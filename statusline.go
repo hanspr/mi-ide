@@ -154,6 +154,11 @@ func (sline *Statusline) Display() {
 	if style, ok := colorscheme["statusline"]; ok {
 		statusLineStyle = style
 	}
+	if style, ok := colorscheme["unfocused"]; ok {
+		if sline.view.Num != CurView().Num {
+			statusLineStyle = style
+		}
+	}
 
 	// Maybe there is a unicode filename?
 	fileRunes := []rune(file)
