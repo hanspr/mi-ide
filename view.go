@@ -487,11 +487,7 @@ func (v *View) Relocate() bool {
 
 func (v *View) GetMouseRelativePositon(x, y int) (int, int) {
 	x -= v.x - v.leftCol
-	if y < v.y {
-		y = 0
-	} else {
-		y = y - v.y + 1
-	}
+	y = y - v.y + 1
 	return x, y
 }
 
@@ -721,7 +717,7 @@ func (v *View) HandleEvent(event tcell.Event) {
 		//		if dirview.Open == false || CurView() != dirview.tree_view {
 		rx, ry := v.GetMouseRelativePositon(e.Position())
 		if v.Type.Kind == 0 {
-			messenger.Message(ry, "?", v.Height)
+			//messenger.Message(ry, "?", v.Height)
 			if ry < 0 {
 				// ignore actions on tabbar or upper views
 				return
