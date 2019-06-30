@@ -74,7 +74,7 @@ func (m *microMenu) Search(callback func(map[string]string)) {
 		m.myapp.AddWindowButton("set", " Search ", "ok", left+38, top+4, m.StartSearch, "")
 		m.myapp.WindowFinish = callback
 	}
-	m.myapp.SetFocus("search")
+	m.myapp.SetFocus("search", "E")
 	m.myapp.Start()
 	apprunning = m.myapp
 }
@@ -108,7 +108,7 @@ func (m *microMenu) SearchReplace(callback func(map[string]string)) {
 		m.myapp.AddWindowButton("set", " Search ", "ok", left+38, top+8, m.StartSearch, "")
 		m.myapp.WindowFinish = callback
 	}
-	m.myapp.SetFocus("search")
+	m.myapp.SetFocus("search", "E")
 	m.myapp.Start()
 	apprunning = m.myapp
 }
@@ -143,7 +143,7 @@ func (m *microMenu) SaveAs(b *Buffer, usePlugin bool, callback func(map[string]s
 		right := width
 		bottom := heigth
 		m.myapp.AddWindowBox("enc", "Save As ...", left, top, right, bottom, nil, "")
-		m.myapp.AddWindowTextBox("filename", "File name : ", "", "string", left+2, top+2, 60, 90, nil, "")
+		m.myapp.AddWindowTextBox("filename", "File name : ", "", "string", left+2, top+2, 65, 200, nil, "")
 		m.myapp.AddWindowSelect("encoding", "Encoding  : ", b.encoder, ENCODINGS+"|"+b.encoder+":"+b.encoder, left+2, top+4, 0, 1, m.SaveAsEncodingEvent, "")
 		m.myapp.AddWindowTextBox("encode", "Use this encoding: ", "", "string", left+32, top+4, 15, 15, nil, "")
 		m.myapp.AddWindowButton("cancel", " Cancel ", "cancel", left+56, top+6, m.SaveAsButtonFinish, "")
@@ -151,7 +151,8 @@ func (m *microMenu) SaveAs(b *Buffer, usePlugin bool, callback func(map[string]s
 		m.myapp.WindowFinish = callback
 	}
 	m.usePlugin = usePlugin
-	m.myapp.SetValue("filename", b.AbsPath)
+	m.myapp.SetValue("filename", b.Path)
+	m.myapp.SetFocus("filename", "B")
 	if strings.Contains(ENCODINGS, b.encoder) {
 		m.myapp.SetValue("encoding", b.encoder)
 		m.myapp.SetValue("encode", "")

@@ -261,16 +261,59 @@ func (a *MicroApp) SetLabel(k, v string) {
 	a.screen.Show()
 }
 
-func (a *MicroApp) SetFocus(k string) {
+func (a *MicroApp) SetFocus(k, where string) {
 	if a.elements[k].index == 0 || (a.elements[k].form != "textbox" && a.elements[k].form != "textarea") {
 		return
 	}
 	a.activeElement = k
-	offset := len(a.elements[k].value)
-	a.cursor.X = a.elements[k].aposb.X + offset
-	a.cursor.Y = a.elements[k].aposb.Y
-	a.screen.ShowCursor(a.cursor.X, a.cursor.Y)
-	a.screen.Show()
+	e := a.elements[k]
+	a.cursor = e.aposb
+	if where == "B" {
+		where = "Home"
+	} else {
+		where = "End"
+	}
+	if e.form == "textbox" {
+		e.TextBoxKeyEvent(where, e.aposb.X, e.aposb.Y)
+	} else {
+		e.TextAreaKeyEvent(where, e.aposb.X, e.aposb.Y)
+	}
+}
+
+func (a *MicroApp) SetFocusNextInputElement(k string) {
+	var next AppElement
+	var first AppElement
+
+	first.pos.Y = 9999999999
+	next.pos.Y = 9999999999
+	next.pos.X = 9999999999
+	me := a.elements[k]
+	for _, e := range a.elements {
+		if e.index == 0 || e.name == me.name || (e.form != "textbox" && e.form != "textarea") {
+			continue
+		}
+		if e.pos.Y == me.pos.Y && e.pos.X > me.pos.X {
+			next = e
+			break
+		}
+		if e.pos.Y > me.pos.Y && e.pos.Y <= next.pos.Y && e.pos.X < next.pos.X {
+			next = e
+			continue
+		}
+		if e.pos.Y < first.pos.Y {
+			first = e
+			continue
+		}
+		if e.pos.Y == first.pos.Y && e.pos.X < first.pos.X {
+			first = e
+			continue
+		}
+	}
+	if next.name != "" {
+		a.SetFocus(next.name, "B")
+	} else if first.name != "" {
+		a.SetFocus(first.name, "B")
+	}
 }
 
 // ------------------------------------------------
@@ -996,6 +1039,9 @@ func (e *AppElement) TextBoxKeyEvent(key string, x, y int) {
 				a.cursor.X = e.apose.X
 			}
 		} else if key == "Enter" {
+			return
+		} else if key == "Tab" {
+			a.SetFocusNextInputElement(e.name)
 			return
 		}
 		a.elements[e.name] = *e
