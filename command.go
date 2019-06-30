@@ -677,17 +677,6 @@ func Replace(args []string) {
 	}
 }
 
-func SearchDialog() {
-	micromenu.SearchReplace(SearchDialogFinished)
-}
-
-func SearchDialogFinished(values map[string]string) {
-	if values["search"] == "" {
-		return
-	}
-	Replace([]string{values["search"], values["replace"], values["a"], values["i"], values["l"]})
-}
-
 // ReplaceAll replaces search term all at once
 func ReplaceAll(args []string) {
 	// aliased to Replace command

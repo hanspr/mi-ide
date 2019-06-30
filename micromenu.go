@@ -68,7 +68,7 @@ func (m *microMenu) Search(callback func(map[string]string)) {
 		right := width
 		bottom := heigth
 		m.myapp.AddWindowBox("enc", "Search", left, top, right, bottom, nil, "")
-		m.myapp.AddWindowTextBox("search", "Search regex: ", "", "string", left+2, top+2, 27, 30, nil, "")
+		m.myapp.AddWindowTextBox("search", "Search regex: ", "", "string", left+2, top+2, 27, 30, m.SubmitSearchOnEnter, "")
 		m.myapp.AddWindowCheckBox("i", "i", "i", left+45, top+2, false, nil, "")
 		m.myapp.AddWindowButton("cancel", " Cancel ", "cancel", left+23, top+4, m.ButtonFinish, "")
 		m.myapp.AddWindowButton("set", " Search ", "ok", left+38, top+4, m.StartSearch, "")
@@ -99,7 +99,7 @@ func (m *microMenu) SearchReplace(callback func(map[string]string)) {
 		bottom := heigth
 		m.myapp.AddWindowBox("enc", "Search / Replace", left, top, right, bottom, nil, "")
 		m.myapp.AddWindowTextBox("search", "Search regex:   ", "", "string", left+2, top+2, 30, 30, nil, "")
-		m.myapp.AddWindowTextBox("replace", "Replace string: ", "", "string", left+2, top+4, 30, 30, nil, "")
+		m.myapp.AddWindowTextBox("replace", "Replace string: ", "", "string", left+2, top+4, 30, 30, m.SubmitSearchOnEnter, "")
 		m.myapp.AddWindowCheckBox("i", "i", "i", left+2, top+6, false, nil, "")
 		m.myapp.AddWindowCheckBox("a", "all", "a", left+9, top+6, false, nil, "")
 		m.myapp.AddWindowCheckBox("s", `s (\n)`, "s", left+16, top+6, false, nil, "")
@@ -117,6 +117,15 @@ func (m *microMenu) StartSearch(name, value, event string, x, y int) bool {
 	m.myapp.WindowFinish(m.myapp.getValues())
 	m.Finish("Done")
 	return true
+}
+
+func (m *microMenu) SubmitSearchOnEnter(name, value, event string, x, y int) bool {
+	if event != "Enter" {
+		return true
+	}
+	m.myapp.WindowFinish(m.myapp.getValues())
+	m.Finish("Done")
+	return false
 }
 
 // END Application Search / Replace

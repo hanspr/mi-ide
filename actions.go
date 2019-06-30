@@ -1050,30 +1050,6 @@ func (v *View) SaveAs(usePlugin bool) bool {
 	return true
 }
 
-// Find opens a prompt and searches forward for the input
-//func (v *View) Find(usePlugin bool) bool {
-//	if v.mainCursor() {
-//		if usePlugin && !PreActionCall("Find", v) {
-//			return false
-//		}
-//
-//		searchStr := ""
-//		if v.Cursor.HasSelection() {
-//			searchStart = v.Cursor.CurSelection[1]
-//			searchStart = v.Cursor.CurSelection[1]
-//			searchStr = v.Cursor.GetSelection()
-//		} else {
-//			searchStart = v.Cursor.Loc
-//		}
-//		BeginSearch(searchStr)
-//
-//		if usePlugin {
-//			return PostActionCall("Find", v)
-//		}
-//	}
-//	return true
-//}
-
 // FindNext searches forwards for the last used search term
 func (v *View) FindNext(usePlugin bool) bool {
 
@@ -2413,8 +2389,17 @@ func (v *View) RemoveAllMultiCursors(usePlugin bool) bool {
 }
 
 func (v *View) SearchDialog(usePlugin bool) bool {
-	SearchDialog()
+	micromenu.SearchReplace(v.SearchDialogFinished)
 	return true
+}
+
+// Call command:Replace
+func (v *View) SearchDialogFinished(values map[string]string) {
+	if values["search"] == "" {
+		return
+	}
+	searchStart = v.Cursor.Loc
+	Replace([]string{values["search"], values["replace"], values["a"], values["i"], values["l"]})
 }
 
 func (v *View) FindDialog(usePlugin bool) bool {
@@ -2422,6 +2407,7 @@ func (v *View) FindDialog(usePlugin bool) bool {
 	return true
 }
 
+// Call search:Search
 func (v *View) FindDialogFinished(values map[string]string) {
 	if values["search"] == "" {
 		return
@@ -2433,6 +2419,7 @@ func (v *View) FindDialogFinished(values map[string]string) {
 	}
 	search = mods + search
 	lastSearch = search
+	searchStart = v.Cursor.Loc
 	Search(search, v, true)
 	StartSearchMode()
 }

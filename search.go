@@ -41,6 +41,9 @@ func ExitSearch(v *View) {
 // HandleSearchEvent takes an event and a view and will do a real time match from the messenger's output
 // to the current buffer. It searches down the buffer.
 func HandleSearchEvent(event tcell.Event, v *View) {
+	if searching == false {
+		return
+	}
 	switch e := event.(type) {
 	case *tcell.EventKey:
 		switch e.Key() {
@@ -48,42 +51,14 @@ func HandleSearchEvent(event tcell.Event, v *View) {
 			// Exit the search mode
 			ExitSearch(v)
 			return
-		case tcell.KeyEnter:
-			// If the user has pressed Enter, they want this to be the lastSearch
-			lastSearch = messenger.response
-			StartSearchMode()
-			return
 		case tcell.KeyF5:
 			v.FindPrevious(true)
 			return
 		case tcell.KeyF6:
 			v.FindNext(true)
 			return
-		default:
-			if searching == true && messenger.hasPrompt == false {
-				return
-			}
 		}
 	}
-
-	messenger.HandleEvent(event, searchHistory)
-
-	if messenger.cursorx < 0 {
-		// Done
-		StartSearchMode()
-		return
-	}
-
-	if messenger.response == "" {
-		v.Cursor.ResetSelection()
-		// We don't end the search though
-		return
-	}
-
-	Search(messenger.response, v, true)
-
-	v.Relocate()
-
 	return
 }
 
@@ -107,10 +82,11 @@ func searchDown(r *regexp.Regexp, v *View, start, end Loc) bool {
 
 		if match != nil {
 			for j := 0; j < len(match); j++ {
-				X := match[j][0]
+				X := runePos(match[j][0], l)
+				Y := runePos(match[j][1], l)
 				if X > startX {
 					v.Cursor.SetSelectionStart(Loc{X, i})
-					v.Cursor.SetSelectionEnd(Loc{match[j][1], i})
+					v.Cursor.SetSelectionEnd(Loc{Y, i})
 					v.Cursor.OrigSelection[0] = v.Cursor.CurSelection[0]
 					v.Cursor.OrigSelection[1] = v.Cursor.CurSelection[1]
 					v.Cursor.Loc = v.Cursor.CurSelection[1]
@@ -145,10 +121,11 @@ func searchUp(r *regexp.Regexp, v *View, start, end Loc) bool {
 
 		if match != nil {
 			for j := len(match) - 1; j >= 0; j-- {
-				X := match[j][0]
+				X := runePos(match[j][0], l)
+				Y := runePos(match[j][1], l)
 				if X < startX {
 					v.Cursor.SetSelectionStart(Loc{X, i})
-					v.Cursor.SetSelectionEnd(Loc{match[j][1], i})
+					v.Cursor.SetSelectionEnd(Loc{Y, i})
 					v.Cursor.OrigSelection[0] = v.Cursor.CurSelection[0]
 					v.Cursor.OrigSelection[1] = v.Cursor.CurSelection[1]
 					v.Cursor.Loc = v.Cursor.CurSelection[1]

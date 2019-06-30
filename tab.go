@@ -250,7 +250,7 @@ func ToolbarHandleMouseEvent(x int) {
 		v.FindDialog(true)
 	case x < 18:
 		//Search Replace
-		SearchDialog()
+		v.SearchDialog(true)
 	default:
 		//Close View
 		v.SafeQuit(true)
