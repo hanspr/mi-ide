@@ -391,7 +391,26 @@ func (b *Buffer) UpdateRules() {
 		}
 	}
 
-	if b.syntaxDef != nil {
+	if b.syntaxDef == nil {
+		f := FindRuntimeFile(RTSyntax, "unknown")
+		data, err := f.Data()
+		if err != nil {
+			TermMessage("Error loading syntax file " + f.Name() + ": " + err.Error())
+		} else {
+			file, err := highlight.ParseFile(data)
+			if err != nil {
+				TermMessage("Error loading syntax file " + f.Name() + ": " + err.Error())
+			} else {
+				header := new(highlight.Header)
+				header.FileType = "Unknown"
+				b.syntaxDef, err = highlight.ParseDef(file, header)
+				if err != nil {
+					TermMessage("Error loading syntax file " + f.Name() + ": " + err.Error())
+				}
+				rehighlight = true
+			}
+		}
+	} else {
 		highlight.ResolveIncludes(b.syntaxDef, files)
 	}
 
