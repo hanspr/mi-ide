@@ -10,8 +10,8 @@ import (
 	"strings"
 
 	"github.com/flynn/json5"
-	"github.com/yuin/gopher-lua"
 	"github.com/hanspr/tcell"
+	"github.com/yuin/gopher-lua"
 	"layeh.com/gopher-luar"
 )
 
@@ -139,7 +139,7 @@ func luaPluginName(name string) string {
 	return strings.Replace(name, "-", "_", -1)
 }
 
-// LoadPlugins loads the pre-installed plugins and the plugins located in ~/.config/micro/plugins
+// LoadPlugins loads the pre-installed plugins and the plugins located in ~/.config/micro-ide/plugins
 func LoadPlugins() {
 	loadedPlugins = make(map[string]string)
 	pluginOption = make(map[string]interface{})

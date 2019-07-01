@@ -10,7 +10,6 @@ import (
 	"unicode/utf8"
 
 	"github.com/hanspr/clipboard"
-	//"github.com/hanspr/micro/cmd/micro/shellwords"
 	"github.com/hanspr/tcell"
 	"github.com/yuin/gopher-lua"
 )
@@ -2402,6 +2401,7 @@ func (v *View) SearchDialogFinished(values map[string]string) {
 	v.Cursor.ResetSelection()
 	if values["search"] == "" {
 		v.Cursor.GotoLoc(v.searchSave)
+		v.Relocate()
 		return
 	}
 	Replace([]string{values["search"], values["replace"], values["a"], values["i"], values["l"]})
@@ -2420,6 +2420,7 @@ func (v *View) FindDialogFinished(values map[string]string) {
 	v.Cursor.ResetSelection()
 	if values["search"] == "" {
 		v.Cursor.GotoLoc(v.searchSave)
+		v.Relocate()
 		return
 	}
 	search := values["search"]

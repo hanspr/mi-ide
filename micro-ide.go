@@ -39,8 +39,8 @@ var (
 	defStyle tcell.Style
 
 	// Where the user's configuration is
-	// This should be $XDG_CONFIG_HOME/micro
-	// If $XDG_CONFIG_HOME is not set, it is ~/.config/micro
+	// This should be $XDG_CONFIG_HOME/micro-ide
+	// If $XDG_CONFIG_HOME is not set, it is ~/.config/micro-ide
 	configDir string
 
 	// Version is the version number or commit hash
@@ -153,7 +153,7 @@ func InitConfigDir() {
 		}
 		xdgHome = home + "/.config"
 	}
-	configDir = xdgHome + "/micro"
+	configDir = xdgHome + "/micro-ide"
 
 	if len(*flagConfigDir) > 0 {
 		if _, err := os.Stat(*flagConfigDir); os.IsNotExist(err) {
@@ -173,11 +173,13 @@ func InitConfigDir() {
 	}
 
 	if _, err := os.Stat(configDir); os.IsNotExist(err) {
-		// If the micro specific config directory doesn't exist we should create that too
-		err = os.Mkdir(configDir, os.ModePerm)
-		if err != nil {
-			TermMessage("Error creating configuration directory: " + err.Error())
-		}
+		// If the micro specific config directory doesn't exist we should download a basic one
+		TermMessage("You need to install the config directory first.\n\nDownload and run installer from: https://github.com/hanspr/micro-ide/releases")
+		os.Exit(1)
+		//		err = os.Mkdir(configDir, os.ModePerm)
+		//		if err != nil {
+		//			TermMessage("Error creating configuration directory: " + err.Error())
+		//		}
 	}
 }
 
@@ -267,7 +269,7 @@ func RedrawAll() {
 }
 
 func LoadAll() {
-	// Find the user's configuration directory (probably $XDG_CONFIG_HOME/micro)
+	// Find the user's configuration directory (probably $XDG_CONFIG_HOME/micro)-ide
 	InitConfigDir()
 
 	// Build a list of available Extensions (Syntax, Colorscheme etc.)
@@ -355,7 +357,7 @@ func main() {
 	encoding.Register()
 	tcell.SetEncodingFallback(tcell.EncodingFallbackASCII)
 
-	// Find the user's configuration directory (probably $XDG_CONFIG_HOME/micro)
+	// Find the user's configuration directory (probably $XDG_CONFIG_HOME/micro-ide)
 	InitConfigDir()
 
 	// Build a list of available Extensions (Syntax, Colorscheme etc.)

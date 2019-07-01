@@ -94,7 +94,7 @@ func GetFileEncoding(filename string) (string, string) {
 	filename, _ = filepath.Abs(filename)
 	// Find last encoding used for this file
 	cachename := filename
-	cachename = ReplaceHome("~/.config/micro/buffers/") + strings.ReplaceAll(cachename, "/", "")
+	cachename = configDir + "/buffers/" + strings.ReplaceAll(cachename, "/", "")
 	if _, err := os.Stat(cachename); err == nil {
 		file, err := os.Open(cachename)
 		if err == nil {
@@ -106,9 +106,9 @@ func GetFileEncoding(filename string) (string, string) {
 		}
 	}
 	// Use uchardet shipped with micro others may be to old
-	uchardet := ReplaceHome("~/.config/micro/libs/uchardet")
+	uchardet := configDir + "/libs/uchardet"
 	cmd := exec.Command(uchardet, filename)
-	cmd.Dir = ReplaceHome("~/.config/micro/libs")
+	cmd.Dir = configDir + "/libs"
 	msg, err := cmd.Output()
 	if err != nil {
 		return "UTF-8", err.Error()
@@ -241,7 +241,7 @@ func NewBuffer(reader io.Reader, size int64, path string, cursorPosition []strin
 
 	if cursorLocationError != nil && len(*flagStartPos) == 0 && (b.Settings["savecursor"].(bool) || b.Settings["saveundo"].(bool)) {
 		// If either savecursor or saveundo is turned on, we need to load the serialized information
-		// from ~/.config/micro/buffers
+		// from ~/.config/micro-ide/buffers
 		file, err := os.Open(configDir + "/buffers/" + EscapePath(b.AbsPath))
 		defer file.Close()
 		if err == nil {
@@ -250,7 +250,7 @@ func NewBuffer(reader io.Reader, size int64, path string, cursorPosition []strin
 			gob.Register(TextEvent{})
 			err = decoder.Decode(&buffer)
 			if err != nil {
-				TermMessage(err.Error(), "\n", "You may want to remove the files in ~/.config/micro/buffers (these files store the information for the 'saveundo' and 'savecursor' options) if this problem persists.")
+				TermMessage(err.Error(), "\n", "You may want to remove the files in ~/.config/micro-ide/buffers (these files store the information for the 'saveundo' and 'savecursor' options) if this problem persists.")
 			}
 			if b.Settings["savecursor"].(bool) {
 				b.Cursor = buffer.Cursor
@@ -676,7 +676,7 @@ func (b *Buffer) SaveAs(filename string) error {
 	b.IsModified = false
 	if b.sencoder != b.encoder {
 		cachename, _ := filepath.Abs(filename)
-		cachename = ReplaceHome("~/.config/micro/buffers/") + strings.ReplaceAll(cachename, "/", "")
+		cachename = configDir + "/buffers/" + strings.ReplaceAll(cachename, "/", "")
 		messenger.AddLog(cachename)
 		f, err := os.Create(cachename)
 		defer f.Close()
