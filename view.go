@@ -82,9 +82,11 @@ type View struct {
 	// This is useful for detecting double and triple clicks
 	lastClickTime time.Time
 
-	lastLoc   Loc
-	savedLoc  Loc
-	savedLine string
+	// Saved cursor locations for view jumps and search
+	lastLoc    Loc
+	savedLoc   Loc
+	savedLine  string
+	searchSave Loc
 
 	// lastCutTime stores when the last ctrl+k was issued.
 	// It is used for clearing the clipboard to replace it with fresh cut lines.

@@ -16,19 +16,19 @@ type AppElement struct {
 	label      string // element label if it applyes
 	form       string // types: box, textbox, textarea, label, checkbox, radio, button
 	value      string
-	value_type string                                      // string, number
-	pos        Loc                                         // Top left corner where to position element
-	aposb      Loc                                         // hotspot top,left
-	apose      Loc                                         // hotspot bottom,right
-	cursor     Loc                                         // cursor location inside text elements
-	width      int                                         // text element width, text area width
-	height     int                                         // Textbox: maxlength, text area have no predefined maxlength
-	index      int                                         // order in which to draw
-	callback   func(string, string, string, int, int) bool // (element.name, element.value, event, x, y)
-	style      tcell.Style                                 // color style for this element
-	checked    bool                                        // Checkbox, Radio checked. Select is open
-	oname      string                                      // Original name, required for radio buttons
-	offset     int                                         // Select = indexSelected, Text = offset from the age id box smaller than maxlength
+	value_type string                                              // string, number
+	pos        Loc                                                 // Top left corner where to position element
+	aposb      Loc                                                 // hotspot top,left
+	apose      Loc                                                 // hotspot bottom,right
+	cursor     Loc                                                 // cursor location inside text elements
+	width      int                                                 // text element width, text area width
+	height     int                                                 // Textbox: maxlength, text area have no predefined maxlength
+	index      int                                                 // order in which to draw
+	callback   func(string, string, string, string, int, int) bool // (element.name, element.value, event, x, y)
+	style      tcell.Style                                         // color style for this element
+	checked    bool                                                // Checkbox, Radio checked. Select is open
+	oname      string                                              // Original name, required for radio buttons
+	offset     int                                                 // Select = indexSelected, Text = offset from the age id box smaller than maxlength
 	microapp   *MicroApp
 }
 
@@ -70,7 +70,7 @@ func (a *MicroApp) AddStyle(name, style string) {
 	a.styles[name] = s
 }
 
-func (a *MicroApp) AddWindowElement(name, label, form, value, value_type string, x, y, w, h int, chk bool, callback func(string, string, string, int, int) bool, style string) {
+func (a *MicroApp) AddWindowElement(name, label, form, value, value_type string, x, y, w, h int, chk bool, callback func(string, string, string, string, int, int) bool, style string) {
 	var e AppElement
 
 	e.name = name
@@ -144,18 +144,18 @@ func (a *MicroApp) AddWindowElement(name, label, form, value, value_type string,
 	a.elements[e.name] = e
 }
 
-func (a *MicroApp) AddWindowBox(name, title string, x, y, width, height int, callback func(string, string, string, int, int) bool, style string) {
+func (a *MicroApp) AddWindowBox(name, title string, x, y, width, height int, callback func(string, string, string, string, int, int) bool, style string) {
 	if width < 1 || height < 1 {
 		return
 	}
 	a.AddWindowElement(name, title, "box", "", "", x, y, width, height, false, callback, style)
 }
 
-func (a *MicroApp) AddWindowLabel(name, label string, x, y int, callback func(string, string, string, int, int) bool, style string) {
+func (a *MicroApp) AddWindowLabel(name, label string, x, y int, callback func(string, string, string, string, int, int) bool, style string) {
 	a.AddWindowElement(name, label, "label", "", "", x, y, 0, 0, false, callback, style)
 }
 
-func (a *MicroApp) AddWindowTextBox(name, label, value, value_type string, x, y, width, maxlength int, callback func(string, string, string, int, int) bool, style string) {
+func (a *MicroApp) AddWindowTextBox(name, label, value, value_type string, x, y, width, maxlength int, callback func(string, string, string, string, int, int) bool, style string) {
 	if width < 1 {
 		return
 	} else if width <= 3 && maxlength > 3 {
@@ -164,22 +164,22 @@ func (a *MicroApp) AddWindowTextBox(name, label, value, value_type string, x, y,
 	a.AddWindowElement(name, label, "textbox", value, value_type, x, y, width, maxlength, false, callback, style)
 }
 
-func (a *MicroApp) AddWindowCheckBox(name, label, value string, x, y int, checked bool, callback func(string, string, string, int, int) bool, style string) {
+func (a *MicroApp) AddWindowCheckBox(name, label, value string, x, y int, checked bool, callback func(string, string, string, string, int, int) bool, style string) {
 	a.AddWindowElement(name, label, "checkbox", value, "", x, y, 0, 0, checked, callback, style)
 }
 
-func (a *MicroApp) AddWindowRadio(name, label, value string, x, y int, checked bool, callback func(string, string, string, int, int) bool, style string) {
+func (a *MicroApp) AddWindowRadio(name, label, value string, x, y int, checked bool, callback func(string, string, string, string, int, int) bool, style string) {
 	a.AddWindowElement(name, label, "radio", value, "", x, y, 0, 0, checked, callback, style)
 }
 
-func (a *MicroApp) AddWindowTextArea(name, label, value string, x, y, columns, rows int, readonly bool, callback func(string, string, string, int, int) bool, style string) {
+func (a *MicroApp) AddWindowTextArea(name, label, value string, x, y, columns, rows int, readonly bool, callback func(string, string, string, string, int, int) bool, style string) {
 	if columns < 5 || rows < 2 {
 		return
 	}
 	a.AddWindowElement(name, label, "textarea", value, "", x, y, columns+2, rows+2, readonly, callback, style)
 }
 
-func (a *MicroApp) AddWindowSelect(name, label, value string, options string, x, y, width, height int, callback func(string, string, string, int, int) bool, style string) bool {
+func (a *MicroApp) AddWindowSelect(name, label, value string, options string, x, y, width, height int, callback func(string, string, string, string, int, int) bool, style string) bool {
 	if options == "" {
 		return false
 	}
@@ -205,7 +205,7 @@ func (a *MicroApp) AddWindowSelect(name, label, value string, options string, x,
 	return true
 }
 
-func (a *MicroApp) AddWindowButton(name, label, button_type string, x, y int, callback func(string, string, string, int, int) bool, style string) {
+func (a *MicroApp) AddWindowButton(name, label, button_type string, x, y int, callback func(string, string, string, string, int, int) bool, style string) {
 	a.AddWindowElement(name, label, "button", "", button_type, x, y, 0, 0, false, callback, style)
 }
 
@@ -257,7 +257,7 @@ func (a *MicroApp) SetLabel(k, v string) {
 	e := a.elements[k]
 	e.label = v
 	a.elements[e.name] = e
-	e.Draw()
+	a.DrawAll()
 	a.screen.Show()
 }
 
@@ -845,21 +845,31 @@ func (e *AppElement) ProcessElementClick(event string, x, y int) {
 		check = true
 	}
 	if e.callback != nil {
-		if e.callback(name, e.value, event, x, y) == false {
+		if e.callback(name, e.value, event, "PRE", x, y) == false {
 			return
 		}
 	}
-	if event != "click1" {
-		return
+	if event == "click1" {
+		if check == true {
+			e.RadioCheckboxClickEvent(event, x, y)
+		} else if e.form == "textbox" {
+			e.TextBoxClickEvent(event, x, y)
+		} else if e.form == "textarea" {
+			e.TextAreaClickEvent(event, x, y)
+		} else if e.form == "select" {
+			e.SelectClickEvent(event, x, y)
+		}
 	}
-	if check == true {
-		e.RadioCheckboxClickEvent(event, x, y)
-	} else if e.form == "textbox" {
-		e.TextBoxClickEvent(event, x, y)
-	} else if e.form == "textarea" {
-		e.TextAreaClickEvent(event, x, y)
-	} else if e.form == "select" {
-		e.SelectClickEvent(event, x, y)
+	if e.callback != nil {
+		if check == true {
+			value := "false"
+			if e.checked == true {
+				value = "true"
+			}
+			e.callback(name, value, event, "POST", x, y)
+		} else {
+			e.callback(name, e.value, event, "POST", x, y)
+		}
 	}
 }
 
@@ -1075,7 +1085,7 @@ func (e *AppElement) ProcessElementKey(key string, x, y int) {
 		return
 	}
 	if e.callback != nil {
-		if e.callback(e.name, e.value, key, x, y) == false {
+		if e.callback(e.name, e.value, key, "PRE", x, y) == false {
 			return
 		}
 	}
@@ -1085,6 +1095,9 @@ func (e *AppElement) ProcessElementKey(key string, x, y int) {
 		e.TextAreaKeyEvent(key, x, y)
 	} else if e.form == "select" {
 		e.SelectKeyEvent(key, x, y)
+	}
+	if e.callback != nil {
+		e.callback(e.name, e.value, key, "POST", x, y)
 	}
 }
 
@@ -1165,6 +1178,7 @@ func (a *MicroApp) HandleEvents(event tcell.Event) {
 				MicroAppStop()
 			} else {
 				a.Finish("")
+				MicroAppStop()
 			}
 			return
 		}

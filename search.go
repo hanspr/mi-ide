@@ -169,3 +169,19 @@ func Search(searchStr string, v *View, down bool) {
 		v.Relocate()
 	}
 }
+
+func DialogSearch(searchStr string) string {
+	if searchStr == "" {
+		return ""
+	}
+	r, err := regexp.Compile(searchStr)
+	if err != nil {
+		return ""
+	}
+	v := CurView()
+	if searchDown(r, v, v.searchSave, v.Buf.End()) == true {
+		return v.Cursor.GetSelection()
+	} else {
+		return ""
+	}
+}

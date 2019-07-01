@@ -40,7 +40,10 @@ func (m *microMenu) Finish(s string) {
 	FixTabsIconArea()
 }
 
-func (m *microMenu) ButtonFinish(name, value, event string, x, y int) bool {
+func (m *microMenu) ButtonFinish(name, value, event, when string, x, y int) bool {
+	if when == "POST" {
+		return true
+	}
 	m.Finish("Abort")
 	return true
 }
@@ -62,16 +65,20 @@ func (m *microMenu) Search(callback func(map[string]string)) {
 		m.myapp.AddStyle("def", "ColorWhite,ColorDarkGrey")
 		w, h := screen.Size()
 		width := 50
-		heigth := 6
+		heigth := 8
 		left := w/2 - width/2
 		top := h/2 - heigth/2
 		right := width
 		bottom := heigth
+		m.myapp.AddStyle("f", "ColorWhite,ColorDarkBlue")
 		m.myapp.AddWindowBox("enc", "Search", left, top, right, bottom, nil, "")
 		m.myapp.AddWindowTextBox("search", "Search regex: ", "", "string", left+2, top+2, 27, 30, m.SubmitSearchOnEnter, "")
-		m.myapp.AddWindowCheckBox("i", "i", "i", left+45, top+2, false, nil, "")
-		m.myapp.AddWindowButton("cancel", " Cancel ", "cancel", left+23, top+4, m.ButtonFinish, "")
-		m.myapp.AddWindowButton("set", " Search ", "ok", left+38, top+4, m.StartSearch, "")
+		m.myapp.AddWindowLabel("lblf", "Found:", left+2, top+4, nil, "")
+		m.myapp.AddWindowLabel("found", "", left+9, top+4, nil, "f")
+		m.myapp.AddWindowCheckBox("i", "i", "i", left+45, top+2, false, m.SubmitSearchOnEnter, "")
+		m.myapp.AddWindowButton("cancel", " Cancel ", "cancel", left+23, top+6, m.ButtonFinish, "")
+		m.myapp.AddWindowButton("set", " Search ", "ok", left+38, top+6, m.StartSearch, "")
+		m.myapp.Finish = m.AbortSearch
 		m.myapp.WindowFinish = callback
 	}
 	m.myapp.SetFocus("search", "E")
@@ -92,20 +99,24 @@ func (m *microMenu) SearchReplace(callback func(map[string]string)) {
 		m.myapp.AddStyle("def", "ColorWhite,ColorDarkGrey")
 		w, h := screen.Size()
 		width := 50
-		heigth := 10
+		heigth := 12
 		left := w/2 - width/2
 		top := h/2 - heigth/2
 		right := width
 		bottom := heigth
+		m.myapp.AddStyle("f", "ColorWhite,ColorDarkBlue")
 		m.myapp.AddWindowBox("enc", "Search / Replace", left, top, right, bottom, nil, "")
-		m.myapp.AddWindowTextBox("search", "Search regex:   ", "", "string", left+2, top+2, 30, 30, nil, "")
+		m.myapp.AddWindowTextBox("search", "Search regex:   ", "", "string", left+2, top+2, 30, 30, m.SubmitSearchOnEnter, "")
 		m.myapp.AddWindowTextBox("replace", "Replace string: ", "", "string", left+2, top+4, 30, 30, m.SubmitSearchOnEnter, "")
-		m.myapp.AddWindowCheckBox("i", "i", "i", left+2, top+6, false, nil, "")
-		m.myapp.AddWindowCheckBox("a", "all", "a", left+9, top+6, false, nil, "")
-		m.myapp.AddWindowCheckBox("s", `s (\n)`, "s", left+16, top+6, false, nil, "")
-		m.myapp.AddWindowCheckBox("l", "No regex", "l", left+26, top+6, false, nil, "")
-		m.myapp.AddWindowButton("cancel", " Cancel ", "cancel", left+23, top+8, m.ButtonFinish, "")
-		m.myapp.AddWindowButton("set", " Search ", "ok", left+38, top+8, m.StartSearch, "")
+		m.myapp.AddWindowCheckBox("i", "i", "i", left+2, top+6, false, m.SubmitSearchOnEnter, "")
+		m.myapp.AddWindowCheckBox("a", "all", "a", left+9, top+6, false, m.SubmitSearchOnEnter, "")
+		m.myapp.AddWindowCheckBox("s", `s (\n)`, "s", left+16, top+6, false, m.SubmitSearchOnEnter, "")
+		m.myapp.AddWindowCheckBox("l", "No regex", "l", left+26, top+6, false, m.SubmitSearchOnEnter, "")
+		m.myapp.AddWindowLabel("lblf", "Found:", left+2, top+8, nil, "")
+		m.myapp.AddWindowLabel("found", "", left+9, top+8, nil, "f")
+		m.myapp.AddWindowButton("cancel", " Cancel ", "cancel", left+23, top+10, m.ButtonFinish, "")
+		m.myapp.AddWindowButton("set", " Search ", "ok", left+38, top+10, m.StartSearch, "")
+		m.myapp.Finish = m.AbortSearch
 		m.myapp.WindowFinish = callback
 	}
 	m.myapp.SetFocus("search", "E")
@@ -113,19 +124,59 @@ func (m *microMenu) SearchReplace(callback func(map[string]string)) {
 	apprunning = m.myapp
 }
 
-func (m *microMenu) StartSearch(name, value, event string, x, y int) bool {
+func (m *microMenu) AbortSearch(s string) {
+	var resp = make(map[string]string)
+	resp["search"] = ""
+	m.myapp.SetValue("search", "")
+	m.myapp.SetLabel("found", "")
+	m.myapp.WindowFinish(resp)
+	m.Finish("Search Abort")
+}
+
+func (m *microMenu) StartSearch(name, value, event, when string, x, y int) bool {
+	if when == "POST" {
+		return true
+	}
 	m.myapp.WindowFinish(m.myapp.getValues())
 	m.Finish("Done")
 	return true
 }
 
-func (m *microMenu) SubmitSearchOnEnter(name, value, event string, x, y int) bool {
-	if event != "Enter" {
+func (m *microMenu) SubmitSearchOnEnter(name, value, event, when string, x, y int) bool {
+	if event == "Enter" && when == "PRE" {
+		m.myapp.WindowFinish(m.myapp.getValues())
+		m.Finish("Done")
+		return false
+	}
+	if name == "replace" {
 		return true
 	}
-	m.myapp.WindowFinish(m.myapp.getValues())
-	m.Finish("Done")
-	return false
+	if when == "PRE" {
+		return true
+	}
+	if event == "click1" {
+		value2 := m.myapp.GetValue("search")
+		if name == "i" && value == "true" {
+			value2 = "(?i)" + value2
+		}
+		if name == "s" && value == "true" {
+			value2 = "(?s)" + value2
+		}
+		event = ""
+		value = value2
+	} else if strings.Contains(event, "click") {
+		return true
+	}
+	if len(event) > 1 {
+		if event == "Backspace2" || event == "Delete" {
+			event = ""
+		} else {
+			return true
+		}
+	}
+	found := DialogSearch(value)
+	m.myapp.SetLabel("found", found)
+	return true
 }
 
 // END Application Search / Replace
@@ -174,7 +225,10 @@ func (m *microMenu) SaveAs(b *Buffer, usePlugin bool, callback func(map[string]s
 	apprunning = m.myapp
 }
 
-func (m *microMenu) SaveAsEncodingEvent(name, value, event string, x, y int) bool {
+func (m *microMenu) SaveAsEncodingEvent(name, value, event, when string, x, y int) bool {
+	if when == "POST" {
+		return true
+	}
 	if event == "click1" {
 		m.myapp.SetValue("encode", "")
 	}
@@ -189,12 +243,18 @@ func (m *microMenu) SaveAsFinish(x string) {
 	m.Finish("Abort")
 }
 
-func (m *microMenu) SaveAsButtonFinish(name, value, event string, x, y int) bool {
+func (m *microMenu) SaveAsButtonFinish(name, value, event, when string, x, y int) bool {
+	if when == "POST" {
+		return true
+	}
 	m.SaveAsFinish("")
 	return true
 }
 
-func (m *microMenu) SaveFile(name, value, event string, x, y int) bool {
+func (m *microMenu) SaveFile(name, value, event, when string, x, y int) bool {
+	if when == "POST" {
+		return true
+	}
 	var resp = make(map[string]string)
 	values := m.myapp.getValues()
 	if values["encode"] != "" {
@@ -247,7 +307,10 @@ func (m *microMenu) SelEncoding(callback func(map[string]string)) {
 	apprunning = m.myapp
 }
 
-func (m *microMenu) SetEncoding(name, value, event string, x, y int) bool {
+func (m *microMenu) SetEncoding(name, value, event, when string, x, y int) bool {
+	if when == "POST" {
+		return true
+	}
 	var resp = make(map[string]string)
 	values := m.myapp.getValues()
 	if values["encode"] != "" {
@@ -303,7 +366,10 @@ func (m *microMenu) Test() {
 	//m.myapp.PrintStyle("{a1}Color a1{/a1} {a2}Color a2{/a2}", 10, 25,nil)
 }
 
-func (m *microMenu) GetDatos(name, value, event string, x, y int) bool {
+func (m *microMenu) GetDatos(name, value, event, when string, x, y int) bool {
+	if when == "POST" {
+		return true
+	}
 	values := m.myapp.getValues()
 	for k, v := range values {
 		messenger.AddLog(k, "=", v)
@@ -313,10 +379,10 @@ func (m *microMenu) GetDatos(name, value, event string, x, y int) bool {
 	return true
 }
 
-func (m *microMenu) CallBackMouseEvent(name, value, event string, x, y int) bool {
+func (m *microMenu) CallBackMouseEvent(name, value, event, when string, x, y int) bool {
 	return true
 }
 
-func (m *microMenu) CallBackKeyEvent(name, value, char string, x, y int) bool {
+func (m *microMenu) CallBackKeyEvent(name, value, char, when string, x, y int) bool {
 	return true
 }
