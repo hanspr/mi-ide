@@ -167,30 +167,46 @@ func MakeRelative(path, base string) (string, error) {
 	return path, nil
 }
 
-// Find y line has a balanced braces
-func BalanceBracePairs(str string, paste bool, v *View) string {
+func BracePairsAreBalanced(str string) int {
 	k := 0
 	b := 0
 	for i := 0; i < len(str); i++ {
 		c := str[i : i+1]
 		if c == "{" || c == "[" || c == "(" {
-			if paste == false && v.Cursor.X <= i {
-				return ""
-			}
 			b++
 			k++
 		} else if c == "}" || c == "]" || c == ")" {
 			b--
 			if k == 0 {
-				b++
+				b--
+				//				r = true
 			}
 			k++
 		}
 	}
-	if b > 0 {
+	return b
+}
+
+// Find y line has a balanced braces
+func BalanceBracePairs(str string) string {
+	n := BracePairsAreBalanced(str)
+	if n > 0 || n == -1 {
 		return "\t"
 	}
 	return ""
+}
+
+// CountLeadingWhitespace returns the ammount of leading whitespace of the given string
+func CountLeadingWhitespace(str string) int {
+	ws := 0
+	for _, c := range str {
+		if c == ' ' || c == '\t' {
+			ws++
+		} else {
+			break
+		}
+	}
+	return ws
 }
 
 // GetLeadingWhitespace returns the leading whitespace of the given string

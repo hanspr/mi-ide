@@ -3,7 +3,6 @@ package main
 import (
 	"fmt"
 	"reflect"
-	"regexp"
 	"strconv"
 	"strings"
 	"time"
@@ -200,30 +199,10 @@ func (v *View) ToggleTabbar() {
 }
 
 func (v *View) paste(clip string) {
-	var ws1 string
+	var Start Loc
 
-	if v.Buf.Settings["smartpaste"].(bool) {
-		ws := GetLeadingWhitespace(v.Buf.Line(v.Cursor.Y))
-		if v.Cursor.Y > 1 {
-			r := regexp.MustCompile(`[ \t]*\}`)
-			if r.FindString(clip) == "" {
-				ws1 = GetLeadingWhitespace(v.Buf.Line(v.Cursor.Y - 1))
-			}
-			if Count(ws) <= Count(ws1) {
-				ws = ws1 + BalanceBracePairs(v.Buf.Line(v.Cursor.Y-1), true, v)
-			}
-		}
-		if v.Cursor.X >= 0 && v.Cursor.X <= Count(ws) {
-			v.Cursor.GotoLoc(Loc{0, v.Cursor.Y})
-		} else {
-			r := regexp.MustCompile(`(?m)^[ \t]*`)
-			clip = r.ReplaceAllString(clip, "")
-			ws = ""
-		}
-		r := regexp.MustCompile(`(?m)^[ \t]*`)
-		clip = r.ReplaceAllString(clip, ws)
-		r = regexp.MustCompile(`(?m)[ \t]+$`)
-		clip = r.ReplaceAllString(clip, "")
+	if v.Buf.Settings["smartindent"].(bool) {
+		Start = v.Cursor.Loc
 	}
 
 	if v.Cursor.HasSelection() {
@@ -232,6 +211,12 @@ func (v *View) paste(clip string) {
 	}
 
 	v.Buf.Insert(v.Cursor.Loc, clip)
+
+	if v.Buf.Settings["smartindent"].(bool) || v.Buf.Settings["smartpaste"].(bool) {
+		v.Buf.SmartIndent(Start, v.Cursor.Loc, false)
+		v.Cursor.GotoLoc(Loc{0, v.Cursor.Y})
+	}
+
 	v.freshClip = false
 	messenger.Message("Pasted clipboard")
 }

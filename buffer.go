@@ -6,15 +6,14 @@ import (
 	"crypto/md5"
 	"encoding/gob"
 	"errors"
-	"reflect"
-
-	//	"fmt"
 	"io"
 	"io/ioutil"
 	"os"
 	"os/exec"
 	"os/signal"
 	"path/filepath"
+	"reflect"
+	"regexp"
 	"strconv"
 	"strings"
 	"time"
@@ -436,6 +435,67 @@ func (b *Buffer) IndentString() string {
 		return Spaces(int(b.Settings["tabsize"].(float64)))
 	}
 	return "\t"
+}
+
+func (b *Buffer) SmartIndent(Start, Stop Loc, once bool) {
+	iChar := b.Settings["indentchar"].(string)
+	iStr := ""
+	n := 0
+	re := regexp.MustCompile(`^[ \t]*`)
+	Ys := Start.Y - 1
+	Ye := Stop.Y
+	if Ys < 0 {
+		Ys = 0
+	} else {
+		// Look back for the first line that is not empty, get that indentation as reference
+		for y := Ys; y >= 0; y-- {
+			if len(b.Line(y)) > 0 {
+				n = CountLeadingWhitespace(b.Line(y))
+				break
+			}
+		}
+	}
+	// Add as meany spaces to use as default indentetion from here on
+	for i := 0; i < n; i++ {
+		iStr = iStr + iChar
+	}
+	// Check is this line has balanced braces
+	c := BracePairsAreBalanced(b.Line(Ys))
+	if c > 0 || c == -1 {
+		// Is unbalanced increase indentation
+		n++
+		iStr = iStr + iChar
+	}
+	Ys++
+	for y := Ys; y <= Ye; y++ {
+		x := Count(b.Line(y))
+		str := b.Line(y)
+		// Check is this line has balanced braces
+		c = BracePairsAreBalanced(str)
+		if c < 0 {
+			// Is unbalanced } ... { or closing ... } decrease indentation on current line
+			iStr = ""
+			for i := 0; i < n-1; i++ {
+				iStr = iStr + iChar
+			}
+		}
+		str = re.ReplaceAllString(str, iStr)
+		if c > 0 || c == -1 {
+			// Is unbalanced increase indentation again for next line
+			n++
+			iStr = iStr + iChar
+		}
+		b.Replace(Loc{0, y}, Loc{x, y}, str)
+		if c < 2 {
+			// Special case, is a close brace, need to reformat this line again only once
+			// To avoid rewwriting all code above over again, call recursivevly only one time
+			// We have to check because this line will always be unbalanced
+			if once {
+				return
+			}
+			b.SmartIndent(Loc{0, y}, Loc{0, y}, true)
+		}
+	}
 }
 
 // CheckModTime makes sure that the file this buffer points to hasn't been updated

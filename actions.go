@@ -714,7 +714,7 @@ func (v *View) InsertNewline(usePlugin bool) bool {
 	}
 
 	ws := GetLeadingWhitespace(v.Buf.Line(v.Cursor.Y))
-	ws = ws + BalanceBracePairs(v.Buf.Line(v.Cursor.Y), false, v)
+	ws = ws + BalanceBracePairs(v.Buf.Line(v.Cursor.Y))
 	v.Buf.Insert(v.Cursor.Loc, "\n")
 
 	if v.Buf.Settings["autoindent"].(bool) {
@@ -844,18 +844,22 @@ func (v *View) IndentSelection(usePlugin bool) bool {
 			v.Cursor.SetSelectionStart(start)
 			v.Cursor.SetSelectionEnd(end)
 		}
-
-		startY := start.Y
-		endY := end.Move(-1, v.Buf).Y
-		endX := end.Move(-1, v.Buf).X
-		tabsize := len(v.Buf.IndentString())
-		for y := startY; y <= endY; y++ {
-			v.Buf.Insert(Loc{0, y}, v.Buf.IndentString())
-			if y == startY && start.X > 0 {
-				v.Cursor.SetSelectionStart(start.Move(tabsize, v.Buf))
-			}
-			if y == endY {
-				v.Cursor.SetSelectionEnd(Loc{endX + tabsize + 1, endY})
+		if v.Buf.Settings["smartindent"].(bool) {
+			v.Buf.SmartIndent(start, end, false)
+			v.Cursor.SetSelectionStart(start)
+		} else {
+			startY := start.Y
+			endY := end.Move(-1, v.Buf).Y
+			endX := end.Move(-1, v.Buf).X
+			tabsize := len(v.Buf.IndentString())
+			for y := startY; y <= endY; y++ {
+				v.Buf.Insert(Loc{0, y}, v.Buf.IndentString())
+				if y == startY && start.X > 0 {
+					v.Cursor.SetSelectionStart(start.Move(tabsize, v.Buf))
+				}
+				if y == endY {
+					v.Cursor.SetSelectionEnd(Loc{endX + tabsize + 1, endY})
+				}
 			}
 		}
 		v.Cursor.Relocate()
@@ -929,6 +933,8 @@ func (v *View) OutdentSelection(usePlugin bool) bool {
 
 // InsertTab inserts a tab or spaces
 func (v *View) InsertTab(usePlugin bool) bool {
+	var cLoc Loc
+
 	if usePlugin && !PreActionCall("InsertTab", v) {
 		return false
 	}
@@ -937,12 +943,19 @@ func (v *View) InsertTab(usePlugin bool) bool {
 		return false
 	}
 
+	if v.Buf.Settings["smartindent"].(bool) == true {
+		cLoc = v.Cursor.Loc
+	}
 	tabBytes := len(v.Buf.IndentString())
 	bytesUntilIndent := tabBytes - (v.Cursor.GetVisualX() % tabBytes)
 	if v.Buf.Settings["tabindents"].(bool) == false {
 		v.Buf.Insert(v.Cursor.Loc, v.Buf.IndentString()[:bytesUntilIndent])
 	} else {
 		v.Buf.Insert(Loc{0, v.Cursor.Loc.Y}, v.Buf.IndentString()[:bytesUntilIndent])
+	}
+	if v.Buf.Settings["smartindent"].(bool) == true {
+		v.Buf.SmartIndent(v.Cursor.Loc, v.Cursor.Loc, false)
+		v.Cursor.GotoLoc(cLoc)
 	}
 
 	if usePlugin {
