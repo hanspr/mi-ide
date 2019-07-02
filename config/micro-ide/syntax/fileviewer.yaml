@@ -1,0 +1,8 @@
+filetype: fileviewer
+
+detect:
+    filename: "^fileviewer$"
+
+rules:
+    # The "..", the separator line thing, and directories
+- special: "^.*?/$"

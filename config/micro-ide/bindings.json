@@ -1,0 +1,21 @@
+{
+	"F1":"OpenFile",
+	"F2":"Save",
+	"F3":"SaveAs",
+	"F4":"Quit",
+	"F5":"PreviousSplit",
+	"F6":"NextSplit",
+	"F7":"PreviousTab",
+	"F8":"NextTab",
+	"Insert":"Paste",
+	"Alt-t":"AddTab",
+	"Alt-k":"DeleteLine",
+	"Alt-v":"VSplit",
+	"Alt-h":"HSplit",
+	"Alt-g":"command-edit:help ",
+	"Alt-s":"command:snippetinsert",
+	"Alt-r":"ToggleRuler",
+	"CtrlG":"JumpLine",
+	"CtrlL":"Center",
+	"CtrlR":"SearchDialog"
+}

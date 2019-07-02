@@ -1,0 +1,20 @@
+filetype: xml
+
+detect:
+    filename: "\\.xml$"
+
+rules:
+    - type: " [A-Za-z]+ *="
+    - type.keyword: "version|encoding|DOCTYPE|ENTITY"
+    - type.keyword: "[A-Za-z]+:[A-Za-z]+"
+    - constant.number: "(?i)#[0-9A-F]{6,6}"
+    - constant.tag: "&[\\w]{2,5};"
+    - symbol.operator: "[\\-\\+\\*/=<>\\|]| (and|or) "
+    - preproc: "disable-output-escaping=\"yes\""
+    - symbol.tag: "</?[A-Za-z0-9:]+/?[ >]"
+    - default: "http://[A-Za-z0-9\\-_/\\.]+"
+    - comment:
+        start: "<!--"
+        end: "-->"
+        rules: []
+    - constant.string: "\".*?\""

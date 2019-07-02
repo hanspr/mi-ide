@@ -1,0 +1,19 @@
+filetype: xslt
+
+detect:
+    filename: "\\.xslt$"
+
+rules:
+    - identifier.var: "\"(current\\(\\))?([A-Za-z_0-9]+:[ A-Za-z_0-9:/@]+|@[A-Za-z_0-9]+|\\.?(/+)[A-Za-z0-9:@/ \\!=<>\\']+)\""
+    - type: "(--)?&[A-Za-z0-9_;!\\-]+|</?[A-Za-z0-9:]+[ />]+|/?>|nbsp;"
+    - constant.number: "(?i)#[0-9A-F]{6,6}"
+    - symbol.operator: "[\\-\\+\\*/=<>\\|]| (and|or) "
+    - preproc: "disable-output-escaping=\"yes\""
+    - symbol.tag: "</?[A-Za-z0-9:]+/?[ >]"
+    - default: "http://[A-Za-z0-9\\-_/\\.]+"
+    - special: "\\[[A-Z]+:|\\]"
+    - special: "(;[A-Za-z0-9_;]+)[;\\]]"
+    - type.keyword: "(current|match|select|test) ?="
+    - type.keyword: "</?xsl:[A-Za-z\\-]+[ >]"
+    - comment: "<!.*-[ \t]*>"
+
