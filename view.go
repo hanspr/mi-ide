@@ -213,8 +213,9 @@ func (v *View) paste(clip string) {
 	v.Buf.Insert(v.Cursor.Loc, clip)
 
 	if v.Buf.Settings["smartindent"].(bool) || v.Buf.Settings["smartpaste"].(bool) {
+		saveLoc := v.Cursor.Loc
 		v.Buf.SmartIndent(Start, v.Cursor.Loc, false)
-		v.Cursor.GotoLoc(Loc{0, v.Cursor.Y})
+		v.Cursor.GotoLoc(saveLoc)
 	}
 
 	v.freshClip = false
