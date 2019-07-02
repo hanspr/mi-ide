@@ -175,6 +175,9 @@ func (m *microMenu) SubmitSearchOnEnter(name, value, event, when string, x, y in
 		}
 	}
 	found := DialogSearch(value)
+	if len(found) > 40 {
+		found = found[:39]
+	}
 	m.myapp.SetLabel("found", found)
 	return true
 }
