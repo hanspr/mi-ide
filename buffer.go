@@ -438,10 +438,11 @@ func (b *Buffer) IndentString() string {
 }
 
 func (b *Buffer) SmartIndent(Start, Stop Loc, once bool) {
+	//	messenger.AddLog(once, ": =========================")
 	iChar := b.Settings["indentchar"].(string)
 	iStr := ""
 	n := 0
-	//	B := 0
+	B := 0
 	re := regexp.MustCompile(`^[ \t]*`)
 	Ys := Start.Y - 1
 	Ye := Stop.Y
@@ -452,7 +453,7 @@ func (b *Buffer) SmartIndent(Start, Stop Loc, once bool) {
 		for y := Ys; y >= 0; y-- {
 			if len(b.Line(y)) > 0 {
 				n = CountLeadingWhitespace(b.Line(y))
-				//				B = BracePairsAreBalanced()
+				B = BracePairsAreBalanced(b.Line(y))
 				break
 			}
 		}
@@ -462,31 +463,51 @@ func (b *Buffer) SmartIndent(Start, Stop Loc, once bool) {
 		iStr = iStr + iChar
 	}
 	// Check is this line has balanced braces
-	c := BracePairsAreBalanced(b.Line(Ys))
-	if c > 0 || c == -1 {
+	C := BracePairsAreBalanced(b.Line(Ys))
+	//	messenger.AddLog(once, ": C=", C)
+	//	messenger.AddLog(once, ": n=", n)
+	if C > 0 || C == -1 {
+		//		messenger.AddLog(once, ": Indent extra")
 		// Is unbalanced increase indentation
 		n++
 		iStr = iStr + iChar
 	}
 	Ys++
+	//	messenger.AddLog(once, ": n=", n)
 	for y := Ys; y <= Ye; y++ {
 		x := Count(b.Line(y))
 		str := b.Line(y)
 		// Check is this line has balanced braces
-		c = BracePairsAreBalanced(str)
-		if c < 0 {
+		c := BracePairsAreBalanced(str)
+		//		messenger.AddLog(once, ": c=", c)
+		//		messenger.AddLog(once, ": B=", B)
+		if c == -1 {
+			//			messenger.AddLog(once, ": Outdent } ... {")
+			// Is unbalanced } ... { or closing ... } decrease indentation on current line
+			iStr = ""
+			for i := 0; i < n-1; i++ {
+				iStr = iStr + iChar
+			}
+			//		} else if c == -2 && C <= 0 && once == true && B >= 0 {
+		} else if c == -2 && C == B && once == true {
+			//			messenger.AddLog(once, ": Outdent")
 			// Is unbalanced } ... { or closing ... } decrease indentation on current line
 			iStr = ""
 			for i := 0; i < n-1; i++ {
 				iStr = iStr + iChar
 			}
 		}
+
+		//		messenger.AddLog(once, ": strB", str)
 		str = re.ReplaceAllString(str, iStr)
+		//		messenger.AddLog(once, ": strA", str)
 		if c > 0 || c == -1 {
 			// Is unbalanced increase indentation again for next line
+			//			messenger.AddLog(once, ": Extra indentation")
 			n++
 			iStr = iStr + iChar
 		}
+		//		messenger.AddLog(once, ": n=", n)
 		b.Replace(Loc{0, y}, Loc{x, y}, str)
 		if c < 2 {
 			// Special case, is a close brace, need to reformat this line again only once
@@ -495,6 +516,7 @@ func (b *Buffer) SmartIndent(Start, Stop Loc, once bool) {
 			if once {
 				return
 			}
+			//			messenger.AddLog(once, ": ----------- Recursive once")
 			b.SmartIndent(Loc{0, y}, Loc{0, y}, true)
 		}
 	}
