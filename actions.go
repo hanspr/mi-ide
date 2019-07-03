@@ -715,19 +715,32 @@ func (v *View) InsertNewline(usePlugin bool) bool {
 
 	ws := GetLeadingWhitespace(v.Buf.Line(v.Cursor.Y))
 	ws = ws + BalanceBracePairs(v.Buf.Line(v.Cursor.Y))
-	v.Buf.Insert(v.Cursor.Loc, "\n")
 
-	if v.Buf.Settings["autoindent"].(bool) && !v.Buf.Settings["smartindent"].(bool) {
-		v.Buf.Insert(v.Cursor.Loc, ws)
-
-		// Remove the whitespaces if keepautoindent setting is off
-		if IsSpacesOrTabs(v.Buf.Line(v.Cursor.Y-1)) && !v.Buf.Settings["keepautoindent"].(bool) {
-			line := v.Buf.Line(v.Cursor.Y - 1)
-			v.Buf.Remove(Loc{0, v.Cursor.Y - 1}, Loc{Count(line), v.Cursor.Y - 1})
+	// Autoclose for (),[],{}
+	if v.Buf.Settings["autoclose"].(bool) && v.Cursor.X < len(v.Buf.Line(v.Cursor.Y)) {
+		cha := v.Buf.Line(v.Cursor.Y)[v.Cursor.X : v.Cursor.X+1]
+		messenger.AddLog("cha=", cha)
+		if strings.Contains(autocloseNewLine, cha) {
+			messenger.AddLog("Agregar línea adicional")
+			v.Buf.Insert(v.Cursor.Loc, "\n\n")
+			v.Buf.SmartIndent(v.Cursor.Loc, v.Cursor.Loc, false)
+			//			v.Cursor.Up()
+			v.Buf.SmartIndent(v.Cursor.Loc, v.Cursor.Loc, false)
 		}
-	} else if v.Buf.Settings["smartindent"].(bool) {
-		v.Buf.SmartIndent(Loc{v.Cursor.Loc.X, v.Cursor.Loc.Y - 1}, Loc{v.Cursor.Loc.X, v.Cursor.Loc.Y - 1}, false)
-		v.Buf.SmartIndent(v.Cursor.Loc, v.Cursor.Loc, false)
+	} else {
+		v.Buf.Insert(v.Cursor.Loc, "\n")
+		if v.Buf.Settings["autoindent"].(bool) && !v.Buf.Settings["smartindent"].(bool) {
+			v.Buf.Insert(v.Cursor.Loc, ws)
+
+			// Remove the whitespaces if keepautoindent setting is off
+			if IsSpacesOrTabs(v.Buf.Line(v.Cursor.Y-1)) && !v.Buf.Settings["keepautoindent"].(bool) {
+				line := v.Buf.Line(v.Cursor.Y - 1)
+				v.Buf.Remove(Loc{0, v.Cursor.Y - 1}, Loc{Count(line), v.Cursor.Y - 1})
+			}
+		} else if v.Buf.Settings["smartindent"].(bool) {
+			v.Buf.SmartIndent(Loc{v.Cursor.Loc.X, v.Cursor.Loc.Y - 1}, Loc{v.Cursor.Loc.X, v.Cursor.Loc.Y - 1}, false)
+			v.Buf.SmartIndent(v.Cursor.Loc, v.Cursor.Loc, false)
+		}
 	}
 	v.Cursor.LastVisualX = v.Cursor.GetVisualX()
 
@@ -741,6 +754,17 @@ func (v *View) InsertNewline(usePlugin bool) bool {
 func (v *View) Backspace(usePlugin bool) bool {
 	if usePlugin && !PreActionCall("Backspace", v) {
 		return false
+	}
+
+	// Remove autoclose here
+	if v.Buf.Settings["autoclose"].(bool) && v.Cursor.X > 0 && v.Cursor.X < len(v.Buf.Line(v.Cursor.Y)) {
+		cha := v.Buf.Line(v.Cursor.Y)[v.Cursor.X : v.Cursor.X+1]
+		chb := v.Buf.Line(v.Cursor.Y)[v.Cursor.X-1 : v.Cursor.X]
+		n := strings.Index(autocloseClose, cha)
+		m := strings.Index(autocloseOpen, chb)
+		if n >= 0 && m == n {
+			v.Delete(false)
+		}
 	}
 
 	// Delete a character
@@ -946,13 +970,12 @@ func (v *View) InsertTab(usePlugin bool) bool {
 
 	tabBytes := len(v.Buf.IndentString())
 	bytesUntilIndent := tabBytes - (v.Cursor.GetVisualX() % tabBytes)
-	if v.Buf.Settings["tabindents"].(bool) == false {
+	if v.Buf.Settings["smartindent"].(bool) == true {
+		v.Buf.SmartIndent(v.Cursor.Loc, v.Cursor.Loc, false)
+	} else if v.Buf.Settings["tabindents"].(bool) == false {
 		v.Buf.Insert(v.Cursor.Loc, v.Buf.IndentString()[:bytesUntilIndent])
 	} else {
 		v.Buf.Insert(Loc{0, v.Cursor.Loc.Y}, v.Buf.IndentString()[:bytesUntilIndent])
-	}
-	if v.Buf.Settings["smartindent"].(bool) == true {
-		v.Buf.SmartIndent(v.Cursor.Loc, v.Cursor.Loc, false)
 	}
 
 	if usePlugin {
@@ -2178,7 +2201,7 @@ func (v *View) PlayMacro(usePlugin bool) bool {
 			// v.Cursor.Right()
 
 			for pl := range loadedPlugins {
-				_, err := Call(pl+".onRune", string(t), v)
+				_, err := Call(pl+".onRuneonRune", string(t), v)
 				if err != nil && !strings.HasPrefix(err.Error(), "function does not exist") {
 					TermMessage(err)
 				}

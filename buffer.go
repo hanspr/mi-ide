@@ -441,6 +441,7 @@ func (b *Buffer) SmartIndent(Start, Stop Loc, once bool) {
 	iChar := b.Settings["indentchar"].(string)
 	iStr := ""
 	n := 0
+	//	B := 0
 	re := regexp.MustCompile(`^[ \t]*`)
 	Ys := Start.Y - 1
 	Ye := Stop.Y
@@ -451,6 +452,7 @@ func (b *Buffer) SmartIndent(Start, Stop Loc, once bool) {
 		for y := Ys; y >= 0; y-- {
 			if len(b.Line(y)) > 0 {
 				n = CountLeadingWhitespace(b.Line(y))
+				//				B = BracePairsAreBalanced()
 				break
 			}
 		}
