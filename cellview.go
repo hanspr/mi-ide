@@ -1,8 +1,8 @@
 package main
 
 import (
-	"github.com/mattn/go-runewidth"
 	"github.com/hanspr/tcell"
+	"github.com/mattn/go-runewidth"
 )
 
 func min(a, b int) int {
@@ -101,9 +101,11 @@ func (c *CellView) Draw(buf *Buffer, top, height, left, width int) {
 	start := buf.Cursor.Y
 	// Patch to avoid crash, have to study where it comes from
 	if start < 0 {
+		TermMessage("Wrong call start < 0")
 		start = 1
 		buf.Cursor.Y = start
 	} else if start > buf.End().Y {
+		TermMessage("Wrong call start > buffer end")
 		start = buf.End().Y
 		buf.Cursor.Y = start
 	}
@@ -170,7 +172,8 @@ func (c *CellView) Draw(buf *Buffer, top, height, left, width int) {
 			if viewCol >= 0 {
 				st := curStyle
 				if colN == matchingBrace.X && lineN == matchingBrace.Y && !buf.Cursor.HasSelection() {
-					st = curStyle.Reverse(true)
+					//					st = curStyle.Reverse(true)
+					st = curStyle.Bold(true).Background(tcell.ColorBlack).Foreground(tcell.ColorLightSkyBlue).Reverse(true)
 				}
 				if viewCol < len(c.lines[viewLine]) {
 					c.lines[viewLine][viewCol] = &Char{Loc{viewCol, viewLine}, Loc{colN, lineN}, char, char, st, 1}
