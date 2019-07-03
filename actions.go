@@ -721,7 +721,6 @@ func (v *View) InsertNewline(usePlugin bool) bool {
 		cha := v.Buf.Line(v.Cursor.Y)[v.Cursor.X : v.Cursor.X+1]
 		//chb := v.Buf.Line(v.Cursor.Y)[v.Cursor.X-1 : v.Cursor.X]
 		if strings.Contains(autocloseNewLine, cha) {
-			messenger.AddLog("Agregar línea adicional")
 			v.Buf.Insert(v.Cursor.Loc, "\n\n")
 			v.Buf.SmartIndent(v.Cursor.Loc, v.Cursor.Loc, false)
 			v.Cursor.Up()
