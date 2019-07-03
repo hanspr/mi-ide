@@ -46,9 +46,6 @@ func NewTabFromView(v *View) *Tab {
 	if globalSettings["infobar"].(bool) {
 		t.tree.height--
 	}
-	if globalSettings["keymenu"].(bool) {
-		t.tree.height -= 2
-	}
 
 	t.Resize()
 	return t
@@ -76,9 +73,6 @@ func (t *Tab) Resize() {
 
 	if globalSettings["infobar"].(bool) {
 		t.tree.height--
-	}
-	if globalSettings["keymenu"].(bool) {
-		t.tree.height -= 2
 	}
 
 	t.tree.ResizeSplits()

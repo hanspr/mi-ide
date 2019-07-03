@@ -442,8 +442,6 @@ func ParseCursorLocation(cursorPositions []string) (Loc, error) {
 	return startpos, err
 }
 
-// Hans New rutines
-
 func SubtringSafe(utf8s string, from int, to int) string {
 	lastIndex := Count(utf8s)
 	if from > lastIndex {

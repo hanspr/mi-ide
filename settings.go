@@ -216,7 +216,6 @@ func DefaultGlobalSettings() map[string]interface{} {
 		"indentchar":     " ",
 		"infobar":        true,
 		"keepautoindent": false,
-		"keymenu":        false,
 		"matchbrace":     false,
 		"matchbraceleft": false,
 		"mouse":          true,
@@ -339,7 +338,7 @@ func SetOption(option, value string) error {
 		}
 	}
 
-	if option == "infobar" || option == "keymenu" {
+	if option == "infobar" {
 		for _, tab := range tabs {
 			tab.Resize()
 		}

@@ -717,7 +717,7 @@ func (v *View) InsertNewline(usePlugin bool) bool {
 	ws = ws + BalanceBracePairs(v.Buf.Line(v.Cursor.Y))
 	v.Buf.Insert(v.Cursor.Loc, "\n")
 
-	if v.Buf.Settings["autoindent"].(bool) {
+	if v.Buf.Settings["autoindent"].(bool) && !v.Buf.Settings["smartindent"].(bool) {
 		v.Buf.Insert(v.Cursor.Loc, ws)
 
 		// Remove the whitespaces if keepautoindent setting is off
@@ -725,6 +725,9 @@ func (v *View) InsertNewline(usePlugin bool) bool {
 			line := v.Buf.Line(v.Cursor.Y - 1)
 			v.Buf.Remove(Loc{0, v.Cursor.Y - 1}, Loc{Count(line), v.Cursor.Y - 1})
 		}
+	} else if v.Buf.Settings["smartindent"].(bool) {
+		v.Buf.SmartIndent(Loc{v.Cursor.Loc.X, v.Cursor.Loc.Y - 1}, Loc{v.Cursor.Loc.X, v.Cursor.Loc.Y - 1}, false)
+		v.Buf.SmartIndent(v.Cursor.Loc, v.Cursor.Loc, false)
 	}
 	v.Cursor.LastVisualX = v.Cursor.GetVisualX()
 
@@ -933,8 +936,6 @@ func (v *View) OutdentSelection(usePlugin bool) bool {
 
 // InsertTab inserts a tab or spaces
 func (v *View) InsertTab(usePlugin bool) bool {
-	var cLoc Loc
-
 	if usePlugin && !PreActionCall("InsertTab", v) {
 		return false
 	}
@@ -943,9 +944,6 @@ func (v *View) InsertTab(usePlugin bool) bool {
 		return false
 	}
 
-	if v.Buf.Settings["smartindent"].(bool) == true {
-		cLoc = v.Cursor.Loc
-	}
 	tabBytes := len(v.Buf.IndentString())
 	bytesUntilIndent := tabBytes - (v.Cursor.GetVisualX() % tabBytes)
 	if v.Buf.Settings["tabindents"].(bool) == false {
@@ -955,7 +953,6 @@ func (v *View) InsertTab(usePlugin bool) bool {
 	}
 	if v.Buf.Settings["smartindent"].(bool) == true {
 		v.Buf.SmartIndent(v.Cursor.Loc, v.Cursor.Loc, false)
-		v.Cursor.GotoLoc(cLoc)
 	}
 
 	if usePlugin {
@@ -1777,25 +1774,6 @@ func (v *View) ToggleHelp(usePlugin bool) bool {
 
 		if usePlugin {
 			return PostActionCall("ToggleHelp", v)
-		}
-	}
-	return true
-}
-
-// ToggleKeyMenu toggles the keymenu option and resizes all tabs
-func (v *View) ToggleKeyMenu(usePlugin bool) bool {
-	if v.mainCursor() {
-		if usePlugin && !PreActionCall("ToggleBindings", v) {
-			return false
-		}
-
-		globalSettings["keymenu"] = !globalSettings["keymenu"].(bool)
-		for _, tab := range tabs {
-			tab.Resize()
-		}
-
-		if usePlugin {
-			return PostActionCall("ToggleBindings", v)
 		}
 	}
 	return true

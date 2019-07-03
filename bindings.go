@@ -15,7 +15,6 @@ var bindingsStr map[string]string
 var bindings map[Key][]func(*View, bool) bool
 var mouseBindings map[Key][]func(*View, bool, *tcell.EventMouse) bool
 var helpBinding string
-var kmenuBinding string
 
 var mouseBindingActions = map[string]func(*View, bool, *tcell.EventMouse) bool{
 	"MousePress":       (*View).MousePress,
@@ -87,7 +86,6 @@ var bindingActions = map[string]func(*View, bool) bool{
 	"StartOfLine":            (*View).StartOfLine,
 	"EndOfLine":              (*View).EndOfLine,
 	"ToggleHelp":             (*View).ToggleHelp,
-	"ToggleKeyMenu":          (*View).ToggleKeyMenu,
 	"ToggleRuler":            (*View).ToggleRuler,
 	"JumpLine":               (*View).JumpLine,
 	"ClearStatus":            (*View).ClearStatus,
@@ -465,14 +463,8 @@ func BindKey(k, v string) {
 	if v == "ToggleHelp" {
 		helpBinding = k
 	}
-	if v == "ToggleKeyMenu" {
-		kmenuBinding = k
-	}
 	if helpBinding == k && v != "ToggleHelp" {
 		helpBinding = ""
-	}
-	if kmenuBinding == k && v != "ToggleKeyMenu" {
-		kmenuBinding = ""
 	}
 
 	actionNames := strings.Split(v, ",")
@@ -574,7 +566,6 @@ func DefaultBindings() map[string]string {
 		"CtrlPageUp":     "PreviousTab",
 		"CtrlPageDown":   "NextTab",
 		"CtrlG":          "ToggleHelp",
-		"Alt-g":          "ToggleKeyMenu",
 		"CtrlR":          "ToggleRuler",
 		"CtrlL":          "JumpLine",
 		"Delete":         "Delete",
