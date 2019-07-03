@@ -719,12 +719,18 @@ func (v *View) InsertNewline(usePlugin bool) bool {
 	// Autoclose for (),[],{}
 	if v.Buf.Settings["autoclose"].(bool) && v.Cursor.X < len(v.Buf.Line(v.Cursor.Y)) {
 		cha := v.Buf.Line(v.Cursor.Y)[v.Cursor.X : v.Cursor.X+1]
+		//chb := v.Buf.Line(v.Cursor.Y)[v.Cursor.X-1 : v.Cursor.X]
 		if strings.Contains(autocloseNewLine, cha) {
 			messenger.AddLog("Agregar línea adicional")
 			v.Buf.Insert(v.Cursor.Loc, "\n\n")
 			v.Buf.SmartIndent(v.Cursor.Loc, v.Cursor.Loc, false)
 			v.Cursor.Up()
 			v.Buf.SmartIndent(v.Cursor.Loc, v.Cursor.Loc, false)
+		} else {
+			v.Buf.Insert(v.Cursor.Loc, "\n")
+			cSave := v.Cursor.Loc
+			v.Buf.SmartIndent(v.Cursor.Loc, v.Cursor.Loc, false)
+			v.Cursor.GotoLoc(Loc{cSave.X + CountLeadingWhitespace(v.Buf.Line(v.Cursor.Y)), v.Cursor.Y})
 		}
 	} else {
 		v.Buf.Insert(v.Cursor.Loc, "\n")

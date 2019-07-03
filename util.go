@@ -167,22 +167,39 @@ func MakeRelative(path, base string) (string, error) {
 	return path, nil
 }
 
+// 0 = Line has balanced brace or dirty close brace " text} , text)" treated as balanced line
+// > 0 unbalanced indent
+// == -1 balanced } .. {, but requires indent on next line
+// == -2 unbalanced but is a closing brace and is the first one
 func BracePairsAreBalanced(str string) int {
+	r := regexp.MustCompile(`^[ \t]+`)
+	str = r.ReplaceAllString(str, "")
 	k := 0
 	b := 0
+	w := false
+	f := false
 	for i := 0; i < len(str); i++ {
 		c := str[i : i+1]
 		if c == "{" || c == "[" || c == "(" {
 			b++
-			k++
+			if f == false {
+				f = true
+				if w == true {
+					w = false
+				}
+			}
 		} else if c == "}" || c == "]" || c == ")" {
 			b--
 			if k == 0 {
+				f = true
 				b--
-				//				r = true
+			} else if w {
+				b++
 			}
-			k++
+		} else if k == 0 {
+			w = true
 		}
+		k++
 	}
 	return b
 }
