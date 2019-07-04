@@ -477,6 +477,7 @@ func (b *Buffer) SmartIndent(Start, Stop Loc, once bool) {
 	for y := Ys; y <= Ye; y++ {
 		x := Count(b.Line(y))
 		str := b.Line(y)
+		strB := str
 		// Check is this line has balanced braces
 		c := BracePairsAreBalanced(str)
 		//messenger.AddLog(once, ": c=", c)
@@ -507,7 +508,9 @@ func (b *Buffer) SmartIndent(Start, Stop Loc, once bool) {
 			iStr = iStr + iChar
 		}
 		//messenger.AddLog(once, ": Next n=", n)
-		b.Replace(Loc{0, y}, Loc{x, y}, str)
+		if strB != str {
+			b.Replace(Loc{0, y}, Loc{x, y}, str)
+		}
 		if c < 2 {
 			// Special case, is a close brace, need to reformat this line again only once
 			// To avoid rewwriting all code above over again, call recursivevly only one time
