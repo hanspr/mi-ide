@@ -10,10 +10,10 @@ import (
 	"strings"
 	"time"
 
-	"github.com/mattn/go-runewidth"
 	"github.com/hanspr/clipboard"
 	"github.com/hanspr/micro/cmd/micro/shellwords"
 	"github.com/hanspr/tcell"
+	"github.com/mattn/go-runewidth"
 )
 
 // TermMessage sends a message to the user in the terminal. This usually occurs before
@@ -133,6 +133,11 @@ func (m *Messenger) Error(msg ...interface{}) {
 	}
 	// add the message to the log regardless of active prompts
 	m.AddLog(buf.String())
+	go func() {
+		time.Sleep(4 * time.Second)
+		m.Reset()
+		m.Clear()
+	}()
 }
 
 // Success sends a success message to the user
@@ -151,11 +156,10 @@ func (m *Messenger) Success(msg ...interface{}) {
 	}
 	// add the message to the log regardless of active prompts
 	m.AddLog(buf.String())
-	to := make(chan error, 1)
 	go func() {
 		time.Sleep(4 * time.Second)
-		m.Message("")
-		to <- nil
+		m.Reset()
+		m.Clear()
 	}()
 }
 
@@ -596,6 +600,7 @@ func (m *Messenger) Clear() {
 	for x := 0; x < w; x++ {
 		screen.SetContent(x, h-1, ' ', nil, defStyle)
 	}
+	screen.Show()
 }
 
 func (m *Messenger) DisplaySuggestions(suggestions []string) {
