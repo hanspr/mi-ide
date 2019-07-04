@@ -88,6 +88,8 @@ func (l *LeafNode) VSplit(buf *Buffer, splitIndex int) {
 		tab.Views[splitIndex] = newView
 
 		tab.CurView = splitIndex
+		newView.savedLoc = Loc{0, 0}
+		newView.savedLine = buf.Line(0)
 	} else {
 		if splitIndex > 1 {
 			splitIndex = 1
@@ -99,6 +101,7 @@ func (l *LeafNode) VSplit(buf *Buffer, splitIndex int) {
 		s.tabNum = l.parent.tabNum
 		newView := NewView(buf)
 		newView.TabNum = l.parent.tabNum
+
 		if splitIndex == 1 {
 			s.children = []Node{l, NewLeafNode(newView, s)}
 		} else {
@@ -112,6 +115,8 @@ func (l *LeafNode) VSplit(buf *Buffer, splitIndex int) {
 		tab.Views[splitIndex] = newView
 
 		tab.CurView = splitIndex
+		newView.savedLoc = Loc{0, 0}
+		newView.savedLine = buf.Line(0)
 	}
 
 	tab.Resize()
@@ -147,6 +152,8 @@ func (l *LeafNode) HSplit(buf *Buffer, splitIndex int) {
 		tab.Views[splitIndex] = newView
 
 		tab.CurView = splitIndex
+		newView.savedLoc = Loc{0, 0}
+		newView.savedLine = buf.Line(0)
 	} else {
 		if splitIndex > 1 {
 			splitIndex = 1
@@ -172,6 +179,8 @@ func (l *LeafNode) HSplit(buf *Buffer, splitIndex int) {
 		tab.Views[splitIndex] = newView
 
 		tab.CurView = splitIndex
+		newView.savedLoc = Loc{0, 0}
+		newView.savedLine = buf.Line(0)
 	}
 
 	tab.Resize()

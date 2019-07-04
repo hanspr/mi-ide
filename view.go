@@ -246,6 +246,16 @@ func (v *View) ScrollDown(n int) {
 // If there are unsaved changes, the user will be asked if the view can be closed
 // causing them to lose the unsaved changes
 func (v *View) CanClose() bool {
+	// Check if another clone is open, if it is, close without saving
+	for _, t := range tabs {
+		for _, view := range t.Views {
+			if v.Buf.AbsPath == view.Buf.AbsPath && v.Num != view.Num {
+				return true
+			} else if v.Buf.AbsPath == view.Buf.AbsPath && v.TabNum != view.TabNum {
+				return true
+			}
+		}
+	}
 	if v.Type == vtDefault && v.Buf.Modified() {
 		var choice bool
 		var canceled bool
@@ -919,7 +929,7 @@ func (v *View) DisplayView() {
 	if CurView().Type.Kind == 0 && LastView != CurView().Num && CurView().Cursor.Loc != CurView().savedLoc {
 		// HP
 		// Set de cursor in last known position for this view
-		// It happens when 2 views point to same buffer
+		// It happens when 2+ views point to same buffer
 		// Set into current view boudaries
 		if CurView().savedLoc.Y > CurView().Buf.End().Y {
 			CurView().savedLoc.Y = CurView().Buf.End().Y
@@ -939,10 +949,11 @@ func (v *View) DisplayView() {
 					newLoc = CurView().savedLoc
 				}
 			}
-			CurView().Cursor.Loc = newLoc
+			CurView().Cursor.GotoLoc(newLoc)
 		} else {
-			CurView().Cursor.Loc = CurView().savedLoc
+			CurView().Cursor.GotoLoc(CurView().savedLoc)
 		}
+		CurView().Relocate()
 	}
 
 	// We need to know the string length of the largest line number

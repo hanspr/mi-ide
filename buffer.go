@@ -61,8 +61,8 @@ type Buffer struct {
 	// Whether or not the buffer has been modified since it was opened
 	IsModified bool
 
-	// Stack Referencia since saved, used to set buffer clean if undos arrives to
-	// last clean state (monitores in Undo Redo Actions)
+	// Stack Reference since saved, used to set buffer clean if undos arrives to
+	// last clean state (monitors in Undo Redo Actions)
 	UndoStackRef int
 
 	// Stores the last modification time of the file the buffer is pointing to
