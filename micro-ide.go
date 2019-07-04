@@ -174,12 +174,8 @@ func InitConfigDir() {
 
 	if _, err := os.Stat(configDir); os.IsNotExist(err) {
 		// If the micro specific config directory doesn't exist we should download a basic one
-		TermMessage("You need to install the config directory first.\n\nDownload and run installer from: https://github.com/hanspr/micro-ide/releases")
-		os.Exit(1)
-		//		err = os.Mkdir(configDir, os.ModePerm)
-		//		if err != nil {
-		//			TermMessage("Error creating configuration directory: " + err.Error())
-		//		}
+		TermMessage("micro-ide will download the necessary config files need it to run.\nFiles will be donwnloaded from github.com\nIf you do not agree type Ctrl-C to abort")
+		DownLoadExtractZip("https://raw.githubusercontent.com/hanspr/test/master/config.zip", configDir)
 	}
 }
 

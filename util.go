@@ -1,17 +1,22 @@
 package main
 
 import (
+	"archive/zip"
+	"bytes"
+	"fmt"
+	"io"
+	"io/ioutil"
+	"net/http"
 	"os"
 	"os/user"
 	"path/filepath"
 	"reflect"
+	"regexp"
 	"runtime"
 	"strconv"
 	"strings"
 	"time"
 	"unicode/utf8"
-
-	"regexp"
 
 	"github.com/go-errors/errors"
 	"github.com/mattn/go-runewidth"
@@ -468,4 +473,80 @@ func SubtringSafe(utf8s string, from int, to int) string {
 		to = lastIndex
 	}
 	return utf8s[from:to]
+}
+
+func DownLoadExtractZip(url, targetDir string) error {
+	TermMessage(fmt.Sprintf("Downloading %q to %q", url, targetDir))
+	resp, err := http.Get(url)
+	if err != nil {
+		return err
+	}
+	defer resp.Body.Close()
+	data, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		return err
+	}
+	zipbuf := bytes.NewReader(data)
+	z, err := zip.NewReader(zipbuf, zipbuf.Size())
+	if err != nil {
+		return err
+	}
+	dirPerm := os.FileMode(0750)
+	//	if err = os.MkdirAll(targetDir, dirPerm); err != nil {
+	//		return err
+	//	}
+
+	// Check if all files in zip are in the same directory.
+	// this might be the case if the plugin zip contains the whole plugin dir
+	// instead of its content.
+	var prefix string
+	allPrefixed := false
+	for i, f := range z.File {
+		parts := strings.Split(f.Name, "/")
+		if i == 0 {
+			prefix = parts[0]
+		} else if parts[0] != prefix {
+			allPrefixed = false
+			break
+		} else {
+			// switch to true since we have at least a second file
+			allPrefixed = true
+		}
+	}
+
+	// Install files and directory's
+	for _, f := range z.File {
+		parts := strings.Split(f.Name, "/")
+		if allPrefixed {
+			parts = parts[1:]
+		}
+
+		targetName := filepath.Join(targetDir, filepath.Join(parts...))
+		if f.FileInfo().IsDir() {
+			if err := os.MkdirAll(targetName, dirPerm); err != nil {
+				return err
+			}
+		} else {
+			basepath := filepath.Dir(targetName)
+
+			if err := os.MkdirAll(basepath, dirPerm); err != nil {
+				return err
+			}
+
+			content, err := f.Open()
+			if err != nil {
+				return err
+			}
+			defer content.Close()
+			target, err := os.Create(targetName)
+			if err != nil {
+				return err
+			}
+			defer target.Close()
+			if _, err = io.Copy(target, content); err != nil {
+				return err
+			}
+		}
+	}
+	return nil
 }
