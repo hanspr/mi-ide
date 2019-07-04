@@ -156,9 +156,6 @@ func TabbarHandleMouseEvent(event tcell.Event) bool {
 
 	switch e := event.(type) {
 	case *tcell.EventMouse:
-		if e.HasMotion() == true {
-			return false
-		}
 		button := e.Buttons()
 		// Accepted Mouse Click Events
 		if button == tcell.Button1 || button == tcell.Button3 {
@@ -168,24 +165,26 @@ func TabbarHandleMouseEvent(event tcell.Event) bool {
 			if y != 0 {
 				return false
 			}
+			if e.HasMotion() == true {
+				return true
+			}
 			str, indicies := TabbarString()
 			// ignore if past last tab
 			if x+tabBarOffset >= Count(str) {
-				return false
+				return true
 			}
 			if x < 3 {
 				// Click on Menu Icon
 				//micromenu.Start()
 				micromenu.Test()
-				return false
+				return true
 			}
 			if x < 21 {
 				// Click on Toolbar
 				if button == tcell.Button1 {
 					ToolbarHandleMouseEvent(x)
-					return true
 				}
-				return false
+				return true
 			}
 			// Find which tab was clicked
 			for k := range indicies {
@@ -200,7 +199,7 @@ func TabbarHandleMouseEvent(event tcell.Event) bool {
 			}
 			// Ignore on current tab and not to close
 			if button == tcell.Button1 && curTab == tabnum {
-				return false
+				return true
 			}
 			// Change tab
 			dirview.onTabChange()
@@ -220,6 +219,7 @@ func TabbarHandleMouseEvent(event tcell.Event) bool {
 					return true
 				}
 			}
+			return true
 		}
 	}
 	return false

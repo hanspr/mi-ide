@@ -1175,10 +1175,11 @@ func (a *MicroApp) HandleEvents(event tcell.Event) {
 	case *tcell.EventKey:
 		if ev.Key() == tcell.KeyEscape {
 			if a.Finish == nil {
+				messenger.AddLog("A")
 				MicroAppStop()
 			} else {
+				messenger.AddLog("B")
 				a.Finish("")
-				MicroAppStop()
 			}
 			return
 		}
@@ -1286,6 +1287,7 @@ func (a *MicroApp) New(name string) {
 }
 
 func (a *MicroApp) Start() {
+	screen.HideCursor()
 	a.DrawAll()
 	a.screen.Show()
 	a.screen.HideCursor()

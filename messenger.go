@@ -600,7 +600,6 @@ func (m *Messenger) Clear() {
 	for x := 0; x < w; x++ {
 		screen.SetContent(x, h-1, ' ', nil, defStyle)
 	}
-	screen.Show()
 }
 
 func (m *Messenger) DisplaySuggestions(suggestions []string) {

@@ -358,9 +358,9 @@ func (m *microMenu) Test() {
 		m.myapp.AddWindowSelect("prof", "Profesión ", "1", "0:Doctor|1:Engineer|2:Pilot|3:Pope|4:Philosopher|5:Cook|6:Writer|7:Programmer|8:Others", 4, 9, 0, 4, nil, "")
 		m.myapp.AddWindowTextArea("area", "Área Texto", "", 4, 14, 30, 5, false, nil, "")
 		m.myapp.AddWindowButton("btn1", "Save", "ok", 60, 15, m.GetDatos, "")
-		m.myapp.AddWindowButton("btn2", "Cancel", "cancel", 60, 17, nil, "")
+		m.myapp.AddWindowButton("btn2", "Cancel", "cancel", 60, 17, m.ButtonFinish, "")
 		m.myapp.AddWindowButton("btn3", "Exit", "", 60, 19, m.ButtonFinish, "")
-		m.myapp.Finish = m.Finish
+		//m.myapp.Finish = m.Finish
 		//m.myapp.AddStyle("a1", "bold #ff0000,#ffffff")
 		//m.myapp.AddStyle("a2", "underline #000000,#aaaaff")
 	}
