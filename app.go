@@ -1175,10 +1175,8 @@ func (a *MicroApp) HandleEvents(event tcell.Event) {
 	case *tcell.EventKey:
 		if ev.Key() == tcell.KeyEscape {
 			if a.Finish == nil {
-				messenger.AddLog("A")
 				MicroAppStop()
 			} else {
-				messenger.AddLog("B")
 				a.Finish("")
 			}
 			return

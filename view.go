@@ -681,7 +681,8 @@ func (v *View) HandleEvent(event tcell.Event) {
 							if n < 3 || m > 2 {
 								// Test we do not duplicate closing chars
 								if v.Cursor.X < len(v.Buf.Line(v.Cursor.Y)) && v.Cursor.X > 1 {
-									chb := v.Buf.Line(v.Cursor.Y)[v.Cursor.X : v.Cursor.X+1]
+									x := runePos(v.Cursor.X, v.Buf.Line(v.Cursor.Y))
+									chb := v.Buf.Line(v.Cursor.Y)[x : x+1]
 									if chb == string(e.Rune()) {
 										v.Delete(false)
 										n = -1
@@ -689,7 +690,7 @@ func (v *View) HandleEvent(event tcell.Event) {
 								}
 							}
 							if n >= 0 {
-								v.Buf.Insert(v.Cursor.Loc, string([]rune(autocloseClose[n:n+1])))
+								v.Buf.Insert(v.Cursor.Loc, autocloseClose[n:n+1])
 								v.Cursor.Left()
 							}
 						}

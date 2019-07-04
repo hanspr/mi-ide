@@ -762,10 +762,8 @@ func (v *View) Backspace(usePlugin bool) bool {
 
 	// Remove autoclose here
 	if v.Buf.Settings["autoclose"].(bool) && v.Cursor.X > 0 && v.Cursor.X < len(v.Buf.Line(v.Cursor.Y)) {
-		cha := v.Buf.Line(v.Cursor.Y)[v.Cursor.X : v.Cursor.X+1]
-		chb := v.Buf.Line(v.Cursor.Y)[v.Cursor.X-1 : v.Cursor.X]
-		n := strings.Index(autocloseClose, cha)
-		m := strings.Index(autocloseOpen, chb)
+		n := strings.Index(autocloseClose, string(v.Buf.LineRunes(v.Cursor.Y)[v.Cursor.X:v.Cursor.X+1]))
+		m := strings.Index(autocloseOpen, string(v.Buf.LineRunes(v.Cursor.Y)[v.Cursor.X-1:v.Cursor.X]))
 		if n >= 0 && m == n {
 			v.Delete(false)
 		}
