@@ -199,16 +199,13 @@ func (v *View) ToggleTabbar() {
 }
 
 func (v *View) paste(clip string) {
-	var Start Loc
-
-	if v.Buf.Settings["smartindent"].(bool) {
-		Start = v.Cursor.Loc
-	}
 
 	if v.Cursor.HasSelection() {
 		v.Cursor.DeleteSelection()
 		v.Cursor.ResetSelection()
 	}
+
+	Start := v.Cursor.Loc
 
 	v.Buf.Insert(v.Cursor.Loc, clip)
 

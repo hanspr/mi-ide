@@ -10,8 +10,9 @@ import (
 const ENCODINGS = "UTF-8:|ISO-8859-1:|ISO-8859-2:|ISO-8859-15:|WINDOWS-1250:|WINDOWS-1251:|WINDOWS-1252:|WINDOWS-1256:|SHIFT-JIS:|GB2312:|EUC-KR:|EUC-JP:|GBK:|BIG-5:|ASCII:"
 
 type microMenu struct {
-	myapp     *MicroApp
-	usePlugin bool
+	myapp       *MicroApp
+	usePlugin   bool
+	searchMatch bool
 }
 
 // Applicacion Micro Menu
@@ -81,9 +82,11 @@ func (m *microMenu) Search(callback func(map[string]string)) {
 		m.myapp.Finish = m.AbortSearch
 		m.myapp.WindowFinish = callback
 	}
-	m.myapp.SetFocus("search", "E")
+	m.searchMatch = false
 	m.myapp.Start()
+	m.myapp.SetFocus("search", "E")
 	apprunning = m.myapp
+	m.SubmitSearchOnEnter("search", m.myapp.GetValue("search"), "", "POST", 0, 0)
 }
 
 func (m *microMenu) SearchReplace(callback func(map[string]string)) {
@@ -119,9 +122,11 @@ func (m *microMenu) SearchReplace(callback func(map[string]string)) {
 		m.myapp.Finish = m.AbortSearch
 		m.myapp.WindowFinish = callback
 	}
-	m.myapp.SetFocus("search", "E")
+	m.searchMatch = false
 	m.myapp.Start()
+	m.myapp.SetFocus("search", "E")
 	apprunning = m.myapp
+	m.SubmitSearchOnEnter("search", m.myapp.GetValue("search"), "", "POST", 0, 0)
 }
 
 func (m *microMenu) AbortSearch(s string) {
@@ -137,6 +142,9 @@ func (m *microMenu) StartSearch(name, value, event, when string, x, y int) bool 
 	if when == "POST" {
 		return true
 	}
+	if m.searchMatch == false {
+		m.myapp.SetValue("search", "")
+	}
 	m.myapp.WindowFinish(m.myapp.getValues())
 	m.Finish("Done")
 	return true
@@ -144,6 +152,9 @@ func (m *microMenu) StartSearch(name, value, event, when string, x, y int) bool 
 
 func (m *microMenu) SubmitSearchOnEnter(name, value, event, when string, x, y int) bool {
 	if event == "Enter" && when == "PRE" {
+		if m.searchMatch == false {
+			m.myapp.SetValue("search", "")
+		}
 		m.myapp.WindowFinish(m.myapp.getValues())
 		m.Finish("Done")
 		return false
@@ -177,6 +188,10 @@ func (m *microMenu) SubmitSearchOnEnter(name, value, event, when string, x, y in
 	found := DialogSearch(value)
 	if len(found) > 40 {
 		found = found[:39]
+	} else if len(found) > 0 {
+		m.searchMatch = true
+	} else {
+		m.searchMatch = false
 	}
 	m.myapp.SetLabel("found", found)
 	return true
