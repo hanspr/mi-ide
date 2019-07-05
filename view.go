@@ -1086,8 +1086,14 @@ func (v *View) DisplayView() {
 		lineNumStyle := defStyle
 		if v.Buf.Settings["ruler"] == true {
 			// Write the line number
-			if style, ok := colorscheme["line-number"]; ok {
-				lineNumStyle = style
+			if tabs[curTab].CurView == v.Num {
+				if style, ok := colorscheme["line-number"]; ok {
+					lineNumStyle = style
+				}
+			} else {
+				if style, ok := colorscheme["unfocused"]; ok {
+					lineNumStyle = style
+				}
 			}
 			if style, ok := colorscheme["current-line-number"]; ok {
 				if realLineN == v.Cursor.Y && tabs[curTab].CurView == v.Num && !v.Cursor.HasSelection() {
