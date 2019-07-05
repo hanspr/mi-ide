@@ -689,12 +689,23 @@ func (v *View) HandleEvent(event tcell.Event) {
 						m := strings.Index(autocloseClose, string(e.Rune()))
 						if n != -1 || m != -1 {
 							if n < 3 || m > 2 {
-								// Test we do not duplicate closing chars
-								if v.Cursor.X < len(v.Buf.Line(v.Cursor.Y)) && v.Cursor.X > 1 {
-									x := runePos(v.Cursor.X, v.Buf.Line(v.Cursor.Y))
-									chb := v.Buf.Line(v.Cursor.Y)[x : x+1]
+								// Test we do not duplicate closing char
+								x := v.Cursor.X
+								if v.Cursor.X < len(v.Buf.LineRunes(v.Cursor.Y)) && v.Cursor.X > 1 {
+									chb := string(v.Buf.LineRunes(v.Cursor.Y)[x : x+1])
+									messenger.AddLog("chb:", chb)
 									if chb == string(e.Rune()) {
 										v.Delete(false)
+										n = -1
+									}
+								}
+								if n >= 0 && n < 3 && v.Cursor.X < len(v.Buf.LineRunes(v.Cursor.Y))-1 && v.Cursor.X > 1 {
+									// Test surrounding chars are not [ \w]
+									ch1 := string(v.Buf.LineRunes(v.Cursor.Y)[x-2 : x-1])
+									ch2 := string(v.Buf.LineRunes(v.Cursor.Y)[x : x+1])
+									messenger.AddLog(ch1, ",", ch2)
+									if IsStrWhitespace(ch1) || IsStrWhitespace(ch2) || IsWordChar(ch1) || IsWordChar(ch2) {
+										messenger.AddLog("Abort close char")
 										n = -1
 									}
 								}

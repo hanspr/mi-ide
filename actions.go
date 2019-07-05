@@ -717,9 +717,8 @@ func (v *View) InsertNewline(usePlugin bool) bool {
 	ws = ws + BalanceBracePairs(v.Buf.Line(v.Cursor.Y))
 
 	// Autoclose for (),[],{}
-	if v.Buf.Settings["autoclose"].(bool) && v.Cursor.X < len(v.Buf.Line(v.Cursor.Y)) {
-		cha := v.Buf.Line(v.Cursor.Y)[v.Cursor.X : v.Cursor.X+1]
-		//chb := v.Buf.Line(v.Cursor.Y)[v.Cursor.X-1 : v.Cursor.X]
+	if v.Buf.Settings["autoclose"].(bool) && v.Cursor.X < len(v.Buf.LineRunes(v.Cursor.Y)) {
+		cha := string(v.Buf.LineRunes(v.Cursor.Y)[v.Cursor.X : v.Cursor.X+1])
 		if strings.Contains(autocloseNewLine, cha) {
 			v.Buf.Insert(v.Cursor.Loc, "\n\n")
 			v.Buf.SmartIndent(v.Cursor.Loc, v.Cursor.Loc, false)
@@ -761,7 +760,7 @@ func (v *View) Backspace(usePlugin bool) bool {
 	}
 
 	// Remove autoclose here
-	if v.Buf.Settings["autoclose"].(bool) && v.Cursor.X > 0 && v.Cursor.X < len(v.Buf.Line(v.Cursor.Y)) {
+	if v.Buf.Settings["autoclose"].(bool) && v.Cursor.X > 0 && v.Cursor.X < len(v.Buf.LineRunes(v.Cursor.Y)) {
 		n := strings.Index(autocloseClose, string(v.Buf.LineRunes(v.Cursor.Y)[v.Cursor.X:v.Cursor.X+1]))
 		m := strings.Index(autocloseOpen, string(v.Buf.LineRunes(v.Cursor.Y)[v.Cursor.X-1:v.Cursor.X]))
 		if n >= 0 && m == n {
