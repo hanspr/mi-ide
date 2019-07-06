@@ -1286,8 +1286,8 @@ func (a *MicroApp) New(name string) {
 
 func (a *MicroApp) Start() {
 	a.DrawAll()
-	a.screen.Show()
 	a.screen.HideCursor()
+	a.screen.Show()
 }
 
 func (a *MicroApp) Reset() {

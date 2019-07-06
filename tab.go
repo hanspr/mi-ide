@@ -175,8 +175,7 @@ func TabbarHandleMouseEvent(event tcell.Event) bool {
 			}
 			if x < 3 {
 				// Click on Menu Icon
-				//micromenu.Start()
-				micromenu.Test()
+				micromenu.Menu()
 				return true
 			}
 			if x < 21 {

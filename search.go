@@ -170,6 +170,8 @@ func Search(searchStr string, v *View, down bool) {
 	}
 }
 
+const Doff int = 20
+
 func DialogSearch(searchStr string) string {
 	if searchStr == "" {
 		return ""
@@ -180,7 +182,13 @@ func DialogSearch(searchStr string) string {
 	}
 	v := CurView()
 	if searchDown(r, v, v.searchSave, v.Buf.End()) == true {
-		return v.Cursor.GetSelection()
+		xs := v.Cursor.CurSelection
+		line := CurView().Buf.LineRunes(xs[0].Y)
+		x1 := 0
+		if xs[0].X-Doff >= 0 {
+			x1 = xs[0].X - Doff
+		}
+		return string(line[x1:xs[0].X]) + "{f}" + v.Cursor.GetSelection() + "{/f}" + string(line[xs[1].X:])
 	} else {
 		return ""
 	}
