@@ -181,7 +181,11 @@ func DialogSearch(searchStr string) string {
 		return ""
 	}
 	v := CurView()
-	if searchDown(r, v, v.searchSave, v.Buf.End()) == true {
+	found := searchDown(r, v, v.searchSave, v.Buf.End())
+	if !found {
+		found = searchDown(r, v, v.Buf.Start(), v.searchSave)
+	}
+	if found {
 		xs := v.Cursor.CurSelection
 		line := CurView().Buf.LineRunes(xs[0].Y)
 		x1 := 0

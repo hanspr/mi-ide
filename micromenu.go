@@ -188,7 +188,8 @@ func (m *microMenu) SubmitSearchOnEnter(name, value, event, when string, x, y in
 	found := DialogSearch(value)
 	if len(found) > 68 {
 		found = found[:67]
-	} else if len(found) > 0 {
+	}
+	if len(found) > 0 {
 		m.searchMatch = true
 	} else {
 		m.searchMatch = false
