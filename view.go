@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"reflect"
+	"regexp"
 	"strconv"
 	"strings"
 	"time"
@@ -214,7 +215,13 @@ func (v *View) paste(clip string) {
 	v.Buf.Insert(v.Cursor.Loc, clip)
 
 	if v.Buf.Settings["smartindent"].(bool) || v.Buf.Settings["smartpaste"].(bool) {
+		re, _ := regexp.Compile(`\n$`)
 		v.Buf.SmartIndent(Start, v.Cursor.Loc, false)
+		if re.MatchString(clip) {
+			// SmartIndent, has to process the next line, and leaves cursor at end of next line
+			// Return to begining if the last character en clip is a \n
+			v.Cursor.GotoLoc(Loc{0, v.Cursor.Loc.Y})
+		}
 	}
 
 	v.freshClip = false
