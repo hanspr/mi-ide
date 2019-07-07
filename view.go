@@ -206,13 +206,15 @@ func (v *View) paste(clip string) {
 	}
 
 	Start := v.Cursor.Loc
+	if v.Buf.Settings["rmtrailingws"] == true {
+		v.Buf.RemoveTrailingSpace(v.Cursor.Loc)
+	}
+	v.Cursor.Loc = Start
 
 	v.Buf.Insert(v.Cursor.Loc, clip)
 
 	if v.Buf.Settings["smartindent"].(bool) || v.Buf.Settings["smartpaste"].(bool) {
-		saveLoc := v.Cursor.Loc
 		v.Buf.SmartIndent(Start, v.Cursor.Loc, false)
-		v.Cursor.GotoLoc(saveLoc)
 	}
 
 	v.freshClip = false
@@ -747,10 +749,13 @@ func (v *View) HandleEvent(event tcell.Event) {
 		// range validation
 		// Mouse clicks outside range are handled at micro.go main event loop
 		// That allows to change views, and restrict mouse events here based on the view size
-		//		if dirview.Open == false || CurView() != dirview.tree_view {
+
+		button := e.Buttons()
+
+		// This events are relative to each view dimentions
 		rx, ry := v.GetMouseRelativePositon(e.Position())
 		if v.Type.Kind == 0 {
-			//messenger.Message(ry, "?", v.Height)
+			//messenger.Message(ry, "?", v.Height, ": rx", rx, "?", v.lineNumOffset)
 			if ry < 0 {
 				// ignore actions on tabbar or upper views
 				return
@@ -761,6 +766,10 @@ func (v *View) HandleEvent(event tcell.Event) {
 			} else if ry > v.Height+1 {
 				// ignore actions in messenger area or lower views
 				return
+			} else if button == tcell.Button3 && rx < v.lineNumOffset && v.Buf.Settings["ruler"] == true {
+				v.Buf.Settings["ruler"] = false
+			} else if button == tcell.Button3 && rx < 3 && v.Buf.Settings["ruler"] == false {
+				v.Buf.Settings["ruler"] = true
 			}
 		} else {
 			if ry >= v.Height {
@@ -772,7 +781,6 @@ func (v *View) HandleEvent(event tcell.Event) {
 
 		// Don't relocate for mouse events
 		relocate = false
-		button := e.Buttons()
 		for key, actions := range bindings {
 			if button == key.buttons && e.Modifiers() == key.modifiers {
 				for _, c := range v.Buf.cursors {

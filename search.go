@@ -25,7 +25,7 @@ var (
 func StartSearchMode() {
 	messenger.hasPrompt = false
 	searching = true
-	messenger.Message("Find: " + lastSearch + "   " + "Esc,CtrlG (Exit)  F5 (Previous)  F6 (Next)")
+	messenger.Message("Find: " + lastSearch + "   " + "Esc,CtrlG (Exit)  F5 (Previous)  F6,Enter (Next)")
 }
 
 // ExitSearch exits the search mode, reset active search phrase, and clear status bar
@@ -53,6 +53,9 @@ func HandleSearchEvent(event tcell.Event, v *View) {
 			return
 		case tcell.KeyF5:
 			v.FindPrevious(true)
+			return
+		case tcell.KeyEnter:
+			v.FindNext(true)
 			return
 		case tcell.KeyF6:
 			v.FindNext(true)
@@ -90,7 +93,8 @@ func searchDown(r *regexp.Regexp, v *View, start, end Loc) bool {
 					v.Cursor.OrigSelection[0] = v.Cursor.CurSelection[0]
 					v.Cursor.OrigSelection[1] = v.Cursor.CurSelection[1]
 					v.Cursor.Loc = v.Cursor.CurSelection[1]
-					if v.Cursor.Y >= v.Bottomline()-2 {
+					messenger.AddLog(v.Cursor.Y, "?", v.Bottomline())
+					if v.Cursor.Y >= v.Bottomline()-2 || v.Cursor.Y <= v.Topline+2 {
 						v.Center(false)
 					}
 					return true
@@ -129,7 +133,7 @@ func searchUp(r *regexp.Regexp, v *View, start, end Loc) bool {
 					v.Cursor.OrigSelection[0] = v.Cursor.CurSelection[0]
 					v.Cursor.OrigSelection[1] = v.Cursor.CurSelection[1]
 					v.Cursor.Loc = v.Cursor.CurSelection[1]
-					if v.Cursor.Y <= v.Topline+2 {
+					if v.Cursor.Y >= v.Bottomline()-2 || v.Cursor.Y <= v.Topline+2 {
 						v.Center(false)
 					}
 					return true

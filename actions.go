@@ -468,7 +468,9 @@ func (v *View) EndOfLine(usePlugin bool) bool {
 	}
 
 	v.deselect(0)
-
+	if v.Buf.Settings["rmtrailingws"] == true {
+		v.Buf.RemoveTrailingSpace(Loc{0, v.Cursor.Loc.Y})
+	}
 	v.Cursor.End()
 
 	if usePlugin {
@@ -1152,6 +1154,9 @@ func (v *View) Undo(usePlugin bool) bool {
 	}
 
 	v.Buf.Undo()
+	if v.Cursor.Y >= v.Bottomline()-2 || v.Cursor.Y <= v.Topline+2 {
+		v.Center(false)
+	}
 
 	// If current undo stack len == Last Saved Stack Len, buffer is not modified
 	if v.Buf.UndoStack.Len() == v.Buf.UndoStackRef {
@@ -1176,6 +1181,9 @@ func (v *View) Redo(usePlugin bool) bool {
 	}
 
 	v.Buf.Redo()
+	if v.Cursor.Y >= v.Bottomline()-2 || v.Cursor.Y <= v.Topline+2 {
+		v.Center(false)
+	}
 
 	// If current undo stack len == Last Saved Stack Len, buffer is not modified
 	if v.Buf.UndoStack.Len() == v.Buf.UndoStackRef {

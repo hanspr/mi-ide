@@ -1016,6 +1016,14 @@ func (b *Buffer) MoveLinesDown(start int, end int) {
 	)
 }
 
+func (b *Buffer) RemoveTrailingSpace(pos Loc) {
+	line := b.Line(pos.Y)[pos.X:]
+	end := len(b.LineRunes(pos.Y))
+	re, _ := regexp.Compile(`[\t ]+$`)
+	line = re.ReplaceAllString(line, "")
+	b.Replace(Loc{pos.X, pos.Y}, Loc{end, pos.Y}, line)
+}
+
 // ClearMatches clears all of the syntax highlighting for this buffer
 func (b *Buffer) ClearMatches() {
 	for i := range b.lines {
