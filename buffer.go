@@ -1020,8 +1020,10 @@ func (b *Buffer) RemoveTrailingSpace(pos Loc) {
 	line := b.Line(pos.Y)[pos.X:]
 	end := len(b.LineRunes(pos.Y))
 	re, _ := regexp.Compile(`[\t ]+$`)
-	line = re.ReplaceAllString(line, "")
-	b.Replace(Loc{pos.X, pos.Y}, Loc{end, pos.Y}, line)
+	if re.MatchString(line) == true {
+		line = re.ReplaceAllString(line, "")
+		b.Replace(Loc{pos.X, pos.Y}, Loc{end, pos.Y}, line)
+	}
 }
 
 // ClearMatches clears all of the syntax highlighting for this buffer
