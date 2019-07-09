@@ -12,7 +12,7 @@ import (
 
 	"github.com/go-errors/errors"
 	"github.com/hanspr/clipboard"
-	"github.com/hanspr/micro/cmd/micro/terminfo"
+	"github.com/hanspr/microidelibs/terminfo"
 	"github.com/hanspr/tcell"
 	"github.com/hanspr/tcell/encoding"
 	"github.com/mattn/go-isatty"

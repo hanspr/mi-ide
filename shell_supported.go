@@ -3,7 +3,7 @@
 package main
 
 import (
-	"github.com/hanspr/micro/cmd/micro/shellwords"
+	"github.com/hanspr/microidelibs/shellwords"
 )
 
 const TermEmuSupported = true

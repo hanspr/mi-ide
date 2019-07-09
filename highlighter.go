@@ -1,6 +1,6 @@
 package main
 
-import "github.com/hanspr/highlight"
+import "github.com/hanspr/microidelibs/highlight"
 
 var syntaxFiles []*highlight.File
 

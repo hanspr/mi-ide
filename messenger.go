@@ -11,7 +11,7 @@ import (
 	"time"
 
 	"github.com/hanspr/clipboard"
-	"github.com/hanspr/micro/cmd/micro/shellwords"
+	"github.com/hanspr/microidelibs/shellwords"
 	"github.com/hanspr/tcell"
 	"github.com/mattn/go-runewidth"
 )

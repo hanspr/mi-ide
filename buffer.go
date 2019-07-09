@@ -21,7 +21,7 @@ import (
 	"unicode/utf8"
 
 	iconv "github.com/djimenez/iconv-go"
-	"github.com/hanspr/highlight"
+	"github.com/hanspr/microidelibs/highlight"
 )
 
 const LargeFileThreshold = 50000
