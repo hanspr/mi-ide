@@ -110,7 +110,9 @@ func (c *CellView) Draw(buf *Buffer, top, height, left, width int) {
 		buf.Cursor.Y = start
 	}
 	// End of patch
+
 	if buf.Settings["syntax"].(bool) && buf.syntaxDef != nil {
+		buf.highlighter.SetDimensions(top, left, width, height)
 		if start > 0 && buf.lines[start-1].rehighlight {
 			buf.highlighter.ReHighlightLine(buf, start-1)
 			buf.lines[start-1].rehighlight = false

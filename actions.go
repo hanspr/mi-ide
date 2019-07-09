@@ -1197,6 +1197,19 @@ func (v *View) Redo(usePlugin bool) bool {
 	return true
 }
 
+const MaxClipboardSize int = 50000
+
+func (v *View) SelectionTooBig() bool {
+	total := 0
+	for _, l := range v.Cursor.CurSelection {
+		total += len(v.Buf.LineBytes(l.Y))
+	}
+	if total > MaxClipboardSize {
+		return true
+	}
+	return false
+}
+
 // Copy the selection to the system clipboard
 func (v *View) Copy(usePlugin bool) bool {
 	if v.mainCursor() {
@@ -1205,9 +1218,13 @@ func (v *View) Copy(usePlugin bool) bool {
 		}
 
 		if v.Cursor.HasSelection() {
-			v.Cursor.CopySelection("clipboard")
-			v.freshClip = true
-			messenger.Message("Copied selection")
+			if v.SelectionTooBig() {
+				messenger.Error("Selection is to big, can not copy. You may move (up/down) or delete only.")
+			} else {
+				v.Cursor.CopySelection("clipboard")
+				v.freshClip = true
+				messenger.Message("Copied selection")
+			}
 		}
 
 		if usePlugin {
@@ -1224,6 +1241,10 @@ func (v *View) CutLine(usePlugin bool) bool {
 	}
 	v.Cursor.SelectLine()
 	if !v.Cursor.HasSelection() {
+		return false
+	}
+	if v.SelectionTooBig() {
+		messenger.Error("Line is to big, can not cut. You may move (up/down) or delete only.")
 		return false
 	}
 	if v.freshClip == true {
@@ -1258,19 +1279,29 @@ func (v *View) Cut(usePlugin bool) bool {
 	}
 
 	if v.Cursor.HasSelection() {
-		v.Cursor.CopySelection("clipboard")
-		v.Cursor.DeleteSelection()
-		v.Cursor.ResetSelection()
-		v.freshClip = true
-		messenger.Message("Cut selection")
+		if v.SelectionTooBig() {
+			messenger.Error("Selection is to big, can not cut. You may move (up/down) or delete only.")
+			return false
+		} else {
+			v.Cursor.CopySelection("clipboard")
+			v.Cursor.DeleteSelection()
+			v.Cursor.ResetSelection()
+			v.freshClip = true
+			messenger.Message("Cut selection")
+		}
 
 		if usePlugin {
 			return PostActionCall("Cut", v)
 		}
 		return true
 	} else {
-		return v.CutLine(usePlugin)
+		if len(v.Buf.LineBytes(v.Cursor.Loc.Y)) > MaxClipboardSize {
+			messenger.Error("Line is to big to cut")
+		} else {
+			return v.CutLine(usePlugin)
+		}
 	}
+	return true
 }
 
 // DuplicateLine duplicates the current line or selection
@@ -1280,8 +1311,16 @@ func (v *View) DuplicateLine(usePlugin bool) bool {
 	}
 
 	if v.Cursor.HasSelection() {
+		if v.SelectionTooBig() {
+			messenger.Error("Line is to big, can not duplicate. You may move (up/down) or delete only.")
+			return false
+		}
 		v.Buf.Insert(v.Cursor.CurSelection[1], v.Cursor.GetSelection())
 	} else {
+		if len(v.Buf.LineBytes(v.Cursor.Loc.Y)) > MaxClipboardSize {
+			messenger.Error("Line is to big, can not duplicate. You may move (up/down) or delete only.")
+			return false
+		}
 		v.Cursor.End()
 		v.Buf.Insert(v.Cursor.Loc, "\n"+v.Buf.Line(v.Cursor.Y))
 		// v.Cursor.Right()
