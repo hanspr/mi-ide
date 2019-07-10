@@ -8,6 +8,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/hanspr/clipboard"
 	"github.com/hanspr/tcell"
 )
 
@@ -982,6 +983,12 @@ func (e *AppElement) TextAreaKeyEvent(key string, x, y int) {
 			e.cursor.X = len(b)
 		} else if key == "Enter" {
 			return
+		} else if key == "Ctrl+V" {
+			clip, _ := clipboard.ReadAll("clipboard")
+			e.value = e.value + clip
+			a.elements[e.name] = *e
+			e.TextAreaKeyEvent("End", x, y)
+			return
 		}
 		a.elements[e.name] = *e
 		e.Draw()
@@ -1052,6 +1059,12 @@ func (e *AppElement) TextBoxKeyEvent(key string, x, y int) {
 			return
 		} else if key == "Tab" {
 			a.SetFocusNextInputElement(e.name)
+			return
+		} else if key == "Ctrl+V" {
+			clip, _ := clipboard.ReadAll("clipboard")
+			e.value = e.value + clip
+			a.elements[e.name] = *e
+			e.TextBoxKeyEvent("End", x, y)
 			return
 		}
 		a.elements[e.name] = *e

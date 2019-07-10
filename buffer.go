@@ -762,7 +762,6 @@ func (b *Buffer) SaveAs(filename string) error {
 	if b.sencoder != b.encoder {
 		cachename, _ := filepath.Abs(filename)
 		cachename = configDir + "/buffers/" + strings.ReplaceAll(cachename, "/", "")
-		messenger.AddLog(cachename)
 		f, err := os.Create(cachename)
 		defer f.Close()
 		if err == nil {

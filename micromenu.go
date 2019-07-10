@@ -84,6 +84,14 @@ func (m *microMenu) Search(callback func(map[string]string)) {
 	}
 	m.searchMatch = false
 	m.myapp.Start()
+	messenger.AddLog("A:", CurView().Cursor.HasSelection())
+	if CurView().Cursor.HasSelection() {
+		sel := CurView().Cursor.CurSelection
+		messenger.AddLog(sel)
+		if sel[0].Y == sel[1].Y {
+			m.myapp.SetValue("search", CurView().Cursor.GetSelection())
+		}
+	}
 	m.myapp.SetFocus("search", "E")
 	apprunning = m.myapp
 	m.SubmitSearchOnEnter("search", m.myapp.GetValue("search"), "", "POST", 0, 0)
@@ -124,6 +132,13 @@ func (m *microMenu) SearchReplace(callback func(map[string]string)) {
 	}
 	m.searchMatch = false
 	m.myapp.Start()
+	if CurView().Cursor.HasSelection() {
+		sel := CurView().Cursor.CurSelection
+		messenger.AddLog(sel)
+		if sel[0].Y == sel[1].Y {
+			m.myapp.SetValue("search", CurView().Cursor.GetSelection())
+		}
+	}
 	m.myapp.SetFocus("search", "E")
 	apprunning = m.myapp
 	m.SubmitSearchOnEnter("search", m.myapp.GetValue("search"), "", "POST", 0, 0)
@@ -179,7 +194,7 @@ func (m *microMenu) SubmitSearchOnEnter(name, value, event, when string, x, y in
 		return true
 	}
 	if len(event) > 1 {
-		if event == "Backspace2" || event == "Delete" {
+		if event == "Backspace2" || event == "Delete" || event == "Ctrl+V" {
 			event = ""
 		} else {
 			return true

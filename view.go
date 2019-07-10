@@ -699,7 +699,6 @@ func (v *View) HandleEvent(event tcell.Event) {
 								x := v.Cursor.X
 								if v.Cursor.X < len(v.Buf.LineRunes(v.Cursor.Y)) && v.Cursor.X > 1 {
 									chb := string(v.Buf.LineRunes(v.Cursor.Y)[x : x+1])
-									messenger.AddLog("chb:", chb)
 									if chb == string(e.Rune()) {
 										v.Delete(false)
 										n = -1
@@ -709,9 +708,7 @@ func (v *View) HandleEvent(event tcell.Event) {
 									// Test surrounding chars are not [ \w]
 									ch1 := string(v.Buf.LineRunes(v.Cursor.Y)[x-2 : x-1])
 									ch2 := string(v.Buf.LineRunes(v.Cursor.Y)[x : x+1])
-									messenger.AddLog(ch1, ",", ch2)
 									if IsStrWhitespace(ch1) || IsStrWhitespace(ch2) || IsWordChar(ch1) || IsWordChar(ch2) {
-										messenger.AddLog("Abort close char")
 										n = -1
 									}
 								}

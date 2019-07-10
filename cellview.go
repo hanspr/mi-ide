@@ -99,15 +99,12 @@ func (c *CellView) Draw(buf *Buffer, top, height, left, width int) {
 	indentchar := indentrunes[0]
 
 	start := buf.Cursor.Y
-	// Patch to avoid crash, have to study where it comes from
-	if start < 0 {
-		TermMessage("Wrong call start < 0")
-		start = 1
-		buf.Cursor.Y = start
-	} else if start > buf.End().Y {
-		TermMessage("Wrong call start > buffer end")
-		start = buf.End().Y
-		buf.Cursor.Y = start
+	// Patch to avoid crash, it comes from selections, haven't been able to replicate
+	if start > buf.End().Y {
+		TermMessage("Wrong call buf.Cursor.Y > buf.End().Y")
+		buf.Cursor.X = buf.End().X
+		buf.Cursor.Y = buf.End().Y
+		start = buf.Cursor.Y
 	}
 	// End of patch
 

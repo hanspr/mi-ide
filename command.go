@@ -589,7 +589,6 @@ func Replace(args []string) {
 	replace := string(args[1])
 	replace = ExpandString(replace)
 	replaceBytes := []byte(replace)
-	messenger.AddLog(mods + search)
 	regex, err := regexp.Compile(search)
 	if err != nil {
 		// There was an error with the user's regex
@@ -645,6 +644,7 @@ func Replace(args []string) {
 				break
 			} else if choice == 'y' {
 				sel := view.Cursor.GetSelection()
+				messenger.AddLog("replace", replace)
 				rep := regex.ReplaceAllString(sel, replace)
 				view.Cursor.DeleteSelection()
 				view.Buf.Insert(view.Cursor.Loc, rep)
