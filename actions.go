@@ -974,6 +974,7 @@ func (v *View) InsertTab(usePlugin bool) bool {
 	tabBytes := len(v.Buf.IndentString())
 	bytesUntilIndent := tabBytes - (v.Cursor.GetVisualX() % tabBytes)
 	if v.Buf.Settings["smartindent"].(bool) == true {
+		v.Buf.RemoveTrailingSpace(Loc{0, v.Cursor.Loc.Y})
 		cSave := v.Cursor.Loc
 		v.Buf.SmartIndent(v.Cursor.Loc, v.Cursor.Loc, false)
 		if cSave != v.Buf.Cursor.Loc {
