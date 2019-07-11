@@ -18,6 +18,9 @@ import (
 func PreActionCall(funcName string, view *View, args ...interface{}) bool {
 	executeAction := true
 	for pl := range loadedPlugins {
+		if GetPluginOption(pl, "ftype") != "*" && (GetPluginOption(pl, "ftype") == nil || GetPluginOption(pl, "ftype") != CurView().Buf.FileType()) {
+			continue
+		}
 		ret, err := Call(pl+".pre"+funcName, append([]interface{}{view}, args...)...)
 		if err != nil && !strings.HasPrefix(err.Error(), "function does not exist") {
 			TermMessage(err)
@@ -34,6 +37,9 @@ func PreActionCall(funcName string, view *View, args ...interface{}) bool {
 func PostActionCall(funcName string, view *View, args ...interface{}) bool {
 	relocate := true
 	for pl := range loadedPlugins {
+		if GetPluginOption(pl, "ftype") != "*" && (GetPluginOption(pl, "ftype") == nil || GetPluginOption(pl, "ftype") != CurView().Buf.FileType()) {
+			continue
+		}
 		ret, err := Call(pl+".on"+funcName, append([]interface{}{view}, args...)...)
 		if err != nil && !strings.HasPrefix(err.Error(), "function does not exist") {
 			TermMessage(err)

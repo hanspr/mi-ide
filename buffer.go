@@ -530,15 +530,20 @@ func (b *Buffer) CheckModTime() {
 	modTime, ok := GetModTime(b.Path)
 	if ok {
 		if modTime != b.ModTime {
-			choice, canceled := messenger.YesNoPrompt("The file has changed since it was last read. Reload file? (y,n)")
-			messenger.Reset()
-			messenger.Clear()
-			if !choice || canceled {
-				// Don't load new changes -- do nothing
-				b.ModTime, _ = GetModTime(b.Path)
-			} else {
-				// Load new changes
+			if b.Settings["autoreload"].(bool) && b.IsModified == false {
+				messenger.Information("Buffer reloaded")
 				b.ReOpen()
+			} else {
+				choice, canceled := messenger.YesNoPrompt("The file has changed since it was last read. Reload file? (y,n)")
+				messenger.Reset()
+				messenger.Clear()
+				if !choice || canceled {
+					// Don't load new changes -- do nothing
+					b.ModTime, _ = GetModTime(b.Path)
+				} else {
+					// Load new changes
+					b.ReOpen()
+				}
 			}
 		}
 	}

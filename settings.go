@@ -204,6 +204,7 @@ func DefaultGlobalSettings() map[string]interface{} {
 	return map[string]interface{}{
 		"autoclose":      true,
 		"autoindent":     true,
+		"autoreload":     true,
 		"autosave":       false,
 		"basename":       false,
 		"colorcolumn":    float64(0),
@@ -254,6 +255,7 @@ func DefaultLocalSettings() map[string]interface{} {
 	return map[string]interface{}{
 		"autoclose":      true,
 		"autoindent":     true,
+		"autoreload":     true,
 		"autosave":       false,
 		"basename":       false,
 		"colorcolumn":    float64(0),

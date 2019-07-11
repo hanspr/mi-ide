@@ -134,7 +134,7 @@ func (m *Messenger) Error(msg ...interface{}) {
 	// add the message to the log regardless of active prompts
 	m.AddLog(buf.String())
 	go func() {
-		time.Sleep(4 * time.Second)
+		time.Sleep(8 * time.Second)
 		m.Reset()
 		m.Clear()
 	}()
@@ -173,11 +173,16 @@ func (m *Messenger) Information(msg ...interface{}) {
 	if m.hasPrompt == false {
 		// if there is no active prompt then style and display the message as normal
 		m.message = buf.String()
-		m.style = defStyle.Foreground(tcell.ColorLightCyan).Normal().Background(tcell.ColorDarkBlue)
+		m.style = defStyle.Foreground(tcell.ColorBlue).Bold(true)
 		m.hasMessage = true
 	}
 	// add the message to the log regardless of active prompts
 	m.AddLog(buf.String())
+	go func() {
+		time.Sleep(6 * time.Second)
+		m.Reset()
+		m.Clear()
+	}()
 }
 
 func (m *Messenger) PromptText(msg ...interface{}) {

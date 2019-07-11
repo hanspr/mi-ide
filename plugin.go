@@ -139,7 +139,7 @@ func luaPluginName(name string) string {
 	return strings.Replace(name, "-", "_", -1)
 }
 
-// LoadPlugins loads the pre-installed plugins and the plugins located in ~/.config/micro-ide/plugins
+// LoadPlugins loads the plugins located in ~/.config/micro-ide/plugins
 func LoadPlugins() {
 	loadedPlugins = make(map[string]string)
 	pluginOption = make(map[string]interface{})
@@ -182,6 +182,9 @@ func LoadPlugins() {
 // loaded
 func GlobalPluginCall(function string, args ...interface{}) {
 	for pl := range loadedPlugins {
+		if GetPluginOption(pl, "ftype") != "*" && (GetPluginOption(pl, "ftype") == nil || GetPluginOption(pl, "ftype") != CurView().Buf.FileType()) {
+			continue
+		}
 		_, err := Call(pl+"."+function, args...)
 		if err != nil && !strings.HasPrefix(err.Error(), "function does not exist") {
 			TermMessage(err)

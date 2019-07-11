@@ -183,6 +183,9 @@ func (eh *EventHandler) Execute(t *TextEvent) {
 	eh.UndoStack.Push(t)
 
 	for pl := range loadedPlugins {
+		if GetPluginOption(pl, "ftype") != "*" && (GetPluginOption(pl, "ftype") == nil || GetPluginOption(pl, "ftype") != CurView().Buf.FileType()) {
+			continue
+		}
 		ret, err := Call(pl+".onBeforeTextEvent", t)
 		if err != nil && !strings.HasPrefix(err.Error(), "function does not exist") {
 			TermMessage(err)

@@ -153,6 +153,9 @@ func NewViewWidthHeight(buf *Buffer, w, h int) *View {
 	v.term = new(Terminal)
 
 	for pl := range loadedPlugins {
+		if GetPluginOption(pl, "ftype") != "*" && (GetPluginOption(pl, "ftype") == nil || GetPluginOption(pl, "ftype") != CurView().Buf.FileType()) {
+			continue
+		}
 		_, err := Call(pl+".onViewOpen", v)
 		if err != nil && !strings.HasPrefix(err.Error(), "function does not exist") {
 			TermMessage(err)
@@ -721,6 +724,9 @@ func (v *View) HandleEvent(event tcell.Event) {
 					}
 
 					for pl := range loadedPlugins {
+						if GetPluginOption(pl, "ftype") != "*" && (GetPluginOption(pl, "ftype") == nil || GetPluginOption(pl, "ftype") != CurView().Buf.FileType()) {
+							continue
+						}
 						_, err := Call(pl+".onRune", string(e.Rune()), v)
 						if err != nil && !strings.HasPrefix(err.Error(), "function does not exist") {
 							TermMessage(err)
@@ -1259,6 +1265,9 @@ func (v *View) DisplayView() {
 		LastView = CurView().Num
 
 		for pl := range loadedPlugins {
+			if GetPluginOption(pl, "ftype") != "*" && (GetPluginOption(pl, "ftype") == nil || GetPluginOption(pl, "ftype") != CurView().Buf.FileType()) {
+				continue
+			}
 			_, err := Call(pl+".onDisplayFocus", CurView())
 			if err != nil && !strings.HasPrefix(err.Error(), "function does not exist") {
 				TermMessage(err)
