@@ -84,7 +84,6 @@ func (m *microMenu) Search(callback func(map[string]string)) {
 	}
 	m.searchMatch = false
 	m.myapp.Start()
-	messenger.AddLog("A:", CurView().Cursor.HasSelection())
 	if CurView().Cursor.HasSelection() {
 		sel := CurView().Cursor.CurSelection
 		messenger.AddLog(sel)
@@ -193,7 +192,7 @@ func (m *microMenu) SubmitSearchOnEnter(name, value, event, when string, x, y in
 	} else if strings.Contains(event, "click") {
 		return true
 	}
-	if len(event) > 1 {
+	if len([]rune(event)) > 1 {
 		if event == "Backspace2" || event == "Delete" || event == "Ctrl+V" {
 			event = ""
 		} else {

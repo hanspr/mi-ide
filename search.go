@@ -176,6 +176,7 @@ func Search(searchStr string, v *View, down bool) {
 const Doff int = 20
 
 func DialogSearch(searchStr string) string {
+	messenger.AddLog("search=", searchStr)
 	if searchStr == "" {
 		return ""
 	}
