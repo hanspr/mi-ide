@@ -977,7 +977,7 @@ func (v *View) InsertTab(usePlugin bool) bool {
 		v.Buf.RemoveTrailingSpace(Loc{0, v.Cursor.Loc.Y})
 		cSave := v.Cursor.Loc
 		v.Buf.SmartIndent(v.Cursor.Loc, v.Cursor.Loc, false)
-		if cSave != v.Buf.Cursor.Loc {
+		if cSave != v.Buf.Cursor.Loc && v.Buf.IsModified {
 			v.Cursor.GotoLoc(Loc{cSave.X + CountLeadingWhitespace(v.Buf.Line(v.Cursor.Y)), v.Cursor.Y})
 		}
 	} else if v.Buf.Settings["tabindents"].(bool) == false {
@@ -2177,7 +2177,7 @@ func (v *View) NextSplit(usePlugin bool) bool {
 		tab := tabs[curTab]
 		// Save cursor location and line reference
 		v.savedLoc = v.Cursor.Loc
-		v.savedLine = SubtringSafe(v.Buf.Line(v.Cursor.Loc.Y), 0, 10)
+		v.savedLine = SubtringSafe(v.Buf.Line(v.Cursor.Loc.Y), 0, 20)
 		// Find next View parsing tree_split downward
 		//			tab.CurView++
 		tab.CurView = v.splitNode.GetNextPrevView(1)
@@ -2198,7 +2198,7 @@ func (v *View) PreviousSplit(usePlugin bool) bool {
 		tab := tabs[curTab]
 		// Save cursor location and line reference
 		v.savedLoc = v.Cursor.Loc
-		v.savedLine = SubtringSafe(v.Buf.Line(v.Cursor.Loc.Y), 0, 10)
+		v.savedLine = SubtringSafe(v.Buf.Line(v.Cursor.Loc.Y), 0, 20)
 		// Find next View parsing tree_split upward
 		//			tab.CurView--
 		tab.CurView = v.splitNode.GetNextPrevView(-1)

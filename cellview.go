@@ -102,7 +102,7 @@ func (c *CellView) Draw(buf *Buffer, top, height, left, width int) {
 	// Patch to avoid crash, it comes from selections, deletions, haven't been able to replicate
 	if start > buf.End().Y {
 		// Try to silently recover
-		messenger.Message("Wrong call buf.Cursor.Y > buf.End().Y ", buf.Cursor.HasSelection(), "?", start, ":", buf.End())
+		messenger.Message("Wrong call buf.Cursor.Y > buf.End().Y : ", buf.Cursor.HasSelection(), " ? ", start, ":", buf.End())
 		if buf.Cursor.HasSelection() {
 			buf.Cursor.ResetSelection()
 		}
@@ -112,6 +112,7 @@ func (c *CellView) Draw(buf *Buffer, top, height, left, width int) {
 	}
 	// End of patch
 
+	// Hightlite Buffer
 	if buf.Settings["syntax"].(bool) && buf.syntaxDef != nil {
 		buf.highlighter.SetDimensions(top, left, width, height)
 		if start > 0 && buf.lines[start-1].rehighlight {

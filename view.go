@@ -341,7 +341,7 @@ func (v *View) HSplit(buf *Buffer) {
 		i = 1
 	}
 	v.savedLoc = v.Cursor.Loc
-	v.savedLine = SubtringSafe(v.Buf.Line(v.Cursor.Loc.Y), 0, 10)
+	v.savedLine = SubtringSafe(v.Buf.Line(v.Cursor.Loc.Y), 0, 20)
 	v.splitNode.HSplit(buf, CurView().Num+i)
 }
 
@@ -352,7 +352,7 @@ func (v *View) VSplit(buf *Buffer) {
 		i = 1
 	}
 	v.savedLoc = v.Cursor.Loc
-	v.savedLine = SubtringSafe(v.Buf.Line(v.Cursor.Loc.Y), 0, 10)
+	v.savedLine = SubtringSafe(v.Buf.Line(v.Cursor.Loc.Y), 0, 20)
 	v.splitNode.VSplit(buf, CurView().Num+i)
 }
 
@@ -957,11 +957,10 @@ func (v *View) DisplayView() {
 				CurView().savedLoc.X = CurView().Buf.End().X
 			}
 		}
-		currLine := SubtringSafe(CurView().Buf.Line(CurView().savedLoc.Y), 0, 10)
+		currLine := SubtringSafe(CurView().Buf.Line(CurView().savedLoc.Y), 0, 20)
 		if currLine != CurView().savedLine {
 			var newLoc Loc
 			// Line has moved, find new position using as a reference the last known line beggining
-			// TODO: Try to implement with go routines to search forward and backward simultaneoulsy
 			newLoc = CurView().FindCurLine(-1, CurView().savedLine)
 			if newLoc.Y < 0 {
 				newLoc = CurView().FindCurLine(1, CurView().savedLine)

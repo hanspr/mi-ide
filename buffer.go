@@ -438,7 +438,9 @@ func (b *Buffer) IndentString() string {
 }
 
 func (b *Buffer) SmartIndent(Start, Stop Loc, once bool) {
-	//messenger.AddLog(once, ": =========================")
+	stack := b.UndoStack.Len()
+	sCursor := b.Cursor.Loc
+	sMod := b.IsModified
 	iChar := b.Settings["indentchar"].(string)
 	iStr := ""
 	n := 0
@@ -462,35 +464,27 @@ func (b *Buffer) SmartIndent(Start, Stop Loc, once bool) {
 	for i := 0; i < n; i++ {
 		iStr = iStr + iChar
 	}
-	// Check is this line has balanced braces
+	// Check if this line has balanced braces
 	C := BracePairsAreBalanced(b.Line(Ys))
-	//messenger.AddLog(once, ": C=", C)
-	//messenger.AddLog(once, ": n=", n)
 	if C > 0 || C == -1 {
-		//messenger.AddLog(once, ": Indent extra")
 		// Is unbalanced increase indentation
 		n++
 		iStr = iStr + iChar
 	}
 	Ys++
-	//messenger.AddLog(once, ": n=", n)
 	for y := Ys; y <= Ye; y++ {
 		x := Count(b.Line(y))
 		str := b.Line(y)
 		strB := str
-		// Check is this line has balanced braces
+		// Check if this line has balanced braces
 		c := BracePairsAreBalanced(str)
-		//messenger.AddLog(once, ": c=", c)
-		//messenger.AddLog(once, ": B=", B)
 		if c == -1 {
-			//messenger.AddLog(once, ": Outdent } ... {")
 			// Is unbalanced } ... { or closing ... } decrease indentation on current line
 			iStr = ""
 			for i := 0; i < n-1; i++ {
 				iStr = iStr + iChar
 			}
 		} else if c == -2 && C == B && once == true {
-			//messenger.AddLog(once, ": Outdent")
 			// Is unbalanced } ... { or closing ... } decrease indentation on current line
 			iStr = ""
 			for i := 0; i < n-1; i++ {
@@ -498,27 +492,30 @@ func (b *Buffer) SmartIndent(Start, Stop Loc, once bool) {
 			}
 		}
 
-		//messenger.AddLog(once, ": strB", str)
 		str = re.ReplaceAllString(str, iStr)
-		//messenger.AddLog(once, ": strA", str)
 		if c > 0 || c == -1 {
 			// Is unbalanced increase indentation again for next line
-			//messenger.AddLog(once, ": Extra indentation")
 			n++
 			iStr = iStr + iChar
 		}
-		//messenger.AddLog(once, ": Next n=", n)
 		if strB != str {
 			b.Replace(Loc{0, y}, Loc{x, y}, str)
 		}
-		if c < 2 {
-			// Special case, is a close brace, need to reformat this line again only once
-			// To avoid rewwriting all code above over again, call recursivevly only one time
-			// We have to check because this line will always be unbalanced
-			if once {
-				return
+		// We need a second pass (to outdent wrong ones)
+		// To avoid rewwriting all code above over again, call recursivevly only one time
+		if once {
+			return
+		}
+		b.SmartIndent(Loc{0, y}, Loc{0, y}, true)
+		// if c == -2 unbalanced close brace like ....}
+		// check if we really did an indentation on this case
+		if c == -2 && strB == b.Line(y) && b.IsModified && Start.Y == Stop.Y && sMod != b.IsModified {
+			// Not dirty, this is just a consecuence of the algorithm, reverse modified status, undos, cursor
+			b.IsModified = false
+			b.Cursor.GotoLoc(sCursor)
+			for stack < b.UndoStack.Len() {
+				b.UndoStack.Pop()
 			}
-			b.SmartIndent(Loc{0, y}, Loc{0, y}, true)
 		}
 	}
 }
