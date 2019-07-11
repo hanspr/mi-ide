@@ -99,9 +99,13 @@ func (c *CellView) Draw(buf *Buffer, top, height, left, width int) {
 	indentchar := indentrunes[0]
 
 	start := buf.Cursor.Y
-	// Patch to avoid crash, it comes from selections, haven't been able to replicate
+	// Patch to avoid crash, it comes from selections, deletions, haven't been able to replicate
 	if start > buf.End().Y {
-		TermMessage("Wrong call buf.Cursor.Y > buf.End().Y")
+		// Try to silently recover
+		messenger.Message("Wrong call buf.Cursor.Y > buf.End().Y ", buf.Cursor.HasSelection(), "?", start, ":", buf.End())
+		if buf.Cursor.HasSelection() {
+			buf.Cursor.ResetSelection()
+		}
 		buf.Cursor.X = buf.End().X
 		buf.Cursor.Y = buf.End().Y
 		start = buf.Cursor.Y
