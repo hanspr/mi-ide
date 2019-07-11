@@ -33,15 +33,15 @@
     "smartpaste": true,
     "softwrap": false,
     "splitbottom": true,
-    "splitright": true,
     "splitempty": false,
+    "splitright": true,
     "statusline": true,
     "sucmd": "sudo",
     "syntax": true,
+    "tabindents": false,
     "tabmovement": true,
     "tabsize": 4,
     "tabstospaces": false,
-    "tabindents": false,
     "termtitle": false,
     "useprimary": true
 }
