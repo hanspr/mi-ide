@@ -114,7 +114,7 @@ func GetFileEncoding(filename string) (string, string) {
 	}
 	encoding := strings.TrimSuffix(strings.ToUpper(string(msg)), "\n")
 	// Double check, file -E has better detection for UTF-8 files
-	cmd = exec.Command("file", "-b", "-E", filename)
+	cmd = exec.Command("file", "-b", filename)
 	msg, err = cmd.Output()
 	if err == nil && strings.Contains(string(msg), "UTF-8") {
 		return "UTF-8", "file"
