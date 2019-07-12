@@ -1,0 +1,13 @@
+filetype: snippet
+
+detect:
+    filename: "\\.snippets?$"
+
+rules:
+    - comment: "^[[:space:]]*[#]+.*"
+    - special:
+        start: "^snippet"
+        end: "$"
+        rules:
+            - type: "[[:space:]]*\\w+"
+

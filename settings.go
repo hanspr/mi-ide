@@ -232,7 +232,7 @@ func DefaultGlobalSettings() map[string]interface{} {
 		"scrollmargin":   float64(3),
 		"scrollspeed":    float64(2),
 		"softwrap":       false,
-		"smartindent":    true,
+		"smartindent":    false,
 		"smartpaste":     true,
 		"splitbottom":    true,
 		"splitright":     true,

@@ -29,7 +29,7 @@
     "scrollbar": false,
     "scrollmargin": 0,
     "scrollspeed": 2,
-    "smartindent": true,
+    "smartindent": false,
     "smartpaste": true,
     "softwrap": false,
     "splitbottom": true,
