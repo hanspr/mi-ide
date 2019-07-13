@@ -46,6 +46,7 @@ can change it!
 | CtrlHome or CtrlUpArrow   | Move cursor to start of document                     |
 | CtrlEnd or CtrlDownArrow  | Move cursor to end of document                       |
 | Ctrl+G                    | Jump to a line in the file (prompts with #)          |
+| Ctrl+L                    | Center line vertically in view                       |
 
 ### Tabs
 
@@ -60,7 +61,7 @@ can change it!
 | Key     | Description of function           |
 |-------- |-----------------------------------|
 | Alt-V   | Split current window vertically   |
-| Alt.H   | Split current window horizontally |
+| Alt-H   | Split current window horizontally |
 
 ### Find Operations
 
@@ -70,6 +71,7 @@ can change it!
 | Ctrl+R    | Replace (opens Search / Replace Dialog)   |
 | F5        | Find previous instance of current search  |
 | F6        | Find next instance of current search      |
+| Enter     | Find next instance of current search      |
 
 ### File Operations
 
@@ -84,13 +86,14 @@ can change it!
 ### Text operations
 
 | Key                               | Description of function                   |
-|---------------------------------  |------------------------------------------ |
+|-----------------------------------|------------------------------------------ |
 | AltShiftRightArrow                | Select word right                         |
 | AltShiftLeftArrow                 | Select word left                          |
 | ShiftHome or CtrlShiftLeftArrow   | Select to start of current line           |
 | ShiftEnd or CtrlShiftRightArrow   | Select to end of current line             |
 | CtrlShiftUpArrow                  | Select to start of file                   |
 | CtrlShiftDownArrow                | Select to end of file                     |
+| Ctrl+K                            | Cut selected line and append to clipboard |
 | Ctrl+X                            | Cut selected text                         |
 | Ctrl+C                            | Copy selected text                        |
 | Ctrl+V                            | Paste                                     |
@@ -101,6 +104,7 @@ can change it!
 | AltUpArrow                        | Move current line or selected lines up    |
 | AltDownArrow                      | Move current line of selected lines down  |
 | AltBackspace or AltCtrl+H         | Delete word left                          |
+| Alt+L                             | Delete line                               |
 | Ctrl+A                            | Select all                                |
 
 ### Macros
@@ -132,7 +136,7 @@ can change it!
 ### Emacs style actions
 
 | Key       | Description of function   |
-|-------    |-------------------------  |
+|-----------|-------------------------  |
 | Alt+F     | Next word                 |
 | Alt+B     | Previous word             |
 | Alt+A     | Move to start of line     |

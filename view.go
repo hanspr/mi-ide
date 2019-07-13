@@ -204,6 +204,10 @@ func (v *View) ToggleTabbar() {
 
 func (v *View) paste(clip string) {
 
+	if len(clip) == 0 {
+		return
+	}
+
 	if v.Cursor.HasSelection() {
 		v.Cursor.DeleteSelection()
 		v.Cursor.ResetSelection()
