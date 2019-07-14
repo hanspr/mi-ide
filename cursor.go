@@ -1,7 +1,7 @@
 package main
 
 import (
-	"github.com/hanspr/clipboard"
+	"github.com/hanspr/microidelibs/clipboard"
 )
 
 // The Cursor struct stores the location of the cursor in the view

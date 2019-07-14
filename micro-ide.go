@@ -11,7 +11,7 @@ import (
 	"time"
 
 	"github.com/go-errors/errors"
-	"github.com/hanspr/clipboard"
+	"github.com/hanspr/microidelibs/clipboard"
 	"github.com/hanspr/microidelibs/terminfo"
 	"github.com/hanspr/tcell"
 	"github.com/hanspr/tcell/encoding"
@@ -78,6 +78,8 @@ var (
 	apprunning *MicroApp = nil
 
 	micromenu *microMenu
+
+	microideclosing bool = false
 )
 
 // LoadInput determines which files should be loaded into buffers
@@ -242,6 +244,11 @@ func InitScreen() {
 
 // RedrawAll redraws everything -- all the views and the messenger
 func RedrawAll() {
+
+	if microideclosing {
+		return
+	}
+
 	messenger.Clear()
 
 	w, h := screen.Size()
@@ -390,6 +397,7 @@ func main() {
 	// Now we load the input
 	buffers := LoadInput()
 	if len(buffers) == 0 {
+		microideclosing = true
 		screen.Fini()
 		os.Exit(1)
 	}
@@ -496,6 +504,9 @@ func main() {
 	// Here is the event loop which runs in a separate thread
 	go func() {
 		for {
+			if microideclosing {
+				break
+			}
 			if screen != nil {
 				events <- screen.PollEvent()
 			}
@@ -504,6 +515,9 @@ func main() {
 
 	go func() {
 		for {
+			if microideclosing {
+				break
+			}
 			time.Sleep(autosaveTime * time.Second)
 			if globalSettings["autosave"].(bool) {
 				autosave <- true
@@ -520,6 +534,10 @@ func main() {
 
 	for {
 		// Display everything
+
+		if microideclosing {
+			break
+		}
 
 		if apprunning == nil {
 			RedrawAll()

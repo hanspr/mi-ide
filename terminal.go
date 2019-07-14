@@ -8,7 +8,7 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/hanspr/clipboard"
+	"github.com/hanspr/microidelibs/clipboard"
 	"github.com/hanspr/tcell"
 	"github.com/hanspr/terminal"
 )

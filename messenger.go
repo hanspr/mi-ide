@@ -10,7 +10,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/hanspr/clipboard"
+	"github.com/hanspr/microidelibs/clipboard"
 	"github.com/hanspr/microidelibs/shellwords"
 	"github.com/hanspr/tcell"
 	"github.com/mattn/go-runewidth"
