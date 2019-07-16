@@ -1025,8 +1025,8 @@ func (v *View) DisplayView() {
 	top := v.Topline
 
 	// Add extra space to the right on lines longer than window width when no softwrap
-	if v.Buf.Settings["softwrap"].(bool) == false && v.Cursor.Loc.X+10 >= v.Width-v.lineNumOffset && len(v.Buf.LineBytes(v.Cursor.Loc.Y)) > width {
-		left += 10
+	if v.Buf.Settings["softwrap"].(bool) == false && v.Cursor.Loc.X+20 >= v.Width-v.lineNumOffset && len(v.Buf.LineBytes(v.Cursor.Loc.Y)) > width {
+		left += 20
 	}
 
 	v.cellview.Draw(v.Buf, top, height, left, width-v.lineNumOffset)
