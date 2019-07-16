@@ -151,16 +151,16 @@ func PluginCmd(args []string) {
 			for _, plugin := range args[1:] {
 				pp := GetAllPluginPackages().Get(plugin)
 				if pp == nil {
-					messenger.Error("Unknown plugin \"" + plugin + "\"")
+					messenger.Error(Language.Translate("Unknown plugin:") + plugin)
 				} else if err := pp.IsInstallable(); err != nil {
-					messenger.Error("Error installing ", plugin, ": ", err)
+					messenger.Error(Language.Translate("Error installing "), plugin, ": ", err)
 				} else {
 					for _, installed := range installedVersions {
 						if pp.Name == installed.pack.Name {
 							if pp.Versions[0].Version.Compare(installed.Version) == 1 {
-								messenger.Error(pp.Name, " is already installed but out-of-date: use 'plugin update ", pp.Name, "' to update")
+								messenger.Error(pp.Name, Language.Translate(" is already installed but out-of-date: use 'plugin update "), pp.Name, Language.Translate("' to update"))
 							} else {
-								messenger.Error(pp.Name, " is already installed")
+								messenger.Error(pp.Name, Language.Translate(" is already installed"))
 							}
 						}
 					}
@@ -178,16 +178,16 @@ func PluginCmd(args []string) {
 				}
 			}
 			if !IsSpaces([]byte(removed)) {
-				messenger.Message("Removed ", removed)
+				messenger.Message(Language.Translate("Removed "), removed)
 			} else {
-				messenger.Error("The requested plugins do not exist")
+				messenger.Error(Language.Translate("The requested plugins do not exist"))
 			}
 		case "update":
 			UpdatePlugins(args[1:])
 		case "list":
 			plugins := GetInstalledVersions(false)
 			messenger.AddLog("----------------")
-			messenger.AddLog("The following plugins are currently installed:\n")
+			messenger.AddLog(Language.Translate("The following plugins are currently installed:") + "\n")
 			for _, p := range plugins {
 				messenger.AddLog(fmt.Sprintf("%s (%s)", p.pack.Name, p.Version))
 			}
@@ -199,7 +199,7 @@ func PluginCmd(args []string) {
 			}
 		case "search":
 			plugins := SearchPlugin(args[1:])
-			messenger.Message(len(plugins), " plugins found")
+			messenger.Message(len(plugins), Language.Translate(" plugins found"))
 			for _, p := range plugins {
 				messenger.AddLog("----------------")
 				messenger.AddLog(p.String())
@@ -212,7 +212,7 @@ func PluginCmd(args []string) {
 			}
 		case "available":
 			packages := GetAllPluginPackages()
-			messenger.AddLog("Available Plugins:")
+			messenger.AddLog(Language.Translate("Available Plugins:"))
 			for _, pkg := range packages {
 				messenger.AddLog(pkg.Name)
 			}
@@ -221,7 +221,7 @@ func PluginCmd(args []string) {
 			}
 		}
 	} else {
-		messenger.Error("Not enough arguments")
+		messenger.Error(Language.Translate("Not enough arguments"))
 	}
 }
 
@@ -237,8 +237,8 @@ func Raw(args []string) {
 	buf := NewBufferFromString("", "Raw events")
 
 	view := NewView(buf)
-	view.Buf.Insert(view.Cursor.Loc, "Warning: Showing raw event escape codes\n")
-	view.Buf.Insert(view.Cursor.Loc, "Use CtrlQ to exit\n")
+	view.Buf.Insert(view.Cursor.Loc, Language.Translate("Warning: Showing raw event escape codes")+"\n")
+	view.Buf.Insert(view.Cursor.Loc, Language.Translate("Use CtrlQ to exit")+"\n")
 	view.Type = vtRaw
 	tab := NewTabFromView(view)
 	tab.SetNum(len(tabs))
@@ -269,7 +269,7 @@ func TabSwitch(args []string) {
 				}
 			}
 			if !found {
-				messenger.Error("Could not find tab: ", err)
+				messenger.Error(Language.Translate("Could not find tab: "), err)
 			}
 		} else {
 			num--
@@ -288,7 +288,7 @@ func Cd(args []string) {
 		path := ReplaceHome(args[0])
 		err := os.Chdir(path)
 		if err != nil {
-			messenger.Error("Error with cd: ", err)
+			messenger.Error(Language.Translate("Error with cd: "), err)
 			return
 		}
 		wd, _ := os.Getwd()
@@ -338,14 +338,14 @@ func Open(args []string) {
 		// the filename might or might not be quoted, so unquote first then join the strings.
 		args, err := shellwords.Split(filename)
 		if err != nil {
-			messenger.Error("Error parsing args ", err)
+			messenger.Error(Language.Translate("Error parsing args "), err)
 			return
 		}
 		filename = strings.Join(args, " ")
 
 		CurView().Open(filename)
 	} else {
-		messenger.Error("No filename")
+		messenger.Error(Language.Translate("No filename"))
 	}
 }
 
@@ -381,7 +381,7 @@ func Help(args []string) {
 		if FindRuntimeFile(RTHelp, helpPage) != nil {
 			CurView().openHelp(helpPage)
 		} else {
-			messenger.Error("Sorry, no help for ", helpPage)
+			messenger.Error(Language.Translate("Sorry, no help for "), helpPage)
 		}
 	}
 }
@@ -426,7 +426,7 @@ func Eval(args []string) {
 			messenger.Error(err)
 		}
 	} else {
-		messenger.Error("Not enough arguments")
+		messenger.Error(Language.Translate("Not enough arguments"))
 	}
 }
 
@@ -458,7 +458,7 @@ func NewTab(args []string) {
 // Set sets an option
 func Set(args []string) {
 	if len(args) < 2 {
-		messenger.Error("Not enough arguments")
+		messenger.Error(Language.Translate("Not enough arguments"))
 		return
 	}
 
@@ -471,7 +471,7 @@ func Set(args []string) {
 // SetLocal sets an option local to the buffer
 func SetLocal(args []string) {
 	if len(args) < 2 {
-		messenger.Error("Not enough arguments")
+		messenger.Error(Language.Translate("Not enough arguments"))
 		return
 	}
 
@@ -487,14 +487,14 @@ func SetLocal(args []string) {
 // Show shows the value of the given option
 func Show(args []string) {
 	if len(args) < 1 {
-		messenger.Error("Please provide an option to show")
+		messenger.Error(Language.Translate("Please provide an option to show"))
 		return
 	}
 
 	option := GetOption(args[0])
 
 	if option == nil {
-		messenger.Error(args[0], " is not a valid option")
+		messenger.Error(args[0], Language.Translate(" is not a valid option"))
 		return
 	}
 
@@ -504,21 +504,21 @@ func Show(args []string) {
 // ShowKey displays the action that a key is bound to
 func ShowKey(args []string) {
 	if len(args) < 1 {
-		messenger.Error("Please provide a key to show")
+		messenger.Error(Language.Translate("Please provide a key to show"))
 		return
 	}
 
 	if action, ok := bindingsStr[args[0]]; ok {
 		messenger.Message(action)
 	} else {
-		messenger.Message(args[0], " has no binding")
+		messenger.Message(args[0], Language.Translate(" has no binding"))
 	}
 }
 
 // Bind creates a new keybinding
 func Bind(args []string) {
 	if len(args) < 2 {
-		messenger.Error("Not enough arguments")
+		messenger.Error(Language.Translate("Not enough arguments"))
 		return
 	}
 	BindKey(args[0], args[1])
@@ -551,7 +551,7 @@ func Replace(args []string) {
 
 	if len(args) < 2 {
 		// We need to find both a search and replace expression
-		messenger.Error("Invalid replace statement: " + strings.Join(args, " "))
+		messenger.Error(Language.Translate("Invalid replace statement: ") + strings.Join(args, " "))
 		return
 	}
 
@@ -572,7 +572,7 @@ func Replace(args []string) {
 				noRegex = true
 			case "":
 			default:
-				messenger.Error("Invalid flag: " + arg)
+				messenger.Error(Language.Translate("Invalid flag: ") + arg)
 				return
 			}
 		}
@@ -626,7 +626,12 @@ func Replace(args []string) {
 			}
 			view.Relocate()
 			RedrawAll()
-			choice, canceled := messenger.LetterPrompt("Perform replacement? (y,n,q,!)", 'y', 'n', 'q', '!')
+			y := []rune(Language.Translate("y"))[0]
+			n := []rune(Language.Translate("n"))[0]
+			q := []rune(Language.Translate("q"))[0]
+			I := []rune(Language.Translate("!"))[0]
+			messenger.AddLog("Valores:", y, n, q)
+			choice, canceled := messenger.LetterPrompt(Language.Translate("Perform replacement? (y,n,q,!)"), y, n, q, I)
 			if canceled {
 				if view.Cursor.HasSelection() {
 					view.Cursor.Loc = view.Cursor.CurSelection[0]
@@ -634,7 +639,7 @@ func Replace(args []string) {
 				}
 				messenger.Reset()
 				break
-			} else if choice == '!' {
+			} else if choice == I {
 				if view.Cursor.HasSelection() {
 					view.Cursor.Loc = view.Cursor.CurSelection[0]
 					view.Cursor.ResetSelection()
@@ -642,7 +647,7 @@ func Replace(args []string) {
 				messenger.Reset()
 				replaceAll()
 				break
-			} else if choice == 'y' {
+			} else if choice == y {
 				sel := view.Cursor.GetSelection()
 				messenger.AddLog("replace", replace)
 				rep := regex.ReplaceAllString(sel, replace)
@@ -651,7 +656,7 @@ func Replace(args []string) {
 				view.Cursor.ResetSelection()
 				messenger.Reset()
 				found++
-			} else if choice == 'q' {
+			} else if choice == q {
 				if view.Cursor.HasSelection() {
 					view.Cursor.Loc = view.Cursor.CurSelection[0]
 					view.Cursor.ResetSelection()
@@ -669,11 +674,11 @@ func Replace(args []string) {
 	view.Cursor.Relocate()
 
 	if found > 1 {
-		messenger.Message("Replaced ", found, " occurrences of ", search)
+		messenger.Message(Language.Translate("Replaced "), found, Language.Translate(" occurrences of "), search)
 	} else if found == 1 {
-		messenger.Message("Replaced ", found, " occurrence of ", search)
+		messenger.Message(Language.Translate("Replaced "), found, Language.Translate(" occurrence of "), search)
 	} else {
-		messenger.Message("Nothing matched ", search)
+		messenger.Message(Language.Translate("Nothing matched "), search)
 	}
 }
 
@@ -700,14 +705,14 @@ func Term(args []string) {
 func HandleCommand(input string) {
 	args, err := shellwords.Split(input)
 	if err != nil {
-		messenger.Error("Error parsing args ", err)
+		messenger.Error(Language.Translate("Error parsing args "), err)
 		return
 	}
 
 	inputCmd := args[0]
 
 	if _, ok := commands[inputCmd]; !ok {
-		messenger.Error("Unknown command ", inputCmd)
+		messenger.Error(Language.Translate("Unknown command "), inputCmd)
 	} else {
 		commands[inputCmd].action(args[1:])
 	}

@@ -232,7 +232,6 @@ func (v *View) paste(clip string) {
 	}
 
 	v.freshClip = false
-	messenger.Message("Pasted clipboard")
 }
 
 // ScrollUp scrolls the view up n lines (if possible)
@@ -275,7 +274,7 @@ func (v *View) CanClose() bool {
 		if v.Buf.Settings["autosave"].(bool) {
 			choice = true
 		} else {
-			choice, canceled = messenger.YesNoPrompt("Save changes to " + v.Buf.GetName() + " before closing? (y,n,esc) ")
+			choice, canceled = messenger.YesNoPrompt(Language.Translate("Save changes to ") + v.Buf.GetName() + Language.Translate(" before closing? (y,n,esc)"))
 		}
 		if !canceled {
 			//if char == 'y' {

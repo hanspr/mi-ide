@@ -1049,7 +1049,7 @@ func (v *View) saveToFile(filename string) {
 	err := v.Buf.SaveAs(filename)
 	if err != nil {
 		if strings.HasSuffix(err.Error(), "permission denied") {
-			choice, _ := messenger.YesNoPrompt("Permission denied. Do you want to save this file using sudo? (y,n)")
+			choice, _ := messenger.YesNoPrompt(Language.Translate("Permission denied. Do you want to save this file using sudo? (y,n)"))
 			if choice {
 				err = v.Buf.SaveAsWithSudo(filename)
 				if err != nil {
@@ -1169,7 +1169,6 @@ func (v *View) Undo(usePlugin bool) bool {
 	if v.Buf.UndoStack.Len() == v.Buf.UndoStackRef {
 		v.Buf.IsModified = false
 	}
-	messenger.Message("Undid action")
 
 	if usePlugin {
 		return PostActionCall("Undo", v)
@@ -1196,7 +1195,6 @@ func (v *View) Redo(usePlugin bool) bool {
 	if v.Buf.UndoStack.Len() == v.Buf.UndoStackRef {
 		v.Buf.IsModified = false
 	}
-	messenger.Message("Redid action")
 
 	if usePlugin {
 		return PostActionCall("Redo", v)
@@ -1226,11 +1224,10 @@ func (v *View) Copy(usePlugin bool) bool {
 
 		if v.Cursor.HasSelection() {
 			if v.SelectionTooBig() {
-				messenger.Error("Selection is to big, can not copy. You may move (up/down) or delete only.")
+				messenger.Error(Language.Translate("Selection is to big, can not copy. You may move (up/down) or delete only."))
 			} else {
 				v.Cursor.CopySelection("clipboard")
 				v.freshClip = true
-				messenger.Message("Copied selection")
 			}
 		}
 
@@ -1251,7 +1248,7 @@ func (v *View) CutLine(usePlugin bool) bool {
 		return false
 	}
 	if v.SelectionTooBig() {
-		messenger.Error("Line is to big, can not cut. You may move (up/down) or delete only.")
+		messenger.Error(Language.Translate("Line is to big, can not cut. You may move (up/down) or delete only."))
 		return false
 	}
 	if v.freshClip == true {
@@ -1271,7 +1268,6 @@ func (v *View) CutLine(usePlugin bool) bool {
 	v.Cursor.ResetSelection()
 	// Force cursor to begin of line, or it junps to the end of next line afterwards
 	v.Cursor.GotoLoc(Loc{0, v.Cursor.Y})
-	messenger.Message("Cut line")
 
 	if usePlugin {
 		return PostActionCall("CutLine", v)
@@ -1287,14 +1283,13 @@ func (v *View) Cut(usePlugin bool) bool {
 
 	if v.Cursor.HasSelection() {
 		if v.SelectionTooBig() {
-			messenger.Error("Selection is to big, can not cut. You may move (up/down) or delete only.")
+			messenger.Error(Language.Translate("Selection is to big, can not copy. You may move (up/down) or delete only."))
 			return false
 		} else {
 			v.Cursor.CopySelection("clipboard")
 			v.Cursor.DeleteSelection()
 			v.Cursor.ResetSelection()
 			v.freshClip = true
-			messenger.Message("Cut selection")
 		}
 
 		if usePlugin {
@@ -1303,7 +1298,7 @@ func (v *View) Cut(usePlugin bool) bool {
 		return true
 	} else {
 		if len(v.Buf.LineBytes(v.Cursor.Loc.Y)) > MaxClipboardSize {
-			messenger.Error("Line is to big to cut")
+			messenger.Error(Language.Translate("Line is to big to cut"))
 		} else {
 			return v.CutLine(usePlugin)
 		}
@@ -1319,21 +1314,19 @@ func (v *View) DuplicateLine(usePlugin bool) bool {
 
 	if v.Cursor.HasSelection() {
 		if v.SelectionTooBig() {
-			messenger.Error("Line is to big, can not duplicate. You may move (up/down) or delete only.")
+			messenger.Error(Language.Translate("Line is to big, can not duplicate. You may move (up/down) or delete only."))
 			return false
 		}
 		v.Buf.Insert(v.Cursor.CurSelection[1], v.Cursor.GetSelection())
 	} else {
 		if len(v.Buf.LineBytes(v.Cursor.Loc.Y)) > MaxClipboardSize {
-			messenger.Error("Line is to big, can not duplicate. You may move (up/down) or delete only.")
+			messenger.Error(Language.Translate("Line is to big, can not duplicate. You may move (up/down) or delete only."))
 			return false
 		}
 		v.Cursor.End()
 		v.Buf.Insert(v.Cursor.Loc, "\n"+v.Buf.Line(v.Cursor.Y))
 		// v.Cursor.Right()
 	}
-
-	messenger.Message("Duplicated line")
 
 	if usePlugin {
 		return PostActionCall("DuplicateLine", v)
@@ -1355,7 +1348,6 @@ func (v *View) DeleteLine(usePlugin bool) bool {
 	v.Cursor.ResetSelection()
 	// Force cursor to begin of line, or it junps to the end of next line afterwards
 	v.Cursor.GotoLoc(Loc{0, v.Cursor.Y})
-	messenger.Message("Deleted line")
 
 	if usePlugin {
 		return PostActionCall("DeleteLine", v)
@@ -1371,7 +1363,6 @@ func (v *View) MoveLinesUp(usePlugin bool) bool {
 
 	if v.Cursor.HasSelection() {
 		if v.Cursor.CurSelection[0].Y == 0 {
-			messenger.Message("Can not move further up")
 			return true
 		}
 		start := v.Cursor.CurSelection[0].Y
@@ -1385,17 +1376,14 @@ func (v *View) MoveLinesUp(usePlugin bool) bool {
 			end,
 		)
 		v.Cursor.CurSelection[1].Y -= 1
-		messenger.Message("Moved up selected line(s)")
 	} else {
 		if v.Cursor.Loc.Y == 0 {
-			messenger.Message("Can not move further up")
 			return true
 		}
 		v.Buf.MoveLinesUp(
 			v.Cursor.Loc.Y,
 			v.Cursor.Loc.Y+1,
 		)
-		messenger.Message("Moved up current line")
 	}
 	v.Buf.IsModified = true
 
@@ -1413,7 +1401,6 @@ func (v *View) MoveLinesDown(usePlugin bool) bool {
 
 	if v.Cursor.HasSelection() {
 		if v.Cursor.CurSelection[1].Y >= len(v.Buf.lines) {
-			messenger.Message("Can not move further down")
 			return true
 		}
 		start := v.Cursor.CurSelection[0].Y
@@ -1426,17 +1413,14 @@ func (v *View) MoveLinesDown(usePlugin bool) bool {
 			start,
 			end,
 		)
-		messenger.Message("Moved down selected line(s)")
 	} else {
 		if v.Cursor.Loc.Y >= len(v.Buf.lines)-1 {
-			messenger.Message("Can not move further down")
 			return true
 		}
 		v.Buf.MoveLinesDown(
 			v.Cursor.Loc.Y,
 			v.Cursor.Loc.Y+1,
 		)
-		messenger.Message("Moved down current line")
 	}
 	v.Buf.IsModified = true
 
@@ -1761,10 +1745,8 @@ func (v *View) ToggleRuler(usePlugin bool) bool {
 
 		if v.Buf.Settings["ruler"] == false {
 			v.Buf.Settings["ruler"] = true
-			messenger.Message("Enabled ruler")
 		} else {
 			v.Buf.Settings["ruler"] = false
-			messenger.Message("Disabled ruler")
 		}
 
 		if usePlugin {
@@ -1781,7 +1763,7 @@ func (v *View) JumpLine(usePlugin bool) bool {
 	}
 
 	// Prompt for line number
-	message := fmt.Sprintf("Jump to line:col (1 - %v) # ", v.Buf.NumLines)
+	message := fmt.Sprintf(Language.Translate("Jump to line: (1 - %v) # "), v.Buf.NumLines)
 	input, canceled := messenger.Prompt(message, "", "LineNumber", NoCompletion)
 	if canceled {
 		return false
@@ -1793,18 +1775,18 @@ func (v *View) JumpLine(usePlugin bool) bool {
 		split := strings.Split(input, ":")
 		lineInt, err = strconv.Atoi(split[0])
 		if err != nil {
-			messenger.Message("Invalid line number")
+			messenger.Message(Language.Translate("Invalid line number"))
 			return false
 		}
 		colInt, err = strconv.Atoi(split[1])
 		if err != nil {
-			messenger.Message("Invalid column number")
+			messenger.Message(Language.Translate("Invalid line number"))
 			return false
 		}
 	} else {
 		lineInt, err = strconv.Atoi(input)
 		if err != nil {
-			messenger.Message("Invalid line number")
+			messenger.Message(Language.Translate("Invalid line number"))
 			return false
 		}
 	}
@@ -1820,7 +1802,7 @@ func (v *View) JumpLine(usePlugin bool) bool {
 		}
 		return true
 	}
-	messenger.Error("Only ", v.Buf.NumLines, " lines to jump")
+	messenger.Message(Language.Translate("Invalid line number"))
 	return false
 }
 
@@ -2230,9 +2212,9 @@ func (v *View) ToggleMacro(usePlugin bool) bool {
 
 		if recordingMacro {
 			curMacro = []interface{}{}
-			messenger.Message("Recording")
+			messenger.Message(Language.Translate("Recording"))
 		} else {
-			messenger.Message("Stopped recording")
+			messenger.Message(Language.Translate("Stopped recording"))
 		}
 
 		if usePlugin {
@@ -2360,7 +2342,6 @@ func (v *View) SpawnMultiCursorSelect(usePlugin bool) bool {
 			PostActionCall("SpawnMultiCursorSelect", v)
 		}
 
-		messenger.Message("Added cursors from selection")
 	}
 	return false
 }

@@ -218,6 +218,7 @@ func DefaultGlobalSettings() map[string]interface{} {
 		"indentchar":     " ",
 		"infobar":        true,
 		"keepautoindent": false,
+		"lang":           "english",
 		"matchbrace":     false,
 		"matchbraceleft": false,
 		"mouse":          true,

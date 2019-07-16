@@ -25,7 +25,7 @@ var (
 func StartSearchMode() {
 	messenger.hasPrompt = false
 	searching = true
-	messenger.Message("Find: " + lastSearch + "   " + "Esc,CtrlG (Exit)  F5 (Previous)  F6,Enter (Next)")
+	messenger.Message(Language.Translate("Find") + " :" + lastSearch + "   " + Language.Translate("Esc,CtrlG (Exit)  F5 (Previous)  F6,Enter (Next)"))
 }
 
 // ExitSearch exits the search mode, reset active search phrase, and clear status bar

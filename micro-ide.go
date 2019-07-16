@@ -12,6 +12,7 @@ import (
 
 	"github.com/go-errors/errors"
 	"github.com/hanspr/microidelibs/clipboard"
+	"github.com/hanspr/microidelibs/lang"
 	"github.com/hanspr/microidelibs/terminfo"
 	"github.com/hanspr/tcell"
 	"github.com/hanspr/tcell/encoding"
@@ -80,6 +81,8 @@ var (
 	micromenu *microMenu
 
 	microideclosing bool = false
+
+	Language *lang.Lang
 )
 
 // LoadInput determines which files should be loaded into buffers
@@ -531,7 +534,7 @@ func main() {
 	x := strings.LastIndex(CurView().Buf.AbsPath, "/") + 1
 	dirview.LastPath = string([]rune(CurView().Buf.AbsPath)[:x])
 	micromenu = new(microMenu)
-
+	Language = lang.NewLang(globalSettings["lang"].(string), configDir+"/langs/"+globalSettings["lang"].(string)+".lang")
 	for {
 		// Display everything
 

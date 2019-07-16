@@ -198,7 +198,7 @@ func (m *Messenger) PromptText(msg ...interface{}) {
 
 	m.hasMessage = true
 	// add the message to the log regardless of active prompts
-	m.AddLog(displayMessage)
+	//m.AddLog(displayMessage)
 }
 
 // YesNoPrompt asks the user a yes or no question (waits for y or n) and returns the result
@@ -218,10 +218,10 @@ func (m *Messenger) YesNoPrompt(prompt string) (bool, bool) {
 		case *tcell.EventKey:
 			switch e.Key() {
 			case tcell.KeyRune:
-				if e.Rune() == 'y' || e.Rune() == 'Y' {
+				if string(e.Rune()) == Language.Translate("y") || string(e.Rune()) == Language.Translate("Y") {
 					m.hasPrompt = false
 					return true, false
-				} else if e.Rune() == 'n' || e.Rune() == 'N' {
+				} else if string(e.Rune()) == Language.Translate("n") || string(e.Rune()) == Language.Translate("N") {
 					m.hasPrompt = false
 					return false, false
 				}
@@ -665,7 +665,7 @@ func (m *Messenger) LoadHistory() {
 			err = decoder.Decode(&decodedMap)
 
 			if err != nil {
-				m.Error("Error loading history:", err)
+				m.Error(Language.Translate("Error loading history:"), err)
 				return
 			}
 		}
@@ -698,7 +698,7 @@ func (m *Messenger) SaveHistory() {
 
 			err = encoder.Encode(m.history)
 			if err != nil {
-				m.Error("Error saving history:", err)
+				m.Error(Language.Translate("Error saving history:"), err)
 				return
 			}
 		}

@@ -135,7 +135,7 @@ func NewBufferFromFile(path string) (*Buffer, error) {
 	fileInfo, _ := os.Stat(filename)
 
 	if err == nil && fileInfo.IsDir() {
-		return nil, errors.New(filename + " is a directory")
+		return nil, errors.New(filename + " " + Language.Translate("is a directory"))
 	}
 
 	defer file.Close()
@@ -194,13 +194,11 @@ func NewBuffer(reader io.Reader, size int64, path string, cursorPosition []strin
 				b.encoding = true
 			}
 		}
-		//		b.encoder = fmt.Sprintf("%T", reader)
 	} else {
 		utf8reader = reader
 		b.encoding = false
 	}
 
-	//b.LineArray = NewLineArray(size, reader)
 	b.LineArray = NewLineArray(size, utf8reader)
 
 	b.Settings = DefaultLocalSettings()
@@ -252,7 +250,7 @@ func NewBuffer(reader io.Reader, size int64, path string, cursorPosition []strin
 			gob.Register(TextEvent{})
 			err = decoder.Decode(&buffer)
 			if err != nil {
-				TermMessage(err.Error(), "\n", "You may want to remove the files in ~/.config/micro-ide/buffers (these files store the information for the 'saveundo' and 'savecursor' options) if this problem persists.")
+				TermMessage(err.Error(), "\n", Language.Translate("You may want to remove the files in")+" ~/.config/micro-ide/buffers "+Language.Translate("(these files store the information for the 'saveundo' and 'savecursor' options) if this problem persists."))
 			}
 			if b.Settings["savecursor"].(bool) {
 				b.Cursor = buffer.Cursor
@@ -364,16 +362,16 @@ func (b *Buffer) UpdateRules() {
 	for _, f := range ListRuntimeFiles(RTSyntax) {
 		data, err := f.Data()
 		if err != nil {
-			TermMessage("Error loading syntax file " + f.Name() + ": " + err.Error())
+			TermMessage(Language.Translate("Error loading syntax file") + " " + f.Name() + ": " + err.Error())
 		} else {
 			file, err := highlight.ParseFile(data)
 			if err != nil {
-				TermMessage("Error loading syntax file " + f.Name() + ": " + err.Error())
+				TermMessage(Language.Translate("Error loading syntax file") + " " + f.Name() + ": " + err.Error())
 				continue
 			}
 			ftdetect, err := highlight.ParseFtDetect(file)
 			if err != nil {
-				TermMessage("Error loading syntax file " + f.Name() + ": " + err.Error())
+				TermMessage(Language.Translate("Error loading syntax file") + " " + f.Name() + ": " + err.Error())
 				continue
 			}
 
@@ -385,7 +383,7 @@ func (b *Buffer) UpdateRules() {
 					header.FtDetect = ftdetect
 					b.syntaxDef, err = highlight.ParseDef(file, header)
 					if err != nil {
-						TermMessage("Error loading syntax file " + f.Name() + ": " + err.Error())
+						TermMessage(Language.Translate("Error loading syntax file") + " " + f.Name() + ": " + err.Error())
 						continue
 					}
 					rehighlight = true
@@ -397,7 +395,7 @@ func (b *Buffer) UpdateRules() {
 					header.FtDetect = ftdetect
 					b.syntaxDef, err = highlight.ParseDef(file, header)
 					if err != nil {
-						TermMessage("Error loading syntax file " + f.Name() + ": " + err.Error())
+						TermMessage(Language.Translate("Error loading syntax file") + " " + f.Name() + ": " + err.Error())
 						continue
 					}
 					rehighlight = true
@@ -411,17 +409,17 @@ func (b *Buffer) UpdateRules() {
 		f := FindRuntimeFile(RTSyntax, "unknown")
 		data, err := f.Data()
 		if err != nil {
-			TermMessage("Error loading syntax file " + f.Name() + ": " + err.Error())
+			TermMessage(Language.Translate("Error loading syntax file") + " " + f.Name() + ": " + err.Error())
 		} else {
 			file, err := highlight.ParseFile(data)
 			if err != nil {
-				TermMessage("Error loading syntax file " + f.Name() + ": " + err.Error())
+				TermMessage(Language.Translate("Error loading syntax file") + " " + f.Name() + ": " + err.Error())
 			} else {
 				header := new(highlight.Header)
 				header.FileType = "Unknown"
 				b.syntaxDef, err = highlight.ParseDef(file, header)
 				if err != nil {
-					TermMessage("Error loading syntax file " + f.Name() + ": " + err.Error())
+					TermMessage(Language.Translate("Error loading syntax file") + " " + f.Name() + ": " + err.Error())
 				}
 				rehighlight = true
 			}
@@ -545,10 +543,10 @@ func (b *Buffer) CheckModTime() {
 	if ok {
 		if modTime != b.ModTime {
 			if b.Settings["autoreload"].(bool) && b.IsModified == false {
-				messenger.Information("Buffer reloaded")
+				messenger.Information(Language.Translate("Buffer reloaded"))
 				b.ReOpen()
 			} else {
-				choice, canceled := messenger.YesNoPrompt("The file has changed since it was last read. Reload file? (y,n)")
+				choice, canceled := messenger.YesNoPrompt(Language.Translate("The file has changed since it was last read. Reload file? (y,n)"))
 				messenger.Reset()
 				messenger.Clear()
 				if !choice || canceled {
@@ -691,7 +689,7 @@ func (b *Buffer) SaveAs(filename string) error {
 		// Check if the parent dirs don't exist
 		if _, statErr := os.Stat(dirname); os.IsNotExist(statErr) {
 			// Prompt to make sure they want to create the dirs that are missing
-			if yes, canceled := messenger.YesNoPrompt("Parent folders \"" + dirname + "\" do not exist. Create them? (y,n)"); yes && !canceled {
+			if yes, canceled := messenger.YesNoPrompt(Language.Translate("Parent folders") + " '" + dirname + "' " + Language.Translate("do not exist. Create them? (y,n)")); yes && !canceled {
 				// Create all leading dir(s) since they don't exist
 				if mkdirallErr := os.MkdirAll(dirname, os.ModePerm); mkdirallErr != nil {
 					// If there was an error creating the dirs
@@ -699,7 +697,7 @@ func (b *Buffer) SaveAs(filename string) error {
 				}
 			} else {
 				// If they canceled the creation of leading dirs
-				return errors.New("Save aborted")
+				return errors.New(Language.Translate("Save aborted"))
 			}
 		}
 	}
@@ -717,7 +715,7 @@ func (b *Buffer) SaveAs(filename string) error {
 				messenger.AddLog("Error!:", err.Error())
 				messenger.AddLog("Original encoding:", b.encoder)
 				messenger.AddLog("Save as UTF-8")
-				messenger.Information("File saved as UTF-8")
+				messenger.Information(Language.Translate("File saved as UTF-8"))
 				fileutf8 = file
 				b.encoder = "UTF-8"
 				b.encoding = false
@@ -803,7 +801,7 @@ func (b *Buffer) RetryOnceSaveAs(filename string) error {
 	if err != nil {
 		b.encoder = enc
 		b.encoding = true
-		return errors.New("File can not be saved with selected encoding")
+		return errors.New(Language.Translate("File can not be saved with selected encoding"))
 	}
 	return err
 }

@@ -14,6 +14,7 @@
     "indentchar": "\t",
     "infobar": true,
     "keepautoindent": true,
+    "lang" : "spanish",
     "matchbrace": true,
     "matchbraceleft": false,
     "mouse": true,
