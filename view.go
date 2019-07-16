@@ -138,8 +138,8 @@ func NewViewWidthHeight(buf *Buffer, w, h int) *View {
 	v.messages = make(map[string][]GutterMessage)
 
 	v.sline = &Statusline{
-		view:     v,
-		hostspot: make(map[string]Loc),
+		view:    v,
+		hotspot: make(map[string]Loc),
 	}
 
 	v.scrollbar = &ScrollBar{
@@ -695,6 +695,8 @@ func (v *View) HandleEvent(event tcell.Event) {
 					} else {
 						v.Buf.Insert(v.Cursor.Loc, string(e.Rune()))
 					}
+					// Check id we are at the right border to widen visibility
+					messenger.Message(v.Cursor.X, "?", v.x)
 
 					// Autoclose here for : {}[]()''""``
 					if v.Buf.Settings["autoclose"].(bool) {
@@ -1021,6 +1023,11 @@ func (v *View) DisplayView() {
 	width := v.Width
 	left := v.leftCol
 	top := v.Topline
+
+	// Add extra space to the right on lines longer than window width when no softwrap
+	if v.Buf.Settings["softwrap"].(bool) == false && v.Cursor.Loc.X+10 >= v.Width-v.lineNumOffset && len(v.Buf.LineBytes(v.Cursor.Loc.Y)) > width {
+		left += 10
+	}
 
 	v.cellview.Draw(v.Buf, top, height, left, width-v.lineNumOffset)
 

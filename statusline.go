@@ -13,8 +13,8 @@ import (
 // It gives information such as filename, whether the file has been
 // modified, filetype, cursor location
 type Statusline struct {
-	view     *View
-	hostspot map[string]Loc
+	view    *View
+	hotspot map[string]Loc
 }
 
 func (sline *Statusline) EncodingSelected(values map[string]string) {
@@ -31,16 +31,11 @@ func (sline *Statusline) EncodingSelected(values map[string]string) {
 }
 
 func (sline *Statusline) MouseEvent(e *tcell.EventMouse, rx, ry int) {
-	//messenger.Message("statusline:", e.Buttons(), "?", tcell.Button1, ":", e.HasMotion(), "-->", rx, ",", ry)
 	if e.Buttons() != tcell.Button1 || e.HasMotion() == true {
 		return
 	}
-	//x, _ := e.Position()
-	//messenger.Message("statusline:event", x, ",", y)
-	for _, hs := range sline.hostspot {
-		//messenger.AddLog("Check(", sline.view.Num, ") ", hotspot, " = ", hs.X, "<=", rx, "<=", hs.Y)
+	for _, hs := range sline.hotspot {
 		if rx >= hs.X && rx <= hs.Y {
-			//messenger.Message("HOTSPOT !!! ", hotspot, " = ", hs.X, "<=", rx, "<=", hs.Y)
 			micromenu.SelEncoding(sline.EncodingSelected)
 		}
 	}
@@ -119,7 +114,7 @@ func (sline *Statusline) Display() {
 	if sline.view.x != 0 {
 		offset++
 	}
-	sline.hostspot["ENCODER"] = Loc{Count(file) + 1 + offset, Count(file) + offset + Count(sline.view.Buf.encoder)}
+	sline.hotspot["ENCODER"] = Loc{Count(file) + 1 + offset, Count(file) + offset + Count(sline.view.Buf.encoder)}
 	file += " " + sline.view.Buf.encoder
 
 	if size > 12 {
@@ -167,7 +162,7 @@ func (sline *Statusline) Display() {
 		tStyle := statusLineStyle
 		if x < 3 && fvstyle {
 			tStyle = StringToStyle("#ffd700,#5f87af")
-		} else if sline.hostspot["ENCODER"].X-offset <= x && x <= sline.hostspot["ENCODER"].Y-offset && sline.view.Num == CurView().Num {
+		} else if sline.hotspot["ENCODER"].X-offset <= x && x <= sline.hotspot["ENCODER"].Y-offset && sline.view.Num == CurView().Num {
 			tStyle = StringToStyle("#ffd700,#585858")
 		}
 		if x < len(fileRunes) {

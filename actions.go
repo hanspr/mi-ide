@@ -701,7 +701,6 @@ func (v *View) InsertSpace(usePlugin bool) bool {
 		v.Cursor.ResetSelection()
 	}
 	v.Buf.Insert(v.Cursor.Loc, " ")
-	// v.Cursor.Right()
 
 	if usePlugin {
 		return PostActionCall("InsertSpace", v)
