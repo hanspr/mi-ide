@@ -2187,7 +2187,6 @@ func (v *View) PreviousSplit(usePlugin bool) bool {
 		v.savedLoc = v.Cursor.Loc
 		v.savedLine = SubtringSafe(v.Buf.Line(v.Cursor.Loc.Y), 0, 20)
 		// Find next View parsing tree_split upward
-		//			tab.CurView--
 		tab.CurView = v.splitNode.GetNextPrevView(-1)
 
 		if usePlugin {
