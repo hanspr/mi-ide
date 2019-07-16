@@ -1,6 +1,7 @@
 {
     "autoclose": true,
     "autoindent": true,
+    "autoreload": true,
     "autosave": false,
     "basename": false,
     "colorcolumn": 0,
@@ -14,7 +15,7 @@
     "indentchar": "\t",
     "infobar": true,
     "keepautoindent": true,
-    "lang" : "spanish",
+    "lang": "spanish",
     "matchbrace": true,
     "matchbraceleft": false,
     "mouse": true,

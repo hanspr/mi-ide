@@ -173,6 +173,8 @@ func Search(searchStr string, v *View, down bool) {
 	}
 }
 
+// Search dialogs preview of found text
+
 const Doff int = 20
 
 func DialogSearch(searchStr string) string {

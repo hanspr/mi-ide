@@ -125,6 +125,7 @@ func (a *MicroApp) AddWindowElement(name, label, form, value, value_type string,
 		e.aposb = Loc{x + lblwidth, y}
 		e.apose = Loc{x + lblwidth + w - 1, y}
 	} else if form == "select" {
+		e.index++
 		h--
 		e.offset = -1
 		e.aposb = Loc{x + lblwidth, y}
@@ -633,7 +634,12 @@ func (a *MicroApp) DrawAll() {
 	}
 	// Draw all non box elements
 	for _, e := range a.elements {
-		if e.index > 0 {
+		if e.index == 1 {
+			e.Draw()
+		}
+	}
+	for _, e := range a.elements {
+		if e.index == 2 {
 			e.Draw()
 		}
 	}

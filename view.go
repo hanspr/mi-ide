@@ -222,12 +222,20 @@ func (v *View) paste(clip string) {
 	v.Buf.Insert(v.Cursor.Loc, clip)
 
 	if v.Buf.Settings["smartindent"].(bool) || v.Buf.Settings["smartpaste"].(bool) {
-		re, _ := regexp.Compile(`\n$`)
+		re, _ := regexp.Compile(`\n`)
+		x := v.Cursor.Loc.X
+		spc := CountLeadingWhitespace(v.Buf.Line(v.Cursor.Y))
 		v.Buf.SmartIndent(Start, v.Cursor.Loc, false)
 		if re.MatchString(clip) {
-			// SmartIndent, has to process the next line, and leaves cursor at end of next line
-			// Return to begining if the last character en clip is a \n
+			// Multiline paste, move cursor to begging of last line, is the safest option
 			v.Cursor.GotoLoc(Loc{0, v.Cursor.Loc.Y})
+		} else {
+			// One line paste, check if it was indented
+			spc2 := CountLeadingWhitespace(v.Buf.Line(v.Cursor.Y))
+			if spc != spc2 {
+				// Was indented move cursor location to pasted end string
+				v.Cursor.GotoLoc(Loc{x + spc2, v.Cursor.Loc.Y})
+			}
 		}
 	}
 
@@ -274,7 +282,7 @@ func (v *View) CanClose() bool {
 		if v.Buf.Settings["autosave"].(bool) {
 			choice = true
 		} else {
-			choice, canceled = messenger.YesNoPrompt(Language.Translate("Save changes to ") + v.Buf.GetName() + Language.Translate(" before closing? (y,n,esc)"))
+			choice, canceled = messenger.YesNoPrompt(Language.Translate("Save changes to ") + v.Buf.GetName() + " " + Language.Translate("before closing? (y,n,esc)"))
 		}
 		if !canceled {
 			//if char == 'y' {

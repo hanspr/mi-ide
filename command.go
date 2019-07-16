@@ -158,9 +158,9 @@ func PluginCmd(args []string) {
 					for _, installed := range installedVersions {
 						if pp.Name == installed.pack.Name {
 							if pp.Versions[0].Version.Compare(installed.Version) == 1 {
-								messenger.Error(pp.Name, Language.Translate(" is already installed but out-of-date: use 'plugin update "), pp.Name, Language.Translate("' to update"))
+								messenger.Error(pp.Name, " "+Language.Translate("is already installed but out-of-date: use 'plugin update "), pp.Name, Language.Translate("' to update"))
 							} else {
-								messenger.Error(pp.Name, Language.Translate(" is already installed"))
+								messenger.Error(pp.Name, " "+Language.Translate("is already installed"))
 							}
 						}
 					}
@@ -199,7 +199,7 @@ func PluginCmd(args []string) {
 			}
 		case "search":
 			plugins := SearchPlugin(args[1:])
-			messenger.Message(len(plugins), Language.Translate(" plugins found"))
+			messenger.Message(len(plugins), " "+Language.Translate("plugins found"))
 			for _, p := range plugins {
 				messenger.AddLog("----------------")
 				messenger.AddLog(p.String())
@@ -494,7 +494,7 @@ func Show(args []string) {
 	option := GetOption(args[0])
 
 	if option == nil {
-		messenger.Error(args[0], Language.Translate(" is not a valid option"))
+		messenger.Error(args[0], " "+Language.Translate("is not a valid option"))
 		return
 	}
 
@@ -511,7 +511,7 @@ func ShowKey(args []string) {
 	if action, ok := bindingsStr[args[0]]; ok {
 		messenger.Message(action)
 	} else {
-		messenger.Message(args[0], Language.Translate(" has no binding"))
+		messenger.Message(args[0], " "+Language.Translate("has no binding"))
 	}
 }
 
@@ -674,9 +674,9 @@ func Replace(args []string) {
 	view.Cursor.Relocate()
 
 	if found > 1 {
-		messenger.Message(Language.Translate("Replaced "), found, Language.Translate(" occurrences of "), search)
+		messenger.Message(Language.Translate("Replaced "), found, " "+Language.Translate("occurrences of "), search)
 	} else if found == 1 {
-		messenger.Message(Language.Translate("Replaced "), found, Language.Translate(" occurrence of "), search)
+		messenger.Message(Language.Translate("Replaced "), found, " "+Language.Translate("occurrence of "), search)
 	} else {
 		messenger.Message(Language.Translate("Nothing matched "), search)
 	}

@@ -73,12 +73,14 @@ func (m *microMenu) Search(callback func(map[string]string)) {
 		bottom := heigth
 		m.myapp.AddStyle("f", "black,yellow")
 		m.myapp.AddWindowBox("enc", Language.Translate("Search"), left, top, right, bottom, nil, "")
-		m.myapp.AddWindowTextBox("search", Language.Translate("Search regex: "), "", "string", left+2, top+2, 47, 50, m.SubmitSearchOnEnter, "")
-		//m.myapp.AddWindowLabel("lblf", Language.Translate("Found"), left+2, top+4, nil, "")
-		m.myapp.AddWindowLabel("found", "", left+2, top+4, nil, "")
+		lbl := Language.Translate("Search regex:")
+		m.myapp.AddWindowTextBox("search", lbl+" ", "", "string", left+2, top+2, 61-Count(lbl), 50, m.SubmitSearchOnEnter, "")
 		m.myapp.AddWindowCheckBox("i", "i", "i", left+65, top+2, false, m.SubmitSearchOnEnter, "")
-		m.myapp.AddWindowButton("cancel", Language.Translate(" Cancel "), "cancel", left+43, top+6, m.ButtonFinish, "")
-		m.myapp.AddWindowButton("set", Language.Translate(" Search "), "ok", left+58, top+6, m.StartSearch, "")
+		m.myapp.AddWindowLabel("found", "", left+2, top+4, nil, "")
+		lbl = Language.Translate("Cancel")
+		m.myapp.AddWindowButton("cancel", " "+lbl+" ", "cancel", left+46-Count(lbl), top+6, m.ButtonFinish, "")
+		lbl = Language.Translate("Search")
+		m.myapp.AddWindowButton("set", " "+lbl+" ", "ok", left+64-Count(lbl), top+6, m.StartSearch, "")
 		m.myapp.Finish = m.AbortSearch
 		m.myapp.WindowFinish = callback
 	}
@@ -116,16 +118,21 @@ func (m *microMenu) SearchReplace(callback func(map[string]string)) {
 		bottom := heigth
 		m.myapp.AddStyle("f", "bold black,yellow")
 		m.myapp.AddWindowBox("enc", Language.Translate("Search / Replace"), left, top, right, bottom, nil, "")
-		m.myapp.AddWindowTextBox("search", Language.Translate("Search regex:   "), "", "string", left+2, top+2, 50, 50, m.SubmitSearchOnEnter, "")
-		m.myapp.AddWindowTextBox("replace", Language.Translate("Replace string: "), "", "string", left+2, top+4, 40, 40, m.SubmitSearchOnEnter, "")
-		m.myapp.AddWindowCheckBox("i", "i", "i", left+2, top+6, false, m.SubmitSearchOnEnter, "")
-		m.myapp.AddWindowCheckBox("a", "all", "a", left+9, top+6, false, m.SubmitSearchOnEnter, "")
-		m.myapp.AddWindowCheckBox("s", `s (\n)`, "s", left+16, top+6, false, m.SubmitSearchOnEnter, "")
-		m.myapp.AddWindowCheckBox("l", "No regex", "l", left+26, top+6, false, m.SubmitSearchOnEnter, "")
-		//m.myapp.AddWindowLabel("lblf", Language.Translate("Found"), left+2, top+8, nil, "")
+		lbl := Language.Translate("Search regex:")
+		m.myapp.AddWindowTextBox("search", lbl+" ", "", "string", left+2, top+2, 63-Count(lbl), 50, m.SubmitSearchOnEnter, "")
+		lbl = Language.Translate("Replace regex:")
+		m.myapp.AddWindowTextBox("replace", lbl+" ", "", "string", left+2, top+4, 54-Count(lbl), 40, m.SubmitSearchOnEnter, "")
+		lbl = Language.Translate("ignore case")
+		m.myapp.AddWindowCheckBox("i", lbl, "i", left+2, top+6, false, m.SubmitSearchOnEnter, "")
+		lbl = Language.Translate("all")
+		m.myapp.AddWindowCheckBox("a", lbl, "a", left+17, top+6, false, m.SubmitSearchOnEnter, "")
+		m.myapp.AddWindowCheckBox("s", `s (\n)`, "s", left+32, top+6, false, m.SubmitSearchOnEnter, "")
+		m.myapp.AddWindowCheckBox("l", "No regex", "l", left+47, top+6, false, m.SubmitSearchOnEnter, "")
 		m.myapp.AddWindowLabel("found", "", left+2, top+8, nil, "")
-		m.myapp.AddWindowButton("cancel", Language.Translate(" Cancel "), "cancel", left+43, top+10, m.ButtonFinish, "")
-		m.myapp.AddWindowButton("set", Language.Translate(" Search "), "ok", left+58, top+10, m.StartSearch, "")
+		lbl = Language.Translate("Cancel")
+		m.myapp.AddWindowButton("cancel", " "+lbl+" ", "cancel", left+46-Count(lbl), top+10, m.ButtonFinish, "")
+		lbl = Language.Translate("Search")
+		m.myapp.AddWindowButton("set", " "+lbl+" ", "ok", left+64-Count(lbl), top+10, m.StartSearch, "")
 		m.myapp.Finish = m.AbortSearch
 		m.myapp.WindowFinish = callback
 	}
@@ -236,11 +243,16 @@ func (m *microMenu) SaveAs(b *Buffer, usePlugin bool, callback func(map[string]s
 		right := width
 		bottom := heigth
 		m.myapp.AddWindowBox("enc", Language.Translate("Save As ..."), left, top, right, bottom, nil, "")
-		m.myapp.AddWindowTextBox("filename", Language.Translate("File name : "), "", "string", left+2, top+2, 65, 200, nil, "")
-		m.myapp.AddWindowSelect("encoding", Language.Translate("Encoding"), b.encoder, ENCODINGS+"|"+b.encoder+":"+b.encoder, left+2, top+4, 0, 1, m.SaveAsEncodingEvent, "")
-		m.myapp.AddWindowTextBox("encode", Language.Translate("Use this encoding: "), "", "string", left+32, top+4, 15, 15, nil, "")
-		m.myapp.AddWindowButton("cancel", Language.Translate(" Cancel "), "cancel", left+56, top+6, m.SaveAsButtonFinish, "")
-		m.myapp.AddWindowButton("set", Language.Translate("  Save  "), "ok", left+69, top+6, m.SaveFile, "")
+		lbl := Language.Translate("File name :")
+		m.myapp.AddWindowTextBox("filename", lbl+" ", "", "string", left+2, top+2, 76-Count(lbl), 200, nil, "")
+		lbl = Language.Translate("Encoding:")
+		m.myapp.AddWindowSelect("encoding", lbl+" ", b.encoder, ENCODINGS+"|"+b.encoder+":"+b.encoder, left+2, top+4, 0, 1, m.SaveAsEncodingEvent, "")
+		lbl = Language.Translate("Use this encoding:")
+		m.myapp.AddWindowTextBox("encode", lbl+" ", "", "string", left+55-Count(lbl), top+4, 15, 15, nil, "")
+		lbl = Language.Translate("Cancel")
+		m.myapp.AddWindowButton("cancel", " "+lbl+" ", "cancel", left+56-Count(lbl), top+6, m.SaveAsButtonFinish, "")
+		lbl = Language.Translate("Save")
+		m.myapp.AddWindowButton("set", " "+lbl+" ", "ok", left+75-Count(lbl), top+6, m.SaveFile, "")
 		m.myapp.WindowFinish = callback
 	}
 	m.usePlugin = usePlugin
@@ -323,16 +335,20 @@ func (m *microMenu) SelEncoding(callback func(map[string]string)) {
 		m.myapp.AddStyle("def", "ColorWhite,ColorDarkGrey")
 		w, h := screen.Size()
 		width := 60
-		heigth := 6
+		heigth := 8
 		left := w/2 - width/2
 		top := h/2 - heigth/2
 		right := width
 		bottom := heigth
 		m.myapp.AddWindowBox("enc", Language.Translate("Select Encoding"), left, top, right, bottom, nil, "")
-		m.myapp.AddWindowSelect("encoding", Language.Translate("Encoding "), "UTF-8", ENCODINGS, left+2, top+2, 0, 1, nil, "")
-		m.myapp.AddWindowTextBox("encode", Language.Translate("Use this encoding: "), "", "string", left+26, top+2, 14, 15, nil, "")
-		m.myapp.AddWindowButton("cancel", Language.Translate("  Cancel  "), "cancel", left+26, top+4, m.ButtonFinish, "")
-		m.myapp.AddWindowButton("set", Language.Translate("Set encoding"), "ok", left+45, top+4, m.SetEncoding, "")
+		lbl := Language.Translate("Encoding:")
+		m.myapp.AddWindowSelect("encoding", lbl+" ", "UTF-8", ENCODINGS, left+2, top+2, 0, 1, nil, "")
+		lbl = Language.Translate("Use this encoding:")
+		m.myapp.AddWindowTextBox("encode", lbl+" ", "", "string", left+2, top+4, 15, 15, nil, "")
+		lbl = Language.Translate("Cancel")
+		m.myapp.AddWindowButton("cancel", " "+lbl+" ", "cancel", left+33-Count(lbl), top+6, m.ButtonFinish, "")
+		lbl = Language.Translate("Set encoding")
+		m.myapp.AddWindowButton("set", " "+lbl+" ", "ok", left+43, top+6, m.SetEncoding, "")
 		m.myapp.WindowFinish = callback
 	}
 	m.myapp.SetValue("encode", "")

@@ -67,16 +67,16 @@ func (d *DirTreeView) opeFile(line string) {
 			NewTab([]string{d.LastPath + fname})
 			CurView().Buf.name = fname
 			dirview.dirviewOpen()
-			messenger.Information(fname, Language.Translate(" : Opened in new Tab"))
+			messenger.Information(fname, " "+Language.Translate("opened in new Tab"))
 		} else {
 			d.curView = dirview.tree_view.splitNode.GetNextPrevView(1)
 			if tabs[curTab].Views[d.curView].Buf.Modified() {
-				messenger.Error("You need to save view first.")
+				messenger.Error(Language.Translate("You need to save view first"))
 				return
 			}
 			tabs[curTab].Views[d.curView].Open(d.LastPath + fname)
 			tabs[curTab].Views[d.curView].Buf.name = fname
-			messenger.Information(fname, Language.Translate(" : Opened in View"))
+			messenger.Information(fname, " "+Language.Translate("opened in View"))
 			d.curView = 0
 		}
 		//curTab = 0
