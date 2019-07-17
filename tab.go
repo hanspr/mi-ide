@@ -11,7 +11,6 @@ const (
 	tabOpen       string = "|"
 	tabClose      string = "|"
 	tabMenuSymbol string = "µ𝑒 "
-	toolBar       string = " ↴  ◨  ⬓  🔎  ℁  ❎ "
 )
 
 var tabBarOffset int
@@ -30,6 +29,88 @@ type Tab struct {
 	tree *SplitTree
 }
 
+// Toolbar
+
+type ToolBar struct {
+	icons    []rune
+	callback []func()
+}
+
+func NewToolBar() *ToolBar {
+	t := new(ToolBar)
+	t.AddIcon('↴', t.Save)
+	t.AddIcon('◨', t.VSplit)
+	t.AddIcon('⬓', t.HSplit)
+	t.AddIcon('🔎', t.Find)
+	t.AddIcon('℁', t.Replace)
+	t.AddIcon('❎', t.Quit)
+	return t
+}
+
+func (t *ToolBar) AddIcon(icon rune, cb func()) {
+	t.icons = append(t.icons, icon)
+	t.callback = append(t.callback, cb)
+}
+
+func (t *ToolBar) Runes() []rune {
+	var str []rune
+
+	toolBarOffset = len(t.icons)*3 + 3
+	for _, ic := range t.icons {
+		str = append(str, ' ', ic, ' ')
+	}
+	str = append([]rune(tabMenuSymbol), str...)
+	return str
+	//return tabMenuSymbol + str
+}
+
+func (t *ToolBar) Save() {
+	CurView().Buf.Save()
+}
+
+func (t *ToolBar) VSplit() {
+	CurView().VSplitBinding(true)
+}
+
+func (t *ToolBar) HSplit() {
+	CurView().HSplitBinding(true)
+}
+
+func (t *ToolBar) Find() {
+	CurView().FindDialog(true)
+}
+
+func (t *ToolBar) Replace() {
+	CurView().SearchDialog(true)
+}
+
+func (t *ToolBar) Void() {
+}
+
+func (t *ToolBar) Quit() {
+	CurView().Quit(true)
+}
+
+// Handle ToolBarClick
+func (t *ToolBar) ToolbarHandleMouseEvent(x int) {
+	var pos int
+
+	pos = x / 3
+	t.callback[pos-1]()
+}
+
+func (t *ToolBar) FixTabsIconArea() {
+	// prefill the length with with black background spaces
+	var tStyle tcell.Style
+
+	tStyle = StringToStyle("normal #000000,#000000")
+	for x := 0; x < toolBarOffset-1; x++ {
+		screen.SetContent(x, 0, '.', nil, tStyle)
+	}
+	screen.Show()
+}
+
+// Tabs
 // NewTabFromView creates a new tab and puts the given view in the tab
 func NewTabFromView(v *View) *Tab {
 	t := new(Tab)
@@ -84,17 +165,13 @@ func (t *Tab) Resize() {
 			v.term.Resize(v.Width, v.Height)
 		}
 	}
+	MicroToolBar.FixTabsIconArea()
 }
 
 // CurView returns the current view
 func CurView() *View {
 	curTab := tabs[curTab]
 	return curTab.Views[curTab.CurView]
-}
-
-func ToolBarString() string {
-	toolBarOffset = Count(tabMenuSymbol + toolBar)
-	return tabMenuSymbol + toolBar
 }
 
 // TabbarString returns the string that should be displayed in the tabbar
@@ -105,7 +182,6 @@ func TabbarString() (string, map[int]int) {
 	var cv int
 
 	str := ""
-	//str := tabMenuSymbol + toolBar
 	indicies := make(map[int]int)
 	unique := make(map[string]int)
 
@@ -175,11 +251,6 @@ func TabbarHandleMouseEvent(event tcell.Event) bool {
 			if e.HasMotion() == true {
 				return true
 			}
-			str, indicies := TabbarString()
-			// ignore if past last tab
-			if x+tabBarOffset >= Count(str)+toolBarOffset {
-				return true
-			}
 			if x < 3 {
 				// Click on Menu Icon
 				micromenu.Menu()
@@ -188,8 +259,13 @@ func TabbarHandleMouseEvent(event tcell.Event) bool {
 			if x < 21 {
 				// Click on Toolbar
 				if button == tcell.Button1 {
-					ToolbarHandleMouseEvent(x)
+					MicroToolBar.ToolbarHandleMouseEvent(x)
 				}
+				return true
+			}
+			str, indicies := TabbarString()
+			// ignore if past last tab
+			if x+tabBarOffset >= Count(str)+toolBarOffset {
 				return true
 			}
 			// Find which tab was clicked
@@ -229,42 +305,6 @@ func TabbarHandleMouseEvent(event tcell.Event) bool {
 		}
 	}
 	return false
-}
-
-// Handle ToolBarClick
-// Save, Split Vertical, Split Horizontal, Find, Search, Close selected View
-func ToolbarHandleMouseEvent(x int) {
-	v := CurView()
-	switch {
-	case x < 6:
-		// Save
-		v.Buf.Save()
-	case x < 9:
-		// Split Vertical
-		v.VSplitBinding(true)
-	case x < 12:
-		// Split Horizontal
-		v.HSplitBinding(true)
-	case x < 15:
-		// Search
-		v.FindDialog(true)
-	case x < 18:
-		//Search Replace
-		v.SearchDialog(true)
-	default:
-		//Close View
-		v.SafeQuit(true)
-	}
-}
-
-func FixTabsIconArea() {
-	// prefill the first 21 spaces with black background
-	var tStyle tcell.Style
-	tStyle = StringToStyle("normal #000000,#000000")
-	for x := 0; x < 22; x++ {
-		screen.SetContent(x, 0, '.', nil, tStyle)
-	}
-	screen.Show()
 }
 
 // DisplayTabs; always displays the tabbar at the top of the editor
@@ -373,7 +413,8 @@ func DisplayTabs() {
 	}
 
 	// Display ToolBar
-	toolbarRunes := []rune(ToolBarString())
+	//toolbarRunes := []rune(MicroToolBar.String())
+	toolbarRunes := MicroToolBar.Runes()
 	for x := 0; x < len(toolbarRunes); x++ {
 		if x < 3 {
 			// Menu icon

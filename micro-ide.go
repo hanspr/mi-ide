@@ -83,6 +83,8 @@ var (
 	microideclosing bool = false
 
 	Language *lang.Lang
+
+	MicroToolBar *ToolBar
 )
 
 // LoadInput determines which files should be loaded into buffers
@@ -306,10 +308,11 @@ var flagOptions = flag.Bool("options", false, "Show all option help")
 
 func MicroAppStop() {
 	apprunning = nil
-	FixTabsIconArea()
+	MicroToolBar.FixTabsIconArea()
 }
 
 func main() {
+	MicroToolBar = NewToolBar()
 	apprunning = nil
 	flag.Usage = func() {
 		fmt.Println("Usage: micro [OPTIONS] [FILE]...")

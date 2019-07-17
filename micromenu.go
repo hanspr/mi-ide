@@ -38,7 +38,7 @@ func (m *microMenu) Menu() {
 func (m *microMenu) Finish(s string) {
 	messenger.AddLog(s)
 	apprunning = nil
-	FixTabsIconArea()
+	MicroToolBar.FixTabsIconArea()
 }
 
 func (m *microMenu) ButtonFinish(name, value, event, when string, x, y int) bool {
