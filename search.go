@@ -75,7 +75,7 @@ func searchDown(r *regexp.Regexp, v *View, start, end Loc) bool {
 	}
 	for i := start.Y; i <= end.Y; i++ {
 		if i == start.Y {
-			startX = v.Cursor.CurSelection[0].X
+			startX = start.X
 		} else {
 			startX = -1
 		}
@@ -87,7 +87,7 @@ func searchDown(r *regexp.Regexp, v *View, start, end Loc) bool {
 			for j := 0; j < len(match); j++ {
 				X := runePos(match[j][0], l)
 				Y := runePos(match[j][1], l)
-				if X > startX {
+				if X >= startX {
 					v.Cursor.SetSelectionStart(Loc{X, i})
 					v.Cursor.SetSelectionEnd(Loc{Y, i})
 					v.Cursor.OrigSelection[0] = v.Cursor.CurSelection[0]
@@ -178,7 +178,6 @@ func Search(searchStr string, v *View, down bool) {
 const Doff int = 20
 
 func DialogSearch(searchStr string) string {
-	messenger.AddLog("search=", searchStr)
 	if searchStr == "" {
 		return ""
 	}

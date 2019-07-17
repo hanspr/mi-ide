@@ -630,7 +630,6 @@ func Replace(args []string) {
 			n := []rune(Language.Translate("n"))[0]
 			q := []rune(Language.Translate("q"))[0]
 			I := []rune(Language.Translate("!"))[0]
-			messenger.AddLog("Valores:", y, n, q)
 			choice, canceled := messenger.LetterPrompt(Language.Translate("Perform replacement? (y,n,q,!)"), y, n, q, I)
 			if canceled {
 				if view.Cursor.HasSelection() {
@@ -649,8 +648,18 @@ func Replace(args []string) {
 				break
 			} else if choice == y {
 				sel := view.Cursor.GetSelection()
-				messenger.AddLog("replace", replace)
 				rep := regex.ReplaceAllString(sel, replace)
+				if Count(rep) > Count(sel) {
+					searchStart = Loc{view.Cursor.CurSelection[1].X + 1, view.Cursor.Loc.Y}
+				} else {
+					searchStart = Loc{view.Cursor.CurSelection[1].X - 1, view.Cursor.Loc.Y}
+				}
+				if searchStart.X > len(view.Buf.LineBytes(searchStart.Y))-1 {
+					searchStart = Loc{0, searchStart.Y + 1}
+					if searchStart.Y > view.Buf.Len()-1 {
+						searchStart.Y = view.Buf.Len() - 1
+					}
+				}
 				view.Cursor.DeleteSelection()
 				view.Buf.Insert(view.Cursor.Loc, rep)
 				view.Cursor.ResetSelection()
@@ -663,11 +672,6 @@ func Replace(args []string) {
 				}
 				messenger.Reset()
 				break
-			}
-			if view.Cursor.HasSelection() {
-				searchStart = view.Cursor.CurSelection[1]
-			} else {
-				searchStart = view.Cursor.Loc
 			}
 		}
 	}

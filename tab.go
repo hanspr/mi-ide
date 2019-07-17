@@ -15,6 +15,7 @@ const (
 )
 
 var tabBarOffset int
+var toolBarOffset int
 
 // A Tab holds an array of views and a splitTree to determine how the
 // views should be arranged
@@ -91,6 +92,11 @@ func CurView() *View {
 	return curTab.Views[curTab.CurView]
 }
 
+func ToolBarString() string {
+	toolBarOffset = Count(tabMenuSymbol + toolBar)
+	return tabMenuSymbol + toolBar
+}
+
 // TabbarString returns the string that should be displayed in the tabbar
 // It also returns a map containing which indicies correspond to which tab number
 // This is useful when we know that the mouse click has occurred at an x location
@@ -98,7 +104,8 @@ func CurView() *View {
 func TabbarString() (string, map[int]int) {
 	var cv int
 
-	str := tabMenuSymbol + toolBar
+	str := ""
+	//str := tabMenuSymbol + toolBar
 	indicies := make(map[int]int)
 	unique := make(map[string]int)
 
@@ -136,7 +143,7 @@ func TabbarString() (string, map[int]int) {
 			str += "  "
 		}
 		//		indicies[Count(str)+1] = i + 1
-		indicies[Count(str)] = i + 1
+		indicies[Count(str)+toolBarOffset] = i + 1
 	}
 	return str, indicies
 }
@@ -170,7 +177,7 @@ func TabbarHandleMouseEvent(event tcell.Event) bool {
 			}
 			str, indicies := TabbarString()
 			// ignore if past last tab
-			if x+tabBarOffset >= Count(str) {
+			if x+tabBarOffset >= Count(str)+toolBarOffset {
 				return true
 			}
 			if x < 3 {
@@ -273,9 +280,9 @@ func DisplayTabs() {
 		tabBarStyle = style
 	}
 	// Maybe there is a unicode filename?
-	fileRunes := []rune(str)
+	tabsRunes := []rune(str)
 	w, _ := screen.Size()
-	tooWide := (w < len(fileRunes))
+	tooWide := (w < len(tabsRunes))
 
 	// if the entire tab-bar is longer than the screen is wide,
 	// then it should be truncated appropriately to keep the
@@ -314,7 +321,7 @@ func DisplayTabs() {
 
 		// check to make sure we haven't overshot the bounds of the string,
 		// if we have, then take that remainder and put it on the left side
-		overshotRight := rightBuffer - len(fileRunes)
+		overshotRight := rightBuffer - len(tabsRunes)
 		if overshotRight > 0 {
 			leftBuffer = leftBuffer + overshotRight
 		}
@@ -327,8 +334,8 @@ func DisplayTabs() {
 			rightBuffer = leftBuffer + (w - 2)
 		}
 
-		if rightBuffer > len(fileRunes)-1 {
-			rightBuffer = len(fileRunes) - 1
+		if rightBuffer > len(tabsRunes)-1 {
+			rightBuffer = len(tabsRunes) - 1
 		}
 
 		// construct a new buffer of text to put the
@@ -344,12 +351,12 @@ func DisplayTabs() {
 		// copy the runes in from the original tab bar text string
 		// into the new display buffer
 		for x := leftBuffer; x < rightBuffer; x++ {
-			displayText = append(displayText, fileRunes[x])
+			displayText = append(displayText, tabsRunes[x])
 		}
 		// if there is more text to the right of the right-most
 		// column in the tab bar text, then indicate there are more
 		// tabs to the right by displaying a "+"
-		if rightBuffer < len(fileRunes)-1 {
+		if rightBuffer < len(tabsRunes)-1 {
 			displayText = append(displayText, '+')
 		}
 
@@ -360,38 +367,44 @@ func DisplayTabs() {
 
 		// use the constructed buffer as the display buffer to print
 		// onscreen.
-		fileRunes = displayText
+		tabsRunes = displayText
 	} else {
 		tabBarOffset = 0
 	}
 
-	// iterate over the width of the terminal display and for each column,
-	// write a character into the tab display area with the appropriate style.
+	// Display ToolBar
+	toolbarRunes := []rune(ToolBarString())
+	for x := 0; x < len(toolbarRunes); x++ {
+		if x < 3 {
+			// Menu icon
+			if x == 0 {
+				tStyle = StringToStyle("bold #ffd700,#121212")
+			}
+		} else if x < 21 {
+			// Toolbar icons
+			if x == 3 {
+				tStyle = StringToStyle("#ffffff")
+			}
+		}
+		screen.SetContent(x, 0, toolbarRunes[x], nil, tStyle)
+	}
+
+	// Display Tabs
 	for x := 0; x < w; x++ {
-		if x < len(fileRunes) {
-			if x < 3 {
-				// Menu icon
-				if x == 0 {
-					tStyle = StringToStyle("bold #ffd700,#121212")
-				}
-			} else if x < 21 {
-				// Toolbar icons
-				if x == 3 {
-					tStyle = StringToStyle("#ffffff")
-				}
-			} else if string(fileRunes[x]) == tabOpen && tabActive == false {
+		if x < len(tabsRunes) {
+			if string(tabsRunes[x]) == tabOpen && tabActive == false {
 				tStyle = StringToStyle("bold #ffd700,#000087")
 				tabActive = true
 			} else if tabActive {
-				if string(fileRunes[x]) == tabClose {
+				if string(tabsRunes[x]) == tabClose {
 					tabActive = false
 				}
 			} else {
 				tStyle = tabBarStyle
 			}
-			screen.SetContent(x, 0, fileRunes[x], nil, tStyle)
+			screen.SetContent(x+toolBarOffset, 0, tabsRunes[x], nil, tStyle)
 		} else {
-			screen.SetContent(x, 0, ' ', nil, tabBarStyle)
+			screen.SetContent(x+toolBarOffset, 0, ' ', nil, tabBarStyle)
 		}
 	}
 }
