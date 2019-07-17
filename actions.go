@@ -2,7 +2,6 @@ package main
 
 import (
 	"fmt"
-	"os"
 	"regexp"
 	"strconv"
 	"strings"
@@ -1964,10 +1963,8 @@ func (v *View) Quit(usePlugin bool) bool {
 				if usePlugin {
 					PostActionCall("Quit", v)
 				}
-				microideclosing = true
-				screen.Fini()
 				messenger.SaveHistory()
-				os.Exit(0)
+				Finish(0)
 			}
 		}
 
@@ -2014,11 +2011,8 @@ func (v *View) QuitAll(usePlugin bool) bool {
 			if usePlugin {
 				PostActionCall("QuitAll", v)
 			}
-			microideclosing = true
-			screen.Fini()
 			messenger.SaveHistory()
-			os.Exit(0)
-			//			}
+			Finish(0)
 		}
 	}
 

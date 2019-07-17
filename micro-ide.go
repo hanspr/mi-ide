@@ -80,8 +80,6 @@ var (
 
 	micromenu *microMenu
 
-	microideclosing bool = false
-
 	Language *lang.Lang
 
 	MicroToolBar *ToolBar
@@ -250,10 +248,6 @@ func InitScreen() {
 // RedrawAll redraws everything -- all the views and the messenger
 func RedrawAll() {
 
-	if microideclosing {
-		return
-	}
-
 	messenger.Clear()
 
 	w, h := screen.Size()
@@ -298,6 +292,12 @@ func LoadAll() {
 			v.Buf.UpdateRules()
 		}
 	}
+}
+
+// Try to exit without dumbping characters to terminal
+func Finish(status int) {
+	screen.Fini()
+	os.Exit(status)
 }
 
 // Command line flags
@@ -403,9 +403,7 @@ func main() {
 	// Now we load the input
 	buffers := LoadInput()
 	if len(buffers) == 0 {
-		microideclosing = true
-		screen.Fini()
-		os.Exit(1)
+		Finish(1)
 	}
 
 	for _, buf := range buffers {
@@ -510,9 +508,6 @@ func main() {
 	// Here is the event loop which runs in a separate thread
 	go func() {
 		for {
-			if microideclosing {
-				break
-			}
 			if screen != nil {
 				events <- screen.PollEvent()
 			}
@@ -521,9 +516,6 @@ func main() {
 
 	go func() {
 		for {
-			if microideclosing {
-				break
-			}
 			time.Sleep(autosaveTime * time.Second)
 			if globalSettings["autosave"].(bool) {
 				autosave <- true
@@ -540,10 +532,6 @@ func main() {
 	Language = lang.NewLang(globalSettings["lang"].(string), configDir+"/langs/"+globalSettings["lang"].(string)+".lang")
 	for {
 		// Display everything
-
-		if microideclosing {
-			break
-		}
 
 		if apprunning == nil {
 			RedrawAll()
