@@ -1033,9 +1033,8 @@ func (v *View) DisplayView() {
 	top := v.Topline
 
 	messenger.Message(v.Cursor.GetVisualX()+1, " : ", left, "?", width-v.lineNumOffset)
-	// Atempts to have some space on the left and right when navigating long lines
-	// Add extra space to the right on lines longer than window width when no softwrap
-	if v.Buf.Settings["softwrap"].(bool) == false {
+	// Have a window offset on edges a very long lines
+	if v.Buf.Settings["softwrap"].(bool) == false && len(v.Buf.LineBytes(v.Cursor.Loc.Y)) > width-v.lineNumOffset {
 		if v.Cursor.GetVisualX()+1 < width-v.lineNumOffset && v.Cursor.GetVisualX()+1 > width-v.lineNumOffset-WindowOffset {
 			left += WindowOffset
 		} else if v.Cursor.GetVisualX()+1 >= width-v.lineNumOffset && v.Cursor.GetVisualX()-WindowOffset > left+WindowOffset {
