@@ -181,7 +181,7 @@ func LoadPlugins() {
 // loaded
 func GlobalPluginCall(function string, args ...interface{}) {
 	for pl := range loadedPlugins {
-		if GetPluginOption(pl, "ftype") != "*" && (GetPluginOption(pl, "ftype") == nil || GetPluginOption(pl, "ftype") != CurView().Buf.FileType()) {
+		if GetPluginOption(pl, "ftype") != "*" && (GetPluginOption(pl, "ftype") == nil || strings.Contains(GetPluginOption(pl, "ftype").(string), CurView().Buf.FileType()) == false) {
 			continue
 		}
 		_, err := Call(pl+"."+function, args...)

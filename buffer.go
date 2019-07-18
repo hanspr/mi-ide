@@ -331,7 +331,7 @@ func GetBufferCursorLocation(cursorPosition []string, b *Buffer) (Loc, error) {
 func (b *Buffer) LoadPluginOption() {
 	// Set plugin settings for the especific language if available
 	for plugin, _ := range loadedPlugins {
-		if b.Settings["filetype"] == GetPluginOption(plugin, "ftype") {
+		if strings.Contains(GetPluginOption(plugin, "ftype").(string), b.Settings["filetype"].(string)) {
 			for opt, _ := range b.Settings {
 				if GetPluginOption(plugin, opt) != nil {
 					b.Settings[opt] = GetPluginOption(plugin, opt)

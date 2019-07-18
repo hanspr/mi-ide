@@ -152,7 +152,7 @@ func NewViewWidthHeight(buf *Buffer, w, h int) *View {
 	v.term = new(Terminal)
 
 	for pl := range loadedPlugins {
-		if GetPluginOption(pl, "ftype") != "*" && (GetPluginOption(pl, "ftype") == nil || GetPluginOption(pl, "ftype") != CurView().Buf.FileType()) {
+		if GetPluginOption(pl, "ftype") != "*" && (GetPluginOption(pl, "ftype") == nil || strings.Contains(GetPluginOption(pl, "ftype").(string), CurView().Buf.FileType()) == false) {
 			continue
 		}
 		_, err := Call(pl+".onViewOpen", v)
@@ -736,7 +736,7 @@ func (v *View) HandleEvent(event tcell.Event) {
 					}
 
 					for pl := range loadedPlugins {
-						if GetPluginOption(pl, "ftype") != "*" && (GetPluginOption(pl, "ftype") == nil || GetPluginOption(pl, "ftype") != CurView().Buf.FileType()) {
+						if GetPluginOption(pl, "ftype") != "*" && (GetPluginOption(pl, "ftype") == nil || strings.Contains(GetPluginOption(pl, "ftype").(string), CurView().Buf.FileType()) == false) {
 							continue
 						}
 						_, err := Call(pl+".onRune", string(e.Rune()), v)
@@ -1290,7 +1290,7 @@ func (v *View) DisplayView() {
 		LastView = CurView().Num
 
 		for pl := range loadedPlugins {
-			if GetPluginOption(pl, "ftype") != "*" && (GetPluginOption(pl, "ftype") == nil || GetPluginOption(pl, "ftype") != CurView().Buf.FileType()) {
+			if GetPluginOption(pl, "ftype") != "*" && (GetPluginOption(pl, "ftype") == nil || strings.Contains(GetPluginOption(pl, "ftype").(string), CurView().Buf.FileType()) == false) {
 				continue
 			}
 			_, err := Call(pl+".onDisplayFocus", CurView())

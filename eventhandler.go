@@ -183,7 +183,7 @@ func (eh *EventHandler) Execute(t *TextEvent) {
 	eh.UndoStack.Push(t)
 
 	for pl := range loadedPlugins {
-		if GetPluginOption(pl, "ftype") != "*" && (GetPluginOption(pl, "ftype") == nil || GetPluginOption(pl, "ftype") != CurView().Buf.FileType()) {
+		if GetPluginOption(pl, "ftype") != "*" && (GetPluginOption(pl, "ftype") == nil || strings.Contains(GetPluginOption(pl, "ftype").(string), CurView().Buf.FileType()) == false) {
 			continue
 		}
 		ret, err := Call(pl+".onBeforeTextEvent", t)
