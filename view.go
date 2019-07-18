@@ -489,6 +489,8 @@ func (v *View) Relocate() bool {
 
 	if !v.Buf.Settings["softwrap"].(bool) {
 		cx := v.Cursor.GetVisualX()
+		// Force go all the way to the left when visual X in range to fit at the begging
+		// This avoids having shited lines close to the begining of the window
 		if cx < v.Width*10/11 {
 			cx = 0
 		}
@@ -1034,13 +1036,15 @@ func (v *View) DisplayView() {
 
 	// Have a window offset on edges a very long lines
 	if v.Buf.Settings["softwrap"].(bool) == false && len(v.Buf.LineBytes(v.Cursor.Loc.Y)) > width-v.lineNumOffset {
+		shift := 0
 		if v.Cursor.GetVisualX()+1 < width-v.lineNumOffset && v.Cursor.GetVisualX()+1 > width-v.lineNumOffset-WindowOffset {
-			left += WindowOffset
+			shift = WindowOffset - (width - v.lineNumOffset - v.Cursor.GetVisualX())
 		} else if v.Cursor.GetVisualX()+1 >= width-v.lineNumOffset && v.Cursor.GetVisualX()-WindowOffset > left+WindowOffset {
-			left += WindowOffset
+			shift = WindowOffset
 		} else if v.Cursor.GetVisualX()+1 >= width-v.lineNumOffset && v.Cursor.GetVisualX()-WindowOffset <= left+WindowOffset {
-			left -= WindowOffset
+			shift = v.Cursor.GetVisualX() - left - WindowOffset
 		}
+		left += shift
 	}
 
 	v.cellview.Draw(v.Buf, top, height, left, width-v.lineNumOffset)
