@@ -118,7 +118,6 @@ func (t *Terminal) HandleEvent(event tcell.Event) {
 		}
 		if e.Key() == tcell.KeyCtrlC && t.HasSelection() {
 			clipboard.WriteAll(t.GetSelection(t.view.Width), "clipboard")
-			messenger.Message("Copied selection to clipboard")
 		} else if t.status != VTDone {
 			t.WriteString(event.EscSeq())
 		}

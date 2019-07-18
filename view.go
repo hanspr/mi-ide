@@ -703,8 +703,6 @@ func (v *View) HandleEvent(event tcell.Event) {
 					} else {
 						v.Buf.Insert(v.Cursor.Loc, string(e.Rune()))
 					}
-					// Check id we are at the right border to widen visibility
-					messenger.Message(v.Cursor.X, "?", v.x)
 
 					// Autoclose here for : {}[]()''""``
 					if v.Buf.Settings["autoclose"].(bool) {
@@ -950,6 +948,8 @@ func (v *View) FindCurLine(n int, s string) Loc {
 	return newLoc
 }
 
+const WindowOffset int = 20
+
 // DisplayView draws the view to the screen
 func (v *View) DisplayView() {
 	if v.Type == vtTerm {
@@ -1032,9 +1032,17 @@ func (v *View) DisplayView() {
 	left := v.leftCol
 	top := v.Topline
 
+	messenger.Message(v.Cursor.GetVisualX()+1, " : ", left, "?", width-v.lineNumOffset)
+	// Atempts to have some space on the left and right when navigating long lines
 	// Add extra space to the right on lines longer than window width when no softwrap
-	if v.Buf.Settings["softwrap"].(bool) == false && v.Cursor.Loc.X+20 >= v.Width-v.lineNumOffset && len(v.Buf.LineBytes(v.Cursor.Loc.Y)) > width {
-		left += 20
+	if v.Buf.Settings["softwrap"].(bool) == false {
+		if v.Cursor.GetVisualX()+1 < width-v.lineNumOffset && v.Cursor.GetVisualX()+1 > width-v.lineNumOffset-WindowOffset {
+			left += WindowOffset
+		} else if v.Cursor.GetVisualX()+1 >= width-v.lineNumOffset && v.Cursor.GetVisualX()-WindowOffset > left+WindowOffset {
+			left += WindowOffset
+		} else if v.Cursor.GetVisualX()+1 >= width-v.lineNumOffset && v.Cursor.GetVisualX()-WindowOffset <= left+WindowOffset {
+			left -= WindowOffset
+		}
 	}
 
 	v.cellview.Draw(v.Buf, top, height, left, width-v.lineNumOffset)
