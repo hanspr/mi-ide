@@ -377,6 +377,7 @@ func main() {
 	// Load the user's settings
 	InitGlobalSettings()
 
+	// Create translation object, to begin translating messeges
 	Language = lang.NewLang(globalSettings["lang"].(string), configDir+"/langs/"+globalSettings["lang"].(string)+".lang")
 
 	InitCommands()

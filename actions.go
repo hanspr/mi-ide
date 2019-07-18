@@ -710,7 +710,7 @@ func (v *View) InsertSpace(usePlugin bool) bool {
 // InsertNewline inserts a newline plus possible some whitespace if autoindent is on
 func (v *View) InsertNewline(usePlugin bool) bool {
 	if usePlugin && !PreActionCall("InsertNewline", v) {
-		return false
+		//		return false
 	}
 
 	// Insert a newline
@@ -727,13 +727,17 @@ func (v *View) InsertNewline(usePlugin bool) bool {
 		cha := string(v.Buf.LineRunes(v.Cursor.Y)[v.Cursor.X : v.Cursor.X+1])
 		if strings.Contains(autocloseNewLine, cha) {
 			v.Buf.Insert(v.Cursor.Loc, "\n\n")
-			v.Buf.SmartIndent(v.Cursor.Loc, v.Cursor.Loc, false)
-			v.Cursor.Up()
-			v.Buf.SmartIndent(v.Cursor.Loc, v.Cursor.Loc, false)
+			if v.Buf.Settings["smartindent"].(bool) {
+				v.Buf.SmartIndent(v.Cursor.Loc, v.Cursor.Loc, false)
+				v.Cursor.Up()
+				v.Buf.SmartIndent(v.Cursor.Loc, v.Cursor.Loc, false)
+			}
 		} else {
 			v.Buf.Insert(v.Cursor.Loc, "\n")
 			cSave := v.Cursor.Loc
-			v.Buf.SmartIndent(v.Cursor.Loc, v.Cursor.Loc, false)
+			if v.Buf.Settings["smartindent"].(bool) {
+				v.Buf.SmartIndent(v.Cursor.Loc, v.Cursor.Loc, false)
+			}
 			v.Cursor.GotoLoc(Loc{cSave.X + CountLeadingWhitespace(v.Buf.Line(v.Cursor.Y)), v.Cursor.Y})
 		}
 	} else {
@@ -754,7 +758,7 @@ func (v *View) InsertNewline(usePlugin bool) bool {
 	v.Cursor.LastVisualX = v.Cursor.GetVisualX()
 
 	if usePlugin {
-		return PostActionCall("InsertNewline", v)
+		//		return PostActionCall("InsertNewline", v)
 	}
 	return true
 }

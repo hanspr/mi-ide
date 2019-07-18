@@ -2,6 +2,7 @@
 color-link comment "#767676"
 color-link type.keyword "#FBA1A1"
 color-link type.keyword1 "bold #FBA1A1"
+color-link identifier "#FBA1A1"
 color-link identifier.var "bold #FFFFFF"
 color-link constant "bold #FFED00"
 color-link constant.string "#5FAF00"

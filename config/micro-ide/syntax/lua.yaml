@@ -4,6 +4,10 @@ detect:
     filename: "\\.lua$"
 
 rules:
+# Go binding methods
+    - method.other: "\\w+\\:\\w+"
+    - method: "(Add|Get|Set)(Plugin|Local)?Option|view|CurView|messenger|[\\.\\:](Buf(:(remove|insert))?|Cursor(:(GotoLoc|Loc|Goto))?|X|Y|Message|AddLog|Success|Error|Loc|IsModified|ReOpen|Quit|Type|Kind|Readonly|Scratch|Center|Path)"
+# Lua syntax
     - statement: "\\b(do|end|while|repeat|until|if|elseif|then|else|for|in|function|local|return)\\b"
     - statement: "\\b(not|and|or)\\b"
     - statement: "\\b(debug|string|math|table|io|coroutine|os|utf8|bit32)\\b\\."
