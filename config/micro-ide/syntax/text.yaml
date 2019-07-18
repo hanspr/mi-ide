@@ -1,4 +1,4 @@
-filetype: Unknown
+filetype: text
 
 detect:
     filename: "^\\w+$"

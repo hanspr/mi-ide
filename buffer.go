@@ -376,7 +376,7 @@ func (b *Buffer) UpdateRules() {
 			}
 
 			ft := b.Settings["filetype"].(string)
-			if (ft == "Unknown" || ft == "") && !rehighlight {
+			if (ft == "text" || ft == "") && !rehighlight {
 				if highlight.MatchFiletype(ftdetect, b.Path, b.lines[0].data) {
 					header := new(highlight.Header)
 					header.FileType = file.FileType
@@ -406,7 +406,7 @@ func (b *Buffer) UpdateRules() {
 	}
 
 	if b.syntaxDef == nil {
-		f := FindRuntimeFile(RTSyntax, "unknown")
+		f := FindRuntimeFile(RTSyntax, "text")
 		data, err := f.Data()
 		if err != nil {
 			TermMessage(Language.Translate("Error loading syntax file") + " " + f.Name() + ": " + err.Error())
@@ -416,7 +416,7 @@ func (b *Buffer) UpdateRules() {
 				TermMessage(Language.Translate("Error loading syntax file") + " " + f.Name() + ": " + err.Error())
 			} else {
 				header := new(highlight.Header)
-				header.FileType = "Unknown"
+				header.FileType = "text"
 				b.syntaxDef, err = highlight.ParseDef(file, header)
 				if err != nil {
 					TermMessage(Language.Translate("Error loading syntax file") + " " + f.Name() + ": " + err.Error())

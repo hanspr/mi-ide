@@ -264,7 +264,7 @@ func DefaultLocalSettings() map[string]interface{} {
 		"eofnewline":     false,
 		"fastdirty":      true,
 		"fileformat":     "unix",
-		"filetype":       "Unknown",
+		"filetype":       "text",
 		"hidehelp":       false,
 		"ignorecase":     false,
 		"indentchar":     " ",
