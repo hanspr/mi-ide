@@ -294,7 +294,8 @@ func LoadAll() {
 	}
 }
 
-// Try to exit without dumbping characters to terminal
+// One Place Global Exit
+// to control anything that could be necesary (to have a clean exit) in a sinlge point
 func Finish(status int) {
 	screen.Fini()
 	os.Exit(status)
@@ -375,6 +376,8 @@ func main() {
 
 	// Load the user's settings
 	InitGlobalSettings()
+
+	Language = lang.NewLang(globalSettings["lang"].(string), configDir+"/langs/"+globalSettings["lang"].(string)+".lang")
 
 	InitCommands()
 	InitBindings()
@@ -529,7 +532,6 @@ func main() {
 	x := strings.LastIndex(CurView().Buf.AbsPath, "/") + 1
 	dirview.LastPath = string([]rune(CurView().Buf.AbsPath)[:x])
 	micromenu = new(microMenu)
-	Language = lang.NewLang(globalSettings["lang"].(string), configDir+"/langs/"+globalSettings["lang"].(string)+".lang")
 	for {
 		// Display everything
 
