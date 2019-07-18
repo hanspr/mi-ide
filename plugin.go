@@ -1,7 +1,6 @@
 package main
 
 import (
-	//"encoding/json"
 	"encoding/json"
 	"errors"
 	"io/ioutil"
@@ -171,7 +170,7 @@ func LoadPlugins() {
 
 	if _, err := os.Stat(configDir + "/init.lua"); err == nil {
 		data, _ := ioutil.ReadFile(configDir + "/init.lua")
-		if err := LoadFile("init", configDir+"init.lua", string(data)); err != nil {
+		if err := LoadFile("init", configDir+"/init.lua", string(data)); err != nil {
 			TermMessage(err)
 		}
 		loadedPlugins["init"] = "init"

@@ -1032,7 +1032,6 @@ func (v *View) DisplayView() {
 	left := v.leftCol
 	top := v.Topline
 
-	messenger.Message(v.Cursor.GetVisualX()+1, " : ", left, "?", width-v.lineNumOffset)
 	// Have a window offset on edges a very long lines
 	if v.Buf.Settings["softwrap"].(bool) == false && len(v.Buf.LineBytes(v.Cursor.Loc.Y)) > width-v.lineNumOffset {
 		if v.Cursor.GetVisualX()+1 < width-v.lineNumOffset && v.Cursor.GetVisualX()+1 > width-v.lineNumOffset-WindowOffset {
