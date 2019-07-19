@@ -101,11 +101,11 @@ can change it!
 
 ### Power user
 
-| Key    | Description of function                                               |
-|--------|-----------------------------------------------------------------------|
-| Ctrl+E | Open a command prompt for running commands                            |
-| Tab    | In command prompt, it will autocomplete if available                  |
-| Ctrl+B | Run a shell command (this will hide micro while your command executes)|
+| Key    | Description of function                                                   |
+|--------|---------------------------------------------------------------------------|
+| Ctrl+E | Open a command prompt for running commands                                |
+| Tab    | In command prompt, it will auto complete if available                     |
+| Ctrl+B | Run a shell command (this will hide micro-ide while your command executes)|
 
 ### Multiple cursors
 

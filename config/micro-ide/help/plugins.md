@@ -1,8 +1,8 @@
 # Plugins
 
-Micro supports creating plugins with a simple Lua system. Every plugin has a
-main script which is run at startup which should be placed in 
-`~/.config/micro/plugins/pluginName/pluginName.lua`.
+micro-ide supports creating plugins with a simple Lua system. Every plugin has a
+main script which is run at startup which should be placed in
+`~/.config/micro-ide/plugins/pluginName/pluginName.lua`.
 
 There are a number of callback functions which you can create in your plugin to
 run code at times other than startup. The naming scheme is `onAction(view)`. For
@@ -48,13 +48,13 @@ opened.
 ---
 
 There are a number of functions and variables that are available to you in order
-to access the inner workings of micro. Here is a list (the type signatures for
+to access the inner workings of micro-ide. Here is a list (the type signatures for
 functions are given using Go's type system):
 
-* `OS`: variable which gives the OS micro is currently running on (this is the
+* `OS`: variable which gives the OS micro-ide is currently running on (this is the
   same as Go's GOOS variable, so `darwin`, `windows`, `linux`, `freebsd`...)
 
-* `configDir`: contains the path to the micro configuration files
+* `configDir`: contains the path to the micro-ide configuration files
 
 * `tabs`: a list of all the tabs currently in use
 
@@ -100,7 +100,7 @@ functions are given using Go's type system):
 
 * `BindKey(key, action string)`: binds `key` to `action`
 
-* `MakeCommand(name, function string, completions ...Completion)`: 
+* `MakeCommand(name, function string, completions ...Completion)`:
    creates a command with `name` which will call `function` when executed. Use 0
    for completions to get NoCompletion.
 
@@ -121,8 +121,8 @@ functions are given using Go's type system):
 * `RunBackgroundShell(cmd string)`: Run a shell command in the background.
 
 * `RunInteractiveShell(cmd string, wait bool, getOutput bool) (string, error)`: Run a shell command
-   by closing micro and running the command interactively. If `wait` is true, a prompt will be
-   used after the process exits to prevent the terminal from immediately returning to micro, allowing
+   by closing micro-ide and running the command interactively. If `wait` is true, a prompt will be
+   used after the process exits to prevent the terminal from immediately returning to micro-ide, allowing
    the user to view the output of the process. If `getOutput` is true, the command's standard output
    will be returned. Note that if `getOutput` is true, some interactive commands may not behave
    normally because `isatty` will return false.
@@ -137,7 +137,7 @@ functions are given using Go's type system):
    system is supported.
 
 * `TermEmuSupported`: Boolean specifying if the terminal emulator is supported on the version of
-   micro that is running.
+   micro-ide that is running.
 
 * `ToCharPos(loc Loc, buf *Buffer) int`: returns the character position of a
    given x, y location
@@ -185,7 +185,7 @@ The possible methods which you can call using the `messenger` variable are:
 * `messenger.Prompt(prompt, historyType string, completionType Completion) (string, bool)`
 * `messenger.AddLog(msg ...interface{})`
 
-#### Note 
+#### Note
 
 Go function signatures use `.` and lua uses `:` so
 
@@ -211,7 +211,7 @@ Debug or logging your plugin can be done with below lua example code.
 messenger:AddLog("Message goes here ",pluginVariableToPrintHere)
 ```
 
-In Micro to see your plugin logging output press `CtrlE` then type `log`, a 
+In micro-ide to see your plugin logging output press `CtrlE` then type `log`, a
 logging window will open and any logging sent from your plugin will be displayed
 here.
 
@@ -290,7 +290,7 @@ See this example to learn how to use `MakeCompletion` and `MakeCommand`
 ```lua
 local function StartsWith(String,Start)
     String = String:upper()
-    Start = Start:upper() 
+    Start = Start:upper()
     return string.sub(String,1,string.len(Start))==Start
 end
 
@@ -317,21 +317,21 @@ MakeCommand("foo", "example.foo", MakeCompletion("example.complete"))
 ## Default plugins
 
 For examples of plugins, see the default `autoclose` and `linter` plugins
-(stored in the normal micro core repo under `runtime/plugins`) as well as any
+(stored in the normal micro-ide core repo under `runtime/plugins`) as well as any
 plugins that are stored in the official channel
-[here](https://github.com/micro-editor/plugin-channel).
+[here](https://github.com/micro-ide-editor/plugin-channel).
 
 
 ## Plugin Manager
 
-Micro also has a built in plugin manager which you can invoke with the
+micro-ide also has a built in plugin manager which you can invoke with the
 `> plugin ...` command.
 
 For the valid commands you can use, see the `commands` help topic.
 
 The manager fetches plugins from the channels (which is simply a list of plugin
-metadata) which it knows about. By default, micro only knows about the official
-channel which is located at github.com/micro-editor/plugin-channel but you can
+metadata) which it knows about. By default, micro-ide only knows about the official
+channel which is located at github.com/micro-ide-editor/plugin-channel but you can
 add your own third-party channels using the `pluginchannels` option and you can
 directly link third-party plugins to allow installation through the plugin
 manager with the `pluginrepos` option.
@@ -350,14 +350,14 @@ This file will contain the metadata for your plugin. Here is an example:
       "Version": "1.0.0",
       "Url": "https://github.com/user/plugin/archive/v1.0.0.zip",
       "Require": {
-        "micro": ">=1.0.3"
+        "micro-ide": ">=1.0.3"
       }
     }
   ]
 }]
 ```
 
-Then open a pull request at github.com/micro-editor/plugin-channel adding a link
+Then open a pull request at github.com/micro-ide-editor/plugin-channel adding a link
 to the raw `repo.json` that is in your plugin repository. To make updating the
 plugin work, the first line of your plugins lua code should contain the version
 of the plugin. (Like this: `VERSION = "1.0.0"`) Please make sure to use

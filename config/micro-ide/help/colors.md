@@ -1,21 +1,21 @@
 # Colors
 
-This help page aims to cover two aspects of micro's syntax highlighting engine:
+This help page aims to cover two aspects of micro-ide's syntax highlighting engine:
 
 - How to create colorschemes and use them
-- How to create syntax files to add to the list of languages micro can highlight
+- How to create syntax files to add to the list of languages micro-ide can highlight
 
 
 ## Colorschemes
 
-To change your colorscheme, press Ctrl-E in micro to bring up the command
+To change your colorscheme, press Ctrl-E in micro-ide to bring up the command
 prompt, and type:
 ```
 set colorscheme solarized
 ```
 (or whichever colorscheme you choose).
 
-Micro comes with a number of colorschemes by default. Here is the list:
+micro-ide comes with a number of colorschemes by default. Here is the list:
 
 ### 256 color
 
@@ -63,15 +63,15 @@ foreground and background colors. Note: This provides no syntax highlighting!
 
 ### Other
 
-See `help gimmickcolors` for a list of some true colour themes that are more 
+See `help gimmickcolors` for a list of some true colour themes that are more
 just for fun than for serious use. (Though feel free if you want!)
 
 
 ## Creating a Colorscheme
 
-Micro's colorschemes are also extremely simple to create. The default ones can
+micro-ide's colorschemes are also extremely simple to create. The default ones can
 be found
-[here](https://github.com/zyedidia/micro/tree/master/runtime/colorschemes).
+[here](https://github.com/zyedidia/micro-ide/tree/master/runtime/colorschemes).
 
 They are only about 18-30 lines in total.
 
@@ -117,8 +117,8 @@ Then you can use the terminals 256 colors by using their numbers 1-256 (numbers
 1-16 will refer to the named colors).
 
 If the user's terminal supports true color, then you can also specify colors
-exactly using their hex codes. If the terminal is not true color but micro is
-told to use a true color colorscheme it will attempt to map the colors to the 
+exactly using their hex codes. If the terminal is not true color but micro-ide is
+told to use a true color colorscheme it will attempt to map the colors to the
 available 256 colors.
 
 Generally colorschemes which require true color terminals to look good are
@@ -154,7 +154,7 @@ Here is a list of the colorscheme groups that you can use:
 * ignore
 * divider (Color of the divider between vertical splits)
 
-Colorschemes must be placed in the `~/.config/micro/colorschemes` directory to
+Colorschemes must be placed in the `~/.config/micro-ide/colorschemes` directory to
 be used.
 
 ---
@@ -163,26 +163,26 @@ In addition to the main colorscheme groups, there are subgroups that you can
 specify by adding `.subgroup` to the group. If you're creating your own custom
 syntax files, you can make use of your own subgroups.
 
-If micro can't match the subgroup, it'll default to the root group, so  it's
+If micro-ide can't match the subgroup, it'll default to the root group, so  it's
 safe and recommended to use subgroups in your custom syntax files.
 
-For example if `constant.string` is found in your colorscheme, micro will us
+For example if `constant.string` is found in your colorscheme, micro-ide will us
 that for highlighting strings. If it's not found, it will use constant instead.
-Micro tries to match the largest set of groups it can find in the colorscheme
-definitions, so if, for examle `constant.bool.true` is found then micro will use
-that. If `constant.bool.true` is not found but `constant.bool` is found micro
-will use `constant.bool`. If not, it uses `constant`. 
+micro-ide tries to match the largest set of groups it can find in the colorscheme
+definitions, so if, for examle `constant.bool.true` is found then micro-ide will use
+that. If `constant.bool.true` is not found but `constant.bool` is found micro-ide
+will use `constant.bool`. If not, it uses `constant`.
 
-Here's a list of subgroups used in micro's built-in syntax files.
+Here's a list of subgroups used in micro-ide's built-in syntax files.
 
 * comment.bright (Some filetypes have distinctions between types of comments)
 * constant.bool
 * constant.bool.true
 * constant.bool.false
-* constant.number 
+* constant.number
 * constant.specialChar
 * constant.string
-* constant.string.url 
+* constant.string.url
 * identifier.class (Also used for functions)
 * identifier.macro
 * identifier.var
@@ -201,12 +201,12 @@ In the future, plugins may also be able to use color groups for styling.
 The syntax files is written in yaml-format and specify how to highlight
 languages.
 
-Micro's builtin syntax highlighting tries very hard to be sane, sensible and
-provide ample coverage of the meaningful elements of a language. Micro has
-syntax files built in for over 100 languages now! However, there may be 
-situations where you find Micro's highlighting to be insufficient or not to your
+micro-ide's builtin syntax highlighting tries very hard to be sane, sensible and
+provide ample coverage of the meaningful elements of a language. micro-ide has
+syntax files built in for over 100 languages now! However, there may be
+situations where you find micro-ide's highlighting to be insufficient or not to your
 liking. The good news is that you can create your own syntax files, and place them
-in  `~/.config/micro/syntax` and Micro will use those instead.
+in  `~/.config/micro-ide/syntax` and micro-ide will use those instead.
 
 ### Filetype definition
 
@@ -225,7 +225,7 @@ detect:
     filename: "\\.go$"
 ```
 
-Micro will match this regex against a given filename to detect the filetype. You
+micro-ide will match this regex against a given filename to detect the filetype. You
 may also provide an optional `header` regex that will check the first line of
 the file. For example:
 

@@ -3,7 +3,9 @@
 You can execute an editor command by pressing `Ctrl-e` followed by the command.
 Here are the possible commands that you can use.
 
-* `quit`: Quits micro.
+Many commands have been ported to icons, menus or dialogs.
+
+* `quit`: Quits micro-ide.
 
 * `save filename?`: Saves the current buffer. If the filename is provided it
   will 'save as' the filename.
@@ -16,7 +18,7 @@ Here are the possible commands that you can use.
 
 * `show option`: shows the current value of the given option.
 
-* `eval "expression"`: Evaluates a Lua expression. Note that micro will not
+* `eval "expression"`: Evaluates a Lua expression. Note that micro-ide will not
    print anything so you should use `messenger:Message(...)` to display a value.
 
 * `run sh-command`: runs the given shell command in the background. The
@@ -48,7 +50,7 @@ Here are the possible commands that you can use.
 
 * `plugin search plugin_name`: searches for the given plugin. Note that you can
    find a list of all available plugins at
-   github.com/micro-editor/plugin-channel.
+   github.com/micro-ide-editor/plugin-channel.
 
    You can also see more information about the plugin manager in the
    `Plugin Manager` section of the `plugins` help topic.
@@ -67,8 +69,8 @@ Here are the possible commands that you can use.
 * `retab`: Replaces all leading tabs with spaces or leading spaces with tabs
    depending on the value of `tabstospaces`.
 
-* `raw`: Micro will open a new tab and show the escape sequence for every event
-   it receives from the terminal. This shows you what micro actually sees from
+* `raw`: micro-ide will open a new tab and show the escape sequence for every event
+   it receives from the terminal. This shows you what micro-ide actually sees from
    the terminal and helps you see which bindings aren't possible and why. This
    is most useful for debugging keybindings.
 
@@ -79,13 +81,9 @@ Here are the possible commands that you can use.
 
 ---
 
-The following commands are provided by the default plugins:
-
-* `lint`: Lint the current file for errors.
-
 # Command Parsing
 
-When running a command, you can use extra syntax that micro will expand before
+When running a command, you can use extra syntax that micro-ide will expand before
 running the command. To use an argument with a space in it, simply put it in
 quotes. You can also use environment variables in the command bar and they
 will be expanded to their value. Finally, you can put an expression in backticks
