@@ -87,6 +87,7 @@ var bindingActions = map[string]func(*View, bool) bool{
 	"EndOfLine":              (*View).EndOfLine,
 	"ToggleHelp":             (*View).ToggleHelp,
 	"ToggleRuler":            (*View).ToggleRuler,
+	"ToggleSoftWrap":         (*View).ToggleSoftWrap,
 	"JumpLine":               (*View).JumpLine,
 	"ClearStatus":            (*View).ClearStatus,
 	"ShellMode":              (*View).ShellMode,
@@ -585,13 +586,17 @@ func DefaultBindings() map[string]string {
 		// "Alt-p": "CursorUp",
 		// "Alt-n": "CursorDown",
 
-		// Integration with file managers
-		"F2":  "Save",
-		"F3":  "Find",
-		"F4":  "Quit",
-		"F7":  "Find",
-		"F10": "Quit",
-		"Esc": "Escape",
+		// Micro-Ide Defaults
+		"F1":    "OpenFile",
+		"F2":    "Save",
+		"F3":    "SaveAs",
+		"F4":    "Quit",
+		"Alt-1": "OpenFile",
+		"Alt-2": "Save",
+		"Alt-3": "SaveAs",
+		"Alt-4": "Quit",
+		"Alt-!": "ToggleSoftWrap",
+		"Esc":   "Escape",
 
 		// Mouse bindings
 		"MouseWheelUp":   "ScrollUp",

@@ -1758,6 +1758,15 @@ func (v *View) ToggleRuler(usePlugin bool) bool {
 	return false
 }
 
+func (v *View) ToggleSoftWrap(usePlugin bool) bool {
+	if v.Buf.Settings["softwrap"] == false {
+		v.Buf.Settings["softwrap"] = true
+	} else {
+		v.Buf.Settings["softwrap"] = false
+	}
+	return false
+}
+
 // JumpLine jumps to a line and moves the view accordingly.
 func (v *View) JumpLine(usePlugin bool) bool {
 	if usePlugin && !PreActionCall("JumpLine", v) {

@@ -25,7 +25,7 @@ var (
 func StartSearchMode() {
 	messenger.hasPrompt = false
 	searching = true
-	messenger.Message(Language.Translate("Find") + " :" + lastSearch + "   " + Language.Translate("Esc,CtrlG (Exit)  F5 (Previous)  F6,Enter (Next)"))
+	messenger.Message(Language.Translate("Find") + " :" + lastSearch + "   " + Language.Translate("Esc,CtrlG (Exit)  F5,Backspace (Previous)  F6,Enter (Next)"))
 }
 
 // ExitSearch exits the search mode, reset active search phrase, and clear status bar
@@ -48,16 +48,11 @@ func HandleSearchEvent(event tcell.Event, v *View) {
 	case *tcell.EventKey:
 		switch e.Key() {
 		case tcell.KeyEscape, tcell.KeyCtrlQ, tcell.KeyCtrlG:
-			// Exit the search mode
 			ExitSearch(v)
 			return
-		case tcell.KeyF5:
+		case tcell.KeyF5, tcell.KeyBackspace2:
 			v.FindPrevious(true)
-			return
-		case tcell.KeyEnter:
-			v.FindNext(true)
-			return
-		case tcell.KeyF6:
+		case tcell.KeyF6, tcell.KeyEnter:
 			v.FindNext(true)
 			return
 		}

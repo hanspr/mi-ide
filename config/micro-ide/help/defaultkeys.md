@@ -7,27 +7,20 @@ run `> help keybindings`
 Please remember that *all* keys here are rebindable! If you don't like it, you
 can change it!
 
-### Function keys
+### Function keys, and alternatives
 
-| Key    | Description of function                            |
-|--------|----------------------------------------------------|
-| F1     | Open file                                          |
-| F2     | Save                                               |
-| F3     | Save As ...                                        |
-| F4     | Close focused window (Tab if empty)                |
-| F5     | Move to previous window                            |
-| F6     | Move to next window                                |
-| F7     | Move to previous Tab                               |
-| F8     | Move to next Tab                                   |
-| F9-F12 | Keys for plug-ins, should not be used              |
-
-### Power user
-
-| Key    | Description of function                                               |
-|--------|-----------------------------------------------------------------------|
-| Ctrl+E | Open a command prompt for running commands                            |
-| Tab    | In command prompt, it will autocomplete if available                  |
-| Ctrl+B | Run a shell command (this will hide micro while your command executes)|
+| Key        | Description of function                  |
+|------------|------------------------------------------|
+| F1 , Alt-1 | Open file                                |
+| F2 , Alt-2 | Save                                     |
+| F3 , Alt-3 | Save As ...                              |
+| F4 , Alt-4 | Close focused window (Tab if empty)      |
+| F5         | Move to previous window                  |
+| F6         | Move to next window                      |
+| F7         | Move to previous Tab                     |
+| F8         | Move to next Tab                         |
+| F9-F12     | Keys reserved for plug-ins               |
+| Alt-[5-0]  | Keys reserved for plug-ins               |
 
 ### Navigation
 
@@ -45,7 +38,7 @@ can change it!
 | PageDown                  | Move cursor down one page                            |
 | CtrlHome or CtrlUpArrow   | Move cursor to start of document                     |
 | CtrlEnd or CtrlDownArrow  | Move cursor to end of document                       |
-| Ctrl+G                    | Jump to a line in the file (prompts with #)          |
+| Ctrl+G                    | Jump to a line in the file (prompts with line #)     |
 | Ctrl+L                    | Center line vertically in view                       |
 
 ### Tabs
@@ -65,13 +58,12 @@ can change it!
 
 ### Find Operations
 
-| Key       | Description of function                   |
-|-----------|------------------------------------------ |
-| Ctrl+F    | Find (opens Search Dialog)                |
-| Ctrl+R    | Replace (opens Search / Replace Dialog)   |
-| F5        | Find previous instance of current search  |
-| F6        | Find next instance of current search      |
-| Enter     | Find next instance of current search      |
+| Key              | Description of function                   |
+|------------------|-------------------------------------------|
+| Ctrl+F           | Find (opens Search Dialog)                |
+| Ctrl+R           | Replace (opens Search / Replace Dialog)   |
+| F5 , Backspace   | Find previous instance of current search  |
+| F6 , Enter       | Find next instance of current search      |
 
 ### File Operations
 
@@ -107,12 +99,13 @@ can change it!
 | Alt+L                             | Delete line                               |
 | Ctrl+A                            | Select all                                |
 
-### Macros
+### Power user
 
-| Key    | Description of function                                              |
-|--------|----------------------------------------------------------------------|
-| Ctrl+U | Toggle macro recording  (on / off)                                   |
-| Ctrl+J | Run latest recorded macro                                            |
+| Key    | Description of function                                               |
+|--------|-----------------------------------------------------------------------|
+| Ctrl+E | Open a command prompt for running commands                            |
+| Tab    | In command prompt, it will autocomplete if available                  |
+| Ctrl+B | Run a shell command (this will hide micro while your command executes)|
 
 ### Multiple cursors
 
@@ -132,6 +125,14 @@ can change it!
 | Alt+G  | Open help file                             |
 | Ctrl+H | Backspace                                  |
 | Ctrl+R | Toggle the line number ruler               |
+| Alt+!  | Toggle soft wrap                           |
+
+### Macros
+
+| Key    | Description of function                                              |
+|--------|----------------------------------------------------------------------|
+| Ctrl+U | Toggle macro recording  (on / off)                                   |
+| Ctrl+J | Run latest recorded macro                                            |
 
 ### Emacs style actions
 
