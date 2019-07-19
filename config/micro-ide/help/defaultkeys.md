@@ -25,7 +25,7 @@ can change it!
 ### Navigation
 
 | Key                       | Description of function                              |
-|-------------------------- |----------------------------------------------------- |
+|---------------------------|------------------------------------------------------|
 | Arrows                    | Move the cursor around                               |
 | Shift+arrows              | Move and select text                                 |
 | Home or CtrlLeftArrow     | Move to the beginning of the current line            |
@@ -39,12 +39,12 @@ can change it!
 | CtrlHome or CtrlUpArrow   | Move cursor to start of document                     |
 | CtrlEnd or CtrlDownArrow  | Move cursor to end of document                       |
 | Ctrl+G                    | Jump to a line in the file (prompts with line #)     |
-| Ctrl+L                    | Center line vertically in view                       |
+| Ctrl+L                    | Center current line vertically in view               |
 
 ### Tabs
 
 | Key     | Description of function   |
-|-------- |-------------------------  |
+|-------- |---------------------------|
 | Ctrl+T  | Open a new tab            |
 | F7      | Previous tab              |
 | F8      | Next tab                  |
@@ -78,13 +78,14 @@ can change it!
 ### Text operations
 
 | Key                               | Description of function                   |
-|-----------------------------------|------------------------------------------ |
+|-----------------------------------|-------------------------------------------|
+| Shift+arrows                      | Move and select text                      |
 | AltShiftRightArrow                | Select word right                         |
 | AltShiftLeftArrow                 | Select word left                          |
 | ShiftHome or CtrlShiftLeftArrow   | Select to start of current line           |
 | ShiftEnd or CtrlShiftRightArrow   | Select to end of current line             |
-| CtrlShiftUpArrow                  | Select to start of file                   |
-| CtrlShiftDownArrow                | Select to end of file                     |
+| CtrlShiftUpArrow                  | Select one Page Up                        |
+| CtrlShiftDownArrow                | Select one Page Down                      |
 | Ctrl+K                            | Cut selected line and append to clipboard |
 | Ctrl+X                            | Cut selected text                         |
 | Ctrl+C                            | Copy selected text                        |
