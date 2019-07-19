@@ -1,5 +1,8 @@
 # Keybindings
 
+Micro has a plethora of hotkeys that make it easy and powerful to use and all
+hotkeys are fully customizable to your liking.
+
 Custom keybindings are stored internally in micro if changed with the `> bind`
 command or you can also be added in the file `~/.config/micro/bindings.json` as
 discussed below.  For a list of the default keybindings in the json format used
@@ -46,7 +49,7 @@ save and quit you can bind it like so:
 
 ## Binding commands
 
-You can also bind a key to execute a command in command mode (see
+You can also bind a key to execute a command in command mode (see 
 `help commands`). Simply prepend the binding with `command:`. For example:
 
 ```json
@@ -58,9 +61,9 @@ You can also bind a key to execute a command in command mode (see
 Now when you press `Alt-p` the `pwd` command will be executed which will show
 your working directory in the infobar.
 
-You can also bind an "editable" command with `command-edit:`. This means that
+You can also bind an "editable" command with `command-edit:`. This means that 
 micro won't immediately execute the command when you press the binding, but
-instead just place the string in the infobar in command mode. For example,
+instead just place the string in the infobar in command mode. For example, 
 you could rebind `CtrlG` to `> help`:
 
 ```json
@@ -74,13 +77,13 @@ be placed after it (note the space in the json that controls the cursor placemen
 
 ## Binding raw escape sequences
 
-Only read this section if you are interested in binding keys that aren't on the
+Only read this section if you are interested in binding keys that aren't on the 
 list of supported keys for binding.
 
 One of the drawbacks of using a terminal-based editor is that the editor must
 get all of its information about key events through the terminal. The terminal
 sends these events in the form of escape sequences often (but not always)
-starting with `0x1b`.
+starting with `0x1b`. 
 
 For example, if micro reads `\x1b[1;5D`, on most terminals this will mean the
 user pressed CtrlLeft.
@@ -119,7 +122,7 @@ Coming soon!
 
 ## Unbinding keys
 
-It is also possible to disable any of the default key bindings by use of the
+It is also possible to disable any of the default key bindings by use of the 
 `UnbindKey` action in the user's `bindings.json` file.
 
 
@@ -447,6 +450,15 @@ MouseWheelRight
     "Alt-a": "StartOfLine",
     "Alt-e": "EndOfLine",
 
+    // Integration with file managers
+    "F1":  "ToggleHelp",
+    "F2":  "Save",
+    "F3":  "Find",
+    "F4":  "Quit",
+    "F7":  "Find",
+    "F10": "Quit",
+    "Esc": "Escape",
+
     // Mouse bindings
     "MouseWheelUp":   "ScrollUp",
     "MouseWheelDown": "ScrollDown",
@@ -469,7 +481,7 @@ Note: On some old terminal emulators and on Windows machines, `CtrlH` should be
 used for backspace.
 
 Additionally, alt keys can be bound by using `Alt-key`. For example `Alt-a` or
-`Alt-Up`. Micro supports an optional `-` between modifiers like `Alt` and
+`Alt-Up`. Micro supports an optional `-` between modifiers like `Alt` and 
 `Ctrl` so `Alt-a` could be rewritten as `Alta` (case matters for alt bindings).
 This is why in the default keybindings you can see `AltShiftLeft` instead of
 `Alt-ShiftLeft` (they are equivalent).
