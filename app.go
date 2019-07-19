@@ -282,6 +282,42 @@ func (a *MicroApp) SetFocus(k, where string) {
 	}
 }
 
+func (a *MicroApp) SetFocusPreviousInputElement(k string) {
+	var next AppElement
+	var last AppElement
+
+	last.pos.Y = -1
+	next.pos.Y = -1
+	next.pos.X = -1
+	me := a.elements[k]
+	for _, e := range a.elements {
+		if e.index == 0 || e.name == me.name || (e.form != "textbox" && e.form != "textarea") {
+			continue
+		}
+		if e.pos.Y == me.pos.Y && e.pos.X < me.pos.X {
+			next = e
+			break
+		}
+		if e.pos.Y < me.pos.Y && e.pos.Y >= next.pos.Y && e.pos.X > next.pos.X {
+			next = e
+			continue
+		}
+		if e.pos.Y > last.pos.Y {
+			last = e
+			continue
+		}
+		if e.pos.Y == last.pos.Y && e.pos.X > last.pos.X {
+			last = e
+			continue
+		}
+	}
+	if next.name != "" {
+		a.SetFocus(next.name, "B")
+	} else if last.name != "" {
+		a.SetFocus(last.name, "B")
+	}
+}
+
 func (a *MicroApp) SetFocusNextInputElement(k string) {
 	var next AppElement
 	var first AppElement
@@ -1065,6 +1101,9 @@ func (e *AppElement) TextBoxKeyEvent(key string, x, y int) {
 			return
 		} else if key == "Tab" {
 			a.SetFocusNextInputElement(e.name)
+			return
+		} else if key == "Backtab" {
+			a.SetFocusPreviousInputElement(e.name)
 			return
 		} else if key == "Ctrl+V" {
 			clip, _ := clipboard.ReadAll("clipboard")

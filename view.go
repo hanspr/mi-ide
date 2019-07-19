@@ -661,6 +661,7 @@ func (v *View) HandleEvent(event tcell.Event) {
 		}
 	case *tcell.EventKey:
 		// Check first if input is a key binding, if it is we 'eat' the input and don't insert a rune
+		//messenger.Message(e.Name(), ":", e.Key(), "?", e.Rune(), " M ", e.EscSeq())
 		isBinding := false
 		for key, actions := range bindings {
 			if e.Key() == key.keyCode {
