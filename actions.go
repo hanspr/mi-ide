@@ -1774,7 +1774,7 @@ func (v *View) JumpLine(usePlugin bool) bool {
 	}
 
 	// Prompt for line number
-	message := fmt.Sprintf(Language.Translate("Jump to line: (1 - %v) # "), v.Buf.NumLines)
+	message := fmt.Sprintf(Language.Translate("Jump to line: (1 - %v) :"), v.Buf.NumLines)
 	input, canceled := messenger.Prompt(message, "", "LineNumber", NoCompletion)
 	if canceled {
 		return false

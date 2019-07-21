@@ -282,7 +282,7 @@ func (v *View) CanClose() bool {
 		if v.Buf.Settings["autosave"].(bool) {
 			choice = true
 		} else {
-			choice, canceled = messenger.YesNoPrompt(Language.Translate("Save changes to ") + v.Buf.GetName() + " " + Language.Translate("before closing? (y,n,esc)"))
+			choice, canceled = messenger.YesNoPrompt(Language.Translate("Save changes to") + " " + v.Buf.GetName() + " " + Language.Translate("before closing? (y,n,esc)"))
 		}
 		if !canceled {
 			//if char == 'y' {

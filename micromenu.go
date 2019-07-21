@@ -159,11 +159,15 @@ func (m *microMenu) SearchReplace(callback func(map[string]string)) {
 		lbl = Language.Translate("Replace regex:")
 		m.myapp.AddWindowTextBox("replace", lbl+" ", "", "string", 2, 4, 54-Count(lbl), 40, m.SubmitSearchOnEnter, "")
 		lbl = Language.Translate("ignore case")
+		offset := Count(lbl) + 6
 		m.myapp.AddWindowCheckBox("i", lbl, "i", 2, 6, false, m.SubmitSearchOnEnter, "")
 		lbl = Language.Translate("all")
-		m.myapp.AddWindowCheckBox("a", lbl, "a", 17, 6, false, m.SubmitSearchOnEnter, "")
-		m.myapp.AddWindowCheckBox("s", `s (\n)`, "s", 32, 6, false, m.SubmitSearchOnEnter, "")
-		m.myapp.AddWindowCheckBox("l", "No regex", "l", 47, 6, false, m.SubmitSearchOnEnter, "")
+		m.myapp.AddWindowCheckBox("a", lbl, "a", offset, 6, false, m.SubmitSearchOnEnter, "")
+		offset += Count(lbl) + 4
+		m.myapp.AddWindowCheckBox("s", `s (\n)`, "s", offset, 6, false, m.SubmitSearchOnEnter, "")
+		offset += Count(`s (\n)`) + 4
+		lbl = Language.Translate("No regexp")
+		m.myapp.AddWindowCheckBox("l", lbl, "l", offset, 6, false, m.SubmitSearchOnEnter, "")
 		m.myapp.AddWindowLabel("found", "", 2, 8, nil, "")
 		lbl = Language.Translate("Cancel")
 		m.myapp.AddWindowButton("cancel", " "+lbl+" ", "cancel", 46-Count(lbl), 10, m.ButtonFinish, "")

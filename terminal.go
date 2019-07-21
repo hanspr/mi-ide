@@ -171,7 +171,7 @@ func (t *Terminal) Close() {
 	// call the lua function that the user has given as a callback
 	if t.getOutput {
 		_, err := Call(t.callback, t.output.String())
-		if err != nil && !strings.HasPrefix(err.Error(), "function does not exist") {
+		if err != nil && !strings.HasPrefix(err.Error(), Language.Translate("function does not exist")) {
 			TermMessage(err)
 		}
 	}
