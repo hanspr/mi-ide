@@ -48,6 +48,8 @@ func (sline *Statusline) Display() {
 
 	fvstyle := true
 	offset := 0
+	_, h := screen.Size()
+	w := sline.view.Width
 
 	if messenger.hasPrompt && !GetGlobalOption("infobar").(bool) {
 		return
@@ -68,8 +70,8 @@ func (sline *Statusline) Display() {
 	}
 
 	// Fix length of strings to help eyes find information in the same place
-	if 40 > sline.view.Width/4 {
-		size = sline.view.Width / 4
+	if 40 > w/4 {
+		size = w / 4
 		if len(file) > size {
 			file = ".. " + file[len(file)-size+1:]
 		}
@@ -77,18 +79,26 @@ func (sline *Statusline) Display() {
 		size = 40
 	}
 
-	_, h := screen.Size()
-	if y >= h-3 && sline.view.x < 2 {
-		if dirview.Open {
-			file = fmt.Sprintf("<< %-"+strconv.Itoa(size)+"s", file)
-			fvstyle = true
+	if w > 80 || dirview.Open {
+		if y >= h-3 && sline.view.x < 2 {
+			if dirview.Open {
+				file = fmt.Sprintf("<< %-"+strconv.Itoa(size)+"s", file)
+				fvstyle = true
+			} else {
+				file = fmt.Sprintf(">> %-"+strconv.Itoa(size)+"s", file)
+				fvstyle = true
+			}
 		} else {
-			file = fmt.Sprintf(">> %-"+strconv.Itoa(size)+"s", file)
-			fvstyle = true
+			file = fmt.Sprintf("   %-"+strconv.Itoa(size)+"s", file)
+			fvstyle = false
+			dirview.active = false
 		}
+		dirview.active = true
 	} else {
+		// Below 80 columns, treeview fails
 		file = fmt.Sprintf("   %-"+strconv.Itoa(size)+"s", file)
 		fvstyle = false
+		dirview.active = false
 	}
 
 	// Add one to cursor.x and cursor.y because (0,0) is the top left,
@@ -104,25 +114,27 @@ func (sline *Statusline) Display() {
 	// Fix size of cursor position so it stays in the same place all the time
 	file += fmt.Sprintf(" %6s/%s,%-4s ", lineNum, totColumn, columnNum)
 
-	// Add the filetype, minor style changes
-	file += " " + sline.view.Buf.FileType()
+	// bellow 66 begin hidding information even more
+	if w > 65 {
+		// Add the filetype, minor style changes
+		file += " " + sline.view.Buf.FileType()
 
-	if size > 12 {
-		file += "  (" + sline.view.Buf.Settings["fileformat"].(string) + ")  "
-	}
+		if size > 12 {
+			file += "  (" + sline.view.Buf.Settings["fileformat"].(string) + ")  "
+		}
 
-	if sline.view.x != 0 {
-		offset++
-	}
-	sline.hotspot["ENCODER"] = Loc{Count(file) + 1 + offset, Count(file) + offset + Count(sline.view.Buf.encoder)}
-	file += " " + sline.view.Buf.encoder
+		if sline.view.x != 0 {
+			offset++
+		}
+		sline.hotspot["ENCODER"] = Loc{Count(file) + 1 + offset, Count(file) + offset + Count(sline.view.Buf.encoder)}
+		file += " " + sline.view.Buf.encoder
 
-	if size > 12 {
-		if sline.view.Type.Readonly == true {
-			file += " ro"
+		if size > 12 {
+			if sline.view.Type.Readonly == true {
+				file += " ro"
+			}
 		}
 	}
-
 	rightText := ""
 	if !sline.view.Buf.Settings["hidehelp"].(bool) {
 		if len(helpBinding) > 0 {
@@ -158,17 +170,17 @@ func (sline *Statusline) Display() {
 		screen.SetContent(viewX, y, '█', nil, statusLineStyle)
 		viewX++
 	}
-	for x := 0; x < sline.view.Width; x++ {
+	for x := 0; x < w; x++ {
 		tStyle := statusLineStyle
 		if x < 3 && fvstyle {
 			tStyle = StringToStyle("#ffd700,#5f87af")
-		} else if sline.hotspot["ENCODER"].X-offset <= x && x <= sline.hotspot["ENCODER"].Y-offset && sline.view.Num == CurView().Num {
+		} else if w > 65 && sline.hotspot["ENCODER"].X-offset <= x && x <= sline.hotspot["ENCODER"].Y-offset && sline.view.Num == CurView().Num {
 			tStyle = StringToStyle("#ffd700,#585858")
 		}
 		if x < len(fileRunes) {
 			screen.SetContent(viewX+x, y, fileRunes[x], nil, tStyle)
-		} else if x >= sline.view.Width-len(rightText) && x < len(rightText)+sline.view.Width-len(rightText) {
-			screen.SetContent(viewX+x, y, []rune(rightText)[x-sline.view.Width+len(rightText)], nil, tStyle)
+		} else if x >= w-len(rightText) && x < len(rightText)+w-len(rightText) {
+			screen.SetContent(viewX+x, y, []rune(rightText)[x-w+len(rightText)], nil, tStyle)
 		} else {
 			screen.SetContent(viewX+x, y, ' ', nil, tStyle)
 		}

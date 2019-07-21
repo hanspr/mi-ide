@@ -304,7 +304,7 @@ func (m *Messenger) Prompt(prompt, placeholder, historyType string, completionTy
 	} else {
 		m.cursorx = Count(placeholder)
 	}
-	RedrawAll()
+	RedrawAll(true)
 	for m.hasPrompt {
 		var suggestions []string
 		m.Clear()
@@ -316,7 +316,7 @@ func (m *Messenger) Prompt(prompt, placeholder, historyType string, completionTy
 			for _, t := range tabs {
 				t.Resize()
 			}
-			RedrawAll()
+			RedrawAll(true)
 		case *tcell.EventKey:
 			switch e.Key() {
 			case tcell.KeyEscape, tcell.KeyCtrlQ, tcell.KeyCtrlG:

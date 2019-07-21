@@ -951,8 +951,6 @@ func (v *View) FindCurLine(n int, s string) Loc {
 	return newLoc
 }
 
-const WindowOffset int = 20
-
 // DisplayView draws the view to the screen
 func (v *View) DisplayView() {
 	if v.Type == vtTerm {
@@ -1035,7 +1033,11 @@ func (v *View) DisplayView() {
 	left := v.leftCol
 	top := v.Topline
 
-	// Have a window offset on edges a very long lines
+	WindowOffset := 20
+	if width < 80 {
+		WindowOffset = width / 5
+	}
+	// Have a window margin on edges a very long lines if the windows is wide enough
 	if v.Buf.Settings["softwrap"].(bool) == false && len(v.Buf.LineBytes(v.Cursor.Loc.Y)) > width-v.lineNumOffset {
 		shift := 0
 		if v.Cursor.GetVisualX()+1 < width-v.lineNumOffset && v.Cursor.GetVisualX()+1 > width-v.lineNumOffset-WindowOffset {

@@ -38,6 +38,18 @@ type AppStyle struct {
 	style tcell.Style
 }
 
+type Canvas struct {
+	top      int
+	left     int
+	right    int
+	bottom   int
+	position string
+	otop     int
+	oleft    int
+	owidth   int
+	oheight  int
+}
+
 type MicroApp struct {
 	name             string
 	screen           tcell.Screen
@@ -48,7 +60,7 @@ type MicroApp struct {
 	WindowMouseEvent func(string, int, int) // event, x, y
 	WindowKeyEvent   func(string, int, int) // key, x, y
 	WindowFinish     func(map[string]string)
-	cursor           Loc
+	cursor           Loc // Relative position inside canvas
 	activeElement    string
 	lockActive       bool
 	mousedown        bool
@@ -57,11 +69,40 @@ type MicroApp struct {
 	lastclick        time.Time
 	eint             int
 	maxheigth        int
+	canvas           Canvas
+	maxindex         int
 }
 
 // ------------------------------------------------
 // App Build Methods
 // ------------------------------------------------
+
+func (a *MicroApp) SetCanvas(top, left, width, height int, position string) {
+	w, h := a.screen.Size()
+	a.canvas.otop = top
+	a.canvas.oleft = left
+	a.canvas.owidth = width
+	a.canvas.oheight = height
+	if top+left+width+height == 0 {
+		width = w
+		height = h
+	} else {
+		if left < 0 {
+			left = w/2 - width/2
+		}
+		if top < 0 {
+			top = h/2 - height/2
+		}
+	}
+	if position != "fixed" && position != "relative" {
+		position = "relative"
+	}
+	a.canvas.top = top
+	a.canvas.left = left
+	a.canvas.right = left + width
+	a.canvas.bottom = top + height
+	a.canvas.position = position
+}
 
 func (a *MicroApp) AddStyle(name, style string) {
 	var s AppStyle
@@ -146,11 +187,11 @@ func (a *MicroApp) AddWindowElement(name, label, form, value, value_type string,
 	a.elements[e.name] = e
 }
 
-func (a *MicroApp) AddWindowBox(name, title string, x, y, width, height int, callback func(string, string, string, string, int, int) bool, style string) {
+func (a *MicroApp) AddWindowBox(name, title string, x, y, width, height int, border bool, callback func(string, string, string, string, int, int) bool, style string) {
 	if width < 1 || height < 1 {
 		return
 	}
-	a.AddWindowElement(name, title, "box", "", "", x, y, width, height, false, callback, style)
+	a.AddWindowElement(name, title, "box", "", "", x, y, width, height, border, callback, style)
 }
 
 func (a *MicroApp) AddWindowLabel(name, label string, x, y int, callback func(string, string, string, string, int, int) bool, style string) {
@@ -214,6 +255,20 @@ func (a *MicroApp) AddWindowButton(name, label, button_type string, x, y int, ca
 // ------------------------------------------------
 // Element Methods
 // ------------------------------------------------
+
+func (a *MicroApp) SetIndex(k string, v int) {
+	if v > 5 {
+		v = 5
+	} else if v < 0 {
+		v = 0
+	}
+	if v > a.maxindex {
+		a.maxindex = v
+	}
+	e := a.elements[k]
+	e.index = v
+	a.elements[k] = e
+}
 
 func (a *MicroApp) GetValue(k string) string {
 	return a.elements[k].value
@@ -312,9 +367,9 @@ func (a *MicroApp) SetFocusPreviousInputElement(k string) {
 		}
 	}
 	if next.name != "" {
-		a.SetFocus(next.name, "B")
+		a.SetFocus(next.name, "E")
 	} else if last.name != "" {
-		a.SetFocus(last.name, "B")
+		a.SetFocus(last.name, "E")
 	}
 }
 
@@ -322,9 +377,9 @@ func (a *MicroApp) SetFocusNextInputElement(k string) {
 	var next AppElement
 	var first AppElement
 
-	first.pos.Y = 9999999999
-	next.pos.Y = 9999999999
-	next.pos.X = 9999999999
+	first.pos.Y = 99999
+	next.pos.Y = 99999
+	next.pos.X = 99999
 	me := a.elements[k]
 	for _, e := range a.elements {
 		if e.index == 0 || e.name == me.name || (e.form != "textbox" && e.form != "textarea") {
@@ -348,9 +403,9 @@ func (a *MicroApp) SetFocusNextInputElement(k string) {
 		}
 	}
 	if next.name != "" {
-		a.SetFocus(next.name, "B")
+		a.SetFocus(next.name, "E")
 	} else if first.name != "" {
-		a.SetFocus(first.name, "B")
+		a.SetFocus(first.name, "E")
 	}
 }
 
@@ -382,10 +437,24 @@ func (e *AppElement) Draw() {
 
 func (e *AppElement) DrawBox() {
 	a := e.microapp
-	x1 := e.pos.X
-	y1 := e.pos.Y
-	x2 := e.pos.X + e.width
-	y2 := e.pos.Y + e.height
+	Hborder := tcell.RuneHLine
+	Vborder := tcell.RuneVLine
+	ULC := tcell.RuneULCorner
+	URC := tcell.RuneURCorner
+	LLC := tcell.RuneLLCorner
+	LRC := tcell.RuneLRCorner
+	if e.checked == false {
+		Hborder = ' '
+		Vborder = ' '
+		ULC = ' '
+		URC = ' '
+		LLC = ' '
+		LRC = ' '
+	}
+	x1 := e.pos.X + a.canvas.left
+	y1 := e.pos.Y + a.canvas.top
+	x2 := e.pos.X + a.canvas.left + e.width
+	y2 := e.pos.Y + a.canvas.top + e.height
 	if y2 < y1 {
 		y1, y2 = y2, y1
 	}
@@ -394,19 +463,19 @@ func (e *AppElement) DrawBox() {
 	}
 
 	for col := x1; col <= x2; col++ {
-		a.screen.SetContent(col, y1, tcell.RuneHLine, nil, e.style)
-		a.screen.SetContent(col, y2, tcell.RuneHLine, nil, e.style)
+		a.screen.SetContent(col, y1, Hborder, nil, e.style)
+		a.screen.SetContent(col, y2, Hborder, nil, e.style)
 	}
 	for row := y1 + 1; row < y2; row++ {
-		a.screen.SetContent(x1, row, tcell.RuneVLine, nil, e.style)
-		a.screen.SetContent(x2, row, tcell.RuneVLine, nil, e.style)
+		a.screen.SetContent(x1, row, Vborder, nil, e.style)
+		a.screen.SetContent(x2, row, Vborder, nil, e.style)
 	}
 	if y1 != y2 && x1 != x2 {
 		// Only add corners if we need to
-		a.screen.SetContent(x1, y1, tcell.RuneULCorner, nil, e.style)
-		a.screen.SetContent(x2, y1, tcell.RuneURCorner, nil, e.style)
-		a.screen.SetContent(x1, y2, tcell.RuneLLCorner, nil, e.style)
-		a.screen.SetContent(x2, y2, tcell.RuneLRCorner, nil, e.style)
+		a.screen.SetContent(x1, y1, ULC, nil, e.style)
+		a.screen.SetContent(x2, y1, URC, nil, e.style)
+		a.screen.SetContent(x1, y2, LLC, nil, e.style)
+		a.screen.SetContent(x2, y2, LRC, nil, e.style)
 	}
 	for row := y1 + 1; row < y2; row++ {
 		for col := x1 + 1; col < x2; col++ {
@@ -458,7 +527,7 @@ func (e *AppElement) DrawTextBox() {
 		} else {
 			r = ' '
 		}
-		a.screen.SetContent(e.aposb.X+W, e.pos.Y, r, nil, style)
+		a.screen.SetContent(e.aposb.X+W+a.canvas.left, e.pos.Y+a.canvas.top, r, nil, style)
 	}
 	a.screen.Show()
 }
@@ -531,7 +600,7 @@ func (e *AppElement) DrawSelect() {
 		}
 		label := []rune(fmt.Sprintf(f, opt[1]) + chr)
 		for N := 0; N < len(label); N++ {
-			a.screen.SetContent(e.aposb.X+N, e.aposb.Y+Y, label[N], nil, style)
+			a.screen.SetContent(e.aposb.X+N+a.canvas.left, e.aposb.Y+Y+a.canvas.top, label[N], nil, style)
 		}
 		if e.height == 1 {
 			return
@@ -541,6 +610,7 @@ func (e *AppElement) DrawSelect() {
 }
 
 func (e *AppElement) DrawButton() {
+	a := e.microapp
 	style := e.style
 	label := []rune(" " + e.label + " ")
 	if e.value_type == "cancel" {
@@ -551,7 +621,7 @@ func (e *AppElement) DrawButton() {
 		style = e.style.Background(tcell.ColorDarkSlateGray).Foreground(tcell.ColorWhite).Bold(true)
 	}
 	for x := 0; x < len(label); x++ {
-		e.microapp.screen.SetContent(e.pos.X+x, e.pos.Y, label[x], nil, style)
+		e.microapp.screen.SetContent(e.pos.X+x+a.canvas.left, e.pos.Y+a.canvas.top, label[x], nil, style)
 	}
 }
 
@@ -609,14 +679,14 @@ func (e *AppElement) getECursorFromACursor() int {
 				newx = newx - Abs(X-offset)
 				a.cursor.X = e.aposb.X + X
 			}
-			a.screen.ShowCursor(a.cursor.X, a.cursor.Y)
+			a.screen.ShowCursor(a.cursor.X+a.canvas.left, a.cursor.Y+a.canvas.top)
 			return newx
 		}
 		ac = ac + X
 	}
 	a.cursor.Y = e.aposb.Y + Y
 	a.cursor.X = e.aposb.X + X
-	a.screen.ShowCursor(a.cursor.X, a.cursor.Y)
+	a.screen.ShowCursor(a.cursor.X+a.canvas.left, a.cursor.Y+a.canvas.top)
 	return ac
 }
 
@@ -644,7 +714,7 @@ func (e *AppElement) setACursorFromECursor() {
 	}
 	a.cursor.X = ax
 	a.cursor.Y = ay + e.aposb.Y
-	a.screen.ShowCursor(a.cursor.X, a.cursor.Y)
+	a.screen.ShowCursor(a.cursor.X+a.canvas.left, a.cursor.Y+a.canvas.top)
 }
 
 func runeLastIndex(str, s string) int {
@@ -659,25 +729,49 @@ func runeLastIndex(str, s string) int {
 	return -1
 }
 
+// ------------------------------------------------
 // MicroApp Drawing Methods
+// ------------------------------------------------
 
 func (a *MicroApp) DrawAll() {
-	// Find all boxes first
-	for _, e := range a.elements {
-		if e.index == 0 {
-			e.Draw()
+	// Draw all elements in index order from 0 to current max index (normally 2)
+	for i := 0; i <= a.maxindex; i++ {
+		for _, e := range a.elements {
+			if e.index == i {
+				e.Draw()
+			}
 		}
 	}
-	// Draw all non box elements
-	for _, e := range a.elements {
-		if e.index == 1 {
-			e.Draw()
+	a.screen.Show()
+}
+
+func (a *MicroApp) Resize() {
+	for _, t := range tabs {
+		t.Resize()
+	}
+	if a.canvas.position == "relative" {
+		w, h := a.screen.Size()
+		if a.canvas.otop+a.canvas.oleft+a.canvas.owidth+a.canvas.oheight == 0 {
+			a.canvas.right = w
+			a.canvas.bottom = h
+		} else {
+			if a.canvas.oleft < 0 {
+				a.canvas.left = w/2 - a.canvas.owidth/2
+			}
+			if a.canvas.otop < 0 {
+				a.canvas.top = h/2 - a.canvas.oheight/2
+			}
+			a.canvas.right = a.canvas.left + a.canvas.owidth
+			a.canvas.bottom = a.canvas.top + a.canvas.oheight
 		}
 	}
-	for _, e := range a.elements {
-		if e.index == 2 {
-			e.Draw()
-		}
+	RedrawAll(false)
+	a.DrawAll()
+	if a.activeElement == "" {
+		a.cursor = Loc{0, 0}
+		a.screen.HideCursor()
+	} else {
+		a.screen.ShowCursor(a.cursor.X+a.canvas.left, a.cursor.Y+a.canvas.top)
 	}
 	a.screen.Show()
 }
@@ -693,22 +787,20 @@ func (a *MicroApp) ClearScreen(style *tcell.Style) {
 	a.screen.Show()
 }
 
+// Debug works with absolute coordenates
 func (a *MicroApp) Debug(msg string, x, y int) {
-	a.Print(msg, x, y, nil)
+	a.PrintAbsolute(msg, x, y, nil)
 	a.screen.Show()
 }
 
+// Print works with relative coordinates
 func (a *MicroApp) Print(msg string, x, y int, style *tcell.Style) {
-	if style == nil {
-		style = &a.defStyle
-	}
-	msgr := []rune(msg)
-	for p := 0; p < len(msgr); p++ {
-		a.screen.SetContent(x+p, y, msgr[p], nil, *style)
-	}
-	a.screen.Show()
+	x += a.canvas.left
+	y += a.canvas.top
+	a.PrintAbsolute(msg, x, y, style)
 }
 
+// PrintStyle works with relative coordinates
 func (a *MicroApp) PrintStyle(msg string, x, y int, estyle *tcell.Style) {
 	var style *tcell.Style
 	var defstyle *tcell.Style
@@ -744,6 +836,18 @@ func (a *MicroApp) PrintStyle(msg string, x, y int, estyle *tcell.Style) {
 	}
 }
 
+// PrintAbsolute works with absolute coordinates
+func (a *MicroApp) PrintAbsolute(msg string, x, y int, style *tcell.Style) {
+	if style == nil {
+		style = &a.defStyle
+	}
+	msgr := []rune(msg)
+	for p := 0; p < len(msgr); p++ {
+		a.screen.SetContent(x+p, y, msgr[p], nil, *style)
+	}
+	a.screen.Show()
+}
+
 // ------------------------------------------------
 // Mouse Events
 // ------------------------------------------------
@@ -767,7 +871,7 @@ func (e *AppElement) TextBoxClickEvent(event string, x, y int) {
 		a.cursor.X = x
 	}
 	e.cursor.X = e.offset + a.cursor.X - e.aposb.X
-	a.screen.ShowCursor(x, y)
+	a.screen.ShowCursor(x+a.canvas.left, y+a.canvas.top)
 	a.elements[e.name] = *e
 	a.screen.Show()
 }
@@ -805,7 +909,7 @@ func (e *AppElement) SelectClickEvent(event string, x, y int) {
 		// Reset to height=1, hotspot, savew
 		if e.aposb.Y+e.height > a.maxheigth {
 			a.screen.Clear()
-			RedrawAll()
+			RedrawAll(false)
 		}
 		e.height = 1
 		e.apose = Loc{e.apose.X, e.aposb.Y}
@@ -1114,7 +1218,7 @@ func (e *AppElement) TextBoxKeyEvent(key string, x, y int) {
 		}
 		a.elements[e.name] = *e
 		e.DrawTextBox()
-		a.screen.ShowCursor(a.cursor.X, a.cursor.Y)
+		a.screen.ShowCursor(a.cursor.X+a.canvas.left, a.cursor.Y+a.canvas.top)
 		a.screen.Show()
 		return
 	}
@@ -1131,7 +1235,7 @@ func (e *AppElement) TextBoxKeyEvent(key string, x, y int) {
 	}
 	a.elements[e.name] = *e
 	e.DrawTextBox()
-	a.screen.ShowCursor(a.cursor.X, a.cursor.Y)
+	a.screen.ShowCursor(a.cursor.X+a.canvas.left, a.cursor.Y+a.canvas.top)
 	a.screen.Show()
 }
 
@@ -1161,7 +1265,8 @@ func (e *AppElement) ProcessElementKey(key string, x, y int) {
 
 // Check if event occures on top of an element hotspot
 // If it does, dispacth the appropiate method
-func (a *MicroApp) CheckElementsActions(event string, x, y int) {
+
+func (a *MicroApp) CheckElementsActions(event string, x, y int) bool {
 	//a.Debug(fmt.Sprintf("CheckElementActions %s", time.Now()), 90, 2)
 	for _, e := range a.elements {
 		if e.index == 0 {
@@ -1183,7 +1288,7 @@ func (a *MicroApp) CheckElementsActions(event string, x, y int) {
 			} else {
 				e.ProcessElementKey(event, x, y)
 			}
-			return
+			return true
 		}
 	}
 	//a.Debug(fmt.Sprintf("CheckElementActions END %s", time.Now()), 90, 4)
@@ -1196,6 +1301,7 @@ func (a *MicroApp) CheckElementsActions(event string, x, y int) {
 			a.screen.Show()
 		}
 	}
+	return false
 }
 
 // ------------------------------------------------
@@ -1230,6 +1336,8 @@ func (a *MicroApp) HandleEvents(event tcell.Event) {
 	char := ""
 	//a.Debug(fmt.Sprintf("LOOP %s", time.Now()), 90, 10)
 	switch ev := event.(type) {
+	case *tcell.EventResize:
+		a.Resize()
 	case *tcell.EventKey:
 		if ev.Key() == tcell.KeyEscape {
 			if a.Finish == nil {
@@ -1251,12 +1359,24 @@ func (a *MicroApp) HandleEvents(event tcell.Event) {
 		}
 	case *tcell.EventMouse:
 		//a.Debug(fmt.Sprintf("LOOP %s", time.Now()), 90, 10)
-		x, y := ev.Position()
+		exit := false
+		xa, ya := ev.Position()
+		x := xa - a.canvas.left
+		y := ya - a.canvas.top
+		if x < 0 {
+			x = 0
+		}
+		if y < 0 {
+			y = 0
+		}
 		button := ev.Buttons()
 		action := ""
 		if button == tcell.ButtonNone {
 			//a.Debug(fmt.Sprintf("BUTTON None %s", time.Now()), 90, 11)
 			if a.mousedown == true {
+				if xa < a.canvas.left || xa > a.canvas.right || ya < a.canvas.top || ya > a.canvas.bottom {
+					exit = true
+				}
 				//a.Debug(fmt.Sprintf("MouseUp? %s", time.Now()), 90, 12)
 				Dt := time.Since(a.lastclick) / time.Millisecond
 				// If button released within 2 pixel consider as clic and not a dragstop
@@ -1314,9 +1434,15 @@ func (a *MicroApp) HandleEvents(event tcell.Event) {
 		if a.WindowMouseEvent != nil {
 			//a.Debug(fmt.Sprintf("MouseEvent??? %s", time.Now()), 90, 32)
 			a.WindowMouseEvent(action, x, y)
-		} else {
-			//a.Debug(fmt.Sprintf("CheckActions %s", time.Now()), 90, 33)
-			a.CheckElementsActions(action, x, y)
+		}
+		//a.Debug(fmt.Sprintf("CheckActions %s", time.Now()), 90, 33)
+		if a.CheckElementsActions(action, x, y) == false && exit {
+			if a.Finish == nil {
+				MicroAppStop()
+			} else {
+				a.Finish("")
+			}
+			return
 		}
 	default:
 		//a.Debug(fmt.Sprintf("DEFAULT? %s", time.Now()), 90, 40)
@@ -1339,6 +1465,7 @@ func (a *MicroApp) New(name string) {
 	a.WindowFinish = nil
 	a.WindowKeyEvent = nil
 	a.lockActive = false
+	a.maxindex = 2
 	a.Finish = nil
 }
 
@@ -1351,9 +1478,6 @@ func (a *MicroApp) Start() {
 func (a *MicroApp) Reset() {
 	for k, _ := range a.elements {
 		delete(a.elements, k)
-	}
-	for k, _ := range a.elements {
-		panic("No se borraron elementos!" + k)
 	}
 	for k, _ := range a.styles {
 		delete(a.styles, k)

@@ -15,6 +15,7 @@ type DirTreeView struct {
 	tree_view *View
 	pos       Loc
 	curView   int
+	active    bool
 }
 
 func (d *DirTreeView) opeFile(line string) {
@@ -152,6 +153,9 @@ func (d *DirTreeView) dirviewClose() {
 }
 
 func (d *DirTreeView) toggleView() {
+	if d.active == false {
+		return
+	}
 	if d.Open == true {
 		d.dirviewClose()
 		messenger.Message("")

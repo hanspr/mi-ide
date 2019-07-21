@@ -246,7 +246,7 @@ func InitScreen() {
 }
 
 // RedrawAll redraws everything -- all the views and the messenger
-func RedrawAll() {
+func RedrawAll(show bool) {
 
 	messenger.Clear()
 
@@ -262,7 +262,9 @@ func RedrawAll() {
 	}
 	DisplayTabs()
 	messenger.Display()
-	screen.Show()
+	if show {
+		screen.Show()
+	}
 
 	if numRedraw%50 == 0 {
 		runtime.GC()
@@ -313,8 +315,10 @@ func MicroAppStop() {
 }
 
 func main() {
+	// Create Toolbar object
 	MicroToolBar = NewToolBar()
 	apprunning = nil
+
 	flag.Usage = func() {
 		fmt.Println("Usage: micro [OPTIONS] [FILE]...")
 		fmt.Println("-config-dir dir")
@@ -430,6 +434,17 @@ func main() {
 		}
 	}
 
+	// Create micro-ide objects now to have them available to plugins
+
+	// Tree view
+	dirview = new(DirTreeView)
+	dirview.Open = false
+	x := strings.LastIndex(CurView().Buf.AbsPath, "/") + 1
+	dirview.LastPath = string([]rune(CurView().Buf.AbsPath)[:x])
+
+	// Menu
+	micromenu = new(microMenu)
+
 	// Load all the plugin stuff
 	// We give plugins access to a bunch of variables here which could be useful to them
 	L.SetGlobal("OS", luar.New(L, runtime.GOOS))
@@ -496,6 +511,7 @@ func main() {
 	updateterm = make(chan bool)
 	closeterm = make(chan int)
 
+	// Loading all plugins
 	LoadPlugins()
 
 	for _, t := range tabs {
@@ -527,17 +543,11 @@ func main() {
 		}
 	}()
 
-	// Create DirTreeView object
-	dirview = new(DirTreeView)
-	dirview.Open = false
-	x := strings.LastIndex(CurView().Buf.AbsPath, "/") + 1
-	dirview.LastPath = string([]rune(CurView().Buf.AbsPath)[:x])
-	micromenu = new(microMenu)
 	for {
 		// Display everything
 
 		if apprunning == nil {
-			RedrawAll()
+			RedrawAll(true)
 		}
 
 		var event tcell.Event

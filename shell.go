@@ -61,7 +61,7 @@ func RunBackgroundShell(input string) {
 			messenger.Message(output)
 		}
 		// We have to make sure to redraw
-		RedrawAll()
+		RedrawAll(true)
 	}()
 }
 

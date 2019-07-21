@@ -355,7 +355,7 @@ func ToggleLog(args []string) {
 	if CurView().Type != vtLog {
 		CurView().HSplit(buffer)
 		CurView().Type = vtLog
-		RedrawAll()
+		RedrawAll(true)
 		buffer.Cursor.Loc = buffer.Start()
 		CurView().Relocate()
 		buffer.Cursor.Loc = buffer.End()
@@ -625,7 +625,7 @@ func Replace(args []string) {
 				break
 			}
 			view.Relocate()
-			RedrawAll()
+			RedrawAll(true)
 			y := []rune(Language.Translate("y"))[0]
 			n := []rune(Language.Translate("n"))[0]
 			q := []rune(Language.Translate("q"))[0]

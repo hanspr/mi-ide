@@ -16,22 +16,12 @@ const (
 var tabBarOffset int
 var toolBarOffset int
 
-// A Tab holds an array of views and a splitTree to determine how the
-// views should be arranged
-type Tab struct {
-	// This contains all the views in this tab
-	// There is generally only one view per tab, but you can have
-	// multiple views with splits
-	Views []*View
-	// This is the current view for this tab
-	CurView int
-
-	tree *SplitTree
-}
-
+// -------------------------------------------
 // Toolbar
+// -------------------------------------------
 
 type ToolBar struct {
+	active   bool
 	icons    []rune
 	callback []func()
 }
@@ -44,6 +34,7 @@ func NewToolBar() *ToolBar {
 	t.AddIcon('🔎', t.Find)
 	t.AddIcon('℁', t.Replace)
 	t.AddIcon('❎', t.Quit)
+	t.active = true
 	return t
 }
 
@@ -61,7 +52,6 @@ func (t *ToolBar) Runes() []rune {
 	}
 	str = append([]rune(tabMenuSymbol), str...)
 	return str
-	//return tabMenuSymbol + str
 }
 
 func (t *ToolBar) Save() {
@@ -95,6 +85,9 @@ func (t *ToolBar) Quit() {
 func (t *ToolBar) ToolbarHandleMouseEvent(x int) {
 	var pos int
 
+	if t.active == false {
+		return
+	}
 	pos = x / 3
 	t.callback[pos-1]()
 }
@@ -103,14 +96,33 @@ func (t *ToolBar) FixTabsIconArea() {
 	// prefill the length with with black background spaces
 	var tStyle tcell.Style
 
+	if t.active == false {
+		return
+	}
 	tStyle = StringToStyle("normal #000000,#000000")
-	for x := 0; x < toolBarOffset-1; x++ {
+	for x := 0; x < toolBarOffset; x++ {
 		screen.SetContent(x, 0, '.', nil, tStyle)
 	}
 	screen.Show()
 }
 
+// -------------------------------------------
 // Tabs
+// -------------------------------------------
+
+// A Tab holds an array of views and a splitTree to determine how the
+// views should be arranged
+type Tab struct {
+	// This contains all the views in this tab
+	// There is generally only one view per tab, but you can have
+	// multiple views with splits
+	Views []*View
+	// This is the current view for this tab
+	CurView int
+
+	tree *SplitTree
+}
+
 // NewTabFromView creates a new tab and puts the given view in the tab
 func NewTabFromView(v *View) *Tab {
 	t := new(Tab)
@@ -174,11 +186,15 @@ func CurView() *View {
 	return curTab.Views[curTab.CurView]
 }
 
+// -------------------------------------------
+// Tabbar drawing
+// -------------------------------------------
+
 // TabbarString returns the string that should be displayed in the tabbar
 // It also returns a map containing which indicies correspond to which tab number
 // This is useful when we know that the mouse click has occurred at an x location
 // but need to know which tab that corresponds to to accurately change the tab
-func TabbarString() (string, map[int]int) {
+func TabbarString(toffset int) (string, map[int]int) {
 	var cv int
 
 	str := ""
@@ -219,7 +235,7 @@ func TabbarString() (string, map[int]int) {
 			str += "  "
 		}
 		//		indicies[Count(str)+1] = i + 1
-		indicies[Count(str)+toolBarOffset] = i + 1
+		indicies[Count(str)+toffset] = i + 1
 	}
 	return str, indicies
 }
@@ -231,12 +247,10 @@ func TabbarHandleMouseEvent(event tcell.Event) bool {
 	var tabnum int
 	var keys []int
 
-	// For the moment, ignore mouse events if only one file open in tab
-	// When menu is added will be removed
-	//if len(tabs) <= 1 {
-	//	return false
-	//}
-
+	toffset := toolBarOffset
+	if MicroToolBar.active == false {
+		toffset = 0
+	}
 	switch e := event.(type) {
 	case *tcell.EventMouse:
 		button := e.Buttons()
@@ -251,21 +265,23 @@ func TabbarHandleMouseEvent(event tcell.Event) bool {
 			if e.HasMotion() == true {
 				return true
 			}
-			if x < 3 {
-				// Click on Menu Icon
-				micromenu.Menu()
-				return true
-			}
-			if x < 21 {
-				// Click on Toolbar
-				if button == tcell.Button1 {
-					MicroToolBar.ToolbarHandleMouseEvent(x)
+			if toffset > 0 {
+				if x < 3 {
+					// Click on Menu Icon
+					micromenu.Menu()
+					return true
 				}
-				return true
+				if x < toffset {
+					// Click on Toolbar
+					if button == tcell.Button1 {
+						MicroToolBar.ToolbarHandleMouseEvent(x)
+					}
+					return true
+				}
 			}
-			str, indicies := TabbarString()
+			str, indicies := TabbarString(toffset)
 			// ignore if past last tab
-			if x+tabBarOffset >= Count(str)+toolBarOffset {
+			if x >= Count(str)+toffset {
 				return true
 			}
 			// Find which tab was clicked
@@ -313,7 +329,33 @@ func DisplayTabs() {
 	var tStyle tcell.Style
 	var tabActive bool = false
 
-	str, indicies := TabbarString()
+	// Display ToolBar
+	//toolbarRunes := []rune(MicroToolBar.String())
+	w, _ := screen.Size()
+	toffset := 0
+	if w > 60 {
+		MicroToolBar.active = true
+		toffset = toolBarOffset
+		toolbarRunes := MicroToolBar.Runes()
+		for x := 0; x < len(toolbarRunes); x++ {
+			if x < 3 {
+				// Menu icon
+				if x == 0 {
+					tStyle = StringToStyle("bold #ffd700,#121212")
+				}
+			} else if x < 21 {
+				// Toolbar icons
+				if x == 3 {
+					tStyle = StringToStyle("#ffffff")
+				}
+			}
+			screen.SetContent(x, 0, toolbarRunes[x], nil, tStyle)
+		}
+	} else {
+		MicroToolBar.active = false
+	}
+
+	str, indicies := TabbarString(toffset)
 
 	tabBarStyle := defStyle.Reverse(true)
 	if style, ok := colorscheme["tabbar"]; ok {
@@ -321,7 +363,6 @@ func DisplayTabs() {
 	}
 	// Maybe there is a unicode filename?
 	tabsRunes := []rune(str)
-	w, _ := screen.Size()
 	tooWide := (w < len(tabsRunes))
 
 	// if the entire tab-bar is longer than the screen is wide,
@@ -412,24 +453,6 @@ func DisplayTabs() {
 		tabBarOffset = 0
 	}
 
-	// Display ToolBar
-	//toolbarRunes := []rune(MicroToolBar.String())
-	toolbarRunes := MicroToolBar.Runes()
-	for x := 0; x < len(toolbarRunes); x++ {
-		if x < 3 {
-			// Menu icon
-			if x == 0 {
-				tStyle = StringToStyle("bold #ffd700,#121212")
-			}
-		} else if x < 21 {
-			// Toolbar icons
-			if x == 3 {
-				tStyle = StringToStyle("#ffffff")
-			}
-		}
-		screen.SetContent(x, 0, toolbarRunes[x], nil, tStyle)
-	}
-
 	// Display Tabs
 	for x := 0; x < w; x++ {
 		if x < len(tabsRunes) {
@@ -443,9 +466,9 @@ func DisplayTabs() {
 			} else {
 				tStyle = tabBarStyle
 			}
-			screen.SetContent(x+toolBarOffset, 0, tabsRunes[x], nil, tStyle)
+			screen.SetContent(x+toffset, 0, tabsRunes[x], nil, tStyle)
 		} else {
-			screen.SetContent(x+toolBarOffset, 0, ' ', nil, tabBarStyle)
+			screen.SetContent(x+toffset, 0, ' ', nil, tabBarStyle)
 		}
 	}
 }
