@@ -51,7 +51,7 @@ func (m *microMenu) Menu() {
 		name := "microide"
 		row := 0
 		m.AddSubmenu(name, "Micro-ide")
-		m.myapp.AddWindowLabel(name, fmt.Sprintf("%-"+strconv.Itoa(m.maxwidth+1)+"s", "Micro-ide"), 0, row, m.ShowSubmenuItems, "")
+		m.myapp.AddWindowMenuLabel(name, fmt.Sprintf("%-"+strconv.Itoa(m.maxwidth+1)+"s", "Micro-ide"), 0, row, m.ShowSubmenuItems, "")
 		m.AddSubMenuItem("microide", Language.Translate("Global Configurations"), m.GlobalConfigDialog)
 		m.AddSubMenuItem("microide", Language.Translate("KeyBindings"), m.KeyBindingsDialog)
 		m.AddSubMenuItem("microide", Language.Translate("Plugin Manager"), m.PluginManagerDialog)
@@ -63,6 +63,8 @@ func (m *microMenu) Menu() {
 			}
 			row++
 		}
+		m.myapp.AddWindowMenuBottom("menubottom", fmt.Sprintf("%-"+strconv.Itoa(m.maxwidth+1)+"s", " "), 0, row, nil, "")
+		row++
 		m.myapp.SetCanvas(1, 0, 30, row, "fixed")
 		m.myapp.Finish = m.MenuFinish
 	} else {
@@ -111,13 +113,14 @@ func (m *microMenu) ShowSubmenuItems(name, value, event, when string, x, y int) 
 	items := m.submenuElements[name]
 	for i, s := range items {
 		name := "submenu" + strconv.Itoa(i)
-		m.myapp.AddWindowLabel(name, fmt.Sprintf("%-"+strconv.Itoa(width+1)+"s", s.label), m.maxwidth+1, y, m.MenuItemClick, "")
-		ex := m.myapp.elements[name]
-		ex.Draw()
+		m.myapp.AddWindowMenuLabel(name, fmt.Sprintf("%-"+strconv.Itoa(width+1)+"s", s.label), m.maxwidth+2, y, m.MenuItemClick, "")
 		m.myapp.SetgName(name, "submenu")
 		m.myapp.SetiKey(name, i)
 		y++
 	}
+	m.myapp.AddWindowMenuBottom("smenubottom", fmt.Sprintf("%-"+strconv.Itoa(width+1)+"s", " "), m.maxwidth+2, y, nil, "")
+	m.myapp.SetgName("smenubottom", "submenu")
+	m.myapp.DrawAll()
 	return true
 }
 

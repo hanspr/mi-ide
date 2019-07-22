@@ -202,6 +202,19 @@ func (a *MicroApp) AddWindowLabel(name, label string, x, y int, callback func(st
 	a.AddWindowElement(name, label, "label", "", "", x, y, 0, 0, false, callback, style)
 }
 
+func (a *MicroApp) AddWindowMenuLabel(name, label string, x, y int, callback func(string, string, string, string, int, int) bool, style string) {
+	a.AddWindowElement(name, string(tcell.RuneVLine)+label+string(tcell.RuneVLine), "label", "", "", x, y, 0, 0, false, callback, style)
+}
+
+func (a *MicroApp) AddWindowMenuTop(name, label string, x, y int, callback func(string, string, string, string, int, int) bool, style string) {
+	a.AddWindowElement(name, string(tcell.RuneVLine)+label+string(tcell.RuneVLine), "label", "", "", x, y, 0, 0, false, callback, style)
+}
+
+func (a *MicroApp) AddWindowMenuBottom(name, label string, x, y int, callback func(string, string, string, string, int, int) bool, style string) {
+	label = strings.ReplaceAll(label, " ", string(tcell.RuneHLine))
+	a.AddWindowElement(name, string(tcell.RuneLLCorner)+label+string(tcell.RuneLRCorner), "label", "", "", x, y, 0, 0, false, callback, style)
+}
+
 func (a *MicroApp) AddWindowTextBox(name, label, value, value_type string, x, y, width, maxlength int, callback func(string, string, string, string, int, int) bool, style string) {
 	if width < 1 {
 		return
@@ -1349,7 +1362,7 @@ func (a *MicroApp) CheckElementsActions(event string, x, y int) bool {
 		}
 		// Check if location is inside the element hotspot
 		if x >= e.aposb.X && x <= e.apose.X && y >= e.aposb.Y && y <= e.apose.Y {
-			a.Debug(fmt.Sprintf("Hotspot ok %s , %s", e.name, event), 90, 3)
+			//a.Debug(fmt.Sprintf("Hotspot ok %s , %s", e.name, event), 90, 3)
 			if strings.Contains(event, "mouse") {
 				if a.mouseOver != "" && a.mouseOver != e.name {
 					ex := a.elements[a.mouseOver]
