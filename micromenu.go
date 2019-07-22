@@ -51,7 +51,7 @@ func (m *microMenu) Menu() {
 		name := "microide"
 		row := 0
 		m.AddSubmenu(name, "Micro-ide")
-		m.myapp.AddWindowMenuLabel(name, fmt.Sprintf("%-"+strconv.Itoa(m.maxwidth+1)+"s", "Micro-ide"), 0, row, m.ShowSubmenuItems, "")
+		m.myapp.AddWindowMenuLabel(name, fmt.Sprintf("%-"+strconv.Itoa(m.maxwidth+1)+"s", "Micro-ide"), "", 0, row, m.ShowSubmenuItems, "")
 		m.AddSubMenuItem("microide", Language.Translate("Global Configurations"), m.GlobalConfigDialog)
 		m.AddSubMenuItem("microide", Language.Translate("KeyBindings"), m.KeyBindingsDialog)
 		m.AddSubMenuItem("microide", Language.Translate("Plugin Manager"), m.PluginManagerDialog)
@@ -113,7 +113,13 @@ func (m *microMenu) ShowSubmenuItems(name, value, event, when string, x, y int) 
 	items := m.submenuElements[name]
 	for i, s := range items {
 		name := "submenu" + strconv.Itoa(i)
-		m.myapp.AddWindowMenuLabel(name, fmt.Sprintf("%-"+strconv.Itoa(width+1)+"s", s.label), m.maxwidth+2, y, m.MenuItemClick, "")
+		if i == 0 {
+			m.myapp.AddWindowMenuLabel(name, fmt.Sprintf("%-"+strconv.Itoa(width+1)+"s", s.label), "r", m.maxwidth+2, y, m.MenuItemClick, "")
+		if i == 1 {
+			m.myapp.AddWindowMenuLabel(name, fmt.Sprintf("%-"+strconv.Itoa(width+1)+"s", s.label), "cl", m.maxwidth+2, y, m.MenuItemClick, "")
+		} else {
+			m.myapp.AddWindowMenuLabel(name, fmt.Sprintf("%-"+strconv.Itoa(width+1)+"s", s.label), "", m.maxwidth+2, y, m.MenuItemClick, "")
+		}
 		m.myapp.SetgName(name, "submenu")
 		m.myapp.SetiKey(name, i)
 		y++
