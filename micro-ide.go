@@ -458,6 +458,7 @@ func main() {
 	L.SetGlobal("AddPluginOption", luar.New(L, AddPluginOption))
 	L.SetGlobal("SetPluginOption", luar.New(L, SetPluginOption))
 	L.SetGlobal("GetPluginOption", luar.New(L, GetPluginOption))
+	L.SetGlobal("WritePluginSettings", luar.New(L, WritePluginSettings))
 	L.SetGlobal("SetLocalOption", luar.New(L, SetLocalOption))
 	L.SetGlobal("BindKey", luar.New(L, BindKey))
 	L.SetGlobal("MakeCommand", luar.New(L, MakeCommand))
