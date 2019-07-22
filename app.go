@@ -28,9 +28,10 @@ type AppElement struct {
 	callback   func(string, string, string, string, int, int) bool // (element.name, element.value, event, x, y)
 	style      tcell.Style                                         // color style for this element
 	checked    bool                                                // Checkbox, Radio checked. Select is open
-	oname      string                                              // Original name, required for radio buttons
+	gname      string                                              // Original name, required for radio buttons
 	offset     int                                                 // Select = indexSelected, Text = offset from the age id box smaller than maxlength
-	visible    bool
+	visible    bool                                                //Set element vibilility attribute
+	iKey       int
 	microapp   *MicroApp
 }
 
@@ -149,11 +150,11 @@ func (a *MicroApp) AddWindowElement(name, label, form, value, value_type string,
 	} else if form == "radio" || form == "checkbox" {
 		n := 0
 		for _, e := range a.elements {
-			if e.oname == name {
+			if e.gname == name {
 				n++
 			}
 		}
-		e.oname = name
+		e.gname = name
 		e.name = name + strconv.Itoa(n)
 	}
 	// Calculate begin and end coordenates for the hotspot for element type
@@ -273,6 +274,10 @@ func (a *MicroApp) SetIndex(k string, v int) {
 	a.elements[k] = e
 }
 
+func (a *MicroApp) GetVisible(k string) bool {
+	return a.elements[k].visible
+}
+
 func (a *MicroApp) SetVisible(k string, v bool) {
 	e := a.elements[k]
 	if e.visible == v {
@@ -294,8 +299,24 @@ func (a *MicroApp) SetVisible(k string, v bool) {
 	a.screen.Show()
 }
 
-func (a *MicroApp) GetVisible(k string) bool {
-	return a.elements[k].visible
+func (a *MicroApp) GetgName(k string) string {
+	return a.elements[k].gname
+}
+
+func (a *MicroApp) SetgName(k, v string) {
+	e := a.elements[k]
+	e.gname = v
+	a.elements[k] = e
+}
+
+func (a *MicroApp) GetiKey(k string) int {
+	return a.elements[k].iKey
+}
+
+func (a *MicroApp) SetiKey(k string, v int) {
+	e := a.elements[k]
+	e.iKey = v
+	a.elements[k] = e
 }
 
 func (a *MicroApp) GetValue(k string) string {
@@ -781,6 +802,9 @@ func (a *MicroApp) DrawAll() {
 			}
 		}
 	}
+	if a.activeElement == "" {
+		a.screen.HideCursor()
+	}
 	a.screen.Show()
 }
 
@@ -819,35 +843,14 @@ func (a *MicroApp) Resize() {
 
 // Clear the entire screen from any app drawings
 func (a *MicroApp) ClearScreen(style *tcell.Style) {
-	a.screen.Clear()
 	RedrawAll(false)
 	a.screen.Show()
 }
 
-// Clear the entire canvas
-func (a *MicroApp) ClearCanvas() {
-	for c := a.canvas.left; c <= a.canvas.right; c++ {
-		for r := a.canvas.top; r <= a.canvas.bottom; r++ {
-			a.screen.SetContent(c, r, ' ', nil, StringToStyle("#000000,#000000"))
-		}
-	}
-}
-
-// Redraw all Canvas Area
+// Redraw Canvas
 func (a *MicroApp) ResetCanvas() {
-	a.ClearCanvas()
-	a.DrawAll()
-}
-
-func (a *MicroApp) ClearArea(top, left, right, bottom int) {
-	for c := left; c <= right; c++ {
-		for r := top; r <= bottom; r++ {
-			a.screen.SetContent(c, r, ' ', nil, StringToStyle("#000000,#000000"))
-		}
-	}
 	RedrawAll(false)
 	a.DrawAll()
-	a.screen.Show()
 }
 
 // Print Routines
@@ -1023,7 +1026,7 @@ func (e *AppElement) RadioCheckboxClickEvent(event string, x, y int) {
 	if e.form == "radio" {
 		e.DrawRadio()
 		for _, r := range a.elements {
-			if r.form == "radio" && r.oname == e.oname && r.name != e.name && e.checked == true {
+			if r.form == "radio" && r.gname == e.gname && r.name != e.name && e.checked == true {
 				r.checked = false
 				a.elements[r.name] = r
 				r.DrawRadio()
@@ -1053,7 +1056,7 @@ func (e *AppElement) ProcessElementClick(event string, x, y int) {
 	}
 	check := false
 	if e.form == "checkbox" || e.form == "radio" {
-		name = e.oname
+		name = e.gname
 		check = true
 	}
 	if e.callback != nil {
@@ -1346,7 +1349,7 @@ func (a *MicroApp) CheckElementsActions(event string, x, y int) bool {
 		}
 		// Check if location is inside the element hotspot
 		if x >= e.aposb.X && x <= e.apose.X && y >= e.aposb.Y && y <= e.apose.Y {
-			//a.Debug(fmt.Sprintf("CheckElementActions Hotspot ok %s , %s", event, time.Now()), 90, 3)
+			a.Debug(fmt.Sprintf("Hotspot ok %s , %s", e.name, event), 90, 3)
 			if strings.Contains(event, "mouse") {
 				if a.mouseOver != "" && a.mouseOver != e.name {
 					ex := a.elements[a.mouseOver]
@@ -1449,11 +1452,8 @@ func (a *MicroApp) HandleEvents(event tcell.Event) {
 		xa, ya := ev.Position()
 		x := xa - a.canvas.left
 		y := ya - a.canvas.top
-		if x < 0 {
-			x = 0
-		}
-		if y < 0 {
-			y = 0
+		if x < 0 || y < 0 {
+			break
 		}
 		button := ev.Buttons()
 		action := ""
@@ -1587,15 +1587,15 @@ func (a *MicroApp) getValues() map[string]string {
 		if e.form != "box" && e.form != "button" && e.form != "label" {
 			if e.form == "checkbox" {
 				if e.checked == true {
-					if values[e.oname] == "" {
-						values[e.oname] = e.value
+					if values[e.gname] == "" {
+						values[e.gname] = e.value
 					} else {
-						values[e.oname] = values[e.oname] + "|" + e.value
+						values[e.gname] = values[e.gname] + "|" + e.value
 					}
 				}
 			} else if e.form == "radio" {
 				if e.checked == true {
-					values[e.oname] = e.value
+					values[e.gname] = e.value
 				}
 			} else {
 				values[e.name] = e.value

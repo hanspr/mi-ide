@@ -21,6 +21,7 @@ type microMenu struct {
 	searchMatch     bool
 	submenu         map[string]string
 	submenuElements map[string][]menuElements
+	submenuWidth    map[string]int
 	maxwidth        int
 	activemenu      string
 }
@@ -31,6 +32,7 @@ func (m *microMenu) Menu() {
 	if m.myapp == nil || m.myapp.name != "micromenu" {
 		m.submenu = make(map[string]string)
 		m.submenuElements = make(map[string][]menuElements)
+		m.submenuWidth = make(map[string]int)
 		if m.myapp == nil {
 			m.myapp = new(MicroApp)
 			m.myapp.New("micromenu")
@@ -63,6 +65,8 @@ func (m *microMenu) Menu() {
 		}
 		m.myapp.SetCanvas(1, 0, 30, row, "fixed")
 		m.myapp.Finish = m.MenuFinish
+	} else {
+		m.closeSubmenus()
 	}
 	m.myapp.Start()
 	apprunning = m.myapp
@@ -82,10 +86,16 @@ func (m *microMenu) AddSubMenuItem(submenu, label string, callback func()) {
 	e.callback = callback
 	es = append(es, *e)
 	m.submenuElements[submenu] = es
+	if Count(label) > m.submenuWidth[submenu] {
+		m.submenuWidth[submenu] = Count(label)
+	}
 }
 
 func (m *microMenu) ShowSubmenuItems(name, value, event, when string, x, y int) bool {
 	if event == "mouseout" {
+		if y == m.myapp.elements[name].aposb.Y {
+			return true
+		}
 		m.closeSubmenus()
 		m.activemenu = ""
 		return true
@@ -96,7 +106,18 @@ func (m *microMenu) ShowSubmenuItems(name, value, event, when string, x, y int) 
 		m.closeSubmenus()
 	}
 	m.activemenu = name
-	// TODO Now show new submenu
+	width := m.submenuWidth[name]
+	// Show new submenu
+	items := m.submenuElements[name]
+	for i, s := range items {
+		name := "submenu" + strconv.Itoa(i)
+		m.myapp.AddWindowLabel(name, fmt.Sprintf("%-"+strconv.Itoa(width+1)+"s", s.label), m.maxwidth+1, y, m.MenuItemClick, "")
+		ex := m.myapp.elements[name]
+		ex.Draw()
+		m.myapp.SetgName(name, "submenu")
+		m.myapp.SetiKey(name, i)
+		y++
+	}
 	return true
 }
 
@@ -105,23 +126,35 @@ func (m *microMenu) closeSubmenus() {
 		return
 	}
 	// TODO Remove all submenu elements from last active menu
-	// Clear area for submenu elements
-	// TODO calculate the area to erase
-	m.myapp.ClearArea(0, 0, 0, 0)
+	for k, e := range m.myapp.elements {
+		if e.gname == "submenu" {
+			delete(m.myapp.elements, k)
+		}
+	}
+	m.myapp.ResetCanvas()
+	m.myapp.DrawAll()
 	m.activemenu = ""
 }
 
-func (m *microMenu) MenuItemClick(s string) {
-	// TODO Now call the configured callback to selected item
+func (m *microMenu) MenuItemClick(name, value, event, when string, x, y int) bool {
+	if event != "click1" {
+		return false
+	}
+	ex := m.submenuElements[m.activemenu][m.myapp.GetiKey(name)]
+	ex.callback()
+	return false
 }
 
 func (m *microMenu) GlobalConfigDialog() {
+	m.Finish("")
 }
 
 func (m *microMenu) KeyBindingsDialog() {
+	m.Finish("")
 }
 
 func (m *microMenu) PluginManagerDialog() {
+	m.Finish("")
 }
 
 func (m *microMenu) MenuFinish(s string) {
