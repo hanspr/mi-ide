@@ -262,6 +262,7 @@ func RedrawAll(show bool) {
 	}
 	DisplayTabs()
 	messenger.Display()
+
 	if show {
 		screen.Show()
 	}
@@ -270,7 +271,6 @@ func RedrawAll(show bool) {
 		runtime.GC()
 	}
 	numRedraw++
-
 }
 
 func LoadAll() {

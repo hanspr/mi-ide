@@ -22,6 +22,7 @@ type microMenu struct {
 	submenu         map[string]string
 	submenuElements map[string][]menuElements
 	maxwidth        int
+	activemenu      string
 }
 
 // Applicacion Micro Menu
@@ -48,16 +49,20 @@ func (m *microMenu) Menu() {
 		name := "microide"
 		row := 0
 		m.AddSubmenu(name, "Micro-ide")
-		m.myapp.AddWindowLabel(name, fmt.Sprintf("%-"+strconv.Itoa(m.maxwidth+1)+"s", "Micro-ide"), 0, row, nil, "")
+		m.myapp.AddWindowLabel(name, fmt.Sprintf("%-"+strconv.Itoa(m.maxwidth+1)+"s", "Micro-ide"), 0, row, m.ShowSubmenuItems, "")
+		m.AddSubMenuItem("microide", Language.Translate("Global Configurations"), m.GlobalConfigDialog)
+		m.AddSubMenuItem("microide", Language.Translate("KeyBindings"), m.KeyBindingsDialog)
+		m.AddSubMenuItem("microide", Language.Translate("Plugin Manager"), m.PluginManagerDialog)
 		row++
 		for _, name := range keys {
 			if name != "microide" {
 				label := fmt.Sprintf("%-"+strconv.Itoa(m.maxwidth+1)+"s", m.submenu[name])
-				m.myapp.AddWindowLabel(name, label, 0, row, nil, "")
+				m.myapp.AddWindowLabel(name, label, 0, row, m.ShowSubmenuItems, "")
 			}
 			row++
 		}
 		m.myapp.SetCanvas(1, 0, 30, row, "fixed")
+		m.myapp.Finish = m.MenuFinish
 	}
 	m.myapp.Start()
 	apprunning = m.myapp
@@ -69,6 +74,57 @@ func (m *microMenu) AddSubmenu(name, label string) {
 		m.maxwidth = Count(label)
 	}
 }
+
+func (m *microMenu) AddSubMenuItem(submenu, label string, callback func()) {
+	es := m.submenuElements[submenu]
+	e := new(menuElements)
+	e.label = label
+	e.callback = callback
+	es = append(es, *e)
+	m.submenuElements[submenu] = es
+}
+
+func (m *microMenu) ShowSubmenuItems(name, value, event, when string, x, y int) bool {
+	if m.activemenu != "" && m.activemenu == name {
+		return true
+	} else if m.activemenu != "" {
+		m.closeSubmenus()
+	}
+	m.activemenu = name
+	// TODO Now show new submenu
+	return true
+}
+
+func (m *microMenu) closeSubmenus() {
+	if m.activemenu == "" {
+		return
+	}
+	// TODO Remove all submenu elements from last active menu
+	// Clear area for submenu elements
+	// TODO calculate the area to erase
+	m.myapp.ClearArea(0, 0, 0, 0)
+	m.activemenu = ""
+}
+
+func (m *microMenu) MenuItemClick(s string) {
+	// TODO Now call the configured callback to selected item
+}
+
+func (m *microMenu) GlobalConfigDialog() {
+}
+
+func (m *microMenu) KeyBindingsDialog() {
+}
+
+func (m *microMenu) PluginManagerDialog() {
+}
+
+func (m *microMenu) MenuFinish(s string) {
+	m.closeSubmenus()
+	m.Finish("")
+}
+
+// General Default Routines
 
 func (m *microMenu) Finish(s string) {
 	messenger.AddLog(s)
@@ -82,15 +138,6 @@ func (m *microMenu) ButtonFinish(name, value, event, when string, x, y int) bool
 	}
 	m.Finish("Abort")
 	return true
-}
-
-func (m *microMenu) AddSubMenuItem(submenu, label string, callback func()) {
-	es := m.submenuElements[submenu]
-	e := new(menuElements)
-	e.label = label
-	e.callback = callback
-	es = append(es, *e)
-	m.submenuElements[submenu] = es
 }
 
 // END Menu

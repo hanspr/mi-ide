@@ -30,6 +30,7 @@ type AppElement struct {
 	checked    bool                                                // Checkbox, Radio checked. Select is open
 	oname      string                                              // Original name, required for radio buttons
 	offset     int                                                 // Select = indexSelected, Text = offset from the age id box smaller than maxlength
+	visible    bool
 	microapp   *MicroApp
 }
 
@@ -129,6 +130,7 @@ func (a *MicroApp) AddWindowElement(name, label, form, value, value_type string,
 	e.checked = chk
 	e.offset = 0
 	e.microapp = a
+	e.visible = true
 	re := regexp.MustCompile(`{/?\w+}`)
 	label = re.ReplaceAllString(label, "")
 	if style == "" {
@@ -270,6 +272,31 @@ func (a *MicroApp) SetIndex(k string, v int) {
 	a.elements[k] = e
 }
 
+func (a *MicroApp) SetVisible(k string, v bool) {
+	e := a.elements[k]
+	if e.visible == v {
+		return
+	}
+	e.visible = v
+	a.elements[e.name] = e
+	if v == true {
+		e.Draw()
+	} else {
+		a.ResetCanvas()
+		if a.activeElement == "" {
+			a.cursor = Loc{0, 0}
+			a.screen.HideCursor()
+		} else {
+			a.screen.ShowCursor(a.cursor.X+a.canvas.left, a.cursor.Y+a.canvas.top)
+		}
+	}
+	a.screen.Show()
+}
+
+func (a *MicroApp) GetVisible(k string) bool {
+	return a.elements[k].visible
+}
+
 func (a *MicroApp) GetValue(k string) string {
 	return a.elements[k].value
 }
@@ -409,6 +436,10 @@ func (a *MicroApp) SetFocusNextInputElement(k string) {
 	}
 }
 
+func (a *MicroApp) DeleteElement(k string) {
+	delete(a.elements, k)
+}
+
 // ------------------------------------------------
 // Drawing Methods
 // ------------------------------------------------
@@ -416,6 +447,9 @@ func (a *MicroApp) SetFocusNextInputElement(k string) {
 // Element Drawing
 
 func (e *AppElement) Draw() {
+	if e.visible == false {
+		return
+	}
 	if e.form == "box" {
 		e.DrawBox()
 	} else if e.form == "label" {
@@ -433,6 +467,9 @@ func (e *AppElement) Draw() {
 	} else if e.form == "button" {
 		e.DrawButton()
 	}
+}
+
+func (e *AppElement) Hide() {
 }
 
 func (e *AppElement) DrawBox() {
@@ -495,6 +532,7 @@ func (e *AppElement) DrawLabel() {
 
 func (e *AppElement) DrawTextBox() {
 	var r rune
+
 	a := e.microapp
 	val := []rune(e.value)
 	if e.offset > 0 || (e.height > e.width && len(val) >= e.width) {
@@ -776,16 +814,42 @@ func (a *MicroApp) Resize() {
 	a.screen.Show()
 }
 
-// Fill screen with a style, no borders
+// Clear Routines
+
+// Clear the entire screen from any app drawings
 func (a *MicroApp) ClearScreen(style *tcell.Style) {
-	if style == nil {
-		s := tcell.StyleDefault.Foreground(tcell.ColorWhite)
-		style = &s
-	}
-	s := a.screen
-	s.Fill(' ', *style)
+	a.screen.Clear()
+	RedrawAll(false)
 	a.screen.Show()
 }
+
+// Clear the entire canvas
+func (a *MicroApp) ClearCanvas() {
+	for c := a.canvas.left; c <= a.canvas.right; c++ {
+		for r := a.canvas.top; r <= a.canvas.bottom; r++ {
+			a.screen.SetContent(c, r, ' ', nil, StringToStyle("#000000,#000000"))
+		}
+	}
+}
+
+// Redraw all Canvas Area
+func (a *MicroApp) ResetCanvas() {
+	a.ClearCanvas()
+	a.DrawAll()
+}
+
+func (a *MicroApp) ClearArea(top, left, right, bottom int) {
+	for c := left; c <= right; c++ {
+		for r := top; r <= bottom; r++ {
+			a.screen.SetContent(c, r, ' ', nil, StringToStyle("#000000,#000000"))
+		}
+	}
+	RedrawAll(false)
+	a.DrawAll()
+	a.screen.Show()
+}
+
+// Print Routines
 
 // Debug works with absolute coordenates
 func (a *MicroApp) Debug(msg string, x, y int) {
@@ -1021,6 +1085,11 @@ func (e *AppElement) ProcessElementClick(event string, x, y int) {
 }
 
 func (e *AppElement) ProcessElementMouseMove(event string, x, y int) {
+	if e.callback != nil {
+		if e.callback(e.name, e.value, event, "", x, y) == false {
+			return
+		}
+	}
 }
 
 func (e *AppElement) ProcessElementMouseDown(event string, x, y int) {
