@@ -72,6 +72,7 @@ type MicroApp struct {
 	maxheigth        int
 	canvas           Canvas
 	maxindex         int
+	mouseOver        string
 }
 
 // ------------------------------------------------
@@ -1090,6 +1091,7 @@ func (e *AppElement) ProcessElementMouseMove(event string, x, y int) {
 			return
 		}
 	}
+	// TODO highlitght elements on mouse(over/out)
 }
 
 func (e *AppElement) ProcessElementMouseDown(event string, x, y int) {
@@ -1346,7 +1348,16 @@ func (a *MicroApp) CheckElementsActions(event string, x, y int) bool {
 		if x >= e.aposb.X && x <= e.apose.X && y >= e.aposb.Y && y <= e.apose.Y {
 			//a.Debug(fmt.Sprintf("CheckElementActions Hotspot ok %s , %s", event, time.Now()), 90, 3)
 			if strings.Contains(event, "mouse") {
-				e.ProcessElementMouseMove(event, x, y)
+				if a.mouseOver != "" && a.mouseOver != e.name {
+					ex := a.elements[a.mouseOver]
+					ex.ProcessElementMouseMove("mouseout", x, y)
+					e.ProcessElementMouseMove("mousein", x, y)
+				} else if a.mouseOver == "" {
+					e.ProcessElementMouseMove("mousein", x, y)
+				} else {
+					e.ProcessElementMouseMove(event, x, y)
+				}
+				a.mouseOver = e.name
 			} else if strings.Contains(event, "click") {
 				a.cursor = Loc{x, y}
 				e.ProcessElementClick(event, x, y)
@@ -1356,9 +1367,15 @@ func (a *MicroApp) CheckElementsActions(event string, x, y int) bool {
 				e.ProcessElementMouseWheel(event, x, y)
 			} else {
 				e.ProcessElementKey(event, x, y)
+				a.mouseOver = ""
 			}
 			return true
 		}
+	}
+	if a.mouseOver != "" {
+		ex := a.elements[a.mouseOver]
+		ex.ProcessElementMouseMove("mouseout", x, y)
+		a.mouseOver = ""
 	}
 	//a.Debug(fmt.Sprintf("CheckElementActions END %s", time.Now()), 90, 4)
 	if strings.Contains(event, "click") && a.lockActive == false {

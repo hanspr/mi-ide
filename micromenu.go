@@ -85,6 +85,11 @@ func (m *microMenu) AddSubMenuItem(submenu, label string, callback func()) {
 }
 
 func (m *microMenu) ShowSubmenuItems(name, value, event, when string, x, y int) bool {
+	if event == "mouseout" {
+		m.closeSubmenus()
+		m.activemenu = ""
+		return true
+	}
 	if m.activemenu != "" && m.activemenu == name {
 		return true
 	} else if m.activemenu != "" {
