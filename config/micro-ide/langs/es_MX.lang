@@ -1,0 +1,82 @@
+Find|Encontrar
+Esc,CtrlQ (Exit)  F5,Backspace (Previous)  F6,Enter (Next)|Esc,CtrlQ (Terminar)  F5,Tecla borrar (Anterior)  F6,Enter (Siguiente)
+is a directory|es un directorio
+You may want to remove the files in|Probablemente desee eliminar los archivos en
+(these files store the information for the 'saveundo' and 'savecursor' options) if this problem persists.|(estos archivos almacenan información para 'deshacer' y 'ubicación del cursor') si el problema persiste.
+Error loading syntax file|Error cargagando archivo de sintaxis
+Buffer reloaded|Búfer recargado
+The file has changed since it was last read. Reload file? (y,n)|El archivo ha cambiado desde la última vez que se leyó. Desea recargarlo nuevamente? (s,n)
+y|s
+n|n
+Y|S
+N|N
+Error loading history:|Error cargando historia:
+Error saving history:|Error guardando historia:
+Parent folders|Directorios padre
+do not exist. Create them? (y,n)|no existen. Crearlos? (s,n)
+Save aborted|Guardar abortado
+File saved as UTF-8|Archivo guardado como UTF-8
+File can not be saved with selected encoding|Archivo no se puede salvar con la codificación seleccionada
+Permission denied. Do you want to save this file using sudo? (y,n)|Permiso denegado. Deseas salvar archivo usando sudo? (s,n)
+Selection is to big, can not copy. You may move (up/down) or delete only.|Selección es demasiado grande, no puedo copiar. Puede mover la línea hacia (abajo/arriba) o eliminar únicamente.
+Line is to big, can not cut. You may move (up/down) or delete only.|Línea es muy grande, no puedo cortar. Puede mover la línea hacia (arriba/abajo) o eliminar únicamente.
+Line is to big to cut|Línea demasiado grande para cortar
+Line is to big, can not duplicate. You may move (up/down) or delete only.|Línea es demasiado grande para duplicarla. Puede mover la línea hacia (arriba/abajo) o eliminar únicamente.
+Jump to line: (1 - %v) :|Saltar a línea: (1 - %v) :
+Invalid line number|Número inválido
+Recording|Grabando
+Stopped recording|Grabación detenida
+Unknown plugin:|Complemento desconocido:
+Error installing|Error instalando
+is already installed but out-of-date: use 'plugin update|está instalado pero desactualizado: use 'plugin update
+' to update|' para actualizar
+is already installed|se encuentra ya instalado
+Removed|Eliminado
+The requested plugins do not exist|EL complemento solicitado no existe
+The following plugins are currently installed:|Los siguientes complementos se encuentran instalados
+plugins found|complementos encontrados
+Available Plugins:|Complementos disponibles:
+Not enough arguments|Argumentos insuficientes
+Warning: Showing raw event escape codes|Advertencia: mostrando códigos de eventos directos
+Use CtrlQ to exit|Use Ctrl+Q para salir
+Could not find tab:|No pude localizar pestaña:
+Invalid tab index|Índice de pestáña inválido
+Error with cd:|Error con cd:
+Error parsing args|Error escaneando argumentos
+No filename|Sin nombre de archivo
+Sorry, no help for|Lo siento, sin ayuda para
+Not enough arguments|Sin argumentos suficientes
+Please provide an option to show|Por favor provea una opción a mostrar
+is not a valid option|no es una opción válida
+Please provide a key to show|Por favor provea una tecla asociada para mostrar
+has no binding|no tiene tecla asociada
+Invalid replace statement:|Expresión de reemplazo inválida:
+Invalid flag:|Modificadores inválidos:
+Perform replacement? (y,n,q,!)|Reemplazar? (s,n,f,!)
+q|f
+!|!
+Replaced|Reemplazados
+occurrences of|ocurrencias de
+Nothing matched|Sin cambios
+Unknown command|Comando desconocido
+Save changes to|Salvar cambios a
+before closing? (y,n,esc)|antes de cerrar? (s,n,esc)
+You need to save view first|Necesita salvar vista primero
+opened in new Tab|abierto en nueva pestaña
+opened in View|abierto en vista
+Search|Buscar
+Search regex:|Buscar regex:
+Cancel|Cancelar
+Search / Replace|Buscar / Reemplazar
+Search regex:|Buscar regex:
+Replace regex:|Regex reemplazo:
+ignore case|ignora may.
+all|todos
+No regexp|No regexp
+Save As ...|Guardar como ...
+File name :|Nombre archivo :
+Encoding:|Codificación: 
+Use this encoding:|Usar esta codificación:
+Save|Guardar
+Select Encoding|Seleccionar codificación
+Set encoding|Codificar
