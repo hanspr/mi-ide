@@ -427,11 +427,6 @@ func (m *microMenu) SaveFile(name, value, event, when string, x, y int) bool {
 	if (name == "filename" && event != "Enter") || (name == "set" && event != "mouse-click1") {
 		return true
 	}
-	//	if name == "filename" && event == "Enter" {
-	//	} else if name="ok" && event == "mouse-click1" {
-	//	} else {
-	//		return true
-	//	}
 	var resp = make(map[string]string)
 	values := m.myapp.getValues()
 	if values["encode"] != "" {
@@ -486,6 +481,9 @@ func (m *microMenu) SelEncoding(callback func(map[string]string)) {
 
 func (m *microMenu) SetEncoding(name, value, event, when string, x, y int) bool {
 	if when == "POST" {
+		return true
+	}
+	if event != "mouse-click1" {
 		return true
 	}
 	var resp = make(map[string]string)
