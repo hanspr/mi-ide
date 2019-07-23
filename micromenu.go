@@ -65,7 +65,7 @@ func (m *microMenu) Menu() {
 		}
 		m.myapp.AddWindowMenuBottom("menubottom", fmt.Sprintf("%-"+strconv.Itoa(m.maxwidth+1)+"s", " "), 0, row, nil, "")
 		row++
-		m.myapp.SetCanvas(1, 0, 30, row, "fixed")
+		m.myapp.SetCanvas(1, 0, m.maxwidth, row-1, "fixed")
 		m.myapp.Finish = m.MenuFinish
 	} else {
 		m.closeSubmenus()

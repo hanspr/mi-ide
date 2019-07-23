@@ -1364,6 +1364,9 @@ func (e *AppElement) ProcessElementKey(key string, x, y int) {
 
 func (a *MicroApp) CheckElementsActions(event string, x, y int) bool {
 	//a.Debug(fmt.Sprintf("CheckElementActions %s", time.Now()), 90, 2)
+	if x < 0 || y < 0 {
+		return false
+	}
 	for _, e := range a.elements {
 		if e.index == 0 {
 			// Skip boxes
@@ -1474,9 +1477,6 @@ func (a *MicroApp) HandleEvents(event tcell.Event) {
 		xa, ya := ev.Position()
 		x := xa - a.canvas.left
 		y := ya - a.canvas.top
-		if x < 0 || y < 0 {
-			break
-		}
 		button := ev.Buttons()
 		action := ""
 		if button == tcell.ButtonNone {
