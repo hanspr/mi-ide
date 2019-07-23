@@ -297,7 +297,7 @@ func (m *microMenu) StartSearch(name, value, event, when string, x, y int) bool 
 }
 
 func (m *microMenu) SubmitSearchOnEnter(name, value, event, when string, x, y int) bool {
-	if strings.Contains(event, "mouse") {
+	if strings.Contains(event, "mouse") && event != "mouse-click1" {
 		return true
 	}
 	if event == "Enter" && when == "PRE" {
@@ -324,8 +324,6 @@ func (m *microMenu) SubmitSearchOnEnter(name, value, event, when string, x, y in
 		}
 		event = ""
 		value = value2
-	} else if strings.Contains(event, "click") {
-		return true
 	}
 	if len([]rune(event)) > 1 {
 		if event == "Backspace2" || event == "Delete" || event == "Ctrl+V" {
