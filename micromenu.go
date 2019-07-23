@@ -150,7 +150,7 @@ func (m *microMenu) closeSubmenus() {
 }
 
 func (m *microMenu) MenuItemClick(name, value, event, when string, x, y int) bool {
-	if event != "click1" {
+	if event != "mouse-click1" {
 		return false
 	}
 	ex := m.submenuElements[m.activemenu][m.myapp.GetiKey(name)]
@@ -173,22 +173,6 @@ func (m *microMenu) PluginManagerDialog() {
 func (m *microMenu) MenuFinish(s string) {
 	m.closeSubmenus()
 	m.Finish("")
-}
-
-// General Default Routines
-
-func (m *microMenu) Finish(s string) {
-	messenger.AddLog(s)
-	apprunning = nil
-	MicroToolBar.FixTabsIconArea()
-}
-
-func (m *microMenu) ButtonFinish(name, value, event, when string, x, y int) bool {
-	if when == "POST" {
-		return true
-	}
-	m.Finish("Abort")
-	return true
 }
 
 // END Menu
@@ -298,6 +282,9 @@ func (m *microMenu) AbortSearch(s string) {
 }
 
 func (m *microMenu) StartSearch(name, value, event, when string, x, y int) bool {
+	if event != "mouse-click1" {
+		return true
+	}
 	if when == "POST" {
 		return true
 	}
@@ -310,6 +297,9 @@ func (m *microMenu) StartSearch(name, value, event, when string, x, y int) bool 
 }
 
 func (m *microMenu) SubmitSearchOnEnter(name, value, event, when string, x, y int) bool {
+	if strings.Contains(event, "mouse") {
+		return true
+	}
 	if event == "Enter" && when == "PRE" {
 		if m.searchMatch == false {
 			m.myapp.SetValue("search", "")
@@ -324,7 +314,7 @@ func (m *microMenu) SubmitSearchOnEnter(name, value, event, when string, x, y in
 	if when == "PRE" {
 		return true
 	}
-	if event == "click1" {
+	if event == "mouse-click1" {
 		value2 := m.myapp.GetValue("search")
 		if name == "i" && value == "true" {
 			value2 = "(?i)" + value2
@@ -377,7 +367,7 @@ func (m *microMenu) SaveAs(b *Buffer, usePlugin bool, callback func(map[string]s
 		m.myapp.SetCanvas(-1, -1, width, heigth, "relative")
 		m.myapp.AddWindowBox("enc", Language.Translate("Save As ..."), 0, 0, width, heigth, true, nil, "")
 		lbl := Language.Translate("File name :")
-		m.myapp.AddWindowTextBox("filename", lbl+" ", "", "string", 2, 2, 76-Count(lbl), 200, nil, "")
+		m.myapp.AddWindowTextBox("filename", lbl+" ", "", "string", 2, 2, 76-Count(lbl), 200, m.SaveFile, "")
 		lbl = Language.Translate("Encoding:")
 		m.myapp.AddWindowSelect("encoding", lbl+" ", b.encoder, ENCODINGS+"|"+b.encoder+":"+b.encoder, 2, 4, 0, 1, m.SaveAsEncodingEvent, "")
 		lbl = Language.Translate("Use this encoding:")
@@ -390,7 +380,6 @@ func (m *microMenu) SaveAs(b *Buffer, usePlugin bool, callback func(map[string]s
 	}
 	m.usePlugin = usePlugin
 	m.myapp.SetValue("filename", b.Path)
-	m.myapp.SetFocus("filename", "B")
 	if strings.Contains(ENCODINGS, b.encoder) {
 		m.myapp.SetValue("encoding", b.encoder)
 		m.myapp.SetValue("encode", "")
@@ -400,6 +389,7 @@ func (m *microMenu) SaveAs(b *Buffer, usePlugin bool, callback func(map[string]s
 	}
 	m.myapp.Finish = m.SaveAsFinish
 	m.myapp.Start()
+	m.myapp.SetFocus("filename", "E")
 	apprunning = m.myapp
 }
 
@@ -407,7 +397,7 @@ func (m *microMenu) SaveAsEncodingEvent(name, value, event, when string, x, y in
 	if when == "POST" {
 		return true
 	}
-	if event == "click1" {
+	if event == "mouse-click1" {
 		m.myapp.SetValue("encode", "")
 	}
 	return true
@@ -425,6 +415,9 @@ func (m *microMenu) SaveAsButtonFinish(name, value, event, when string, x, y int
 	if when == "POST" {
 		return true
 	}
+	if event != "mouse-click1" {
+		return true
+	}
 	m.SaveAsFinish("")
 	return true
 }
@@ -433,6 +426,14 @@ func (m *microMenu) SaveFile(name, value, event, when string, x, y int) bool {
 	if when == "POST" {
 		return true
 	}
+	if (name == "filename" && event != "Enter") || (name == "set" && event != "mouse-click1") {
+		return true
+	}
+	//	if name == "filename" && event == "Enter" {
+	//	} else if name="ok" && event == "mouse-click1" {
+	//	} else {
+	//		return true
+	//	}
 	var resp = make(map[string]string)
 	values := m.myapp.getValues()
 	if values["encode"] != "" {
@@ -502,3 +503,22 @@ func (m *microMenu) SetEncoding(name, value, event, when string, x, y int) bool 
 }
 
 // END Encoding
+
+// General Default Routines
+
+func (m *microMenu) Finish(s string) {
+	messenger.AddLog(s)
+	apprunning = nil
+	MicroToolBar.FixTabsIconArea()
+}
+
+func (m *microMenu) ButtonFinish(name, value, event, when string, x, y int) bool {
+	if event != "mouse-click1" {
+		return true
+	}
+	if when == "POST" {
+		return true
+	}
+	m.Finish("Abort")
+	return true
+}

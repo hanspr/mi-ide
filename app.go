@@ -998,7 +998,6 @@ func (e *AppElement) SelectClickEvent(event string, x, y int) {
 
 		// Reset to height=1, hotspot, savew
 		if e.aposb.Y+e.height > a.maxheigth {
-			a.screen.Clear()
 			RedrawAll(false)
 		}
 		e.height = 1
@@ -1086,7 +1085,7 @@ func (e *AppElement) ProcessElementClick(event string, x, y int) {
 			return
 		}
 	}
-	if event == "click1" {
+	if event == "mouse-click1" {
 		if check == true {
 			e.RadioCheckboxClickEvent(event, x, y)
 		} else if e.form == "textbox" {
@@ -1153,6 +1152,9 @@ func (e *AppElement) SelectKeyEvent(key string, x, y int) {
 	} else if key == "Enter" {
 		a.activeElement = ""
 		if a.lockActive == true || e.checked == true {
+			if e.aposb.Y+e.height > a.maxheigth {
+				RedrawAll(false)
+			}
 			e.height = 1
 			e.apose = Loc{e.apose.X, e.aposb.Y}
 			a.lockActive = false
@@ -1376,23 +1378,25 @@ func (a *MicroApp) CheckElementsActions(event string, x, y int) bool {
 		if x >= e.aposb.X && x <= e.apose.X && y >= e.aposb.Y && y <= e.apose.Y {
 			//a.Debug(fmt.Sprintf("Hotspot ok %s , %s", e.name, event), 90, 3)
 			if strings.Contains(event, "mouse") {
-				if a.mouseOver != "" && a.mouseOver != e.name {
-					ex := a.elements[a.mouseOver]
-					ex.ProcessElementMouseMove("mouseout", x, y)
-					e.ProcessElementMouseMove("mousein", x, y)
-				} else if a.mouseOver == "" {
-					e.ProcessElementMouseMove("mousein", x, y)
+				if strings.Contains(event, "click") {
+					a.cursor = Loc{x, y}
+					e.ProcessElementClick(event, x, y)
+				} else if strings.Contains(event, "button") {
+					e.ProcessElementMouseDown(event, x, y)
+				} else if strings.Contains(event, "wheel") {
+					e.ProcessElementMouseWheel(event, x, y)
 				} else {
-					e.ProcessElementMouseMove(event, x, y)
+					if a.mouseOver != "" && a.mouseOver != e.name {
+						ex := a.elements[a.mouseOver]
+						ex.ProcessElementMouseMove("mouseout", x, y)
+						e.ProcessElementMouseMove("mousein", x, y)
+					} else if a.mouseOver == "" {
+						e.ProcessElementMouseMove("mousein", x, y)
+					} else {
+						e.ProcessElementMouseMove(event, x, y)
+					}
+					a.mouseOver = e.name
 				}
-				a.mouseOver = e.name
-			} else if strings.Contains(event, "click") {
-				a.cursor = Loc{x, y}
-				e.ProcessElementClick(event, x, y)
-			} else if strings.Contains(event, "button") {
-				e.ProcessElementMouseDown(event, x, y)
-			} else if strings.Contains(event, "wheel") {
-				e.ProcessElementMouseWheel(event, x, y)
 			} else {
 				e.ProcessElementKey(event, x, y)
 				a.mouseOver = ""
@@ -1491,10 +1495,10 @@ func (a *MicroApp) HandleEvents(event tcell.Event) {
 				if Abs(a.lastloc.X-x) < 3 && Abs(a.lastloc.Y-y) < 3 {
 					if Dt < 300 {
 						//a.Debug(fmt.Sprintf("doubleclick? (%d) %s", Dt, time.Now()), 90, 13)
-						action = "doubleclick" + a.lastbutton
+						action = "mouse-doubleclick" + a.lastbutton
 					} else {
 						//a.Debug(fmt.Sprintf("click? %s", time.Now()), 90, 14)
-						action = "click" + a.lastbutton
+						action = "mouse-click" + a.lastbutton
 						a.mousedown = false
 					}
 				} else {
@@ -1513,25 +1517,25 @@ func (a *MicroApp) HandleEvents(event tcell.Event) {
 			//a.Debug(fmt.Sprintf("MouseDown? %s", time.Now()), 90, 30)
 			a.mousedown = true
 			if button == tcell.Button1 {
-				action = "button1"
+				action = "mouse-button1"
 				a.lastbutton = "1"
 			} else if button == tcell.Button2 {
-				action = "button2"
+				action = "mouse-button2"
 				a.lastbutton = "2"
 			} else if button == tcell.Button3 {
-				action = "button3"
+				action = "mouse-button3"
 				a.lastbutton = "3"
 			} else if button&tcell.WheelUp != 0 {
-				action = "wheelUp"
+				action = "mouse-wheelUp"
 				a.mousedown = false
 			} else if button&tcell.WheelDown != 0 {
-				action = "wheelDown"
+				action = "mouse-wheelDown"
 				a.mousedown = false
 			} else if button&tcell.WheelLeft != 0 {
-				action = "wheelLeft"
+				action = "mouse-wheelLeft"
 				a.mousedown = false
 			} else if button&tcell.WheelRight != 0 {
-				action = "wheelRight"
+				action = "mouse-wheelRight"
 				a.mousedown = false
 			}
 			a.lastloc = Loc{x, y}
