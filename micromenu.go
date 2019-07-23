@@ -40,7 +40,7 @@ func (m *microMenu) Menu() {
 			m.myapp.name = "micromenu"
 		}
 		m.myapp.Reset()
-		style := StringToStyle("#000000,#87afd7")
+		style := StringToStyle("#ffffff,#222222")
 		m.myapp.defStyle = style
 		keys := make([]string, 0, len(m.submenu))
 		m.maxwidth = 0
@@ -109,17 +109,21 @@ func (m *microMenu) ShowSubmenuItems(name, value, event, when string, x, y int) 
 	}
 	m.activemenu = name
 	width := m.submenuWidth[name]
+	if y > 1 {
+		m.myapp.AddWindowMenuTop("smenubottom", fmt.Sprintf("%-"+strconv.Itoa(width+1)+"s", " "), m.maxwidth+2, y, nil, "")
+	}
 	// Show new submenu
 	items := m.submenuElements[name]
 	for i, s := range items {
 		name := "submenu" + strconv.Itoa(i)
 		if i == 0 {
 			m.myapp.AddWindowMenuLabel(name, fmt.Sprintf("%-"+strconv.Itoa(width+1)+"s", s.label), "r", m.maxwidth+2, y, m.MenuItemClick, "")
-		if i == 1 {
+		} else if i == 1 {
 			m.myapp.AddWindowMenuLabel(name, fmt.Sprintf("%-"+strconv.Itoa(width+1)+"s", s.label), "cl", m.maxwidth+2, y, m.MenuItemClick, "")
 		} else {
 			m.myapp.AddWindowMenuLabel(name, fmt.Sprintf("%-"+strconv.Itoa(width+1)+"s", s.label), "", m.maxwidth+2, y, m.MenuItemClick, "")
 		}
+		m.myapp.SetIndex(name, 3)
 		m.myapp.SetgName(name, "submenu")
 		m.myapp.SetiKey(name, i)
 		y++

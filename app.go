@@ -208,14 +208,15 @@ func (a *MicroApp) AddWindowMenuLabel(name, label, kind string, x, y int, callba
 	} else if kind == "l" {
 		a.AddWindowElement(name, string(tcell.RuneVLine)+label+" ", "label", "", "", x, y, 0, 0, false, callback, style)
 	} else if kind == "cl" {
-		a.AddWindowElement(name, string('┤')+label+" ", "label", "", "", x, y, 0, 0, false, callback, style)
+		a.AddWindowElement(name, string('┐')+label+string(tcell.RuneVLine), "label", "", "", x, y, 0, 0, false, callback, style)
 	} else {
 		a.AddWindowElement(name, string(tcell.RuneVLine)+label+string(tcell.RuneVLine), "label", "", "", x, y, 0, 0, false, callback, style)
 	}
 }
 
 func (a *MicroApp) AddWindowMenuTop(name, label string, x, y int, callback func(string, string, string, string, int, int) bool, style string) {
-	a.AddWindowElement(name, string(tcell.RuneVLine)+label+string(tcell.RuneVLine), "label", "", "", x, y, 0, 0, false, callback, style)
+	label = strings.ReplaceAll(label, " ", string(tcell.RuneHLine))
+	a.AddWindowElement(name, string(tcell.RuneLLCorner)+label+string(tcell.RuneURCorner), "label", "", "", x, y, 0, 0, false, callback, style)
 }
 
 func (a *MicroApp) AddWindowMenuBottom(name, label string, x, y int, callback func(string, string, string, string, int, int) bool, style string) {
