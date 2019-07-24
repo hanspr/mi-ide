@@ -184,15 +184,27 @@ func (m *microMenu) GlobalConfigDialog() {
 		row := 2
 		col := 2
 		for _, k := range keys {
-			kind := reflect.TypeOf(globalSettings[k]).Kind()
-			if kind == reflect.Bool {
-				m.myapp.AddWindowCheckBox(k, k, strconv.FormatBool(globalSettings[k].(bool)), col, row, globalSettings[k].(bool), nil, "")
-			} else if kind == reflect.String {
-				m.myapp.AddWindowTextBox(k, k+" ", globalSettings[k].(string), "string", col, row, 10, 20, nil, "")
-			} else if kind == reflect.Float64 {
-				m.myapp.AddWindowTextBox(k, k+" ", fmt.Sprintf("%g", globalSettings[k].(float64)), "integer", col, row, 5, 10, nil, "")
+			if k == "fileformat" {
+				m.myapp.AddWindowSelect(k, k+" ", globalSettings[k].(string), "unix:|dos:", col, row, 0, 1, nil, "")
+			} else if k == "indentchar" {
+				m.myapp.AddWindowSelect(k, k+" ", globalSettings[k].(string), "\t:Tab|\n:Space", col, row, 0, 1, nil, "")
+			} else if k == "scrollmargin" {
+				m.myapp.AddWindowSelect(k, k+" ", fmt.Sprintf("%g", globalSettings[k].(float64)), "0:|1:|2:|3:|4:|5:|6:|7:|8:|9:|10:", col, row, 0, 1, nil, "")
+			} else if k == "scrollspeed" {
+				m.myapp.AddWindowSelect(k, k+" ", fmt.Sprintf("%g", globalSettings[k].(float64)), "1:|2:|3:|4:|5:", col, row, 0, 1, nil, "")
+			} else if k == "tabsize" {
+				m.myapp.AddWindowSelect(k, k+" ", fmt.Sprintf("%g", globalSettings[k].(float64)), "1:|2:|3:|4:|5:|6:|7:|8:|9:|10:", col, row, 0, 1, nil, "")
 			} else {
-				continue
+				kind := reflect.TypeOf(globalSettings[k]).Kind()
+				if kind == reflect.Bool {
+					m.myapp.AddWindowCheckBox(k, k, strconv.FormatBool(globalSettings[k].(bool)), col, row, globalSettings[k].(bool), nil, "")
+				} else if kind == reflect.String {
+					m.myapp.AddWindowTextBox(k, k+" ", globalSettings[k].(string), "string", col, row, 10, 20, nil, "")
+				} else if kind == reflect.Float64 {
+					m.myapp.AddWindowTextBox(k, k+" ", fmt.Sprintf("%g", globalSettings[k].(float64)), "integer", col, row, 5, 10, nil, "")
+				} else {
+					continue
+				}
 			}
 			row += 2
 			if row > height-2 {
