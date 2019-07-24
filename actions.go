@@ -984,9 +984,11 @@ func (v *View) InsertTab(usePlugin bool) bool {
 	if v.Buf.Settings["smartindent"].(bool) == true {
 		v.Buf.RemoveTrailingSpace(Loc{0, v.Cursor.Loc.Y})
 		cSave := v.Cursor.Loc
+		spc := CountLeadingWhitespace(v.Buf.Line(v.Cursor.Y))
 		v.Buf.SmartIndent(v.Cursor.Loc, v.Cursor.Loc, false)
-		if cSave != v.Buf.Cursor.Loc && v.Buf.IsModified {
-			v.Cursor.GotoLoc(Loc{cSave.X + CountLeadingWhitespace(v.Buf.Line(v.Cursor.Y)), v.Cursor.Y})
+		diff := CountLeadingWhitespace(v.Buf.Line(v.Cursor.Y)) - spc
+		if diff != 0 && v.Buf.IsModified {
+			v.Cursor.GotoLoc(Loc{cSave.X + diff, v.Cursor.Y})
 		}
 	} else if v.Buf.Settings["tabindents"].(bool) == false {
 		v.Buf.Insert(v.Cursor.Loc, v.Buf.IndentString()[:bytesUntilIndent])
