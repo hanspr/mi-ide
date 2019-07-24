@@ -1,5 +1,5 @@
 Find|Encontrar
-Esc,CtrlQ (Exit)  F5,Backspace (Previous)  F6,Enter (Next)|Esc,CtrlQ (Terminar)  F5,Tecla borrar (Anterior)  F6,Enter (Siguiente)
+F5,Backspace (Previous)  F6,Enter (Next)|F5,Tecla borrar (Anterior)  F6,Enter (Siguiente)
 is a directory|es un directorio
 You may want to remove the files in|Probablemente desee eliminar los archivos en
 (these files store the information for the 'saveundo' and 'savecursor' options) if this problem persists.|(estos archivos almacenan información para 'deshacer' y 'ubicación del cursor') si el problema persiste.
@@ -80,6 +80,6 @@ Use this encoding:|Usar esta codificación:
 Save|Guardar
 Select Encoding|Seleccionar codificación
 Set encoding|Codificar
-Global Configurations|Configuración Global
+Global Settings|Configuración Global
 KeyBindings|Asignación de teclas
 Plugin Manager|Administrador de Extensiones
