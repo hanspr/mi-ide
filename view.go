@@ -1038,7 +1038,7 @@ func (v *View) DisplayView() {
 		WindowOffset = width / 5
 	}
 
-	// Have a window margin on edges a very long lines if the windows is wide enough
+	// Have a window margin on edges for very long lines if the windows is wide enough
 	if v.Buf.Settings["softwrap"].(bool) == false && StringWidth(v.Buf.Line(v.Cursor.Loc.Y), int(v.Buf.Settings["tabsize"].(float64))) > width-v.lineNumOffset {
 		shift := 0
 		if v.Cursor.GetVisualX()+1 < width-v.lineNumOffset && v.Cursor.GetVisualX()+1 > width-v.lineNumOffset-WindowOffset {
