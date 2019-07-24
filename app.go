@@ -864,7 +864,7 @@ func (a *MicroApp) Resize() {
 // Clear Routines
 
 // Clear the entire screen from any app drawings
-func (a *MicroApp) ClearScreen(style *tcell.Style) {
+func (a *MicroApp) ClearScreen() {
 	RedrawAll(false)
 	a.screen.Show()
 }
@@ -1599,10 +1599,11 @@ func (a *MicroApp) Reset() {
 	a.WindowFinish = nil
 	a.Finish = nil
 	a.lockActive = false
+	a.lastloc = Loc{-1, -1}
 	a.activeElement = ""
-	a.mousedown = false
-	a.lastloc = Loc{0, 0}
+	a.mouseOver = ""
 	a.lastbutton = ""
+	a.mousedown = false
 	a.eint = 0
 }
 

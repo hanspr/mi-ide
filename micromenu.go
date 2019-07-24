@@ -3,6 +3,7 @@ package main
 
 import (
 	"fmt"
+	"reflect"
 	"sort"
 	"strconv"
 	"strings"
@@ -30,6 +31,7 @@ type microMenu struct {
 
 func (m *microMenu) Menu() {
 	if m.myapp == nil || m.myapp.name != "micromenu" {
+		m.activemenu = ""
 		m.submenu = make(map[string]string)
 		m.submenuElements = make(map[string][]menuElements)
 		m.submenuWidth = make(map[string]int)
@@ -52,7 +54,7 @@ func (m *microMenu) Menu() {
 		row := 0
 		m.AddSubmenu(name, "Micro-ide")
 		m.myapp.AddWindowMenuLabel(name, fmt.Sprintf("%-"+strconv.Itoa(m.maxwidth+1)+"s", "Micro-ide"), "", 0, row, m.ShowSubmenuItems, "")
-		m.AddSubMenuItem("microide", Language.Translate("Global Configurations"), m.GlobalConfigDialog)
+		m.AddSubMenuItem("microide", Language.Translate("Global Settings"), m.GlobalConfigDialog)
 		m.AddSubMenuItem("microide", Language.Translate("KeyBindings"), m.KeyBindingsDialog)
 		m.AddSubMenuItem("microide", Language.Translate("Plugin Manager"), m.PluginManagerDialog)
 		row++
@@ -153,13 +155,54 @@ func (m *microMenu) MenuItemClick(name, value, event, when string, x, y int) boo
 	if event != "mouse-click1" {
 		return false
 	}
+	m.myapp.ClearScreen()
 	ex := m.submenuElements[m.activemenu][m.myapp.GetiKey(name)]
 	ex.callback()
 	return false
 }
 
 func (m *microMenu) GlobalConfigDialog() {
-	m.Finish("")
+	if m.myapp == nil || m.myapp.name != "globalconfig" {
+		if m.myapp == nil {
+			m.myapp = new(MicroApp)
+			m.myapp.New("globalconfig")
+		} else {
+			m.myapp.name = "globalconfig"
+		}
+		width := 110
+		height := 30
+		m.myapp.Reset()
+		m.myapp.defStyle = StringToStyle("#ffffff,#262626")
+		m.myapp.AddStyle("def", "ColorWhite,ColorDarkGrey")
+		m.myapp.SetCanvas(-1, -1, width, height, "relative")
+		m.myapp.AddWindowBox("enc", Language.Translate("Global Settings"), 0, 0, width, height, true, nil, "")
+		keys := make([]string, 0, len(globalSettings))
+		for k := range globalSettings {
+			keys = append(keys, k)
+		}
+		sort.Strings(keys)
+		row := 2
+		col := 2
+		for _, k := range keys {
+			kind := reflect.TypeOf(globalSettings[k]).Kind()
+			if kind == reflect.Bool {
+				m.myapp.AddWindowCheckBox(k, k, strconv.FormatBool(globalSettings[k].(bool)), col, row, globalSettings[k].(bool), nil, "")
+			} else if kind == reflect.String {
+				m.myapp.AddWindowTextBox(k, k+" ", globalSettings[k].(string), "string", col, row, 10, 20, nil, "")
+			} else if kind == reflect.Float64 {
+				m.myapp.AddWindowTextBox(k, k+" ", fmt.Sprintf("%g", globalSettings[k].(float64)), "integer", col, row, 5, 10, nil, "")
+			} else {
+				continue
+			}
+			row += 2
+			if row > height-2 {
+				row = 2
+				col += 30
+			}
+		}
+	}
+	m.myapp.Start()
+	apprunning = m.myapp
 }
 
 func (m *microMenu) KeyBindingsDialog() {
