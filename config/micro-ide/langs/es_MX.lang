@@ -26,16 +26,16 @@ Jump to line: (1 - %v) :|Saltar a línea: (1 - %v) :
 Invalid line number|Número inválido
 Recording|Grabando
 Stopped recording|Grabación detenida
-Unknown plugin:|Complemento desconocido:
+Unknown plugin:|Extensión desconocida:
 Error installing|Error instalando
 is already installed but out-of-date: use 'plugin update|está instalado pero desactualizado: use 'plugin update
 ' to update|' para actualizar
 is already installed|se encuentra ya instalado
 Removed|Eliminado
-The requested plugins do not exist|EL complemento solicitado no existe
-The following plugins are currently installed:|Los siguientes complementos se encuentran instalados
-plugins found|complementos encontrados
-Available Plugins:|Complementos disponibles:
+The requested plugins do not exist|La extensión solicitada no existe
+The following plugins are currently installed:|Las siguientes extensiones se encuentran instalados
+plugins found|extensiones encontradas
+Available Plugins:|Extensiones disponibles:
 Not enough arguments|Argumentos insuficientes
 Warning: Showing raw event escape codes|Advertencia: mostrando códigos de eventos directos
 Use CtrlQ to exit|Use Ctrl+Q para salir
@@ -80,3 +80,6 @@ Use this encoding:|Usar esta codificación:
 Save|Guardar
 Select Encoding|Seleccionar codificación
 Set encoding|Codificar
+Global Configurations|Configuración Global
+KeyBindings|Asignación de teclas
+Plugin Manager|Administrador de Extensiones

@@ -621,7 +621,7 @@ func main() {
 								}
 							}
 						}
-					} else if e.Buttons() == tcell.Button3 {
+					} else if e.Buttons() == tcell.Button3 || e.Buttons() == tcell.Button2 {
 						// Added button3 event to dirview to open file in view next to it
 						if dirview.Open && dirview.tree_view == CurView() {
 							v := CurView()

@@ -1327,7 +1327,7 @@ func (v *View) DuplicateLine(usePlugin bool) bool {
 		}
 		v.Cursor.End()
 		v.Buf.Insert(v.Cursor.Loc, "\n"+v.Buf.Line(v.Cursor.Y))
-		// v.Cursor.Right()
+		v.Cursor.Start()
 	}
 
 	if usePlugin {
