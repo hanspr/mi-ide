@@ -2479,12 +2479,12 @@ func (v *View) FindDialog(usePlugin bool) bool {
 func (v *View) FindDialogFinished(values map[string]string) {
 	searchStart = v.searchSave
 	v.Cursor.ResetSelection()
-	if values["search"] == "" {
+	if values["find"] == "" {
 		v.Cursor.GotoLoc(v.searchSave)
 		v.Relocate()
 		return
 	}
-	search := values["search"]
+	search := values["find"]
 	mods := "(?m)"
 	if values["i"] == "i" {
 		mods = mods + "(?i)"

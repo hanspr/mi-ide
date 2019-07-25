@@ -190,10 +190,35 @@ func (m *microMenu) GlobalConfigDialog() {
 				m.myapp.AddWindowSelect(k, k+" ", globalSettings[k].(string), "\t:Tab|\n:Space", col, row, 0, 1, nil, "")
 			} else if k == "scrollmargin" {
 				m.myapp.AddWindowSelect(k, k+" ", fmt.Sprintf("%g", globalSettings[k].(float64)), "0:|1:|2:|3:|4:|5:|6:|7:|8:|9:|10:", col, row, 0, 1, nil, "")
+			} else if k == "colorcolumn" {
+				m.myapp.AddWindowTextBox(k, k+" ", fmt.Sprintf("%g", globalSettings[k].(float64)), "integer", col, row, 4, 3, m.ValidateInteger, "")
 			} else if k == "scrollspeed" {
 				m.myapp.AddWindowSelect(k, k+" ", fmt.Sprintf("%g", globalSettings[k].(float64)), "1:|2:|3:|4:|5:", col, row, 0, 1, nil, "")
 			} else if k == "tabsize" {
 				m.myapp.AddWindowSelect(k, k+" ", fmt.Sprintf("%g", globalSettings[k].(float64)), "1:|2:|3:|4:|5:|6:|7:|8:|9:|10:", col, row, 0, 1, nil, "")
+			} else if k == "lang" {
+				Langs := ""
+				langs := GeTFileListFromPath(configDir+"/langs", "lang")
+				for _, l := range langs {
+					if Langs == "" {
+						Langs = Langs + l + ":"
+					} else {
+						Langs = Langs + "|" + l + ":"
+					}
+				}
+				m.myapp.AddWindowSelect(k, k+" ", globalSettings[k].(string), Langs, col, row, 0, 1, nil, "")
+			} else if k == "colorscheme" {
+				Colors := ""
+				colors := GeTFileListFromPath(configDir+"/colorschemes", "micro")
+				for _, c := range colors {
+					if Colors == "" {
+						Colors = Colors + c + ":"
+					} else {
+						Colors = Colors + "|" + c + ":"
+					}
+				}
+				m.myapp.AddWindowSelect(k, k+" ", globalSettings[k].(string), Colors, col, row, 0, 1, nil, "")
+				m.myapp.SetIndex(k, 3)
 			} else {
 				kind := reflect.TypeOf(globalSettings[k]).Kind()
 				if kind == reflect.Bool {
@@ -215,6 +240,22 @@ func (m *microMenu) GlobalConfigDialog() {
 	}
 	m.myapp.Start()
 	apprunning = m.myapp
+}
+
+func (m *microMenu) ValidateInteger(name, value, event, when string, x, y int) bool {
+	if when == "POST" {
+		return true
+	}
+	if strings.Contains(event, "mouse") {
+		return true
+	}
+	if Count(value) > 1 {
+		return true
+	}
+	if strings.Contains("0123456789", event) {
+		return true
+	}
+	return false
 }
 
 func (m *microMenu) KeyBindingsDialog() {
@@ -251,7 +292,7 @@ func (m *microMenu) Search(callback func(map[string]string)) {
 		m.myapp.AddStyle("f", "black,yellow")
 		m.myapp.AddWindowBox("enc", Language.Translate("Search"), 0, 0, width, heigth, true, nil, "")
 		lbl := Language.Translate("Search regex:")
-		m.myapp.AddWindowTextBox("search", lbl+" ", "", "string", 2, 2, 61-Count(lbl), 50, m.SubmitSearchOnEnter, "")
+		m.myapp.AddWindowTextBox("find", lbl+" ", "", "string", 2, 2, 61-Count(lbl), 50, m.SubmitSearchOnEnter, "")
 		m.myapp.AddWindowCheckBox("i", "i", "i", 65, 2, false, m.SubmitSearchOnEnter, "")
 		m.myapp.AddWindowLabel("found", "", 2, 4, nil, "")
 		lbl = Language.Translate("Cancel")
@@ -267,12 +308,12 @@ func (m *microMenu) Search(callback func(map[string]string)) {
 		sel := CurView().Cursor.CurSelection
 		messenger.AddLog(sel)
 		if sel[0].Y == sel[1].Y {
-			m.myapp.SetValue("search", CurView().Cursor.GetSelection())
+			m.myapp.SetValue("find", CurView().Cursor.GetSelection())
 		}
 	}
-	m.myapp.SetFocus("search", "E")
+	m.myapp.SetFocus("find", "E")
 	apprunning = m.myapp
-	m.SubmitSearchOnEnter("search", m.myapp.GetValue("search"), "", "POST", 0, 0)
+	m.SubmitSearchOnEnter("find", m.myapp.GetValue("find"), "", "POST", 0, 0)
 }
 
 func (m *microMenu) SearchReplace(callback func(map[string]string)) {
@@ -355,7 +396,7 @@ func (m *microMenu) SubmitSearchOnEnter(name, value, event, when string, x, y in
 	if strings.Contains(event, "mouse") && event != "mouse-click1" {
 		return true
 	}
-	if event == "Enter" && when == "PRE" {
+	if event == "Enter" && when == "PRE" && (name == "find" || name == "replace") {
 		if m.searchMatch == false {
 			m.myapp.SetValue("search", "")
 		}

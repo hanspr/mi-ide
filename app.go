@@ -252,9 +252,9 @@ func (a *MicroApp) AddWindowSelect(name, label, value string, options string, x,
 	if options == "" {
 		return false
 	}
-	if strings.Contains(options, "|") == false {
-		return false
-	}
+	//if strings.Contains(options, "|") == false {
+	//return false
+	//}
 	if width == 0 {
 		opts := strings.Split(options, "|")
 		for _, opt := range opts {

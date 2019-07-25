@@ -1,0 +1,85 @@
+Find|
+F5,Backspace (Previous)  F6,Enter (Next)|
+is a directory|
+You may want to remove the files in|
+(these files store the information for the 'saveundo' and 'savecursor' options) if this problem persists.|
+Error loading syntax file|
+Buffer reloaded|
+The file has changed since it was last read. Reload file? (y,n)|
+y|
+n|
+Y|
+N|
+Error loading history:|
+Error saving history:|
+Parent folders|
+do not exist. Create them? (y,n)|
+Save aborted|
+File saved as UTF-8|
+File can not be saved with selected encoding|
+Permission denied. Do you want to save this file using sudo? (y,n)|
+Selection is to big, can not copy. You may move (up/down) or delete only.|
+Line is to big, can not cut. You may move (up/down) or delete only.|
+Line is to big to cut|
+Line is to big, can not duplicate. You may move (up/down) or delete only.|
+Jump to line: (1 - %v) :|
+Invalid line number|
+Recording|
+Stopped recording|
+Unknown plugin:|
+Error installing|
+is already installed but out-of-date: use 'plugin update|
+' to update|
+is already installed|
+Removed|
+The requested plugins do not exist|
+The following plugins are currently installed:|
+plugins found|
+Available Plugins:|
+Not enough arguments|
+Warning: Showing raw event escape codes|
+Use CtrlQ to exit|
+Could not find tab:|
+Invalid tab index|
+Error with cd:|
+Error parsing args|
+No filename|
+Sorry, no help for|
+Not enough arguments|
+Please provide an option to show|
+is not a valid option|
+Please provide a key to show|
+has no binding|
+Invalid replace statement:|
+Invalid flag:|
+Perform replacement? (y,n,q,!)|
+q|
+!|
+Replaced|
+occurrences of|
+Nothing matched|
+Unknown command|
+Save changes to|
+before closing? (y,n,esc)|
+You need to save view first|
+opened in new Tab|
+opened in View|
+Search|
+Search regex:|
+Cancel|
+Search / Replace|
+Search regex:|
+Replace regex:|
+ignore case|
+all|
+No regexp|
+Save As ...|
+File name :|
+Encoding:|
+Use this encoding:|
+Save|
+Select Encoding|
+Set encoding|
+Global Settings|
+KeyBindings|
+Plugin Manager|

@@ -550,3 +550,17 @@ func DownLoadExtractZip(url, targetDir string) error {
 	}
 	return nil
 }
+
+func GeTFileListFromPath(path, extension string) []string {
+	Files := []string{}
+	files, err := ioutil.ReadDir(path)
+	if err != nil {
+		return nil
+	}
+	for _, f := range files {
+		if strings.Contains(f.Name(), extension) {
+			Files = append(Files, strings.Replace(f.Name(), "."+extension, "", 1))
+		}
+	}
+	return Files
+}
