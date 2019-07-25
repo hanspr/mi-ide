@@ -12,7 +12,7 @@
     "fileformat": "unix",
     "hidehelp": false,
     "ignorecase": false,
-    "indentchar": "\t",
+    "indentchar": " ",
     "infobar": true,
     "keepautoindent": true,
     "lang": "es_MX",

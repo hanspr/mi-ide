@@ -83,3 +83,4 @@ Set encoding|Codificar
 Global Settings|Configuración Global
 KeyBindings|Asignación de teclas
 Plugin Manager|Administrador de Extensiones
+Error writing settings.json file|Error al salvar archivo de configuraciones

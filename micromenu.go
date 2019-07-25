@@ -189,7 +189,7 @@ func (m *microMenu) GlobalConfigDialog() {
 			} else if k == "colorcolumn" {
 				m.myapp.AddWindowTextBox(k, k+" ", fmt.Sprintf("%g", globalSettings[k].(float64)), "string", col, row, 4, 3, m.ValidateInteger, "")
 			} else if k == "indentchar" {
-				m.myapp.AddWindowSelect(k, k+" ", globalSettings[k].(string), "\t:Tab|\n:Space", col, row, 0, 1, nil, "")
+				m.myapp.AddWindowSelect(k, k+" ", globalSettings[k].(string), "t:Tab|s:Space", col, row, 0, 1, nil, "")
 			} else if k == "scrollmargin" {
 				m.myapp.AddWindowSelect(k, k+" ", fmt.Sprintf("%g", globalSettings[k].(float64)), "0:|1:|2:|3:|4:|5:|6:|7:|8:|9:|10:", col, row, 3, 1, nil, "")
 				m.myapp.SetIndex(k, 3)
@@ -251,6 +251,44 @@ func (m *microMenu) SaveSettings(name, value, event, when string, x, y int) bool
 		return true
 	}
 	m.Finish("")
+	save := false
+	v := ""
+	values := m.myapp.getValues()
+	if values["indentchar"] == "t" {
+		values["indentchar"] = `\t`
+	} else {
+		values["indentchar"] = ` `
+	}
+	// TODO : Comparar datos contra defaults, si son diferentes agregar para salvar
+	for k, _ := range globalSettings {
+		kind := reflect.TypeOf(globalSettings[k]).Kind()
+		if kind == reflect.Bool {
+			v = strconv.FormatBool(globalSettings[k].(bool))
+			if values[k] == "" {
+				values[k] = "false"
+			}
+		} else if kind == reflect.String {
+			v = globalSettings[k].(string)
+		} else if kind == reflect.Float64 {
+			v = fmt.Sprintf("%g", globalSettings[k].(float64))
+		} else {
+			continue
+		}
+		if v != values[k] {
+			save = true
+			SetOption(k, values[k])
+			if k == "lang" {
+				Language.ChangeLangName(values[k], configDir+"/langs/"+values[k]+".lang")
+			}
+		}
+	}
+	if save {
+		err := WriteSettings(configDir + "/settings.json")
+		if err != nil {
+			messenger.Error(Language.Translate("Error writing settings.json file"), ": ", err.Error())
+		}
+	}
+	// TODO : Salvar
 	return true
 }
 
