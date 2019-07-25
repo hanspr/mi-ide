@@ -155,8 +155,18 @@ func (v *View) ScrollUpAction(usePlugin bool) bool {
 			return false
 		}
 
-		scrollspeed := int(v.Buf.Settings["scrollspeed"].(float64))
+		scrollspeed := 1
+		Dt := time.Since(scrollsince) / time.Millisecond
+		if Dt < 50 {
+			return false
+		} else if Dt < 280 {
+			scrollspeed = 2 * scrollcount
+			scrollcount += 2
+		} else {
+			scrollcount = 1
+		}
 		v.ScrollUp(scrollspeed)
+		scrollsince = time.Now()
 
 		if usePlugin {
 			PostActionCall("ScrollUp", v)
@@ -172,8 +182,18 @@ func (v *View) ScrollDownAction(usePlugin bool) bool {
 			return false
 		}
 
-		scrollspeed := int(v.Buf.Settings["scrollspeed"].(float64))
+		scrollspeed := 1
+		Dt := time.Since(scrollsince) / time.Millisecond
+		if Dt < 50 {
+			return false
+		} else if Dt < 280 {
+			scrollspeed = 2 * scrollcount
+			scrollcount += 2
+		} else {
+			scrollcount = 1
+		}
 		v.ScrollDown(scrollspeed)
+		scrollsince = time.Now()
 
 		if usePlugin {
 			PostActionCall("ScrollDown", v)

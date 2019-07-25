@@ -83,6 +83,9 @@ var (
 	Language *lang.Lang
 
 	MicroToolBar *ToolBar
+
+	scrollsince time.Time
+	scrollcount int
 )
 
 // LoadInput determines which files should be loaded into buffers

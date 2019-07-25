@@ -27,7 +27,6 @@ var invalidSettings bool
 var optionValidators = map[string]optionValidator{
 	"tabsize":      validatePositiveValue,
 	"scrollmargin": validateNonNegativeValue,
-	"scrollspeed":  validateNonNegativeValue,
 	"colorscheme":  validateColorscheme,
 	"colorcolumn":  validateNonNegativeValue,
 	"fileformat":   validateLineEnding,
@@ -231,7 +230,6 @@ func DefaultGlobalSettings() map[string]interface{} {
 		"saveundo":       false,
 		"scrollbar":      false,
 		"scrollmargin":   float64(3),
-		"scrollspeed":    float64(2),
 		"softwrap":       false,
 		"smartindent":    false,
 		"smartpaste":     true,
@@ -277,7 +275,6 @@ func DefaultLocalSettings() map[string]interface{} {
 		"saveundo":       false,
 		"scrollbar":      false,
 		"scrollmargin":   float64(3),
-		"scrollspeed":    float64(2),
 		"softwrap":       false,
 		"smartindent":    true,
 		"smartpaste":     true,

@@ -186,16 +186,15 @@ func (m *microMenu) GlobalConfigDialog() {
 		for _, k := range keys {
 			if k == "fileformat" {
 				m.myapp.AddWindowSelect(k, k+" ", globalSettings[k].(string), "unix:|dos:", col, row, 0, 1, nil, "")
+			} else if k == "colorcolumn" {
+				m.myapp.AddWindowTextBox(k, k+" ", fmt.Sprintf("%g", globalSettings[k].(float64)), "string", col, row, 4, 3, m.ValidateInteger, "")
 			} else if k == "indentchar" {
 				m.myapp.AddWindowSelect(k, k+" ", globalSettings[k].(string), "\t:Tab|\n:Space", col, row, 0, 1, nil, "")
 			} else if k == "scrollmargin" {
-				m.myapp.AddWindowSelect(k, k+" ", fmt.Sprintf("%g", globalSettings[k].(float64)), "0:|1:|2:|3:|4:|5:|6:|7:|8:|9:|10:", col, row, 0, 1, nil, "")
-			} else if k == "colorcolumn" {
-				m.myapp.AddWindowTextBox(k, k+" ", fmt.Sprintf("%g", globalSettings[k].(float64)), "integer", col, row, 4, 3, m.ValidateInteger, "")
-			} else if k == "scrollspeed" {
-				m.myapp.AddWindowSelect(k, k+" ", fmt.Sprintf("%g", globalSettings[k].(float64)), "1:|2:|3:|4:|5:", col, row, 0, 1, nil, "")
+				m.myapp.AddWindowSelect(k, k+" ", fmt.Sprintf("%g", globalSettings[k].(float64)), "0:|1:|2:|3:|4:|5:|6:|7:|8:|9:|10:", col, row, 3, 1, nil, "")
+				m.myapp.SetIndex(k, 3)
 			} else if k == "tabsize" {
-				m.myapp.AddWindowSelect(k, k+" ", fmt.Sprintf("%g", globalSettings[k].(float64)), "1:|2:|3:|4:|5:|6:|7:|8:|9:|10:", col, row, 0, 1, nil, "")
+				m.myapp.AddWindowSelect(k, k+" ", fmt.Sprintf("%g", globalSettings[k].(float64)), "1:|2:|3:|4:|5:|6:|7:|8:|9:|10:", col, row, 3, 1, nil, "")
 			} else if k == "lang" {
 				Langs := ""
 				langs := GeTFileListFromPath(configDir+"/langs", "lang")
@@ -237,9 +236,22 @@ func (m *microMenu) GlobalConfigDialog() {
 				col += 30
 			}
 		}
+		m.myapp.AddWindowButton("cancel", " "+Language.Translate("Cancel")+" ", "cancel", col, 26, m.ButtonFinish, "")
+		m.myapp.AddWindowButton("save", " "+Language.Translate("Save")+" ", "ok", col, 28, m.SaveSettings, "")
 	}
 	m.myapp.Start()
 	apprunning = m.myapp
+}
+
+func (m *microMenu) SaveSettings(name, value, event, when string, x, y int) bool {
+	if event != "mouse-click1" {
+		return true
+	}
+	if when == "POST" {
+		return true
+	}
+	m.Finish("")
+	return true
 }
 
 func (m *microMenu) ValidateInteger(name, value, event, when string, x, y int) bool {
@@ -249,7 +261,7 @@ func (m *microMenu) ValidateInteger(name, value, event, when string, x, y int) b
 	if strings.Contains(event, "mouse") {
 		return true
 	}
-	if Count(value) > 1 {
+	if Count(event) > 1 {
 		return true
 	}
 	if strings.Contains("0123456789", event) {
