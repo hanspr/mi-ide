@@ -30,16 +30,16 @@ type microMenu struct {
 // Applicacion Micro Menu
 
 func (m *microMenu) Menu() {
-	if m.myapp == nil || m.myapp.name != "micromenu" {
+	if m.myapp == nil || m.myapp.name != "mi-menu" {
 		m.activemenu = ""
 		m.submenu = make(map[string]string)
 		m.submenuElements = make(map[string][]menuElements)
 		m.submenuWidth = make(map[string]int)
 		if m.myapp == nil {
 			m.myapp = new(MicroApp)
-			m.myapp.New("micromenu")
+			m.myapp.New("mi-menu")
 		} else {
-			m.myapp.name = "micromenu"
+			m.myapp.name = "mi-menu"
 		}
 		m.myapp.Reset()
 		style := StringToStyle("#ffffff,#222222")
@@ -162,12 +162,12 @@ func (m *microMenu) MenuItemClick(name, value, event, when string, x, y int) boo
 }
 
 func (m *microMenu) GlobalConfigDialog() {
-	if m.myapp == nil || m.myapp.name != "globalconfig" {
+	if m.myapp == nil || m.myapp.name != "mi-globalconfig" {
 		if m.myapp == nil {
 			m.myapp = new(MicroApp)
-			m.myapp.New("globalconfig")
+			m.myapp.New("mi-globalconfig")
 		} else {
-			m.myapp.name = "globalconfig"
+			m.myapp.name = "mi-globalconfig"
 		}
 		width := 110
 		height := 30
@@ -189,7 +189,11 @@ func (m *microMenu) GlobalConfigDialog() {
 			} else if k == "colorcolumn" {
 				m.myapp.AddWindowTextBox(k, k+" ", fmt.Sprintf("%g", globalSettings[k].(float64)), "string", col, row, 4, 3, m.ValidateInteger, "")
 			} else if k == "indentchar" {
-				m.myapp.AddWindowSelect(k, k+" ", globalSettings[k].(string), "t:Tab|s:Space", col, row, 0, 1, nil, "")
+				char := "s"
+				if globalSettings[k].(string) != " " {
+					char = "t"
+				}
+				m.myapp.AddWindowSelect(k, k+" ", char, "t:Tab|s:Space", col, row, 0, 1, nil, "")
 			} else if k == "scrollmargin" {
 				m.myapp.AddWindowSelect(k, k+" ", fmt.Sprintf("%g", globalSettings[k].(float64)), "0:|1:|2:|3:|4:|5:|6:|7:|8:|9:|10:", col, row, 3, 1, nil, "")
 				m.myapp.SetIndex(k, 3)
@@ -255,9 +259,9 @@ func (m *microMenu) SaveSettings(name, value, event, when string, x, y int) bool
 	v := ""
 	values := m.myapp.getValues()
 	if values["indentchar"] == "t" {
-		values["indentchar"] = `\t`
+		values["indentchar"] = "\t"
 	} else {
-		values["indentchar"] = ` `
+		values["indentchar"] = " "
 	}
 	// TODO : Comparar datos contra defaults, si son diferentes agregar para salvar
 	for k, _ := range globalSettings {
@@ -309,7 +313,54 @@ func (m *microMenu) ValidateInteger(name, value, event, when string, x, y int) b
 }
 
 func (m *microMenu) KeyBindingsDialog() {
-	m.Finish("")
+	if m.myapp == nil || m.myapp.name != "mi-keybindings" {
+		if m.myapp == nil {
+			m.myapp = new(MicroApp)
+			m.myapp.New("mi-keybindings")
+		} else {
+			m.myapp.name = "mi-keybindings"
+		}
+		width := 100
+		height := 30
+		c := 0
+		bindings := make(map[string]string)
+		for k, v := range bindingsStr {
+			if strings.Contains(v, "Mouse") || strings.Contains(v, "Cursor") || strings.Contains(v, "Outdent") || strings.Contains(v, "Indent") || strings.Contains(k, "Mouse") || strings.Contains(v, ".") || strings.Contains(v, "snippet") || strings.Contains(v, "Backs") {
+				continue
+			}
+			bindings[v+"?"+strconv.Itoa(c)] = k
+			c++
+		}
+		keys := make([]string, 0, len(bindings))
+		for k := range bindings {
+			keys = append(keys, k)
+		}
+		sort.Strings(keys)
+		if len(bindings) > 55 {
+			width += 25
+		}
+		m.myapp.Reset()
+		m.myapp.defStyle = StringToStyle("#ffffff,#262626")
+		m.myapp.AddStyle("def", "ColorWhite,ColorDarkGrey")
+		m.myapp.SetCanvas(-1, -1, width, height, "relative")
+		m.myapp.AddWindowBox("enc", Language.Translate("KeyBindigs"), 0, 0, width, height, true, nil, "")
+		row := 2
+		col := 2
+		for _, k := range keys {
+			str := k[0:strings.Index(k, "?")]
+			m.myapp.AddWindowTextBox(k, fmt.Sprintf("%-20s", str), bindings[k], "string", col, row, 15, 40, nil, "")
+			//m.myapp.AddWindowTextBox(k, fmt.Sprintf("%-20s", k), bindings[k], "string", col, row, 15, 40, nil, "")
+			row++
+			if row > height-1 {
+				row = 2
+				col += 43
+			}
+		}
+		m.myapp.AddWindowButton("cancel", " "+Language.Translate("Cancel")+" ", "cancel", width-15, height-4, m.ButtonFinish, "")
+		m.myapp.AddWindowButton("save", " "+Language.Translate("Save")+" ", "ok", width-15, height-2, m.SaveSettings, "")
+	}
+	m.myapp.Start()
+	apprunning = m.myapp
 }
 
 func (m *microMenu) PluginManagerDialog() {
@@ -326,12 +377,12 @@ func (m *microMenu) MenuFinish(s string) {
 // Application Search & Replace
 
 func (m *microMenu) Search(callback func(map[string]string)) {
-	if m.myapp == nil || m.myapp.name != "search" {
+	if m.myapp == nil || m.myapp.name != "mi-search" {
 		if m.myapp == nil {
 			m.myapp = new(MicroApp)
-			m.myapp.New("search")
+			m.myapp.New("mi-search")
 		} else {
-			m.myapp.name = "search"
+			m.myapp.name = "mi-search"
 		}
 		m.myapp.Reset()
 		m.myapp.defStyle = StringToStyle("#ffffff,#262626")
@@ -367,12 +418,12 @@ func (m *microMenu) Search(callback func(map[string]string)) {
 }
 
 func (m *microMenu) SearchReplace(callback func(map[string]string)) {
-	if m.myapp == nil || m.myapp.name != "searchreplace" {
+	if m.myapp == nil || m.myapp.name != "mi-searchreplace" {
 		if m.myapp == nil {
 			m.myapp = new(MicroApp)
-			m.myapp.New("searchreplace")
+			m.myapp.New("mi-searchreplace")
 		} else {
-			m.myapp.name = "searchreplace"
+			m.myapp.name = "mi-searchreplace"
 		}
 		m.myapp.Reset()
 		m.myapp.defStyle = StringToStyle("#ffffff,#262626")
@@ -496,12 +547,12 @@ func (m *microMenu) SubmitSearchOnEnter(name, value, event, when string, x, y in
 // Application Save As ...
 
 func (m *microMenu) SaveAs(b *Buffer, usePlugin bool, callback func(map[string]string)) {
-	if m.myapp == nil || m.myapp.name != "saveas" {
+	if m.myapp == nil || m.myapp.name != "mi-saveas" {
 		if m.myapp == nil {
 			m.myapp = new(MicroApp)
-			m.myapp.New("saveas")
+			m.myapp.New("mi-saveas")
 		} else {
-			m.myapp.name = "saveas"
+			m.myapp.name = "mi-saveas"
 		}
 		m.myapp.Reset()
 		m.myapp.defStyle = StringToStyle("#ffffff,#262626")
@@ -596,12 +647,12 @@ func (m *microMenu) SaveFile(name, value, event, when string, x, y int) bool {
 // Application to Set a Buffer Encoding
 
 func (m *microMenu) SelEncoding(callback func(map[string]string)) {
-	if m.myapp == nil || m.myapp.name != "microselencoding" {
+	if m.myapp == nil || m.myapp.name != "mi-selencoding" {
 		if m.myapp == nil {
 			m.myapp = new(MicroApp)
-			m.myapp.New("microselencoding")
+			m.myapp.New("mi-selencoding")
 		} else {
-			m.myapp.name = "microselencoding"
+			m.myapp.name = "mi-selencoding"
 		}
 		m.myapp.Reset()
 		m.myapp.defStyle = StringToStyle("#ffffff,#262626")
