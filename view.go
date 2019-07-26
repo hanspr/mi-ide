@@ -107,9 +107,6 @@ type View struct {
 
 	splitNode *LeafNode
 
-	// The scrollbar
-	scrollbar *ScrollBar
-
 	// Virtual terminal
 	term *Terminal
 }
@@ -140,10 +137,6 @@ func NewViewWidthHeight(buf *Buffer, w, h int) *View {
 	v.sline = &Statusline{
 		view:    v,
 		hotspot: make(map[string]Loc),
-	}
-
-	v.scrollbar = &ScrollBar{
-		view: v,
 	}
 
 	if v.Buf.Settings["statusline"].(bool) {
@@ -1335,10 +1328,6 @@ func (v *View) Display() {
 		screen.HideCursor()
 	}
 	_, screenH := screen.Size()
-
-	if v.Buf.Settings["scrollbar"].(bool) {
-		v.scrollbar.Display()
-	}
 
 	if v.Buf.Settings["statusline"].(bool) {
 		v.sline.Display()

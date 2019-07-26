@@ -235,7 +235,7 @@ func (m *microMenu) GlobalConfigDialog() {
 			} else {
 				kind := reflect.TypeOf(globalSettings[k]).Kind()
 				if kind == reflect.Bool {
-					m.myapp.AddWindowCheckBox(k, k, strconv.FormatBool(globalSettings[k].(bool)), col, row, globalSettings[k].(bool), nil, "")
+					m.myapp.AddWindowCheckBox(k, k, "true", col, row, globalSettings[k].(bool), nil, "")
 				} else if kind == reflect.String {
 					m.myapp.AddWindowTextBox(k, k+" ", globalSettings[k].(string), "string", col, row, 10, 20, nil, "")
 				} else if kind == reflect.Float64 {
@@ -287,7 +287,9 @@ func (m *microMenu) SaveSettings(name, value, event, when string, x, y int) bool
 		} else {
 			continue
 		}
+		messenger.AddLog(k, ">>", v, "?", values[k])
 		if v != values[k] {
+			messenger.AddLog("  Save setting")
 			save = true
 			SetOption(k, values[k])
 			if k == "lang" {
@@ -296,7 +298,9 @@ func (m *microMenu) SaveSettings(name, value, event, when string, x, y int) bool
 		}
 	}
 	if save {
+		messenger.AddLog("SAVE")
 		err := WriteSettings(configDir + "/settings.json")
+		messenger.AddLog("Error? ", err)
 		if err != nil {
 			messenger.Error(Language.Translate("Error writing settings.json file"), ": ", err.Error())
 		}

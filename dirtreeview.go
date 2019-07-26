@@ -135,7 +135,6 @@ func (d *DirTreeView) dirviewOpen() {
 	SetLocalOption("softwrap", "true", d.tree_view)
 	SetLocalOption("ruler", "false", d.tree_view)
 	SetLocalOption("autosave", "false", d.tree_view)
-	SetLocalOption("scrollbar", "false", d.tree_view)
 	tabs[curTab].Resize()
 	d.Open = true
 	d.tree_view.Cursor.GotoLoc(Loc{0, 0})
