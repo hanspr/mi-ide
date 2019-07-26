@@ -162,6 +162,10 @@ func (v *View) ScrollUpAction(usePlugin bool) bool {
 		} else if Dt < 280 {
 			scrollspeed = 2 * scrollcount
 			scrollcount += 2
+			messenger.AddLog(scrollcount)
+			if scrollcount > 20 {
+				scrollspeed *= 3
+			}
 		} else {
 			scrollcount = 1
 		}
@@ -189,6 +193,10 @@ func (v *View) ScrollDownAction(usePlugin bool) bool {
 		} else if Dt < 280 {
 			scrollspeed = 2 * scrollcount
 			scrollcount += 2
+			messenger.AddLog(scrollcount)
+			if scrollcount > 20 {
+				scrollspeed *= 3
+			}
 		} else {
 			scrollcount = 1
 		}

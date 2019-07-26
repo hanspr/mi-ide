@@ -27,7 +27,9 @@ type microMenu struct {
 	activemenu      string
 }
 
-// Applicacion Micro Menu
+// ---------------------------------------
+// Micro-ide Menu
+// ---------------------------------------
 
 func (m *microMenu) Menu() {
 	if m.myapp == nil || m.myapp.name != "mi-menu" {
@@ -161,6 +163,15 @@ func (m *microMenu) MenuItemClick(name, value, event, when string, x, y int) boo
 	return false
 }
 
+func (m *microMenu) MenuFinish(s string) {
+	m.closeSubmenus()
+	m.Finish("")
+}
+
+// ---------------------------------------
+// Edit Global Settings
+// ---------------------------------------
+
 func (m *microMenu) GlobalConfigDialog() {
 	if m.myapp == nil || m.myapp.name != "mi-globalconfig" {
 		if m.myapp == nil {
@@ -173,7 +184,7 @@ func (m *microMenu) GlobalConfigDialog() {
 		height := 30
 		m.myapp.Reset()
 		m.myapp.defStyle = StringToStyle("#ffffff,#262626")
-		m.myapp.AddStyle("def", "ColorWhite,ColorDarkGrey")
+		//m.myapp.AddStyle("def", "ColorWhite,ColorDarkGrey")
 		m.myapp.SetCanvas(-1, -1, width, height, "relative")
 		m.myapp.AddWindowBox("enc", Language.Translate("Global Settings"), 0, 0, width, height, true, nil, "")
 		keys := make([]string, 0, len(globalSettings))
@@ -263,7 +274,6 @@ func (m *microMenu) SaveSettings(name, value, event, when string, x, y int) bool
 	} else {
 		values["indentchar"] = " "
 	}
-	// TODO : Comparar datos contra defaults, si son diferentes agregar para salvar
 	for k, _ := range globalSettings {
 		kind := reflect.TypeOf(globalSettings[k]).Kind()
 		if kind == reflect.Bool {
@@ -292,7 +302,6 @@ func (m *microMenu) SaveSettings(name, value, event, when string, x, y int) bool
 			messenger.Error(Language.Translate("Error writing settings.json file"), ": ", err.Error())
 		}
 	}
-	// TODO : Salvar
 	return true
 }
 
@@ -312,6 +321,10 @@ func (m *microMenu) ValidateInteger(name, value, event, when string, x, y int) b
 	return false
 }
 
+// ---------------------------------------
+// Assign Keybindings to actions
+// ---------------------------------------
+
 func (m *microMenu) KeyBindingsDialog() {
 	if m.myapp == nil || m.myapp.name != "mi-keybindings" {
 		if m.myapp == nil {
@@ -320,61 +333,163 @@ func (m *microMenu) KeyBindingsDialog() {
 		} else {
 			m.myapp.name = "mi-keybindings"
 		}
-		width := 100
-		height := 30
+		width := 0 // 125
+		height := 33
 		c := 0
-		bindings := make(map[string]string)
-		for k, v := range bindingsStr {
-			if strings.Contains(v, "Mouse") || strings.Contains(v, "Cursor") || strings.Contains(v, "Outdent") || strings.Contains(v, "Indent") || strings.Contains(k, "Mouse") || strings.Contains(v, ".") || strings.Contains(v, "snippet") || strings.Contains(v, "Backs") {
+		defaults := DefaultBindings()
+		mkeys := make(map[string]int)
+		keys := make([]string, 0, len(bindingActions))
+		for k := range bindingActions {
+			if strings.Contains(k, "Mouse") || strings.Contains(k, "Scroll") || strings.Contains(k, "Outdent") || strings.Contains(k, "Indent") || strings.Contains(k, "Backs") || strings.Contains(k, "Delete") || strings.Contains(k, "Insert") || strings.Index(k, "End") == 0 || strings.Contains(k, "Escape") {
 				continue
 			}
-			bindings[v+"?"+strconv.Itoa(c)] = k
-			c++
-		}
-		keys := make([]string, 0, len(bindings))
-		for k := range bindings {
+			switch k {
+			case "CursorDown", "CursorUp", "CursorLeft", "CursorRight", "FindNext", "FindPrevious":
+				continue
+			}
 			keys = append(keys, k)
+			mkeys[k] = 1
 		}
+		bindings := make(map[string]string)
+		for k, v := range bindingsStr {
+			if strings.Contains(k, "Mouse") || strings.Contains(v, ".") || strings.Contains(v, ",") {
+				continue
+			}
+			switch k {
+			case "Left", "Up", "Down", "Right", "Backspace", "Delete", "CtrlH", "Esc", "Enter":
+				continue
+			}
+			_, ok := bindings[v]
+			if ok {
+				if defaults[k] == v {
+					bindings[v+"!"+strconv.Itoa(c)] = bindings[v]
+					bindings[v] = k
+				} else {
+					bindings[v+"!"+strconv.Itoa(c)] = k
+				}
+				keys = append(keys, v+"!"+strconv.Itoa(c))
+				c++
+			} else {
+				bindings[v] = k
+				_, ok := mkeys[v]
+				if ok == false {
+					keys = append(keys, v)
+				}
+			}
+		}
+		width = ((len(keys)+2)/(height-2)+1)*42 + 1
 		sort.Strings(keys)
-		if len(bindings) > 55 {
-			width += 25
-		}
 		m.myapp.Reset()
 		m.myapp.defStyle = StringToStyle("#ffffff,#262626")
-		m.myapp.AddStyle("def", "ColorWhite,ColorDarkGrey")
+		m.myapp.AddStyle("grn", "#00FF00,#262626")
+		m.myapp.AddStyle("yw", "#ffff00,#262626")
+		m.myapp.AddStyle("red", "#ff0000,#262626")
 		m.myapp.SetCanvas(-1, -1, width, height, "relative")
 		m.myapp.AddWindowBox("enc", Language.Translate("KeyBindigs"), 0, 0, width, height, true, nil, "")
 		row := 2
 		col := 2
 		for _, k := range keys {
-			str := k[0:strings.Index(k, "?")]
-			m.myapp.AddWindowTextBox(k, fmt.Sprintf("%-20s", str), bindings[k], "string", col, row, 15, 40, nil, "")
-			//m.myapp.AddWindowTextBox(k, fmt.Sprintf("%-20s", k), bindings[k], "string", col, row, 15, 40, nil, "")
+			_, ok := bindings[k]
+			if ok == false {
+				bindings[k] = ""
+			}
+			str := strings.Split(k, "!")
+			if len(str) == 1 {
+				m.myapp.AddWindowTextBox(k, fmt.Sprintf("%-23s", str[0]), bindings[k], "string", col, row, 17, 40, m.SetBinding, "")
+			} else {
+				m.myapp.AddWindowTextBox(k, fmt.Sprintf("{grn}%-23s{/grn}", str[0]), bindings[k], "string", col, row, 17, 40, m.SetBinding, "")
+			}
 			row++
-			if row > height-1 {
+			if row > height-2 {
 				row = 2
-				col += 43
+				col += 42
 			}
 		}
-		m.myapp.AddWindowButton("cancel", " "+Language.Translate("Cancel")+" ", "cancel", width-15, height-4, m.ButtonFinish, "")
-		m.myapp.AddWindowButton("save", " "+Language.Translate("Save")+" ", "ok", width-15, height-2, m.SaveSettings, "")
+		row++
+		m.myapp.AddWindowTextBox("?test", fmt.Sprintf("{yw}%-23s{/yw}", Language.Translate("Key check")), "", "string", col, row, 17, 40, m.SetBinding, "")
+		row++
+		m.myapp.AddWindowLabel("?msg", "", col, row, nil, "")
+		lbl := Language.Translate("Cancel")
+		m.myapp.AddWindowButton("?cancel", " "+lbl+" ", "cancel", width-Count(lbl)-20, 32, m.ButtonFinish, "")
+		lbl = Language.Translate("Save")
+		m.myapp.AddWindowButton("?save", " "+lbl+" ", "ok", width-Count(lbl)-5, 32, m.SaveKeyBindings, "")
 	}
 	m.myapp.Start()
 	apprunning = m.myapp
 }
 
+func (m *microMenu) SetBinding(name, value, event, when string, x, y int) bool {
+	if event == "mouse-click1" {
+		if name == "?test" {
+			m.myapp.SetValue(name, "")
+			m.myapp.SetFocus(name, "B")
+		}
+		return true
+	}
+	if strings.Contains(event, "mouse") || when == "POST" || Count(event) < 2 {
+		return false
+	}
+	switch event {
+	case "Left", "Right", "Down", "Up", "Esc", "Enter", "Tab", "Backspace2", "Backspace", "Delete", "F9", "F10", "F11", "F12":
+		m.myapp.SetValue(name, "")
+		return false
+	}
+	if strings.Contains(event, "Alt") {
+		if strings.Contains(event, "Rune") {
+			event = strings.Replace(event, "Rune[", "", 1)
+			event = strings.Replace(event, "]", "", 1)
+			event = strings.ReplaceAll(event, "+", "-")
+		}
+		event = strings.ReplaceAll(event, "+", "")
+		event = strings.Replace(event, "ShiftAlt", "AltShift", 1)
+	} else if strings.Contains(event, "Ctrl") {
+		event = strings.ReplaceAll(event, "+", "")
+		if strings.Contains(event, "ShiftCtrl") {
+			event = strings.Replace(event, "ShiftCtrl", "CtrlShift", 1)
+		}
+	}
+	free := true
+	for _, e := range m.myapp.elements {
+		if e.value == event {
+			free = false
+			m.myapp.SetLabel("?msg", "{red}"+Language.Translate("Taken")+" : {/red}"+e.label)
+			if name != "?test" {
+				m.myapp.SetValue(e.name, "")
+			}
+			break
+		}
+	}
+	m.myapp.SetValue(name, event)
+	if free {
+		m.myapp.SetLabel("?msg", "{grn}"+Language.Translate("Free")+"{/grn}")
+	}
+	return false
+}
+
+func (m *microMenu) SaveKeyBindings(name, value, event, when string, x, y int) bool {
+	if event != "mouse-click1" {
+		return true
+	}
+	if when == "POST" {
+		return true
+	}
+	m.Finish("")
+	return false
+}
+
+// ---------------------------------------
+// Plugin Manager Dialog
+// ---------------------------------------
+
 func (m *microMenu) PluginManagerDialog() {
 	m.Finish("")
 }
 
-func (m *microMenu) MenuFinish(s string) {
-	m.closeSubmenus()
-	m.Finish("")
-}
-
-// END Menu
-
+// ---------------------------------------
 // Application Search & Replace
+// ---------------------------------------
+
+// Search (Find) Dialog
 
 func (m *microMenu) Search(callback func(map[string]string)) {
 	if m.myapp == nil || m.myapp.name != "mi-search" {
@@ -386,7 +501,7 @@ func (m *microMenu) Search(callback func(map[string]string)) {
 		}
 		m.myapp.Reset()
 		m.myapp.defStyle = StringToStyle("#ffffff,#262626")
-		m.myapp.AddStyle("def", "ColorWhite,ColorDarkGrey")
+		//m.myapp.AddStyle("def", "ColorWhite,ColorDarkGrey")
 		width := 70
 		heigth := 8
 		m.myapp.SetCanvas(-1, -1, width, heigth, "relative")
@@ -417,6 +532,8 @@ func (m *microMenu) Search(callback func(map[string]string)) {
 	m.SubmitSearchOnEnter("find", m.myapp.GetValue("find"), "", "POST", 0, 0)
 }
 
+// Search & Replace Dialog
+
 func (m *microMenu) SearchReplace(callback func(map[string]string)) {
 	if m.myapp == nil || m.myapp.name != "mi-searchreplace" {
 		if m.myapp == nil {
@@ -427,7 +544,7 @@ func (m *microMenu) SearchReplace(callback func(map[string]string)) {
 		}
 		m.myapp.Reset()
 		m.myapp.defStyle = StringToStyle("#ffffff,#262626")
-		m.myapp.AddStyle("def", "ColorWhite,ColorDarkGrey")
+		//m.myapp.AddStyle("def", "ColorWhite,ColorDarkGrey")
 		width := 70
 		heigth := 12
 		m.myapp.SetCanvas(-1, -1, width, heigth, "relative")
@@ -542,9 +659,9 @@ func (m *microMenu) SubmitSearchOnEnter(name, value, event, when string, x, y in
 	return true
 }
 
-// END Application Search / Replace
-
+// ---------------------------------------
 // Application Save As ...
+// ---------------------------------------
 
 func (m *microMenu) SaveAs(b *Buffer, usePlugin bool, callback func(map[string]string)) {
 	if m.myapp == nil || m.myapp.name != "mi-saveas" {
@@ -556,7 +673,7 @@ func (m *microMenu) SaveAs(b *Buffer, usePlugin bool, callback func(map[string]s
 		}
 		m.myapp.Reset()
 		m.myapp.defStyle = StringToStyle("#ffffff,#262626")
-		m.myapp.AddStyle("def", "ColorWhite,ColorDarkGrey")
+		//m.myapp.AddStyle("def", "ColorWhite,ColorDarkGrey")
 		width := 80
 		heigth := 8
 		m.myapp.SetCanvas(-1, -1, width, heigth, "relative")
@@ -642,9 +759,9 @@ func (m *microMenu) SaveFile(name, value, event, when string, x, y int) bool {
 	return true
 }
 
-// END Save As ...
-
-// Application to Set a Buffer Encoding
+// ---------------------------------------
+// Set Buffer Encoding
+// ---------------------------------------
 
 func (m *microMenu) SelEncoding(callback func(map[string]string)) {
 	if m.myapp == nil || m.myapp.name != "mi-selencoding" {
@@ -656,7 +773,7 @@ func (m *microMenu) SelEncoding(callback func(map[string]string)) {
 		}
 		m.myapp.Reset()
 		m.myapp.defStyle = StringToStyle("#ffffff,#262626")
-		m.myapp.AddStyle("def", "ColorWhite,ColorDarkGrey")
+		//m.myapp.AddStyle("def", "ColorWhite,ColorDarkGrey")
 		width := 60
 		heigth := 8
 		m.myapp.SetCanvas(-1, -1, width, heigth, "relative")
@@ -695,9 +812,9 @@ func (m *microMenu) SetEncoding(name, value, event, when string, x, y int) bool 
 	return true
 }
 
-// END Encoding
-
-// General Default Routines
+// ---------------------------------------
+// General Routines
+// ---------------------------------------
 
 func (m *microMenu) Finish(s string) {
 	messenger.AddLog(s)

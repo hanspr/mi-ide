@@ -136,16 +136,6 @@ func (sline *Statusline) Display() {
 		}
 	}
 	rightText := ""
-	if !sline.view.Buf.Settings["hidehelp"].(bool) {
-		if len(helpBinding) > 0 {
-			if sline.view.Type == vtHelp {
-				rightText += helpBinding + ": close help"
-			} else {
-				rightText += helpBinding + ": open help"
-			}
-		}
-		rightText += " "
-	}
 
 	statusLineStyle := defStyle.Reverse(true)
 	if style, ok := colorscheme["statusline"]; ok {

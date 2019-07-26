@@ -1465,7 +1465,7 @@ func (a *MicroApp) HandleEvents(event tcell.Event) {
 			}
 			return
 		}
-		if ev.Key() == 256 {
+		if ev.Key() == 256 && ev.Modifiers() == 0 {
 			char = string(ev.Rune())
 		} else {
 			char = ev.Name()
