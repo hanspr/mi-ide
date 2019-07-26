@@ -550,8 +550,6 @@ func DefaultBindings() map[string]string {
 		"CtrlA":          "SelectAll",
 		"Home":           "StartOfLine",
 		"End":            "EndOfLine",
-		"CtrlHome":       "CursorStart",
-		"CtrlEnd":        "CursorEnd",
 		"PageUp":         "CursorPageUp",
 		"PageDown":       "CursorPageDown",
 		"CtrlG":          "JumpLine",
@@ -574,11 +572,11 @@ func DefaultBindings() map[string]string {
 		"Alt-!": "ToggleSoftWrap",
 		"Esc":   "Escape",
 		"Alt-g": "command-edit:help ",
-
 		"Alt-t": "AddTab",
 		"Alt-k": "DeleteLine",
 		"Alt-v": "VSplit",
 		"Alt-h": "HSplit",
+
 		// Mouse bindings
 		"MouseWheelUp":   "ScrollUp",
 		"MouseWheelDown": "ScrollDown",
