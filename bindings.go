@@ -1,6 +1,7 @@
 package main
 
 import (
+	"encoding/json"
 	"fmt"
 	"io/ioutil"
 	"os"
@@ -77,10 +78,10 @@ var bindingActions = map[string]func(*View, bool) bool{
 	//"End":                 (*View).End,
 	//"PageUp":                 (*View).PageUp,
 	//"PageDown":               (*View).PageDown,
-	"SelectPageUp":           (*View).SelectPageUp,
-	"SelectPageDown":         (*View).SelectPageDown,
-	"HalfPageUp":             (*View).HalfPageUp,
-	"HalfPageDown":           (*View).HalfPageDown,
+	"SelectPageUp":   (*View).SelectPageUp,
+	"SelectPageDown": (*View).SelectPageDown,
+	//"HalfPageUp":             (*View).HalfPageUp,
+	//"HalfPageDown":           (*View).HalfPageDown,
 	"StartOfLine":            (*View).StartOfLine,
 	"EndOfLine":              (*View).EndOfLine,
 	"ToggleRuler":            (*View).ToggleRuler,
@@ -494,6 +495,17 @@ func BindKey(k, v string) {
 		// Can't have a binding be both mouse and normal
 		delete(bindings, key)
 		mouseBindings[key] = mouseActions
+	}
+}
+
+func WriteBindings(values map[string]string) {
+	if _, e := os.Stat(configDir + ""); e == nil {
+		filename := configDir + "/bindings.json"
+		txt, _ := json.MarshalIndent(values, "", "    ")
+		err := ioutil.WriteFile(filename, append(txt, '\n'), 0644)
+		if err != nil {
+			TermMessage("Could not write bindigns.json")
+		}
 	}
 }
 

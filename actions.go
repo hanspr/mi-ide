@@ -162,7 +162,6 @@ func (v *View) ScrollUpAction(usePlugin bool) bool {
 		} else if Dt < 280 {
 			scrollspeed = 2 * scrollcount
 			scrollcount += 2
-			messenger.AddLog(scrollcount)
 			if scrollcount > 20 {
 				scrollspeed *= 3
 			}
@@ -193,7 +192,6 @@ func (v *View) ScrollDownAction(usePlugin bool) bool {
 		} else if Dt < 280 {
 			scrollspeed = 2 * scrollcount
 			scrollcount += 2
-			messenger.AddLog(scrollcount)
 			if scrollcount > 20 {
 				scrollspeed *= 3
 			}
@@ -1036,7 +1034,7 @@ func (v *View) SaveAll(usePlugin bool) bool {
 		if usePlugin && !PreActionCall("SaveAll", v) {
 			return false
 		}
-
+		messenger.AddLog("SAVING ALL")
 		for _, t := range tabs {
 			for _, v := range t.Views {
 				v.Save(false)
@@ -1727,46 +1725,46 @@ func (v *View) CursorPageDown(usePlugin bool) bool {
 }
 
 // HalfPageUp scrolls the view up half a page
-func (v *View) HalfPageUp(usePlugin bool) bool {
-	if v.mainCursor() {
-		if usePlugin && !PreActionCall("HalfPageUp", v) {
-			return false
-		}
+//func (v *View) HalfPageUp(usePlugin bool) bool {
+//	if v.mainCursor() {
+//		if usePlugin && !PreActionCall("HalfPageUp", v) {
+//			return false
+//		}
 
-		if v.Topline > v.Height/2 {
-			v.ScrollUp(v.Height / 2)
-		} else {
-			v.Topline = 0
-		}
+//		if v.Topline > v.Height/2 {
+//			v.ScrollUp(v.Height / 2)
+//		} else {
+//			v.Topline = 0
+//		}
 
-		if usePlugin {
-			return PostActionCall("HalfPageUp", v)
-		}
-	}
-	return false
-}
+//		if usePlugin {
+//			return PostActionCall("HalfPageUp", v)
+//		}
+//	}
+//	return false
+//}
 
 // HalfPageDown scrolls the view down half a page
-func (v *View) HalfPageDown(usePlugin bool) bool {
-	if v.mainCursor() {
-		if usePlugin && !PreActionCall("HalfPageDown", v) {
-			return false
-		}
+//func (v *View) HalfPageDown(usePlugin bool) bool {
+//	if v.mainCursor() {
+//		if usePlugin && !PreActionCall("HalfPageDown", v) {
+//			return false
+//		}
 
-		if v.Buf.NumLines-(v.Topline+v.Height) > v.Height/2 {
-			v.ScrollDown(v.Height / 2)
-		} else {
-			if v.Buf.NumLines >= v.Height {
-				v.Topline = v.Buf.NumLines - v.Height
-			}
-		}
+//		if v.Buf.NumLines-(v.Topline+v.Height) > v.Height/2 {
+//			v.ScrollDown(v.Height / 2)
+//		} else {
+//			if v.Buf.NumLines >= v.Height {
+//				v.Topline = v.Buf.NumLines - v.Height
+//			}
+//		}
 
-		if usePlugin {
-			return PostActionCall("HalfPageDown", v)
-		}
-	}
-	return false
-}
+//		if usePlugin {
+//			return PostActionCall("HalfPageDown", v)
+//		}
+//	}
+//	return false
+//}
 
 // ToggleRuler turns line numbers off and on
 func (v *View) ToggleRuler(usePlugin bool) bool {

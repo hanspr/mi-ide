@@ -184,7 +184,6 @@ func (m *microMenu) GlobalConfigDialog() {
 		height := 30
 		m.myapp.Reset()
 		m.myapp.defStyle = StringToStyle("#ffffff,#262626")
-		//m.myapp.AddStyle("def", "ColorWhite,ColorDarkGrey")
 		m.myapp.SetCanvas(-1, -1, width, height, "relative")
 		m.myapp.AddWindowBox("enc", Language.Translate("Global Settings"), 0, 0, width, height, true, nil, "")
 		keys := make([]string, 0, len(globalSettings))
@@ -352,7 +351,7 @@ func (m *microMenu) KeyBindingsDialog() {
 		}
 		bindings := make(map[string]string)
 		for k, v := range bindingsStr {
-			if strings.Contains(k, "Mouse") || strings.Contains(v, ".") || strings.Contains(v, ",") {
+			if strings.Contains(k, "Mouse") || strings.Contains(v, ",") {
 				continue
 			}
 			switch k {
@@ -385,7 +384,7 @@ func (m *microMenu) KeyBindingsDialog() {
 		m.myapp.AddStyle("yw", "#ffff00,#262626")
 		m.myapp.AddStyle("red", "#ff0000,#262626")
 		m.myapp.SetCanvas(-1, -1, width, height, "relative")
-		m.myapp.AddWindowBox("enc", Language.Translate("KeyBindigs"), 0, 0, width, height, true, nil, "")
+		m.myapp.AddWindowBox("enc", Language.Translate("KeyBindings"), 0, 0, width, height, true, nil, "")
 		row := 2
 		col := 2
 		for _, k := range keys {
@@ -426,7 +425,7 @@ func (m *microMenu) SetBinding(name, value, event, when string, x, y int) bool {
 		}
 		return true
 	}
-	if strings.Contains(event, "mouse") || when == "POST" || Count(event) < 2 {
+	if strings.Contains(event, "mouse") || strings.Contains(event, "Alt+Ctrl") || when == "POST" || Count(event) < 2 {
 		return false
 	}
 	switch event {
@@ -438,9 +437,14 @@ func (m *microMenu) SetBinding(name, value, event, when string, x, y int) bool {
 		if strings.Contains(event, "Rune") {
 			event = strings.Replace(event, "Rune[", "", 1)
 			event = strings.Replace(event, "]", "", 1)
-			event = strings.ReplaceAll(event, "+", "-")
+			if strings.Contains(event, "++") {
+				event = strings.Replace(event, "++", "-+", 1)
+			} else {
+				event = strings.ReplaceAll(event, "+", "-")
+			}
+		} else {
+			event = strings.ReplaceAll(event, "+", "")
 		}
-		event = strings.ReplaceAll(event, "+", "")
 		event = strings.Replace(event, "ShiftAlt", "AltShift", 1)
 	} else if strings.Contains(event, "Ctrl") {
 		event = strings.ReplaceAll(event, "+", "")
@@ -452,7 +456,9 @@ func (m *microMenu) SetBinding(name, value, event, when string, x, y int) bool {
 	for _, e := range m.myapp.elements {
 		if e.value == event {
 			free = false
-			m.myapp.SetLabel("?msg", "{red}"+Language.Translate("Taken")+" : {/red}"+e.label)
+			if e.name != "?test" {
+				m.myapp.SetLabel("?msg", "{red}"+Language.Translate("Taken")+" : {/red}"+e.label)
+			}
 			if name != "?test" {
 				m.myapp.SetValue(e.name, "")
 			}
@@ -472,6 +478,34 @@ func (m *microMenu) SaveKeyBindings(name, value, event, when string, x, y int) b
 	}
 	if when == "POST" {
 		return true
+	}
+	write := false
+	save := make(map[string]string)
+	actionToKey := make(map[string]string)
+	values := m.myapp.getValues()
+	defaults := DefaultBindings()
+	for k, a := range defaults {
+		if strings.Contains(a, "Mouse") || strings.Contains(k, "Mouse") {
+			continue
+		}
+		actionToKey[a] = k
+	}
+	// Comparar cada binding contra defaults
+	for a, k := range values {
+		if strings.Contains(a, "?") {
+			continue
+		}
+		ak := strings.Split(a, "!")
+		//messenger.AddLog("Compara:", ak[0], " > ", actionToKey[ak[0]], "==", k)
+		if k != "" && actionToKey[ak[0]] != k {
+			//messenger.AddLog("Guardar=", k, ",", ak[0])
+			save[k] = ak[0]
+			write = true
+			BindKey(k, a)
+		}
+	}
+	if write {
+		WriteBindings(save)
 	}
 	m.Finish("")
 	return false
@@ -501,7 +535,6 @@ func (m *microMenu) Search(callback func(map[string]string)) {
 		}
 		m.myapp.Reset()
 		m.myapp.defStyle = StringToStyle("#ffffff,#262626")
-		//m.myapp.AddStyle("def", "ColorWhite,ColorDarkGrey")
 		width := 70
 		heigth := 8
 		m.myapp.SetCanvas(-1, -1, width, heigth, "relative")
@@ -544,7 +577,6 @@ func (m *microMenu) SearchReplace(callback func(map[string]string)) {
 		}
 		m.myapp.Reset()
 		m.myapp.defStyle = StringToStyle("#ffffff,#262626")
-		//m.myapp.AddStyle("def", "ColorWhite,ColorDarkGrey")
 		width := 70
 		heigth := 12
 		m.myapp.SetCanvas(-1, -1, width, heigth, "relative")
@@ -673,7 +705,6 @@ func (m *microMenu) SaveAs(b *Buffer, usePlugin bool, callback func(map[string]s
 		}
 		m.myapp.Reset()
 		m.myapp.defStyle = StringToStyle("#ffffff,#262626")
-		//m.myapp.AddStyle("def", "ColorWhite,ColorDarkGrey")
 		width := 80
 		heigth := 8
 		m.myapp.SetCanvas(-1, -1, width, heigth, "relative")
@@ -773,7 +804,6 @@ func (m *microMenu) SelEncoding(callback func(map[string]string)) {
 		}
 		m.myapp.Reset()
 		m.myapp.defStyle = StringToStyle("#ffffff,#262626")
-		//m.myapp.AddStyle("def", "ColorWhite,ColorDarkGrey")
 		width := 60
 		heigth := 8
 		m.myapp.SetCanvas(-1, -1, width, heigth, "relative")

@@ -27,6 +27,7 @@ var (
 )
 
 var LastView int = -1
+var LastTab int = -1
 
 // The View struct stores information about a view into a buffer.
 // It stores information about the cursor, and the viewport
@@ -1292,10 +1293,11 @@ func (v *View) DisplayView() {
 			screen.SetContent(v.x, yOffset+i, tcell.RuneVLine, nil, dividerStyle.Reverse(true))
 		}
 	}
-	if CurView().Type.Kind == 0 && LastView != CurView().Num {
+	if (CurView().Type.Kind == 0 && LastView != CurView().Num) || (LastTab != curTab) {
 		// Only when View Has Changed
 		// Added onDisplayFocus Event.
 		LastView = CurView().Num
+		LastTab = curTab
 
 		for pl := range loadedPlugins {
 			if GetPluginOption(pl, "ftype") != "*" && (GetPluginOption(pl, "ftype") == nil || strings.Contains(GetPluginOption(pl, "ftype").(string), CurView().Buf.FileType()) == false) {
