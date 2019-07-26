@@ -7,6 +7,8 @@ import (
 	"sort"
 	"strconv"
 	"strings"
+
+	"github.com/hanspr/tcell"
 )
 
 const ENCODINGS = "UTF-8:|ISO-8859-1:|ISO-8859-2:|ISO-8859-15:|WINDOWS-1250:|WINDOWS-1251:|WINDOWS-1252:|WINDOWS-1256:|SHIFT-JIS:|GB2312:|EUC-KR:|EUC-JP:|GBK:|BIG-5:|ASCII:"
@@ -63,7 +65,7 @@ func (m *microMenu) Menu() {
 		for _, name := range keys {
 			if name != "microide" {
 				label := fmt.Sprintf("%-"+strconv.Itoa(m.maxwidth+1)+"s", m.submenu[name])
-				m.myapp.AddWindowLabel(name, label, 0, row, m.ShowSubmenuItems, "")
+				m.myapp.AddWindowMenuLabel(name, label, "", 0, row, m.ShowSubmenuItems, "")
 			}
 			row++
 		}
@@ -102,6 +104,9 @@ func (m *microMenu) ShowSubmenuItems(name, value, event, when string, x, y int) 
 		if y == m.myapp.elements[name].aposb.Y {
 			return true
 		}
+		e := m.myapp.elements[name]
+		e.style = e.style.Bold(false).Foreground(tcell.ColorWhite)
+		m.myapp.elements[name] = e
 		m.closeSubmenus()
 		m.activemenu = ""
 		return true
@@ -112,6 +117,9 @@ func (m *microMenu) ShowSubmenuItems(name, value, event, when string, x, y int) 
 		m.closeSubmenus()
 	}
 	m.activemenu = name
+	e := m.myapp.elements[name]
+	e.style = e.style.Bold(true).Foreground(tcell.ColorYellow)
+	m.myapp.elements[name] = e
 	width := m.submenuWidth[name]
 	if y > 1 {
 		m.myapp.AddWindowMenuTop("smenubottom", fmt.Sprintf("%-"+strconv.Itoa(width+1)+"s", " "), m.maxwidth+2, y, nil, "")
@@ -154,6 +162,19 @@ func (m *microMenu) closeSubmenus() {
 }
 
 func (m *microMenu) MenuItemClick(name, value, event, when string, x, y int) bool {
+	if event == "mouseout" {
+		e := m.myapp.elements[name]
+		e.style = e.style.Bold(false).Foreground(tcell.ColorWhite)
+		m.myapp.elements[name] = e
+		e.Draw()
+		return false
+	} else if event == "mousein" {
+		e := m.myapp.elements[name]
+		e.style = e.style.Bold(true).Foreground(tcell.ColorYellow)
+		m.myapp.elements[name] = e
+		e.Draw()
+		return false
+	}
 	if event != "mouse-click1" {
 		return false
 	}
@@ -180,8 +201,8 @@ func (m *microMenu) GlobalConfigDialog() {
 		} else {
 			m.myapp.name = "mi-globalconfig"
 		}
-		width := 110
-		height := 30
+		width := 100
+		height := 25
 		m.myapp.Reset()
 		m.myapp.defStyle = StringToStyle("#ffffff,#262626")
 		m.myapp.SetCanvas(-1, -1, width, height, "relative")
@@ -247,11 +268,11 @@ func (m *microMenu) GlobalConfigDialog() {
 			row += 2
 			if row > height-2 {
 				row = 2
-				col += 30
+				col += 26
 			}
 		}
-		m.myapp.AddWindowButton("cancel", " "+Language.Translate("Cancel")+" ", "cancel", col, 26, m.ButtonFinish, "")
-		m.myapp.AddWindowButton("save", " "+Language.Translate("Save")+" ", "ok", col, 28, m.SaveSettings, "")
+		m.myapp.AddWindowButton("cancel", " "+Language.Translate("Cancel")+" ", "cancel", col, height-3, m.ButtonFinish, "")
+		m.myapp.AddWindowButton("save", " "+Language.Translate("Save")+" ", "ok", col, height-1, m.SaveSettings, "")
 	}
 	m.myapp.Start()
 	apprunning = m.myapp
