@@ -212,9 +212,7 @@ func DefaultGlobalSettings() map[string]interface{} {
 		"eofnewline":     false,
 		"fastdirty":      true,
 		"fileformat":     "unix",
-		"ignorecase":     false,
 		"indentchar":     " ",
-		"infobar":        true,
 		"keepautoindent": false,
 		"lang":           "en_US",
 		"matchbrace":     false,
@@ -234,7 +232,6 @@ func DefaultGlobalSettings() map[string]interface{} {
 		"splitbottom":    true,
 		"splitright":     true,
 		"splitempty":     false,
-		"statusline":     true,
 		"sucmd":          "sudo",
 		"syntax":         true,
 		"tabmovement":    false,
@@ -261,7 +258,6 @@ func DefaultLocalSettings() map[string]interface{} {
 		"fastdirty":      true,
 		"fileformat":     "unix",
 		"filetype":       "text",
-		"ignorecase":     false,
 		"indentchar":     " ",
 		"keepautoindent": false,
 		"matchbrace":     false,
@@ -276,7 +272,6 @@ func DefaultLocalSettings() map[string]interface{} {
 		"smartpaste":     true,
 		"splitbottom":    true,
 		"splitright":     true,
-		"statusline":     true,
 		"syntax":         true,
 		"tabmovement":    false,
 		"tabsize":        float64(4),
@@ -336,10 +331,8 @@ func SetOption(option, value string) error {
 		}
 	}
 
-	if option == "infobar" {
-		for _, tab := range tabs {
-			tab.Resize()
-		}
+	for _, tab := range tabs {
+		tab.Resize()
 	}
 
 	if option == "mouse" {
@@ -430,10 +423,6 @@ func SetLocalOption(option, value string, view *View) error {
 	}
 
 	buf.Settings[option] = nativeValue
-
-	if option == "statusline" {
-		view.ToggleStatusLine()
-	}
 
 	if option == "filetype" {
 		// LoadSyntaxFiles()

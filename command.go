@@ -247,7 +247,7 @@ func Raw(args []string) {
 	if len(tabs) == 2 {
 		for _, t := range tabs {
 			for _, v := range t.Views {
-				v.ToggleTabbar()
+				v.AddTabbarSpace()
 			}
 		}
 	}
@@ -448,7 +448,7 @@ func NewTab(args []string) {
 		if len(tabs) == 2 {
 			for _, t := range tabs {
 				for _, v := range t.Views {
-					v.ToggleTabbar()
+					v.AddTabbarSpace()
 				}
 			}
 		}

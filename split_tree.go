@@ -291,10 +291,8 @@ func (s *SplitTree) ResizeSplits() {
 				n.view.x = s.x
 				y += n.view.Height
 			}
-			if n.view.Buf.Settings["statusline"].(bool) {
-				n.view.Height--
-			}
-			n.view.ToggleTabbar()
+			n.view.Height--
+			n.view.AddTabbarSpace()
 		} else if n, ok := node.(*SplitTree); ok {
 			if s.kind == VerticalSplit {
 				if !n.lockWidth {

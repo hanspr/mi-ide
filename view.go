@@ -128,7 +128,7 @@ func NewViewWidthHeight(buf *Buffer, w, h int) *View {
 	v.Height = h
 	v.cellview = new(CellView)
 
-	v.ToggleTabbar()
+	v.AddTabbarSpace()
 
 	v.OpenBuffer(buf)
 
@@ -137,10 +137,6 @@ func NewViewWidthHeight(buf *Buffer, w, h int) *View {
 	v.sline = &Statusline{
 		view:    v,
 		hotspot: make(map[string]Loc),
-	}
-
-	if v.Buf.Settings["statusline"].(bool) {
-		v.Height--
 	}
 
 	v.term = new(Terminal)
@@ -157,15 +153,6 @@ func NewViewWidthHeight(buf *Buffer, w, h int) *View {
 	}
 
 	return v
-}
-
-// ToggleStatusLine creates an extra row for the statusline if necessary
-func (v *View) ToggleStatusLine() {
-	if v.Buf.Settings["statusline"].(bool) {
-		v.Height--
-	} else {
-		v.Height++
-	}
 }
 
 // StartTerminal execs a command in this view
@@ -186,8 +173,8 @@ func (v *View) CloseTerminal() {
 	v.term.Stop()
 }
 
-// ToggleTabbar creates an extra row for the tabbar if necessary
-func (v *View) ToggleTabbar() {
+// AddTabbarSpace creates an extra row for the tabbar if necessary
+func (v *View) AddTabbarSpace() {
 	if v.y == 0 {
 		// Include one line for the tab bar at the top
 		v.Height--
@@ -1327,13 +1314,5 @@ func (v *View) Display() {
 	if v.Num == tabs[curTab].CurView && (v.Cursor.Y-v.Topline < 0 || v.Cursor.Y-v.Topline > v.Height-1 || v.Cursor.HasSelection()) {
 		screen.HideCursor()
 	}
-	_, screenH := screen.Size()
-
-	if v.Buf.Settings["statusline"].(bool) {
-		v.sline.Display()
-	} else if (v.y + v.Height) != screenH-1 {
-		for x := 0; x < v.Width; x++ {
-			screen.SetContent(v.x+x, v.y+v.Height, '-', nil, defStyle.Reverse(true))
-		}
-	}
+	v.sline.Display()
 }

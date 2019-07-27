@@ -604,7 +604,7 @@ func main() {
 										dirview.onIconClick()
 									}
 									break
-								} else if y == h-1 && messenger.message != "" && globalSettings["infobar"].(bool) {
+								} else if y == h-1 && messenger.message != "" {
 									didAction = true
 									// If the user clicked in the bottom, and there is a message down there
 									// we copy it to the clipboard.

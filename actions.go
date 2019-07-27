@@ -1997,7 +1997,7 @@ func (v *View) Quit(usePlugin bool) bool {
 						curTab--
 					}
 					if curTab == 0 {
-						CurView().ToggleTabbar()
+						CurView().AddTabbarSpace()
 					}
 				}
 			} else {
@@ -2074,7 +2074,7 @@ func (v *View) AddTab(usePlugin bool) bool {
 		if len(tabs) == 2 {
 			for _, t := range tabs {
 				for _, v := range t.Views {
-					v.ToggleTabbar()
+					v.AddTabbarSpace()
 				}
 			}
 		}

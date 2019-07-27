@@ -51,10 +51,6 @@ func (sline *Statusline) Display() {
 	_, h := screen.Size()
 	w := sline.view.Width
 
-	if messenger.hasPrompt && !GetGlobalOption("infobar").(bool) {
-		return
-	}
-
 	// We'll draw the line at the lowest line in the view
 	y := sline.view.Height + sline.view.y
 
