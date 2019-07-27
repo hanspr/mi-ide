@@ -159,11 +159,11 @@ func (v *View) ScrollUpAction(usePlugin bool) bool {
 		Dt := time.Since(scrollsince) / time.Millisecond
 		if Dt < 60 {
 			return false
-		} else if Dt < 180 {
-			scrollspeed = scrollcount * 24
-			scrollcount += 2
-		} else if Dt < 260 {
-			scrollspeed = scrollcount * 6
+		} else if Dt < 130 {
+			scrollspeed = scrollcount * v.Buf.End().Y / 100
+			scrollcount += 3
+		} else if Dt < 210 {
+			scrollspeed = scrollcount * v.Buf.End().Y / 500
 			scrollcount += 2
 		} else {
 			scrollcount = 1
@@ -189,11 +189,11 @@ func (v *View) ScrollDownAction(usePlugin bool) bool {
 		Dt := time.Since(scrollsince) / time.Millisecond
 		if Dt < 60 {
 			return false
-		} else if Dt < 180 {
-			scrollspeed = scrollcount * 24
-			scrollcount += 2
-		} else if Dt < 260 {
-			scrollspeed = scrollcount * 6
+		} else if Dt < 130 {
+			scrollspeed = scrollcount * v.Buf.End().Y / 100
+			scrollcount += 3
+		} else if Dt < 210 {
+			scrollspeed = scrollcount * v.Buf.End().Y / 500
 			scrollcount += 2
 		} else {
 			scrollcount = 1

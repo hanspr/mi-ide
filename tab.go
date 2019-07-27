@@ -339,7 +339,7 @@ func DisplayTabs() {
 				if x == 0 {
 					tStyle = StringToStyle("bold #ffd700,#121212")
 				}
-			} else if x < 21 {
+			} else if x < toffset {
 				// Toolbar icons
 				if x == 3 {
 					tStyle = StringToStyle("#ffffff")
