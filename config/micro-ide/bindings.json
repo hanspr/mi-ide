@@ -1,3 +1,9 @@
 {
-    "CtrlS": "Save"
+    "Alt-a": "snippets.Accept",
+    "Alt-d": "snippets.Cancel",
+    "Alt-w": "snippets.Next",
+    "CtrlS": "Save",
+    "F11": "perl.formatbuffer",
+    "F12": "perl.togglestrict",
+    "F14": "SaveAll"
 }
