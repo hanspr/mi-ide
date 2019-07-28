@@ -423,6 +423,7 @@ func (m *microMenu) KeyBindingsDialog() {
 			} else {
 				m.myapp.AddWindowTextBox(k, fmt.Sprintf("{grn}%-23s{/grn}", str[0]), bindings[k], "string", col, row, 17, 40, m.SetBinding, "")
 			}
+			m.myapp.SetgName(k, m.myapp.elements[k].value)
 			row++
 			if row > height-2 {
 				row = 2
@@ -515,24 +516,39 @@ func (m *microMenu) SaveKeyBindings(name, value, event, when string, x, y int) b
 		}
 		actionToKey[a] = k
 	}
-	// Comparar cada binding contra defaults
+	// Compare each binding vs defaults
 	for a, k := range values {
-		if strings.Contains(a, "?") {
+		// Check actions
+		if strings.Contains(a, "?") || strings.Contains(a, ".") {
+			// Skip buttons, test, plugins
 			continue
 		}
 		ak := strings.Split(a, "!")
-		//messenger.AddLog("Compara:", ak[0], " > ", actionToKey[ak[0]], "==", k)
+		//messenger.AddLog("Compare:", ak[0], " > ", actionToKey[ak[0]], "==", k)
 		if k != "" && actionToKey[ak[0]] != k {
 			//messenger.AddLog("Guardar=", k, ",", ak[0])
 			save[k] = ak[0]
 			write = true
 			BindKey(k, a)
 		}
+		e := m.myapp.elements[a]
+		if e.gname != "" && e.gname != k {
+			//messenger.AddLog("??:", ak[0], " > ", actionToKey[ak[0]], "==", k, " :: ", e.gname, ":: ", defaults[e.gname])
+			if defaults[e.gname] == "" {
+				//messenger.AddLog("UnbindKey=", e.gname)
+				BindKey(e.gname, "UnbindKey")
+			} else if defaults[e.gname] != ak[0] {
+				//messenger.AddLog("RebindToDefault=", e.gname, ":", defaults[e.gname])
+				BindKey(e.gname, defaults[e.gname])
+			}
+		}
 	}
 	if write {
 		WriteBindings(save)
 	}
 	m.Finish("")
+	// Forse to reload always
+	m.myapp = nil
 	return false
 }
 

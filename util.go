@@ -3,6 +3,7 @@ package main
 import (
 	"archive/zip"
 	"bytes"
+	"encoding/json"
 	"fmt"
 	"io"
 	"io/ioutil"
@@ -18,6 +19,7 @@ import (
 	"time"
 	"unicode/utf8"
 
+	"github.com/flynn/json5"
 	"github.com/go-errors/errors"
 	"github.com/mattn/go-runewidth"
 )
@@ -563,4 +565,33 @@ func GeTFileListFromPath(path, extension string) []string {
 		}
 	}
 	return Files
+}
+
+func WriteFileJSON(filename string, values map[string]string) error {
+	if _, e := os.Stat(filename); e == nil {
+		txt, _ := json.MarshalIndent(values, "", "    ")
+		err := ioutil.WriteFile(filename, append(txt, '\n'), 0644)
+		if err != nil {
+			return errors.New("Could not write bindigns.json")
+		}
+	}
+	return nil
+}
+
+func ReadFileJSON(filename string) (map[string]string, error) {
+	var parsed map[string]string
+
+	if _, e := os.Stat(filename); e == nil {
+		input, err := ioutil.ReadFile(filename)
+		if err != nil {
+			return parsed, err
+		}
+		err = json5.Unmarshal(input, &parsed)
+		if err != nil {
+			return parsed, err
+		}
+	} else {
+		return parsed, errors.New("File does not exists")
+	}
+	return parsed, nil
 }

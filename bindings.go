@@ -1,7 +1,6 @@
 package main
 
 import (
-	"encoding/json"
 	"fmt"
 	"io/ioutil"
 	"os"
@@ -499,12 +498,11 @@ func BindKey(k, v string) {
 }
 
 func WriteBindings(values map[string]string) {
-	if _, e := os.Stat(configDir + ""); e == nil {
+	if _, e := os.Stat(configDir); e == nil {
 		filename := configDir + "/bindings.json"
-		txt, _ := json.MarshalIndent(values, "", "    ")
-		err := ioutil.WriteFile(filename, append(txt, '\n'), 0644)
+		err := WriteFileJSON(filename, values)
 		if err != nil {
-			TermMessage("Could not write bindigns.json")
+			TermMessage(err.Error())
 		}
 	}
 }
