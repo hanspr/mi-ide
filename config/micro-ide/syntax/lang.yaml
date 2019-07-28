@@ -1,0 +1,10 @@
+filetype: microlang
+
+detect:
+    filename: "\\.lang$"
+
+rules:
+    - constant.string: "^.+?\\|"
+    - symbol.operator: "\\|"
+    
+

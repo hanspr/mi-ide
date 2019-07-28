@@ -89,10 +89,10 @@ type SerializedBuffer struct {
 	ModTime      time.Time
 }
 
-func GetFileEncoding(filename string) (string, string) {
+func (b *Buffer) GetFileSettings(filename string) {
 	filename, _ = filepath.Abs(filename)
 	// Find last encoding used for this file
-	cachename := filename
+	cachename := filename + ".settings"
 	cachename = configDir + "/buffers/" + strings.ReplaceAll(cachename, "/", "")
 	if _, err := os.Stat(cachename); err == nil {
 		file, err := os.Open(cachename)
@@ -100,28 +100,35 @@ func GetFileEncoding(filename string) (string, string) {
 			defer file.Close()
 			encoder, err := ioutil.ReadAll(file)
 			if err == nil {
-				return string(encoder), "cache"
+				b.encoder = string(encoder)
+				b.sencoder = b.encoder
+				return
 			}
 		}
 	}
-	// Use uchardet shipped with micro others may be to old
+	// Here it beggins the guessing game
+	// Use uchardet shipped with micro-ide
+	b.encoder = "UTF-8"
 	uchardet := configDir + "/libs/uchardet"
-	cmd := exec.Command(uchardet, filename)
-	cmd.Dir = configDir + "/libs"
-	msg, err := cmd.Output()
-	if err != nil {
-		return "UTF-8", err.Error()
+	if _, err := os.Stat(uchardet); err == nil {
+		cmd := exec.Command(uchardet, filename)
+		cmd.Dir = configDir + "/libs"
+		msg, err := cmd.Output()
+		if err != nil {
+			b.encoder = "UTF-8"
+			return
+		}
+		b.encoder = strings.TrimSuffix(strings.ToUpper(string(msg)), "\n")
 	}
-	encoding := strings.TrimSuffix(strings.ToUpper(string(msg)), "\n")
-	if encoding != "UTF-8" {
-		// Double check, file -b has better detection for UTF-8 files
-		cmd = exec.Command("file", "-b", filename)
-		msg, err = cmd.Output()
+	if b.encoder != "UTF-8" {
+		// Double check, file -b has better guessing for UTF-8 files
+		cmd := exec.Command("file", "-b", filename)
+		msg, err := cmd.Output()
 		if err == nil && strings.Contains(string(msg), "UTF-8") {
-			return "UTF-8", "file"
+			b.encoder = "UTF-8"
 		}
 	}
-	return encoding, ""
+	return
 }
 
 // NewBufferFromFile opens a new buffer using the given path
@@ -174,16 +181,13 @@ func NewBuffer(reader io.Reader, size int64, path string, cursorPosition []strin
 	b := new(Buffer)
 
 	if reflect.TypeOf(reader).String() == "*os.File" && path != "" {
-		var msg string
-		// Check for encoding, wrap reader around iconv-go if necessary
-		b.encoder, msg = GetFileEncoding(path)
-		if msg == "cache" {
-			b.sencoder = b.encoder
-		}
+		// Check for previous saved settings
+		b.GetFileSettings(path)
 		if b.encoder == "UTF-8" {
 			utf8reader = reader
 			b.encoding = false
 		} else {
+			// wrap reader around iconv-go
 			var err error
 			utf8reader, err = iconv.NewReader(reader, b.encoder, "utf-8")
 			if err != nil {
@@ -777,7 +781,7 @@ func (b *Buffer) SaveAs(filename string) error {
 	b.Path = filename
 	b.IsModified = false
 	if b.sencoder != b.encoder {
-		cachename, _ := filepath.Abs(filename)
+		cachename, _ := filepath.Abs(filename) + ".settings"
 		cachename = configDir + "/buffers/" + strings.ReplaceAll(cachename, "/", "")
 		f, err := os.Create(cachename)
 		defer f.Close()
