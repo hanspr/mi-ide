@@ -40,7 +40,7 @@ Not enough arguments|Argumentos insuficientes
 Warning: Showing raw event escape codes|Advertencia: mostrando códigos de eventos directos
 Use CtrlQ to exit|Use Ctrl+Q para salir
 Could not find tab:|No pude localizar pestaña:
-Invalid tab index|Índice de pestáña inválido
+Invalid tab index|Índice de pestaña inválido
 Error with cd:|Error con cd:
 Error parsing args|Error escaneando argumentos
 No filename|Sin nombre de archivo
@@ -75,7 +75,7 @@ all|todos
 No regexp|No regexp
 Save As ...|Guardar como ...
 File name :|Nombre archivo :
-Encoding:|Codificación: 
+Encoding:|Codificación:
 Use this encoding:|Usar esta codificación:
 Save|Guardar
 Select Encoding|Seleccionar codificación
