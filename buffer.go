@@ -94,16 +94,12 @@ func (b *Buffer) GetFileSettings(filename string) {
 	// Find last encoding used for this file
 	cachename := filename + ".settings"
 	cachename = configDir + "/buffers/" + strings.ReplaceAll(cachename, "/", "")
-	if _, err := os.Stat(cachename); err == nil {
-		file, err := os.Open(cachename)
-		if err == nil {
-			defer file.Close()
-			encoder, err := ioutil.ReadAll(file)
-			if err == nil {
-				b.encoder = string(encoder)
-				b.sencoder = b.encoder
-				return
-			}
+	settings, jerr := ReadFileJSON(cachename)
+	if jerr == nil {
+		if settings["encoder"] != "" {
+			b.encoder = settings["encoder"]
+			b.sencoder = b.encoder
+			return
 		}
 	}
 	// Here it beggins the guessing game
@@ -781,15 +777,13 @@ func (b *Buffer) SaveAs(filename string) error {
 	b.Path = filename
 	b.IsModified = false
 	if b.sencoder != b.encoder {
-		cachename, _ := filepath.Abs(filename) + ".settings"
-		cachename = configDir + "/buffers/" + strings.ReplaceAll(cachename, "/", "")
-		f, err := os.Create(cachename)
-		defer f.Close()
-		if err == nil {
-			_, err := f.WriteString(b.encoder)
-			if err == nil {
-				b.sencoder = b.encoder
-			}
+		settings := make(map[string]string)
+		cachename, _ := filepath.Abs(filename)
+		cachename = configDir + "/buffers/" + strings.ReplaceAll(cachename+".settings", "/", "")
+		settings["encoder"] = b.encoder
+		err := WriteFileJSON(cachename, settings)
+		if err != nil {
+			messenger.Error(Language.Translate("Could not save settings") + " : " + err.Error())
 		}
 	}
 	// Save current Undo Stack Len to later check Modified status in Actions

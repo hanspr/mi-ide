@@ -568,12 +568,10 @@ func GeTFileListFromPath(path, extension string) []string {
 }
 
 func WriteFileJSON(filename string, values map[string]string) error {
-	if _, e := os.Stat(filename); e == nil {
-		txt, _ := json.MarshalIndent(values, "", "    ")
-		err := ioutil.WriteFile(filename, append(txt, '\n'), 0644)
-		if err != nil {
-			return errors.New("Could not write bindigns.json")
-		}
+	txt, _ := json.MarshalIndent(values, "", "    ")
+	err := ioutil.WriteFile(filename, append(txt, '\n'), 0644)
+	if err != nil {
+		return errors.New("Could not write bindigns.json")
 	}
 	return nil
 }
