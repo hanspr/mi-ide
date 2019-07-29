@@ -34,9 +34,17 @@ func (sline *Statusline) MouseEvent(e *tcell.EventMouse, rx, ry int) {
 	if e.Buttons() != tcell.Button1 || e.HasMotion() == true {
 		return
 	}
-	for _, hs := range sline.hotspot {
+	for action, hs := range sline.hotspot {
 		if rx >= hs.X && rx <= hs.Y {
-			micromenu.SelEncoding(sline.EncodingSelected)
+			if action == "ENCODER" {
+				micromenu.SelEncoding(sline.view.Buf.encoder, sline.EncodingSelected)
+			} else if action == "FILEFORMAT" {
+				if sline.view.Buf.Settings["fileformat"].(string) == "unix" {
+					sline.view.Buf.Settings["fileformat"] = "dos"
+				} else {
+					sline.view.Buf.Settings["fileformat"] = "unix"
+				}
+			}
 		}
 	}
 	return
@@ -116,6 +124,7 @@ func (sline *Statusline) Display() {
 		file += " " + sline.view.Buf.FileType()
 
 		if size > 12 {
+			sline.hotspot["FILEFORMAT"] = Loc{Count(file) + 2 + offset, Count(file) + offset + 3 + Count(sline.view.Buf.Settings["fileformat"].(string))}
 			file += "  (" + sline.view.Buf.Settings["fileformat"].(string) + ")  "
 		}
 
@@ -161,6 +170,8 @@ func (sline *Statusline) Display() {
 		if x < 3 && fvstyle {
 			tStyle = StringToStyle("#ffd700,#5f87af")
 		} else if w > 65 && sline.hotspot["ENCODER"].X-offset <= x && x <= sline.hotspot["ENCODER"].Y-offset && sline.view.Num == CurView().Num {
+			tStyle = StringToStyle("#ffd700,#585858")
+		} else if w > 65 && sline.hotspot["FILEFORMAT"].X-offset <= x && x <= sline.hotspot["FILEFORMAT"].Y-offset && sline.view.Num == CurView().Num {
 			tStyle = StringToStyle("#ffd700,#585858")
 		}
 		if x < len(fileRunes) {

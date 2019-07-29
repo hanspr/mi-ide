@@ -835,7 +835,7 @@ func (m *microMenu) SaveFile(name, value, event, when string, x, y int) bool {
 // Set Buffer Encoding
 // ---------------------------------------
 
-func (m *microMenu) SelEncoding(callback func(map[string]string)) {
+func (m *microMenu) SelEncoding(encoder string, callback func(map[string]string)) {
 	if m.myapp == nil || m.myapp.name != "mi-selencoding" {
 		if m.myapp == nil {
 			m.myapp = new(MicroApp)
@@ -850,7 +850,7 @@ func (m *microMenu) SelEncoding(callback func(map[string]string)) {
 		m.myapp.SetCanvas(-1, -1, width, heigth, "relative")
 		m.myapp.AddWindowBox("enc", Language.Translate("Select Encoding"), 0, 0, width, heigth, true, nil, "")
 		lbl := Language.Translate("Encoding:")
-		m.myapp.AddWindowSelect("encoding", lbl+" ", "UTF-8", ENCODINGS, 2, 2, 0, 1, nil, "")
+		m.myapp.AddWindowSelect("encoding", lbl+" ", encoder, ENCODINGS, 2, 2, 0, 1, nil, "")
 		lbl = Language.Translate("Use this encoding:")
 		m.myapp.AddWindowTextBox("encode", lbl+" ", "", "string", 2, 4, 15, 15, nil, "")
 		lbl = Language.Translate("Cancel")
