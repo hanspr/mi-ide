@@ -4,7 +4,8 @@ import (
 	"archive/zip"
 	"bytes"
 	"encoding/json"
-	"fmt"
+
+	//"fmt"
 	"io"
 	"io/ioutil"
 	"net/http"
@@ -478,7 +479,7 @@ func SubtringSafe(utf8s string, from int, to int) string {
 }
 
 func DownLoadExtractZip(url, targetDir string) error {
-	TermMessage(fmt.Sprintf("Downloading %q to %q", url, targetDir))
+	//TermMessage(fmt.Sprintf("Downloading %q to %q", url, targetDir))
 	resp, err := http.Get(url)
 	if err != nil {
 		return err
@@ -571,7 +572,7 @@ func WriteFileJSON(filename string, values map[string]string) error {
 	txt, _ := json.MarshalIndent(values, "", "    ")
 	err := ioutil.WriteFile(filename, append(txt, '\n'), 0644)
 	if err != nil {
-		return errors.New("Could not write bindigns.json")
+		return errors.New("Could not write " + filename)
 	}
 	return nil
 }

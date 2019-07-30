@@ -1,6 +1,8 @@
 color-link default "#e6e1dc,#2b2b2b"
 color-link comment "#bc9458,#2b2b2b"
 color-link statement "#cc7833,#2b2b2b"
+color-link method "#E068FF"
+color-link method.other "bold #E068FF"
 color-link constant "#a5c261,#2b2b2b"
 color-link constant.bool "#6d9cbe,#2b2b2b"
 color-link type "#6d9cbe,#2b2b2b"

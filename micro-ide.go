@@ -181,9 +181,10 @@ func InitConfigDir() {
 	}
 
 	if _, err := os.Stat(configDir); os.IsNotExist(err) {
+		// Copy files from /etc/micro-ide if they exists (installed by root)?
 		// If the micro specific config directory doesn't exist we should download a basic one
-		TermMessage("micro-ide will download the necessary config files need it to run.\nFiles will be donwnloaded from github.com\nIf you do not agree type Ctrl-C to abort")
-		err := DownLoadExtractZip("https://raw.githubusercontent.com/hanspr/test/master/config.zip", configDir)
+		TermMessage("Missing configuration files.\nmicro-ide will download the necessary config files to run.\nFiles will be downloaded from\n\nhttps://raw.githubusercontent.com/hanspr/mi-sources/master/config.zip\n\nIf you do not agree, type Ctrl-C to abort, and install manually")
+		err := DownLoadExtractZip("https://raw.githubusercontent.com/hanspr/mi-channel/master/config.zip", configDir)
 		if err != nil {
 			TermMessage("Could not download config files, please install manually.\n\nHave to abort.")
 			os.Exit(0)
