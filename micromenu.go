@@ -271,8 +271,10 @@ func (m *microMenu) GlobalConfigDialog() {
 				col += 26
 			}
 		}
-		m.myapp.AddWindowButton("cancel", " "+Language.Translate("Cancel")+" ", "cancel", col, height-3, m.ButtonFinish, "")
-		m.myapp.AddWindowButton("save", " "+Language.Translate("Save")+" ", "ok", col, height-1, m.SaveSettings, "")
+		lbl := Language.Translate("Cancel")
+		m.myapp.AddWindowButton("cancel", " "+lbl+" ", "cancel", width-Count(lbl)-20, height-1, m.ButtonFinish, "")
+		lbl = Language.Translate("Save")
+		m.myapp.AddWindowButton("save", " "+lbl+" ", "ok", width-Count(lbl)-5, height-1, m.SaveSettings, "")
 	}
 	m.myapp.Start()
 	apprunning = m.myapp
