@@ -252,9 +252,6 @@ func (a *MicroApp) AddWindowSelect(name, label, value string, options string, x,
 	if options == "" {
 		return false
 	}
-	//if strings.Contains(options, "|") == false {
-	//return false
-	//}
 	if width == 0 {
 		opts := strings.Split(options, "|")
 		for _, opt := range opts {
@@ -482,6 +479,7 @@ func (a *MicroApp) SetFocusNextInputElement(k string) {
 
 func (a *MicroApp) DeleteElement(k string) {
 	delete(a.elements, k)
+	a.DrawAll()
 }
 
 // ------------------------------------------------
@@ -1454,6 +1452,16 @@ func (a *MicroApp) HandleEvents(event tcell.Event) {
 	char := ""
 	//a.Debug(fmt.Sprintf("LOOP %s", time.Now()), 90, 10)
 	switch ev := event.(type) {
+	case *tcell.EventPaste:
+		e := a.elements[a.activeElement]
+		if a.activeElement != "" && e.form == "textbox" {
+			a.SetValue(a.activeElement, ev.Text())
+			a.SetFocus(a.activeElement, "E")
+			e := a.elements[a.activeElement]
+			if a.elements[a.activeElement].callback != nil {
+				e.callback(e.name, e.value, "Paste", "POST", e.cursor.X, e.cursor.Y)
+			}
+		}
 	case *tcell.EventResize:
 		a.Resize()
 	case *tcell.EventKey:

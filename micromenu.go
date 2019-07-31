@@ -449,16 +449,17 @@ func (m *microMenu) SetBinding(name, value, event, when string, x, y int) bool {
 	if event == "mouse-click1" {
 		if name == "?test" {
 			m.myapp.SetValue(name, "")
-			m.myapp.SetFocus(name, "B")
 		}
+		m.myapp.SetFocus(name, "B")
 		return true
 	}
 	if strings.Contains(event, "mouse") || strings.Contains(event, "Alt+Ctrl") || when == "POST" || Count(event) < 2 {
 		return false
 	}
 	switch event {
-	case "Left", "Right", "Down", "Up", "Esc", "Enter", "Tab", "Backspace2", "Backspace", "Delete", "F9", "F10", "F11", "F12":
+	case "Left", "Right", "Down", "Up", "Esc", "Enter", "Tab", "Backspace2", "Backspace", "Delete", "F9", "F10", "F11", "F12", "PgDn", "PgUp":
 		m.myapp.SetValue(name, "")
+		m.myapp.SetFocus(name, "B")
 		return false
 	}
 	if strings.Contains(event, "Alt") {
@@ -715,7 +716,7 @@ func (m *microMenu) SubmitSearchOnEnter(name, value, event, when string, x, y in
 		value = value2
 	}
 	if len([]rune(event)) > 1 {
-		if event == "Backspace2" || event == "Delete" || event == "Ctrl+V" {
+		if event == "Backspace2" || event == "Delete" || event == "Ctrl+V" || event == "Paste" {
 			event = ""
 		} else {
 			return true
