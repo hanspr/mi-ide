@@ -71,7 +71,7 @@ func (m *microMenu) Menu() {
 		}
 		m.myapp.AddWindowMenuBottom("menubottom", fmt.Sprintf("%-"+strconv.Itoa(m.maxwidth+1)+"s", " "), 0, row, nil, "")
 		row++
-		m.myapp.SetCanvas(1, 0, m.maxwidth, row-1, "fixed")
+		m.myapp.SetFrame(1, 0, m.maxwidth, row-1, "fixed")
 		m.myapp.Finish = m.MenuFinish
 	} else {
 		m.closeSubmenus()
@@ -156,7 +156,7 @@ func (m *microMenu) closeSubmenus() {
 			delete(m.myapp.elements, k)
 		}
 	}
-	m.myapp.ResetCanvas()
+	m.myapp.ResetFrame()
 	m.myapp.DrawAll()
 	m.activemenu = ""
 }
@@ -205,7 +205,7 @@ func (m *microMenu) GlobalConfigDialog() {
 		height := 25
 		m.myapp.Reset()
 		m.myapp.defStyle = StringToStyle("#ffffff,#262626")
-		m.myapp.SetCanvas(-1, -1, width, height, "relative")
+		m.myapp.SetFrame(-1, -1, width, height, "relative")
 		m.myapp.AddWindowBox("enc", Language.Translate("Global Settings"), 0, 0, width, height, true, nil, "")
 		keys := make([]string, 0, len(globalSettings))
 		for k := range globalSettings {
@@ -410,7 +410,7 @@ func (m *microMenu) KeyBindingsDialog() {
 		m.myapp.AddStyle("grn", "#00FF00,#262626")
 		m.myapp.AddStyle("yw", "#ffff00,#262626")
 		m.myapp.AddStyle("red", "#ff0000,#262626")
-		m.myapp.SetCanvas(-1, -1, width, height, "relative")
+		m.myapp.SetFrame(-1, -1, width, height, "relative")
 		m.myapp.AddWindowBox("enc", Language.Translate("KeyBindings"), 0, 0, width, height, true, nil, "")
 		row := 2
 		col := 2
@@ -581,7 +581,7 @@ func (m *microMenu) Search(callback func(map[string]string)) {
 		m.myapp.defStyle = StringToStyle("#ffffff,#262626")
 		width := 70
 		heigth := 8
-		m.myapp.SetCanvas(-1, -1, width, heigth, "relative")
+		m.myapp.SetFrame(-1, -1, width, heigth, "relative")
 		m.myapp.AddStyle("f", "black,yellow")
 		m.myapp.AddWindowBox("enc", Language.Translate("Search"), 0, 0, width, heigth, true, nil, "")
 		lbl := Language.Translate("Search regex:")
@@ -623,7 +623,7 @@ func (m *microMenu) SearchReplace(callback func(map[string]string)) {
 		m.myapp.defStyle = StringToStyle("#ffffff,#262626")
 		width := 70
 		heigth := 12
-		m.myapp.SetCanvas(-1, -1, width, heigth, "relative")
+		m.myapp.SetFrame(-1, -1, width, heigth, "relative")
 		m.myapp.AddStyle("f", "bold black,yellow")
 		m.myapp.AddWindowBox("enc", Language.Translate("Search / Replace"), 0, 0, width, heigth, true, nil, "")
 		lbl := Language.Translate("Search regex:")
@@ -751,7 +751,7 @@ func (m *microMenu) SaveAs(b *Buffer, usePlugin bool, callback func(map[string]s
 		m.myapp.defStyle = StringToStyle("#ffffff,#262626")
 		width := 80
 		heigth := 8
-		m.myapp.SetCanvas(-1, -1, width, heigth, "relative")
+		m.myapp.SetFrame(-1, -1, width, heigth, "relative")
 		m.myapp.AddWindowBox("enc", Language.Translate("Save As ..."), 0, 0, width, heigth, true, nil, "")
 		lbl := Language.Translate("File name :")
 		m.myapp.AddWindowTextBox("filename", lbl+" ", "", "string", 2, 2, 76-Count(lbl), 200, m.SaveFile, "")
@@ -850,7 +850,7 @@ func (m *microMenu) SelEncoding(encoder string, callback func(map[string]string)
 		m.myapp.defStyle = StringToStyle("#ffffff,#262626")
 		width := 60
 		heigth := 8
-		m.myapp.SetCanvas(-1, -1, width, heigth, "relative")
+		m.myapp.SetFrame(-1, -1, width, heigth, "relative")
 		m.myapp.AddWindowBox("enc", Language.Translate("Select Encoding"), 0, 0, width, heigth, true, nil, "")
 		lbl := Language.Translate("Encoding:")
 		m.myapp.AddWindowSelect("encoding", lbl+" ", encoder, ENCODINGS, 2, 2, 0, 1, nil, "")

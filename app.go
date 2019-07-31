@@ -40,7 +40,7 @@ type AppStyle struct {
 	style tcell.Style
 }
 
-type Canvas struct {
+type Frame struct {
 	top      int
 	left     int
 	right    int
@@ -71,7 +71,7 @@ type MicroApp struct {
 	lastclick        time.Time
 	eint             int
 	maxheigth        int
-	canvas           Canvas
+	canvas           Frame
 	maxindex         int
 	mouseOver        string
 }
@@ -80,7 +80,7 @@ type MicroApp struct {
 // App Build Methods
 // ------------------------------------------------
 
-func (a *MicroApp) SetCanvas(top, left, width, height int, position string) {
+func (a *MicroApp) SetFrame(top, left, width, height int, position string) {
 	w, h := a.screen.Size()
 	a.canvas.otop = top
 	a.canvas.oleft = left
@@ -307,7 +307,7 @@ func (a *MicroApp) SetVisible(k string, v bool) {
 	if v == true {
 		e.Draw()
 	} else {
-		a.ResetCanvas()
+		a.ResetFrame()
 		if a.activeElement == "" {
 			a.cursor = Loc{0, 0}
 			a.screen.HideCursor()
@@ -874,8 +874,8 @@ func (a *MicroApp) ClearScreen() {
 	a.screen.Show()
 }
 
-// Redraw Canvas
-func (a *MicroApp) ResetCanvas() {
+// Redraw Frame
+func (a *MicroApp) ResetFrame() {
 	RedrawAll(false)
 	a.DrawAll()
 }
