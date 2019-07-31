@@ -380,9 +380,16 @@ func (a *MicroApp) GetLabel(k string) string {
 
 func (a *MicroApp) SetLabel(k, v string) {
 	e := a.elements[k]
+	if Count(v) < Count(e.label) {
+		// First overwrite n spaces to erease current lable
+		e.label = strings.Repeat(" ", Count(e.label)-1)
+		a.elements[e.name] = e
+		e.Draw()
+	}
+	// Now add new label
 	e.label = v
 	a.elements[e.name] = e
-	a.DrawAll()
+	e.Draw()
 	a.screen.Show()
 }
 
