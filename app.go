@@ -1091,7 +1091,6 @@ func (a *MicroApp) PrintAbsolute(msg string, x, y int, style *tcell.Style) {
 
 func (e *AppElement) TextAreaClickEvent(event string, x, y int) {
 	a := e.microapp
-	//f := e.frame
 	a.activeElement = e.name
 	a.cursor.X = x
 	a.cursor.Y = y
@@ -1310,7 +1309,6 @@ func (e *AppElement) SelectKeyEvent(key string, x, y int) {
 
 func (e *AppElement) TextAreaKeyEvent(key string, x, y int) {
 	a := e.microapp
-	//f := e.frame
 	if e.apose.Y == y && e.apose.X == x {
 		return
 	}
