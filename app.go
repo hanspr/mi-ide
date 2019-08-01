@@ -53,7 +53,7 @@ type Frame struct {
 	oleft     int
 	owidth    int
 	oheight   int
-	elements  map[string]AppElement
+	elements  map[string]*AppElement
 	microapp  *MicroApp
 	maxindex  int
 	maxheigth int
@@ -76,9 +76,10 @@ type MicroApp struct {
 	lastbutton       string
 	lastclick        time.Time
 	eint             int
-	frames           map[string]Frame
+	frames           map[string]*Frame
 	activeFrame      string
 	mouseOver        string
+	debug            bool
 }
 
 // ------------------------------------------------
@@ -88,7 +89,7 @@ type MicroApp struct {
 func (a *MicroApp) AddFrame(name string, top, left, width, height int, position string) *Frame {
 	var f Frame
 
-	f.elements = make(map[string]AppElement)
+	f.elements = make(map[string]*AppElement)
 	w, h := a.screen.Size()
 	f.otop = top
 	f.oleft = left
@@ -122,7 +123,7 @@ func (a *MicroApp) AddFrame(name string, top, left, width, height int, position 
 		a.activeFrame = name
 		f.visible = true
 	}
-	a.frames[name] = f
+	a.frames[name] = &f
 	return &f
 }
 
@@ -152,12 +153,10 @@ func (f *Frame) ChangeFrame(top, left, width, height int, position string) {
 	f.right = left + width
 	f.bottom = top + height
 	f.position = position
-	f.microapp.frames[f.name] = *f
 }
 
 func (f *Frame) Show(v bool) {
 	f.visible = v
-	f.microapp.frames[f.name] = *f
 }
 
 func (a *MicroApp) AddStyle(name, style string) {
@@ -186,7 +185,7 @@ func (a *MicroApp) AddWindowElement(frame, name, label, form, value, value_type 
 	e.checked = chk
 	e.offset = 0
 	e.microapp = a
-	e.frame = &f
+	e.frame = f
 	e.visible = true
 	re := regexp.MustCompile(`{/?\w+}`)
 	label = re.ReplaceAllString(label, "")
@@ -243,7 +242,7 @@ func (a *MicroApp) AddWindowElement(frame, name, label, form, value, value_type 
 		e.aposb = Loc{x + 1, y + 1}
 		e.apose = Loc{x + w - 1, y + h - 1}
 	}
-	a.frames[frame].elements[e.name] = e
+	a.frames[frame].elements[e.name] = &e
 }
 
 func (f *Frame) AddWindowBox(name, title string, x, y, width, height int, border bool, callback func(string, string, string, string, int, int) bool, style string) {
@@ -346,6 +345,10 @@ func (f *Frame) AddWindowButton(name, label, button_type string, x, y int, callb
 // ------------------------------------------------
 
 func (f *Frame) SetIndex(k string, v int) {
+	e, ok := f.elements[k]
+	if ok == false {
+		return
+	}
 	if v > 5 {
 		v = 5
 	} else if v < 0 {
@@ -354,24 +357,27 @@ func (f *Frame) SetIndex(k string, v int) {
 	if v > f.maxindex {
 		f.maxindex = v
 	}
-	e := f.elements[k]
 	e.index = v
-	f.elements[k] = e
-	f.microapp.frames[f.name] = *f
 }
 
 func (f *Frame) GetVisible(k string) bool {
-	return f.elements[k].visible
+	e, ok := f.elements[k]
+	if ok == false {
+		return false
+	}
+	return e.visible
 }
 
 func (f *Frame) SetVisible(k string, v bool) {
 	a := f.microapp
-	e := f.elements[k]
+	e, ok := f.elements[k]
+	if ok == false {
+		return
+	}
 	if e.visible == v {
 		return
 	}
 	e.visible = v
-	f.elements[e.name] = e
 	if v == true {
 		e.Draw()
 	} else {
@@ -387,91 +393,130 @@ func (f *Frame) SetVisible(k string, v bool) {
 }
 
 func (f *Frame) GetgName(k string) string {
-	return f.elements[k].gname
+	e, ok := f.elements[k]
+	if ok == false {
+		return ""
+	}
+	return e.gname
 }
 
 func (f *Frame) SetgName(k, v string) {
-	e := f.elements[k]
+	e, ok := f.elements[k]
+	if ok == false {
+		return
+	}
 	e.gname = v
-	f.elements[k] = e
 }
 
 func (f *Frame) GetiKey(k string) int {
-	return f.elements[k].iKey
+	e, ok := f.elements[k]
+	if ok == false {
+		return 0
+	}
+	return e.iKey
 }
 
 func (f *Frame) SetiKey(k string, v int) {
-	e := f.elements[k]
+	e, ok := f.elements[k]
+	if ok == false {
+		return
+	}
 	e.iKey = v
-	f.elements[k] = e
 }
 
 func (f *Frame) GetValue(k string) string {
-	return f.elements[k].value
+	e, ok := f.elements[k]
+	if ok == false {
+		return ""
+	}
+	return e.value
 }
 
 func (f *Frame) SetValue(k, v string) {
+	e, ok := f.elements[k]
+	if ok == false {
+		return
+	}
 	a := f.microapp
-	e := f.elements[k]
 	e.value = v
-	f.elements[k] = e
 	e.Draw()
 	a.screen.Show()
 }
 
 func (f *Frame) GetChecked(k string) bool {
-	return f.elements[k].checked
+	e, ok := f.elements[k]
+	if ok == false {
+		messenger.AddLog("No existe:", k)
+		return false
+	}
+	return e.checked
 }
 
 func (f *Frame) SetCheked(k string, v bool) {
+	e, ok := f.elements[k]
+	if ok == false {
+		return
+	}
 	a := f.microapp
-	e := f.elements[k]
 	e.checked = v
-	f.elements[e.name] = e
 	e.Draw()
 	a.screen.Show()
 }
 
 func (f *Frame) GetPos(k string) Loc {
-	return f.elements[k].pos
+	e, ok := f.elements[k]
+	if ok == false {
+		return Loc{0, 0}
+	}
+	return e.pos
 }
 
 func (f *Frame) SetPos(k string, v Loc) {
+	e, ok := f.elements[k]
+	if ok == false {
+		return
+	}
 	a := f.microapp
-	e := f.elements[k]
 	e.pos = v
-	f.elements[e.name] = e
 	e.Draw()
 	a.screen.Show()
 }
 
 func (f *Frame) GetLabel(k string) string {
-	return f.elements[k].label
+	e, ok := f.elements[k]
+	if ok == false {
+		return ""
+	}
+	return e.label
 }
 
 func (f *Frame) SetLabel(k, v string) {
+	e, ok := f.elements[k]
+	if ok == false {
+		return
+	}
 	a := f.microapp
-	e := f.elements[k]
 	if Count(v) < Count(e.label) {
 		// First overwrite n spaces to erease current lable
 		e.label = strings.Repeat(" ", Count(e.label)-1)
-		f.elements[e.name] = e
 		e.Draw()
 	}
 	// Now add new label
 	e.label = v
-	f.elements[e.name] = e
 	e.Draw()
 	a.screen.Show()
 }
 
 func (f *Frame) SetFocus(k, where string) {
+	e, ok := f.elements[k]
+	if ok == false {
+		return
+	}
 	a := f.microapp
 	if f.elements[k].index == 0 || (f.elements[k].form != "textbox" && f.elements[k].form != "textarea") {
 		return
 	}
 	a.activeElement = k
-	e := f.elements[k]
 	a.cursor = e.aposb
 	if where == "B" {
 		where = "Home"
@@ -489,28 +534,31 @@ func (f *Frame) SetFocusPreviousInputElement(k string) {
 	var next AppElement
 	var last AppElement
 
+	me, ok := f.elements[k]
+	if ok == false {
+		return
+	}
 	last.pos.Y = -1
 	next.pos.Y = -1
 	next.pos.X = -1
-	me := f.elements[k]
 	for _, e := range f.elements {
 		if e.index == 0 || e.name == me.name || (e.form != "textbox" && e.form != "textarea") {
 			continue
 		}
 		if e.pos.Y == me.pos.Y && e.pos.X < me.pos.X {
-			next = e
+			next = *e
 			break
 		}
 		if e.pos.Y < me.pos.Y && e.pos.Y >= next.pos.Y && e.pos.X > next.pos.X {
-			next = e
+			next = *e
 			continue
 		}
 		if e.pos.Y > last.pos.Y {
-			last = e
+			last = *e
 			continue
 		}
 		if e.pos.Y == last.pos.Y && e.pos.X > last.pos.X {
-			last = e
+			last = *e
 			continue
 		}
 	}
@@ -525,28 +573,31 @@ func (f *Frame) SetFocusNextInputElement(k string) {
 	var next AppElement
 	var first AppElement
 
+	me, ok := f.elements[k]
+	if ok == false {
+		return
+	}
 	first.pos.Y = 99999
 	next.pos.Y = 99999
 	next.pos.X = 99999
-	me := f.elements[k]
 	for _, e := range f.elements {
 		if e.index == 0 || e.name == me.name || (e.form != "textbox" && e.form != "textarea") {
 			continue
 		}
 		if e.pos.Y == me.pos.Y && e.pos.X > me.pos.X {
-			next = e
+			next = *e
 			break
 		}
 		if e.pos.Y > me.pos.Y && e.pos.Y <= next.pos.Y && e.pos.X < next.pos.X {
-			next = e
+			next = *e
 			continue
 		}
 		if e.pos.Y < first.pos.Y {
-			first = e
+			first = *e
 			continue
 		}
 		if e.pos.Y == first.pos.Y && e.pos.X < first.pos.X {
-			first = e
+			first = *e
 			continue
 		}
 	}
@@ -679,7 +730,6 @@ func (e *AppElement) DrawTextBox() {
 			}
 			e.offset = 0
 		}
-		f.elements[e.name] = *e
 	}
 	e.frame.PrintStyle(e.label, e.pos.X, e.pos.Y, &e.style)
 	style := e.style.Underline(true)
@@ -732,7 +782,9 @@ func (e *AppElement) DrawSelect() {
 	}
 	a.eint = start
 	if a.activeElement == e.name {
-		e.style = a.defStyle.Foreground(tcell.Color234).Background(tcell.Color230)
+		style = a.defStyle.Foreground(tcell.Color234).Background(tcell.Color230)
+	} else {
+		style = e.style
 	}
 	for i := start; i < len(opts); i++ {
 		opt := strings.SplitN(opts[i], ":", 2)
@@ -740,15 +792,15 @@ func (e *AppElement) DrawSelect() {
 			opt[1] = opt[0]
 		}
 		if i == e.offset {
-			style = e.style.Reverse(true).Bold(true)
+			style = style.Reverse(true).Bold(true)
 		} else if e.height == 1 {
 			continue
 		} else {
-			style = e.style.Reverse(false).Bold(false)
+			style = style.Reverse(false).Bold(false)
 		}
 		if e.height == 1 {
 			Y = 0
-			style = e.style.Bold(true).Background(tcell.ColorDarkSlateGrey)
+			style = style.Bold(false).Background(tcell.ColorDarkSlateGrey).Foreground(tcell.ColorWhite).Reverse(false)
 			chr = "▼"
 		} else {
 			Y++
@@ -901,12 +953,15 @@ func runeLastIndex(str, s string) int {
 // ------------------------------------------------
 
 func (a *MicroApp) DrawAll() {
+	if a.debug {
+		RedrawAll(false)
+	}
 	// Draw all elements in index order from 0 to current max index (normally 2)
 	for _, f := range a.frames {
 		if f.visible == true {
 			for i := 0; i <= f.maxindex; i++ {
 				for _, e := range f.elements {
-					e.frame = &f
+					//e.frame = &f
 					if e.index == i {
 						e.Draw()
 					}
@@ -924,7 +979,7 @@ func (a *MicroApp) Resize() {
 	for _, t := range tabs {
 		t.Resize()
 	}
-	for fn, f := range a.frames {
+	for _, f := range a.frames {
 		if f.position == "relative" {
 			w, h := a.screen.Size()
 			if f.otop+f.oleft+f.owidth+f.oheight == 0 {
@@ -941,7 +996,7 @@ func (a *MicroApp) Resize() {
 				f.bottom = f.top + f.oheight
 			}
 		}
-		a.frames[fn] = f
+		//a.frames[fn] = f
 	}
 	RedrawAll(false)
 	a.DrawAll()
@@ -1040,12 +1095,11 @@ func (a *MicroApp) PrintAbsolute(msg string, x, y int, style *tcell.Style) {
 
 func (e *AppElement) TextAreaClickEvent(event string, x, y int) {
 	a := e.microapp
-	f := e.frame
+	//f := e.frame
 	a.activeElement = e.name
 	a.cursor.X = x
 	a.cursor.Y = y
 	e.cursor.X = e.getECursorFromACursor()
-	f.elements[e.name] = *e
 	a.screen.Show()
 }
 
@@ -1060,7 +1114,6 @@ func (e *AppElement) TextBoxClickEvent(event string, x, y int) {
 	}
 	e.cursor.X = e.offset + a.cursor.X - e.aposb.X
 	a.screen.ShowCursor(x+f.left, y+f.top)
-	f.elements[e.name] = *e
 	a.screen.Show()
 }
 
@@ -1079,7 +1132,6 @@ func (e *AppElement) SelectClickEvent(event string, x, y int) {
 		// Lock events to this element until closed
 		a.lockActive = true
 		a.activeElement = e.name
-		f.elements[e.name] = *e
 		a.DrawAll()
 		return
 	} else if e.checked == true {
@@ -1105,7 +1157,6 @@ func (e *AppElement) SelectClickEvent(event string, x, y int) {
 		a.lockActive = false
 		a.activeElement = ""
 		e.checked = false
-		f.elements[e.name] = *e
 		// Needs to be all to erase list
 		a.DrawAll()
 		return
@@ -1115,21 +1166,16 @@ func (e *AppElement) SelectClickEvent(event string, x, y int) {
 	// LIST
 	opts := strings.Split(e.value_type, "|")
 	offset := a.eint
-	//a.Debug(fmt.Sprintf("CLICKB S:%d", offset), 100, 4)
 	for i := 0; i < e.cursor.X; i++ {
 		if e.aposb.Y+i == y {
 			if i+offset < e.cursor.X {
 				opt := strings.SplitN(opts[i+offset], ":", 2)
 				e.value = opt[0]
 				e.offset = i + offset
-				//} else {
-				//a.Debug(fmt.Sprintf("ERROR! i+offset<len(opts): %d+%d < %d ecX %d", i, offset, len(opts), e.cursor.X), 100, 7)
 			}
 			break
 		}
 	}
-	//a.Debug(fmt.Sprintf("CLICKA selectIndex:%d value:%s", e.offset, e.value), 100, 5)
-	f.elements[e.name] = *e
 	e.Draw()
 }
 
@@ -1149,14 +1195,12 @@ func (e *AppElement) RadioCheckboxClickEvent(event string, x, y int) {
 		for _, r := range f.elements {
 			if r.form == "radio" && r.gname == e.gname && r.name != e.name && e.checked == true {
 				r.checked = false
-				f.elements[r.name] = r
 				r.DrawRadio()
 			}
 		}
 	} else {
 		e.DrawCheckBox()
 	}
-	f.elements[e.name] = *e
 	a.screen.Show()
 }
 
@@ -1215,7 +1259,6 @@ func (e *AppElement) ProcessElementMouseMove(event string, x, y int) {
 			return
 		}
 	}
-	// TODO highlitght elements on mouse(over/out)
 }
 
 func (e *AppElement) ProcessElementMouseDown(event string, x, y int) {
@@ -1265,15 +1308,13 @@ func (e *AppElement) SelectKeyEvent(key string, x, y int) {
 	opts := strings.Split(e.value_type, "|")
 	opt := strings.SplitN(opts[e.offset], ":", 2)
 	e.value = opt[0]
-	f.elements[e.name] = *e
-	//a.Debug(fmt.Sprintf("KEY: v=%s , offset=%d", e.value, e.offset), 100, 4)
 	a.DrawAll()
 	a.screen.Show()
 }
 
 func (e *AppElement) TextAreaKeyEvent(key string, x, y int) {
 	a := e.microapp
-	f := e.frame
+	//f := e.frame
 	if e.apose.Y == y && e.apose.X == x {
 		return
 	}
@@ -1309,7 +1350,6 @@ func (e *AppElement) TextAreaKeyEvent(key string, x, y int) {
 			}
 			a.cursor.Y--
 			e.cursor.X = e.getECursorFromACursor()
-			f.elements[e.name] = *e
 			a.screen.Show()
 			return
 		} else if key == "Down" {
@@ -1318,7 +1358,6 @@ func (e *AppElement) TextAreaKeyEvent(key string, x, y int) {
 			}
 			a.cursor.Y++
 			e.cursor.X = e.getECursorFromACursor()
-			f.elements[e.name] = *e
 			a.screen.Show()
 			return
 		} else if key == "Home" {
@@ -1332,11 +1371,9 @@ func (e *AppElement) TextAreaKeyEvent(key string, x, y int) {
 		} else if key == "Ctrl+V" {
 			clip, _ := clipboard.ReadAll("clipboard")
 			e.value = e.value + clip
-			f.elements[e.name] = *e
 			e.TextAreaKeyEvent("End", x, y)
 			return
 		}
-		f.elements[e.name] = *e
 		e.Draw()
 		e.setACursorFromECursor()
 		a.screen.Show()
@@ -1346,7 +1383,6 @@ func (e *AppElement) TextAreaKeyEvent(key string, x, y int) {
 	e.cursor.X++
 	e.DrawTextArea()
 	e.setACursorFromECursor()
-	f.elements[e.name] = *e
 	a.screen.Show()
 	return
 }
@@ -1413,11 +1449,9 @@ func (e *AppElement) TextBoxKeyEvent(key string, x, y int) {
 		} else if key == "Ctrl+V" {
 			clip, _ := clipboard.ReadAll("clipboard")
 			e.value = e.value + clip
-			f.elements[e.name] = *e
 			e.TextBoxKeyEvent("End", x, y)
 			return
 		}
-		f.elements[e.name] = *e
 		e.DrawTextBox()
 		a.screen.ShowCursor(a.cursor.X+f.left, a.cursor.Y+f.top)
 		a.screen.Show()
@@ -1434,7 +1468,6 @@ func (e *AppElement) TextBoxKeyEvent(key string, x, y int) {
 			a.cursor.X++
 		}
 	}
-	f.elements[e.name] = *e
 	e.DrawTextBox()
 	a.screen.ShowCursor(a.cursor.X+f.left, a.cursor.Y+f.top)
 	a.screen.Show()
@@ -1468,7 +1501,6 @@ func (e *AppElement) ProcessElementKey(key string, x, y int) {
 // If it does, dispacth the appropiate method
 
 func (a *MicroApp) CheckElementsActions(event string, x, y int) bool {
-	//a.Debug(fmt.Sprintf("CheckElementActions %s", time.Now()), 90, 2)
 	if x < 0 || y < 0 {
 		return false
 	}
@@ -1484,7 +1516,6 @@ func (a *MicroApp) CheckElementsActions(event string, x, y int) bool {
 					if a.activeElement != e.frame.name {
 						a.activeFrame = e.frame.name
 					}
-					//a.Debug(fmt.Sprintf("Hotspot ok %s , %s", e.name, event), 90, 3)
 					if strings.Contains(event, "mouse") {
 						if strings.Contains(event, "click") {
 							a.cursor = Loc{x, y}
@@ -1519,7 +1550,6 @@ func (a *MicroApp) CheckElementsActions(event string, x, y int) bool {
 			}
 		}
 	}
-	//a.Debug(fmt.Sprintf("CheckElementActions END %s", time.Now()), 90, 4)
 	if strings.Contains(event, "click") && a.lockActive == false {
 		a.screen.HideCursor()
 		if a.activeElement != "" {
@@ -1539,7 +1569,7 @@ func (a *MicroApp) GetActiveElement(name string) *AppElement {
 	for _, f := range a.frames {
 		for k, e := range f.elements {
 			if k == name {
-				return &e
+				return e
 			}
 		}
 	}
@@ -1576,7 +1606,6 @@ func (a *MicroApp) insertCharAt(b, r []rune, i int) []rune {
 
 func (a *MicroApp) HandleEvents(event tcell.Event) {
 	char := ""
-	//a.Debug(fmt.Sprintf("LOOP %s", time.Now()), 90, 10)
 	switch ev := event.(type) {
 	case *tcell.EventPaste:
 		e := a.GetActiveElement(a.activeElement)
@@ -1610,7 +1639,6 @@ func (a *MicroApp) HandleEvents(event tcell.Event) {
 			a.CheckElementsActions(char, a.cursor.X, a.cursor.Y)
 		}
 	case *tcell.EventMouse:
-		//a.Debug(fmt.Sprintf("LOOP %s", time.Now()), 90, 10)
 		f := a.frames[a.activeFrame]
 		exit := false
 		xa, ya := ev.Position()
@@ -1630,29 +1658,23 @@ func (a *MicroApp) HandleEvents(event tcell.Event) {
 		button := ev.Buttons()
 		action := ""
 		if button == tcell.ButtonNone {
-			//a.Debug(fmt.Sprintf("BUTTON None %s", time.Now()), 90, 11)
 			if a.mousedown == true {
 				// This is a possible exit
 				if xa < f.left || xa > f.right || ya < f.top || ya > f.bottom {
 					exit = true
 				}
-				//a.Debug(fmt.Sprintf("MouseUp? %s", time.Now()), 90, 12)
 				Dt := time.Since(a.lastclick) / time.Millisecond
 				// If button released within 2 pixel consider as clic and not a dragstop
 				if Abs(a.lastloc.X-x) < 3 && Abs(a.lastloc.Y-y) < 3 {
 					if Dt < 300 {
-						//a.Debug(fmt.Sprintf("doubleclick? (%d) %s", Dt, time.Now()), 90, 13)
 						action = "mouse-doubleclick" + a.lastbutton
 					} else {
-						//a.Debug(fmt.Sprintf("click? %s", time.Now()), 90, 14)
 						action = "mouse-click" + a.lastbutton
 						a.mousedown = false
 					}
 				} else {
-					//a.Debug(fmt.Sprintf("mouse-drag? %s", time.Now()), 90, 15)
 					action = "mousemove-dragstop" + a.lastbutton
 				}
-				//a.Debug(fmt.Sprintf("Limpia %s", time.Now()), 90, 16)
 				a.lastclick = time.Now()
 				a.lastbutton = ""
 			} else {
@@ -1661,7 +1683,6 @@ func (a *MicroApp) HandleEvents(event tcell.Event) {
 		} else if ev.HasMotion() == true {
 			action = "mousemove-drag" + a.lastbutton
 		} else if ev.HasMotion() == false {
-			//a.Debug(fmt.Sprintf("MouseDown? %s", time.Now()), 90, 30)
 			a.mousedown = true
 			if button == tcell.Button1 {
 				action = "mouse-button1"
@@ -1686,15 +1707,12 @@ func (a *MicroApp) HandleEvents(event tcell.Event) {
 				a.mousedown = false
 			}
 			a.lastloc = Loc{x, y}
-			//a.Debug(fmt.Sprintf("Action %s : %s", action, time.Now()), 90, 31)
 		} else {
 			action = "mousemove"
 		}
 		if a.WindowMouseEvent != nil {
-			//a.Debug(fmt.Sprintf("MouseEvent??? %s", time.Now()), 90, 32)
 			a.WindowMouseEvent(action, x, y)
 		}
-		//a.Debug(fmt.Sprintf("CheckActions %s", time.Now()), 90, 33)
 		if a.CheckElementsActions(action, x, y) == false && exit {
 			if a.Finish == nil {
 				MicroAppStop()
@@ -1704,7 +1722,6 @@ func (a *MicroApp) HandleEvents(event tcell.Event) {
 			return
 		}
 	default:
-		//a.Debug(fmt.Sprintf("DEFAULT? %s", time.Now()), 90, 40)
 	}
 }
 
@@ -1716,7 +1733,7 @@ func (a *MicroApp) New(name string) {
 	a.defStyle = tcell.StyleDefault.
 		Background(tcell.ColorBlack).
 		Foreground(tcell.ColorWhite)
-	a.frames = make(map[string]Frame)
+	a.frames = make(map[string]*Frame)
 	a.styles = make(map[string]AppStyle)
 	a.screen = screen
 	a.name = name
@@ -1727,6 +1744,7 @@ func (a *MicroApp) New(name string) {
 	a.WindowKeyEvent = nil
 	a.lockActive = false
 	a.Finish = nil
+	a.debug = false
 }
 
 func (a *MicroApp) Start() {

@@ -592,9 +592,9 @@ func (m *microMenu) Search(callback func(map[string]string)) {
 		f.AddWindowButton("set", " "+lbl+" ", "ok", 64-Count(lbl), 6, m.StartSearch, "")
 		m.myapp.Finish = m.AbortSearch
 		m.myapp.WindowFinish = callback
+		m.myapp.debug = true // QUITAR !!!!!!!!
 	} else {
-		x := m.myapp.frames["f"]
-		f = &x
+		f = m.myapp.frames["f"]
 	}
 	m.searchMatch = false
 	m.myapp.Start()
@@ -649,8 +649,7 @@ func (m *microMenu) SearchReplace(callback func(map[string]string)) {
 		m.myapp.Finish = m.AbortSearch
 		m.myapp.WindowFinish = callback
 	} else {
-		x := m.myapp.frames["f"]
-		f = &x
+		f = m.myapp.frames["f"]
 	}
 	m.searchMatch = false
 	m.myapp.Start()
@@ -710,6 +709,7 @@ func (m *microMenu) SubmitSearchOnEnter(name, value, event, when string, x, y in
 	if when == "PRE" {
 		return true
 	}
+	messenger.AddLog("i?=", f.GetChecked("i0"))
 	if event == "mouse-click1" {
 		value2 := f.GetValue("find")
 		if value2 == "" {
@@ -775,8 +775,7 @@ func (m *microMenu) SaveAs(b *Buffer, usePlugin bool, callback func(map[string]s
 		f.AddWindowButton("set", " "+lbl+" ", "ok", 75-Count(lbl), 6, m.SaveFile, "")
 		m.myapp.WindowFinish = callback
 	} else {
-		x := m.myapp.frames["f"]
-		f = &x
+		f = m.myapp.frames["f"]
 	}
 	m.usePlugin = usePlugin
 	f.SetValue("filename", b.Path)
@@ -877,8 +876,7 @@ func (m *microMenu) SelEncoding(encoder string, callback func(map[string]string)
 		f.AddWindowButton("set", " "+lbl+" ", "ok", 43, 6, m.SetEncoding, "")
 		m.myapp.WindowFinish = callback
 	} else {
-		x := m.myapp.frames["f"]
-		f = &x
+		f = m.myapp.frames["f"]
 	}
 	f.SetValue("encode", "")
 	m.myapp.Start()
