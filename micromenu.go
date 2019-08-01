@@ -592,7 +592,6 @@ func (m *microMenu) Search(callback func(map[string]string)) {
 		f.AddWindowButton("set", " "+lbl+" ", "ok", 64-Count(lbl), 6, m.StartSearch, "")
 		m.myapp.Finish = m.AbortSearch
 		m.myapp.WindowFinish = callback
-		m.myapp.debug = true // QUITAR !!!!!!!!
 	} else {
 		f = m.myapp.frames["f"]
 	}
@@ -709,25 +708,29 @@ func (m *microMenu) SubmitSearchOnEnter(name, value, event, when string, x, y in
 	if when == "PRE" {
 		return true
 	}
-	messenger.AddLog("i?=", f.GetChecked("i0"))
-	if event == "mouse-click1" {
-		value2 := f.GetValue("find")
-		if value2 == "" {
-			value2 = f.GetValue("search")
+	// Need to get search values
+	if name != "find" && name != "search" {
+		value = f.GetValue("find")
+		if value == "" {
+			value = f.GetValue("search")
 		}
-		if name == "i" && value == "true" {
-			value2 = "(?i)" + value2
+	}
+	if f.GetChecked("i0") || f.GetChecked("s0") {
+		if f.GetChecked("i0") {
+			value = "(?i)" + value
 		}
-		if name == "s" && value == "true" {
-			value2 = "(?s)" + value2
+		if f.GetChecked("s0") {
+			value = "(?s)" + value
 		}
 		event = ""
-		value = value2
+	} else if event == "mouse-click1" {
+		event = ""
 	}
 	if len([]rune(event)) > 1 {
 		if event == "Backspace2" || event == "Delete" || event == "Ctrl+V" || event == "Paste" {
 			event = ""
 		} else {
+			messenger.AddLog("UUUPS?")
 			return true
 		}
 	}

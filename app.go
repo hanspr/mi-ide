@@ -446,7 +446,6 @@ func (f *Frame) SetValue(k, v string) {
 func (f *Frame) GetChecked(k string) bool {
 	e, ok := f.elements[k]
 	if ok == false {
-		messenger.AddLog("No existe:", k)
 		return false
 	}
 	return e.checked
@@ -953,9 +952,6 @@ func runeLastIndex(str, s string) int {
 // ------------------------------------------------
 
 func (a *MicroApp) DrawAll() {
-	if a.debug {
-		RedrawAll(false)
-	}
 	// Draw all elements in index order from 0 to current max index (normally 2)
 	for _, f := range a.frames {
 		if f.visible == true {
@@ -1539,6 +1535,10 @@ func (a *MicroApp) CheckElementsActions(event string, x, y int) bool {
 					} else {
 						e.ProcessElementKey(event, x, y)
 						a.mouseOver = ""
+					}
+					if a.debug {
+						RedrawAll(false)
+						a.DrawAll()
 					}
 					return true
 				}
