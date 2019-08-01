@@ -722,6 +722,7 @@ func (e *AppElement) DrawSelect() {
 	f := e.frame
 	start := 0
 	Y := -1
+	chr := ""
 	ft := "%-" + strconv.Itoa(e.width) + "s"
 	e.frame.PrintStyle(e.label, e.pos.X, e.pos.Y, &e.style)
 	opts := strings.Split(e.value_type, "|")
@@ -731,23 +732,24 @@ func (e *AppElement) DrawSelect() {
 	}
 	a.eint = start
 	if a.activeElement == e.name {
-		e.style = a.defStyle.Foreground(tcell.ColorBlack).Background(tcell.ColorKhaki)
+		e.style = a.defStyle.Foreground(tcell.Color234).Background(tcell.Color230)
 	}
 	for i := start; i < len(opts); i++ {
-		chr := ""
 		opt := strings.SplitN(opts[i], ":", 2)
 		if opt[1] == "" {
 			opt[1] = opt[0]
 		}
 		if i == e.offset {
-			style = e.style.Reverse(true)
+			style = e.style.Reverse(true).Bold(true)
 		} else if e.height == 1 {
 			continue
 		} else {
-			style = e.style.Reverse(false)
+			style = e.style.Reverse(false).Bold(false)
 		}
 		if e.height == 1 {
 			Y = 0
+			style = e.style.Bold(true).Background(tcell.ColorDarkSlateGrey)
+			chr = "▼"
 		} else {
 			Y++
 			if start > 0 && i == start {
@@ -948,7 +950,8 @@ func (a *MicroApp) Resize() {
 		a.screen.HideCursor()
 	} else {
 		e := a.GetActiveElement(a.activeElement)
-		a.screen.ShowCursor(a.cursor.X+e.frame.left, a.cursor.Y+e.frame.top)
+		f := e.microapp.frames[e.frame.name]
+		a.screen.ShowCursor(a.cursor.X+f.left, a.cursor.Y+f.top)
 	}
 	a.screen.Show()
 }
@@ -1132,7 +1135,7 @@ func (e *AppElement) SelectClickEvent(event string, x, y int) {
 
 func (e *AppElement) RadioCheckboxClickEvent(event string, x, y int) {
 	a := e.microapp
-	f := e.frame
+	f := a.frames[e.frame.name]
 	if e.form == "radio" && e.checked == true {
 		return
 	}

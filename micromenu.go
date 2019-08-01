@@ -446,7 +446,7 @@ func (m *microMenu) KeyBindingsDialog() {
 }
 
 func (m *microMenu) SetBinding(name, value, event, when string, x, y int) bool {
-	f := m.myapp.frames[m.myapp.activeFrame]
+	f := m.myapp.frames["f"]
 	if event == "mouse-click1" {
 		if name == "?test" {
 			f.SetValue(name, "")
@@ -503,7 +503,7 @@ func (m *microMenu) SetBinding(name, value, event, when string, x, y int) bool {
 }
 
 func (m *microMenu) SaveKeyBindings(name, value, event, when string, x, y int) bool {
-	f := m.myapp.frames[m.myapp.activeFrame]
+	f := m.myapp.frames["f"]
 	if event != "mouse-click1" {
 		return true
 	}
@@ -593,7 +593,7 @@ func (m *microMenu) Search(callback func(map[string]string)) {
 		m.myapp.Finish = m.AbortSearch
 		m.myapp.WindowFinish = callback
 	} else {
-		x := m.myapp.frames[m.myapp.activeFrame]
+		x := m.myapp.frames["f"]
 		f = &x
 	}
 	m.searchMatch = false
@@ -606,7 +606,7 @@ func (m *microMenu) Search(callback func(map[string]string)) {
 	}
 	f.SetFocus("find", "E")
 	apprunning = m.myapp
-	m.SubmitSearchOnEnter("find", f.GetValue("find"), "", "POST", 0, 0)
+	m.SubmitSearchOnEnter("find", f.GetValue("find"), "Paste", "POST", 0, 0)
 }
 
 // Search & Replace Dialog
@@ -649,7 +649,7 @@ func (m *microMenu) SearchReplace(callback func(map[string]string)) {
 		m.myapp.Finish = m.AbortSearch
 		m.myapp.WindowFinish = callback
 	} else {
-		x := m.myapp.frames[m.myapp.activeFrame]
+		x := m.myapp.frames["f"]
 		f = &x
 	}
 	m.searchMatch = false
@@ -667,7 +667,7 @@ func (m *microMenu) SearchReplace(callback func(map[string]string)) {
 
 func (m *microMenu) AbortSearch(s string) {
 	var resp = make(map[string]string)
-	f := m.myapp.frames[m.myapp.activeFrame]
+	f := m.myapp.frames["f"]
 	resp["search"] = ""
 	f.SetValue("search", "")
 	f.SetLabel("found", "")
@@ -676,7 +676,7 @@ func (m *microMenu) AbortSearch(s string) {
 }
 
 func (m *microMenu) StartSearch(name, value, event, when string, x, y int) bool {
-	f := m.myapp.frames[m.myapp.activeFrame]
+	f := m.myapp.frames["f"]
 	if event != "mouse-click1" {
 		return true
 	}
@@ -692,7 +692,7 @@ func (m *microMenu) StartSearch(name, value, event, when string, x, y int) bool 
 }
 
 func (m *microMenu) SubmitSearchOnEnter(name, value, event, when string, x, y int) bool {
-	f := m.myapp.frames[m.myapp.activeFrame]
+	f := m.myapp.frames["f"]
 	if strings.Contains(event, "mouse") && event != "mouse-click1" {
 		return true
 	}
@@ -775,7 +775,7 @@ func (m *microMenu) SaveAs(b *Buffer, usePlugin bool, callback func(map[string]s
 		f.AddWindowButton("set", " "+lbl+" ", "ok", 75-Count(lbl), 6, m.SaveFile, "")
 		m.myapp.WindowFinish = callback
 	} else {
-		x := m.myapp.frames[m.myapp.activeFrame]
+		x := m.myapp.frames["f"]
 		f = &x
 	}
 	m.usePlugin = usePlugin
@@ -794,7 +794,7 @@ func (m *microMenu) SaveAs(b *Buffer, usePlugin bool, callback func(map[string]s
 }
 
 func (m *microMenu) SaveAsEncodingEvent(name, value, event, when string, x, y int) bool {
-	f := m.myapp.frames[m.myapp.activeFrame]
+	f := m.myapp.frames["f"]
 	if when == "POST" {
 		return true
 	}
@@ -877,7 +877,7 @@ func (m *microMenu) SelEncoding(encoder string, callback func(map[string]string)
 		f.AddWindowButton("set", " "+lbl+" ", "ok", 43, 6, m.SetEncoding, "")
 		m.myapp.WindowFinish = callback
 	} else {
-		x := m.myapp.frames[m.myapp.activeFrame]
+		x := m.myapp.frames["f"]
 		f = &x
 	}
 	f.SetValue("encode", "")
