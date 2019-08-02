@@ -495,9 +495,14 @@ func (f *Frame) SetLabel(k, v string) {
 		return
 	}
 	a := f.microapp
-	if Count(v) < Count(e.label) {
+	re, _ := regexp.Compile(`\{\/?\w+\}`)
+	vx := re.ReplaceAllString(v, "")
+	vx = strings.TrimRight(vx, " ")
+	lx := re.ReplaceAllString(e.label, "")
+	lx = strings.TrimRight(lx, " ")
+	if Count(vx) < Count(lx) {
 		// First overwrite n spaces to erease current lable
-		e.label = strings.Repeat(" ", Count(e.label)-1)
+		e.label = strings.Repeat(" ", Count(lx))
 		e.Draw()
 	}
 	// Now add new label

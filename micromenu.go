@@ -366,11 +366,11 @@ func (m *microMenu) KeyBindingsDialog() {
 		mkeys := make(map[string]int)
 		keys := make([]string, 0, len(bindingActions))
 		for k := range bindingActions {
-			if strings.Contains(k, "Mouse") || strings.Contains(k, "Scroll") || strings.Contains(k, "Outdent") || strings.Contains(k, "Indent") || strings.Contains(k, "Backs") || strings.Contains(k, "Delete") || strings.Contains(k, "Insert") || strings.Index(k, "End") == 0 || strings.Contains(k, "Escape") {
+			if strings.Contains(k, "Mouse") || strings.Contains(k, "Scroll") || strings.Contains(k, "Outdent") || strings.Contains(k, "Indent") || strings.Contains(k, "Backs") || strings.Contains(k, "Delete") || strings.Contains(k, "Insert") || strings.Index(k, "End") == 0 || strings.Contains(k, "Escape") || strings.Contains(k, "Cloud") {
 				continue
 			}
 			switch k {
-			case "CursorDown", "CursorUp", "CursorLeft", "CursorRight", "FindNext", "FindPrevious":
+			case "CursorDown", "CursorUp", "CursorLeft", "CursorRight", "FindNext", "FindPrevious", "SelectLeft", "SelectRight", "SelectDown", "SelectUp":
 				continue
 			}
 			keys = append(keys, k)
@@ -382,7 +382,7 @@ func (m *microMenu) KeyBindingsDialog() {
 				continue
 			}
 			switch k {
-			case "Left", "Up", "Down", "Right", "Backspace", "Delete", "CtrlH", "Esc", "Enter":
+			case "Left", "Up", "Down", "Right", "Backspace", "Delete", "CtrlH", "Esc", "Enter", "Backspace2", "ShiftLeft", "ShiftRight", "ShiftUp", "ShiftDown":
 				continue
 			}
 			_, ok := bindings[v]
@@ -441,6 +441,7 @@ func (m *microMenu) KeyBindingsDialog() {
 		lbl = Language.Translate("Save")
 		f.AddWindowButton("?save", " "+lbl+" ", "ok", width-Count(lbl)-5, 32, m.SaveKeyBindings, "")
 	}
+	//m.myapp.debug = true
 	m.myapp.Start()
 	apprunning = m.myapp
 }
@@ -458,8 +459,11 @@ func (m *microMenu) SetBinding(name, value, event, when string, x, y int) bool {
 		return false
 	}
 	switch event {
-	case "Left", "Right", "Down", "Up", "Esc", "Enter", "Tab", "Backspace2", "Backspace", "Delete", "F9", "F10", "F11", "F12", "PgDn", "PgUp":
-		f.SetValue(name, "")
+	case "Left", "Right", "Down", "Up", "Esc", "Enter", "Tab", "Backspace2", "Backspace", "Delete", "F9", "F10", "F11", "F12", "PgDn", "PgUp", "Shift+Left", "Shift+Right", "Shift+Up", "Shift+Down":
+		f.SetLabel("?msg", event+" {red}micro-ide{/red}")
+		if event == "Delete" || event == "Backspace" || event == "Backspace2" {
+			f.SetValue(name, "")
+		}
 		f.SetFocus(name, "B")
 		return false
 	}
@@ -494,6 +498,14 @@ func (m *microMenu) SetBinding(name, value, event, when string, x, y int) bool {
 			}
 			break
 		}
+	}
+	_, ok := findKey(event)
+	if ok == false {
+		f.SetLabel("?msg", "{red}"+Language.Translate("Error")+" : {/red}"+event)
+		if name == "?test" {
+			f.SetValue(name, "")
+		}
+		return false
 	}
 	f.SetValue(name, event)
 	if free {

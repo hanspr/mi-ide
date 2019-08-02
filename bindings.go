@@ -576,8 +576,7 @@ func DefaultBindings() map[string]string {
 		"F8":    "NextTab",
 		"Alt-!": "ToggleSoftWrap",
 		"Esc":   "Escape",
-		"Alt-g": "command-edit:help ",
-		"Alt-s": "command:snippetinsert",
+		"Alt-H": "command-edit:help ",
 		"Alt-t": "AddTab",
 		"Alt-k": "DeleteLine",
 		"Alt-v": "VSplit",
@@ -592,8 +591,15 @@ func DefaultBindings() map[string]string {
 
 		"Alt-n": "SpawnMultiCursor",
 		"Alt-m": "SpawnMultiCursorSelect",
-		"Alt-p": "RemoveMultiCursor",
-		"Alt-c": "RemoveAllMultiCursors",
-		"Alt-x": "SkipMultiCursor",
+		"Alt-,": "RemoveMultiCursor",
+		"Alt-.": "RemoveAllMultiCursors",
+		"Alt-;": "SkipMultiCursor",
+
+		// Micro-ide services
+		//		"Alt-C": "CopyToCloud",
+		//		"Alt-X": "CutToCloud",
+		//		"Alt-V": "PasteFromCloud",
+		//		"Alt-T": "TransferToCloud",
+		//		"Alt-D": "DownloadFromCloud",
 	}
 }
