@@ -575,6 +575,8 @@ func (m *microMenu) PluginManagerDialog() {
 		f.AddWindowButton("plugins", Language.Translate("Plugins"), "", 1+Count(lbl)+3, 2, m.ChangeSource, "")
 		lbl = Language.Translate("Exit")
 		f.AddWindowButton("exit", lbl, "ok", width-Count(lbl)-3, 2, m.ButtonFinish, "")
+		f.AddWindowLabel("msg", "", 1, 4, nil, "")
+		f.AddWindowSelect("list", Language.Translate("Plugins")+" ", "test", "test:", 1, 6, 0, 1, nil, "")
 	}
 	m.myapp.Start()
 	apprunning = m.myapp
