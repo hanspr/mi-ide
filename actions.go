@@ -148,6 +148,8 @@ func (v *View) MousePress(usePlugin bool, e *tcell.EventMouse) bool {
 	return false
 }
 
+var wheelbounce int
+
 // ScrollUpAction scrolls the view up
 func (v *View) ScrollUpAction(usePlugin bool) bool {
 	if v.mainCursor() {
@@ -155,16 +157,21 @@ func (v *View) ScrollUpAction(usePlugin bool) bool {
 			return false
 		}
 
+		if wheelbounce > 0 {
+			wheelbounce = 0
+			return false
+		}
+		wheelbounce++
 		scrollspeed := 1
 		Dt := time.Since(scrollsince) / time.Millisecond
 		if Dt < 60 {
-			return false
-		} else if Dt < 130 {
 			scrollspeed = scrollcount * v.Buf.End().Y / 100
 			scrollcount += 3
-		} else if Dt < 210 {
-			scrollspeed = scrollcount * v.Buf.End().Y / 500
+		} else if Dt < 120 {
+			scrollspeed = scrollcount * v.Buf.End().Y / 100
 			scrollcount += 2
+		} else if Dt < 220 {
+			scrollspeed = 2
 		} else {
 			scrollcount = 1
 		}
@@ -185,16 +192,21 @@ func (v *View) ScrollDownAction(usePlugin bool) bool {
 			return false
 		}
 
+		if wheelbounce > 0 {
+			wheelbounce = 0
+			return false
+		}
+		wheelbounce++
 		scrollspeed := 1
 		Dt := time.Since(scrollsince) / time.Millisecond
 		if Dt < 60 {
-			return false
-		} else if Dt < 130 {
 			scrollspeed = scrollcount * v.Buf.End().Y / 100
 			scrollcount += 3
-		} else if Dt < 210 {
-			scrollspeed = scrollcount * v.Buf.End().Y / 500
+		} else if Dt < 120 {
+			scrollspeed = scrollcount * v.Buf.End().Y / 100
 			scrollcount += 2
+		} else if Dt < 220 {
+			scrollspeed = 2
 		} else {
 			scrollcount = 1
 		}
