@@ -557,7 +557,31 @@ func (m *microMenu) SaveKeyBindings(name, value, event, when string, x, y int) b
 // ---------------------------------------
 
 func (m *microMenu) PluginManagerDialog() {
-	m.Finish("")
+	if m.myapp == nil || m.myapp.name != "mi-pluginmanager" {
+		if m.myapp == nil {
+			m.myapp = new(MicroApp)
+			m.myapp.New("mi-pluginmanager")
+		} else {
+			m.myapp.name = "mi-pluginmanager"
+		}
+		width := 80
+		height := 25
+		m.myapp.Reset()
+		m.myapp.defStyle = StringToStyle("#ffffff,#262626")
+		f := m.myapp.AddFrame("f", -1, -1, width, height, "relative")
+		f.AddWindowBox("enc", Language.Translate("Plugin Manager"), 0, 0, width, height, true, nil, "")
+		lbl := Language.Translate("Languages")
+		f.AddWindowButton("langs", lbl, "", 1, 2, m.ChangeSource, "")
+		f.AddWindowButton("plugins", Language.Translate("Plugins"), "", 1+Count(lbl)+3, 2, m.ChangeSource, "")
+		lbl = Language.Translate("Exit")
+		f.AddWindowButton("exit", lbl, "ok", width-Count(lbl)-3, 2, m.ButtonFinish, "")
+	}
+	m.myapp.Start()
+	apprunning = m.myapp
+}
+
+func (m *microMenu) ChangeSource(name, value, event, when string, x, y int) bool {
+	return true
 }
 
 // ---------------------------------------
