@@ -407,21 +407,25 @@ func (b *Buffer) UpdateRules() {
 
 	if b.syntaxDef == nil {
 		f := FindRuntimeFile(RTSyntax, "text")
-		data, err := f.Data()
-		if err != nil {
-			TermMessage(Language.Translate("Error loading syntax file") + " " + f.Name() + ": " + err.Error())
+		if f == nil {
+			TermMessage(Language.Translate("Error loading syntax file") + ": text.yalm")
 		} else {
-			file, err := highlight.ParseFile(data)
+			data, err := f.Data()
 			if err != nil {
 				TermMessage(Language.Translate("Error loading syntax file") + " " + f.Name() + ": " + err.Error())
 			} else {
-				header := new(highlight.Header)
-				header.FileType = "text"
-				b.syntaxDef, err = highlight.ParseDef(file, header)
+				file, err := highlight.ParseFile(data)
 				if err != nil {
 					TermMessage(Language.Translate("Error loading syntax file") + " " + f.Name() + ": " + err.Error())
+				} else {
+					header := new(highlight.Header)
+					header.FileType = "text"
+					b.syntaxDef, err = highlight.ParseDef(file, header)
+					if err != nil {
+						TermMessage(Language.Translate("Error loading syntax file") + " " + f.Name() + ": " + err.Error())
+					}
+					rehighlight = true
 				}
-				rehighlight = true
 			}
 		}
 	} else {

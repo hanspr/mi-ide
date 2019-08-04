@@ -1268,8 +1268,11 @@ func (v *View) Copy(usePlugin bool) bool {
 			if v.SelectionTooBig() {
 				messenger.Error(Language.Translate("Selection is to big, can not copy. You may move (up/down) or delete only."))
 			} else {
+				loc := v.Cursor.CurSelection
 				v.Cursor.CopySelection("clipboard")
 				v.freshClip = true
+				v.Cursor.ResetSelection()
+				v.Cursor.GotoLoc(loc[0])
 			}
 		}
 
@@ -1365,9 +1368,10 @@ func (v *View) DuplicateLine(usePlugin bool) bool {
 			messenger.Error(Language.Translate("Line is to big, can not duplicate. You may move (up/down) or delete only."))
 			return false
 		}
+		loc := v.Cursor.Loc
 		v.Cursor.End()
 		v.Buf.Insert(v.Cursor.Loc, "\n"+v.Buf.Line(v.Cursor.Y))
-		v.Cursor.Start()
+		v.Cursor.GotoLoc(loc)
 	}
 
 	if usePlugin {

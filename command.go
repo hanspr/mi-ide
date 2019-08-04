@@ -672,6 +672,8 @@ func Replace(args []string) {
 				}
 				messenger.Reset()
 				break
+			} else {
+				searchStart = view.Cursor.CurSelection[1]
 			}
 		}
 	}
