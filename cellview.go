@@ -131,6 +131,7 @@ func (c *CellView) Draw(buf *Buffer, top, height, left, width int) {
 	lineN := top
 
 	curStyle := defStyle
+
 	for viewLine < height {
 		if lineN >= len(buf.lines) {
 			break
@@ -237,6 +238,7 @@ func (c *CellView) Draw(buf *Buffer, top, height, left, width int) {
 			}
 
 		}
+
 		if group, ok := buf.Match(lineN)[len(line)]; ok {
 			curStyle = GetColor(group.String())
 		}

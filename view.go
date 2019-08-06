@@ -831,6 +831,7 @@ func (v *View) HandleEvent(event tcell.Event) {
 				//}
 
 				v.MoveToMouseClick(x, y)
+				v.savedLoc = Loc{x, y}
 				v.mouseReleased = true
 			}
 		}
@@ -940,6 +941,10 @@ func (v *View) FindCurLine(n int, s string) Loc {
 
 // DisplayView draws the view to the screen
 func (v *View) DisplayView() {
+	ActiveView := true
+	if CurView().Num != v.Num {
+		ActiveView = false
+	}
 	if v.Type == vtTerm {
 		v.term.Display()
 		return
@@ -1022,7 +1027,7 @@ func (v *View) DisplayView() {
 
 	WindowOffset := width / 4
 
-	// Have a window margin on edges for very long lines if the windows is wide enough
+	// Have a window margin on edges for long lines if the windows is not wide enough
 	if v.Buf.Settings["softwrap"].(bool) == false && StringWidth(v.Buf.Line(v.Cursor.Loc.Y), int(v.Buf.Settings["tabsize"].(float64))) > width-v.lineNumOffset {
 		shift := 0
 		if v.Cursor.GetVisualX()+1 < width-v.lineNumOffset && v.Cursor.GetVisualX()+1 > width-v.lineNumOffset-WindowOffset {
@@ -1036,6 +1041,14 @@ func (v *View) DisplayView() {
 	}
 
 	v.cellview.Draw(v.Buf, top, height, left, width-v.lineNumOffset)
+	_, bgDisabled, _ := defStyle.Decompose()
+	if ActiveView == false {
+		if style, ok := colorscheme["unfocused"]; ok {
+			_, bgDisabled, _ = style.Decompose()
+		} else {
+			bgDisabled = tcell.Color236
+		}
+	}
 
 	screenX := v.x
 	realLineN := top - 1
@@ -1117,7 +1130,7 @@ func (v *View) DisplayView() {
 		lineNumStyle := defStyle
 		if v.Buf.Settings["ruler"] == true {
 			// Write the line number
-			if tabs[curTab].CurView == v.Num {
+			if ActiveView {
 				if style, ok := colorscheme["line-number"]; ok {
 					lineNumStyle = style
 				}
@@ -1127,7 +1140,7 @@ func (v *View) DisplayView() {
 				}
 			}
 			if style, ok := colorscheme["current-line-number"]; ok {
-				if realLineN == v.Cursor.Y && tabs[curTab].CurView == v.Num && !v.Cursor.HasSelection() {
+				if realLineN == v.Cursor.Y && ActiveView && !v.Cursor.HasSelection() {
 					lineNumStyle = style
 				}
 			}
@@ -1187,18 +1200,20 @@ func (v *View) DisplayView() {
 				}
 				v.SetCursor(&v.Buf.Cursor)
 
-				if v.Buf.Settings["cursorline"].(bool) && tabs[curTab].CurView == v.Num &&
+				if v.Buf.Settings["cursorline"].(bool) && ActiveView &&
 					!v.Cursor.HasSelection() && v.Cursor.Y == realLineN {
 					style := GetColor("cursor-line")
 					fg, _, _ := style.Decompose()
 					lineStyle = lineStyle.Background(fg)
+				} else if ActiveView == false {
+					lineStyle = lineStyle.Background(bgDisabled)
 				}
 
 				screen.SetContent(xOffset+char.visualLoc.X, yOffset+char.visualLoc.Y, char.drawChar, nil, lineStyle)
 
 				for i, c := range v.Buf.cursors {
 					v.SetCursor(c)
-					if tabs[curTab].CurView == v.Num && !v.Cursor.HasSelection() &&
+					if ActiveView && !v.Cursor.HasSelection() &&
 						v.Cursor.Y == char.realLoc.Y && v.Cursor.X == char.realLoc.X && (!cursorSet || i != 0) {
 						ShowMultiCursor(xOffset+char.visualLoc.X, yOffset+char.visualLoc.Y, i)
 						cursorSet = true
@@ -1218,7 +1233,7 @@ func (v *View) DisplayView() {
 			lastX = xOffset + lastChar.visualLoc.X + lastChar.width
 			for i, c := range v.Buf.cursors {
 				v.SetCursor(c)
-				if tabs[curTab].CurView == v.Num && !v.Cursor.HasSelection() &&
+				if ActiveView && !v.Cursor.HasSelection() &&
 					v.Cursor.Y == lastChar.realLoc.Y && v.Cursor.X == lastChar.realLoc.X+1 {
 					ShowMultiCursor(lastX, yOffset+lastChar.visualLoc.Y, i)
 					cx, cy = lastX, yOffset+lastChar.visualLoc.Y
@@ -1230,7 +1245,7 @@ func (v *View) DisplayView() {
 		} else if len(line) == 0 {
 			for i, c := range v.Buf.cursors {
 				v.SetCursor(c)
-				if tabs[curTab].CurView == v.Num && !v.Cursor.HasSelection() &&
+				if ActiveView && !v.Cursor.HasSelection() &&
 					v.Cursor.Y == realLineN {
 					ShowMultiCursor(xOffset, yOffset+visualLineN, i)
 					cx, cy = xOffset, yOffset+visualLineN
@@ -1254,15 +1269,22 @@ func (v *View) DisplayView() {
 			screen.SetContent(xOffset+visualLoc.X, yOffset+visualLoc.Y, ' ', nil, selectStyle)
 		}
 
-		if v.Buf.Settings["cursorline"].(bool) && tabs[curTab].CurView == v.Num &&
+		if v.Buf.Settings["cursorline"].(bool) && ActiveView &&
 			!v.Cursor.HasSelection() && v.Cursor.Y == realLineN {
 			for i := lastX; i < xOffset+v.Width-v.lineNumOffset; i++ {
 				style := GetColor("cursor-line")
 				fg, _, _ := style.Decompose()
 				style = style.Background(fg)
-				if !(tabs[curTab].CurView == v.Num && !v.Cursor.HasSelection() && i == cx && yOffset+visualLineN == cy) {
+				if !(ActiveView && !v.Cursor.HasSelection() && i == cx && yOffset+visualLineN == cy) {
 					screen.SetContent(i, yOffset+visualLineN, ' ', nil, style)
 				}
+			}
+		}
+
+		// Fill trailing space with inactive background
+		if ActiveView == false {
+			for i := lastX; i < xOffset+v.Width-v.lineNumOffset; i++ {
+				screen.SetContent(i, yOffset+visualLineN, ' ', nil, defStyle.Background(bgDisabled))
 			}
 		}
 	}
