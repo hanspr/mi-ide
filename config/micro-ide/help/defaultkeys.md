@@ -11,16 +11,16 @@ can change it!
 
 | Key        | Description of function                  |
 |------------|------------------------------------------|
-| F1 , Alt-1 | Open file                                |
-| F2 , Alt-2 | Save                                     |
-| F3 , Alt-3 | Save As ...                              |
-| F4 , Alt-4 | Close focused window (Tab if empty)      |
+| F1         | Open file                                |
+| F2         | Save                                     |
+| F3         | Save As ...                              |
+| F4         | Close focused window (Tab if empty)      |
 | F5         | Move to previous window                  |
 | F6         | Move to next window                      |
 | F7         | Move to previous Tab                     |
 | F8         | Move to next Tab                         |
 | F9-F12     | Keys reserved for plug-ins               |
-| Alt-[5-0]  | Keys reserved for plug-ins               |
+| Alt-[1-0]  | Keys reserved for plug-ins               |
 
 ### Navigation
 
@@ -43,18 +43,18 @@ can change it!
 
 ### Tabs
 
-| Key     | Description of function   |
-|-------- |---------------------------|
-| Ctrl+T  | Open a new tab            |
-| F7      | Previous tab              |
-| F8      | Next tab                  |
+| Key    | Description of function   |
+|------- |---------------------------|
+| Alt+T  | Open a new tab            |
+| F7     | Previous tab              |
+| F8     | Next tab                  |
 
 ### Windows (Views)
 
 | Key     | Description of function           |
 |-------- |-----------------------------------|
-| Alt-V   | Split current window vertically   |
-| Alt-H   | Split current window horizontally |
+| Alt-v   | Split current window vertically   |
+| Alt-h   | Split current window horizontally |
 
 ### Find Operations
 
@@ -84,8 +84,8 @@ can change it!
 | AltShiftLeftArrow                 | Select word left                          |
 | ShiftHome or CtrlShiftLeftArrow   | Select to start of current line           |
 | ShiftEnd or CtrlShiftRightArrow   | Select to end of current line             |
-| CtrlShiftUpArrow                  | Select one Page Up                        |
-| CtrlShiftDownArrow                | Select one Page Down                      |
+| AltShiftUpArrow                   | Select one Page Up                        |
+| AltShiftDownArrow                 | Select one Page Down                      |
 | Ctrl+K                            | Cut selected line and append to clipboard |
 | Ctrl+X                            | Cut selected text                         |
 | Ctrl+C                            | Copy selected text                        |
@@ -112,18 +112,18 @@ can change it!
 
 | Key            | Description of function                                               |
 |----------------|---------------------------------------------------------------------- |
-| Alt+N          | Create new multiple cursor from selection                             |
-| Alt+P          | Remove latest multiple cursor                                         |
-| Alt+C          | Remove all multiple cursors (cancel)                                  |
-| Alt+X          | Skip multiple cursor selection                                        |
-| Alt+M          | Spawn a new cursor at the beginning of every line in current selection|
+| Alt+n          | Create new multiple cursor from selection                             |
+| Alt+,          | Remove latest multiple cursor                                         |
+| Alt+.          | Remove all multiple cursors (cancel)                                  |
+| Alt+;          | Skip multiple cursor selection                                        |
+| Alt+m          | Spawn a new cursor at the beginning of every line in current selection|
 | Ctrl-MouseLeft | Place a multiple cursor at any location                               |
 
 ### Other
 
 | Key    | Description of function                    |
 |--------|--------------------------------------------|
-| Alt+G  | Open help file                             |
+| Alt+h  | Open help file                             |
 | Ctrl+H | Backspace                                  |
 | Ctrl+R | Toggle the line number ruler               |
 | Alt+!  | Toggle soft wrap                           |
@@ -134,12 +134,3 @@ can change it!
 |--------|----------------------------------------------------------------------|
 | Ctrl+U | Toggle macro recording  (on / off)                                   |
 | Ctrl+J | Run latest recorded macro                                            |
-
-### Emacs style actions
-
-| Key       | Description of function   |
-|-----------|-------------------------  |
-| Alt+F     | Next word                 |
-| Alt+B     | Previous word             |
-| Alt+A     | Move to start of line     |
-| Alt+E     | Move to end of line       |
