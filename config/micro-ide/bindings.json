@@ -1,4 +1,5 @@
 {
     "CtrlS": "Save",
+    "AltEnter":"EndOfLine,InsertNewline",
     "F14": "SaveAll"
 }
