@@ -757,6 +757,7 @@ func (v *View) HandleEvent(event tcell.Event) {
 
 		button := e.Buttons()
 
+		messenger.AddLog(e.Buttons(), "?", e.Modifiers())
 		// This events are relative to each view dimentions
 		if e.Buttons() == tcell.Button1 || button == tcell.Button3 || button == tcell.Button2 {
 			rx, ry := v.GetMouseRelativePositon(e.Position())
