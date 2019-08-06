@@ -53,7 +53,10 @@ func HandleSearchEvent(event tcell.Event, v *View) {
 			v.FindNext(true)
 			return
 		default:
+			loc := v.Cursor.CurSelection
 			ExitSearch(v)
+			v.Cursor.GotoLoc(loc[0])
+			v.HandleEvent(event)
 			return
 		}
 	}

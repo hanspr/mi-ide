@@ -548,10 +548,9 @@ func (v *View) ExecuteActions(actions []func(*View, bool) bool) bool {
 	for _, action := range actions {
 		readonlyBindingsResult := false
 		funcName := ShortFuncName(action)
-		curv := CurView()
 		// Check check for not allowed actions
 		_ = dirview.onExecuteAction(funcName, v)
-		if curv.Type.Readonly == true {
+		if v.Type.Readonly == true {
 			// check for readonly and if true only let key bindings get called if they do not change the contents.
 			for _, readonlyBindings := range readonlyBindingsList {
 				if strings.Contains(funcName, readonlyBindings) {
@@ -561,7 +560,7 @@ func (v *View) ExecuteActions(actions []func(*View, bool) bool) bool {
 		}
 		if !readonlyBindingsResult {
 			// call the key binding
-			relocate = action(curv, true) || relocate
+			relocate = action(v, true) || relocate
 			// Check for allowed actions
 			if dirview.onExecuteAction(funcName, v) == true {
 				// Action was taken, do not do anything else
@@ -759,28 +758,30 @@ func (v *View) HandleEvent(event tcell.Event) {
 		button := e.Buttons()
 
 		// This events are relative to each view dimentions
-		rx, ry := v.GetMouseRelativePositon(e.Position())
-		if v.Type.Kind == 0 {
-			//messenger.Message(ry, "?", v.Height, ": rx", rx, "?", v.lineNumOffset)
-			if ry < 0 {
-				// ignore actions on tabbar or upper views
-				return
-			} else if ry == v.Height+1 {
-				// On status line.
-				v.sline.MouseEvent(e, rx, ry)
-				return
-			} else if ry > v.Height+1 {
-				// ignore actions in messenger area or lower views
-				return
-			} else if button == tcell.Button3 && rx < v.lineNumOffset && v.Buf.Settings["ruler"] == true {
-				v.Buf.Settings["ruler"] = false
-			} else if button == tcell.Button3 && rx < 3 && v.Buf.Settings["ruler"] == false {
-				v.Buf.Settings["ruler"] = true
-			}
-		} else {
-			if ry >= v.Height {
-				// ignore actions in messenger area or lower views
-				return
+		if e.Buttons() == tcell.Button1 || button == tcell.Button3 || button == tcell.Button2 {
+			rx, ry := v.GetMouseRelativePositon(e.Position())
+			if v.Type.Kind == 0 {
+				//messenger.Message(ry, "?", v.Height, ": rx", rx, "?", v.lineNumOffset)
+				if ry <= 0 {
+					// ignore actions on tabbar or upper views
+					return
+				} else if ry == v.Height+1 {
+					// On status line.
+					v.sline.MouseEvent(e, rx, ry)
+					return
+				} else if ry > v.Height+1 {
+					// ignore actions in messenger area or lower views
+					return
+				} else if (button == tcell.Button3 || button == tcell.Button2) && rx < v.lineNumOffset && v.Buf.Settings["ruler"] == true {
+					v.Buf.Settings["ruler"] = false
+				} else if (button == tcell.Button3 || button == tcell.Button2) && rx < 3 && v.Buf.Settings["ruler"] == false {
+					v.Buf.Settings["ruler"] = true
+				}
+			} else {
+				if ry >= v.Height {
+					// ignore actions in messenger area or lower views
+					return
+				}
 			}
 		}
 		// End of range validation
@@ -818,17 +819,18 @@ func (v *View) HandleEvent(event tcell.Event) {
 				x -= v.lineNumOffset - v.leftCol + v.x
 				y += v.Topline - v.y
 
-				// Relocating here isn't really necessary because the cursor will
-				// be in the right place from the last mouse event
-				// However, if we are running in a terminal that doesn't support mouse motion
+				// HP: This code does not work if you can not track mousedrag events, it selects text when jumping between views
+
+				// If we are running in a terminal that doesn't support mouse motion
 				// events, this still allows the user to make selections, except only after they
 				// release the mouse
+				//if !v.doubleClick && !v.tripleClick && v != dirview.tree_view && LastView == CurView().Num {
+				//	v.MoveToMouseClick(x, y)
+				//	v.Cursor.SetSelectionEnd(v.Cursor.Loc)
+				//	v.Cursor.CopySelection("primary")
+				//}
 
-				if !v.doubleClick && !v.tripleClick && v != dirview.tree_view {
-					v.MoveToMouseClick(x, y)
-					v.Cursor.SetSelectionEnd(v.Cursor.Loc)
-					v.Cursor.CopySelection("primary")
-				}
+				v.MoveToMouseClick(x, y)
 				v.mouseReleased = true
 			}
 		}
@@ -836,12 +838,16 @@ func (v *View) HandleEvent(event tcell.Event) {
 
 	if relocate {
 		v.Relocate()
+
+		// HP, does not seems to be needed any more
+
 		// We run relocate again because there's a bug with relocating with softwrap
 		// when for example you jump to the bottom of the buffer and it tries to
 		// calculate where to put the topline so that the bottom line is at the bottom
 		// of the terminal and it runs into problems with visual lines vs real lines.
 		// This is (hopefully) a temporary solution
-		v.Relocate()
+
+		// v.Relocate()
 	}
 }
 
@@ -948,7 +954,7 @@ func (v *View) DisplayView() {
 		v.Relocate()
 	}
 
-	if CurView().Type.Kind == 0 && LastView != CurView().Num && CurView().Cursor.Loc != CurView().savedLoc {
+	if CurView().Type.Kind == 0 && LastView != CurView().Num && CurView().Cursor.Loc != CurView().savedLoc && MouseClick == false {
 		// HP
 		// Set de cursor in last known position for this view
 		// It happens when 2+ views point to same buffer

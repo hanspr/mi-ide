@@ -148,8 +148,6 @@ func (v *View) MousePress(usePlugin bool, e *tcell.EventMouse) bool {
 	return false
 }
 
-var wheelbounce int
-
 // ScrollUpAction scrolls the view up
 func (v *View) ScrollUpAction(usePlugin bool) bool {
 	if v.mainCursor() {
@@ -157,11 +155,6 @@ func (v *View) ScrollUpAction(usePlugin bool) bool {
 			return false
 		}
 
-		if wheelbounce > 0 {
-			wheelbounce = 0
-			return false
-		}
-		wheelbounce++
 		scrollspeed := 1
 		Dt := time.Since(scrollsince) / time.Millisecond
 		if Dt < 60 {
@@ -192,11 +185,6 @@ func (v *View) ScrollDownAction(usePlugin bool) bool {
 			return false
 		}
 
-		if wheelbounce > 0 {
-			wheelbounce = 0
-			return false
-		}
-		wheelbounce++
 		scrollspeed := 1
 		Dt := time.Since(scrollsince) / time.Millisecond
 		if Dt < 60 {
@@ -1046,7 +1034,6 @@ func (v *View) SaveAll(usePlugin bool) bool {
 		if usePlugin && !PreActionCall("SaveAll", v) {
 			return false
 		}
-		messenger.AddLog("SAVING ALL")
 		for _, t := range tabs {
 			for _, v := range t.Views {
 				v.Save(false)

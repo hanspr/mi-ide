@@ -11,7 +11,7 @@ import (
 	"time"
 
 	"github.com/go-errors/errors"
-	"github.com/hanspr/microidelibs/clipboard"
+	//"github.com/hanspr/microidelibs/clipboard"
 	"github.com/hanspr/microidelibs/lang"
 	"github.com/hanspr/microidelibs/terminfo"
 	"github.com/hanspr/tcell"
@@ -86,6 +86,11 @@ var (
 
 	scrollsince time.Time
 	scrollcount int
+
+	wheelbounce int
+
+	// Added to abort relocate cursor when changing views when using a mouse click
+	MouseClick bool
 )
 
 // LoadInput determines which files should be loaded into buffers
@@ -549,8 +554,7 @@ func main() {
 	}()
 
 	for {
-		// Display everything
-
+		// Display everything (if app is not running)
 		if apprunning == nil {
 			RedrawAll(true)
 		}
@@ -588,86 +592,75 @@ func main() {
 				for _, t := range tabs {
 					t.Resize()
 				}
+				didAction = true
 			case *tcell.EventMouse:
-				if !searching {
-					if e.Buttons() == tcell.Button1 {
-						// If the user left clicked we check a couple things
-						_, h := screen.Size()
-						x, y := e.Position()
-						// Test for statusline
-						if y >= h-2 {
-							if e.HasMotion() == false {
-								if y == h-2 {
-									// Click on status bar dirview icon
-									if x < 3 {
-										didAction = true
-										// Click on treeview icon area
-										dirview.onIconClick()
-									}
-									break
-								} else if y == h-1 && messenger.message != "" {
-									didAction = true
-									// If the user clicked in the bottom, and there is a message down there
-									// we copy it to the clipboard.
-									// Often error messages are displayed down there so it can be useful to easily
-									// copy the message
-									clipboard.WriteAll(messenger.message, "primary")
-									break
-								}
-							}
-						} else if CurView().mouseReleased {
-							// We loop through each view in the current tab and make sure the current view
-							// is the one being clicked in
-							// This  supersedeas view.EventHandler
-							for _, v := range tabs[curTab].Views {
-								if x >= v.x && x < v.x+v.Width && y >= v.y && y < v.y+v.Height {
-									tabs[curTab].CurView = v.Num
-								}
-							}
+				MouseClick = false
+				_, h := screen.Size()
+				x, y := e.Position()
+				if y < 1 {
+					// Event is on tabbar, process all events there
+					didAction = TabbarHandleMouseEvent(event)
+				} else if e.Buttons() == tcell.Button1 && e.HasMotion() == false {
+					MouseClick = true
+					// Mouse click event
+					if searching {
+						// Happened during a search lock, release Search
+						ExitSearch(CurView())
+					} else if y == h-2 {
+						// Statusline event
+						if x < 3 {
+							// Click on treeview icon area
+							dirview.onIconClick()
+						} else {
+							// Other status lines events to handle
+							CurView().HandleEvent(event)
 						}
-					} else if e.Buttons() == tcell.Button3 || e.Buttons() == tcell.Button2 {
-						// Added button3 event to dirview to open file in view next to it
-						if dirview.Open && dirview.tree_view == CurView() {
-							v := CurView()
-							x, y := e.Position()
-							x -= v.lineNumOffset - v.leftCol + v.x
-							y += v.Topline - v.y
-							v.MoveToMouseClick(x, y)
-							dirview.onExecuteAction("openonView", v)
-							didAction = true
-						}
-					} else if e.Buttons() == tcell.WheelUp || e.Buttons() == tcell.WheelDown {
-						var view *View
-						x, y := e.Position()
+						didAction = true
+					}
+					if !didAction && CurView().mouseReleased {
+						// We loop through each view in the current tab and make sure the current view
+						// is the one being clicked in
 						for _, v := range tabs[curTab].Views {
 							if x >= v.x && x < v.x+v.Width && y >= v.y && y < v.y+v.Height {
-								view = tabs[curTab].Views[v.Num]
+								tabs[curTab].CurView = v.Num
 							}
 						}
-						if view != nil {
-							view.HandleEvent(e)
-							didAction = true
+					}
+				} else if (e.Buttons() == tcell.Button3 || e.Buttons() == tcell.Button2) && e.HasMotion() == false {
+					// Butttons 2,3 click on dirview; open file in view next to it
+					if dirview.Open && dirview.tree_view == CurView() {
+						v := CurView()
+						x -= v.lineNumOffset - v.leftCol + v.x
+						y += v.Topline - v.y
+						v.MoveToMouseClick(x, y)
+						dirview.onExecuteAction("openonView", v)
+						didAction = true
+					}
+				} else if e.Buttons() == tcell.WheelUp || e.Buttons() == tcell.WheelDown {
+					// Scroll event
+					didAction = true
+					if wheelbounce > 0 {
+						wheelbounce = 0
+						break
+					}
+					wheelbounce++
+					var view *View
+					for _, v := range tabs[curTab].Views {
+						if x >= v.x && x < v.x+v.Width && y >= v.y && y < v.y+v.Height {
+							view = tabs[curTab].Views[v.Num]
 						}
+					}
+					if view != nil {
+						view.HandleEvent(e)
 					}
 				}
 			}
-
-			if !didAction {
-				// This function checks the mouse event for the possibility of changing the current tab
-				// If the tab was changed it returns true
-				if TabbarHandleMouseEvent(event) {
-					break
-				}
-
-				if searching {
-					// Since searching is done in real time, we need to redraw every time
-					// there is a new event in the search bar so we need a special function
-					// to run instead of the standard HandleEvent.
-					HandleSearchEvent(event, CurView())
-				} else {
-					// Send it to the view
-					CurView().HandleEvent(event)
-				}
+			if searching {
+				// Search locks keyboard events to control move next/previous
+				HandleSearchEvent(event, CurView())
+			} else if !didAction {
+				// Send it to the view, is a view event (including its own status line)
+				CurView().HandleEvent(event)
 			}
 
 			select {
