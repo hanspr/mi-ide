@@ -651,7 +651,12 @@ func (v *View) HandleEvent(event tcell.Event) {
 					}
 				}
 				if e.Modifiers() == key.modifiers {
-					for _, c := range v.Buf.cursors {
+					// Reverse cursor order so it works with newline inserts
+					var cursors []*Cursor
+					for i := len(v.Buf.cursors) - 1; i >= 0; i-- {
+						cursors = append(cursors, v.Buf.cursors[i])
+					}
+					for _, c := range cursors {
 						ok := v.SetCursor(c)
 						if !ok {
 							break
@@ -757,7 +762,6 @@ func (v *View) HandleEvent(event tcell.Event) {
 
 		button := e.Buttons()
 
-		messenger.AddLog(e.Buttons(), "?", e.Modifiers())
 		// This events are relative to each view dimentions
 		if e.Buttons() == tcell.Button1 || button == tcell.Button3 || button == tcell.Button2 {
 			rx, ry := v.GetMouseRelativePositon(e.Position())

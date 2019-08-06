@@ -56,7 +56,9 @@ func HandleSearchEvent(event tcell.Event, v *View) {
 			loc := v.Cursor.CurSelection
 			ExitSearch(v)
 			v.Cursor.GotoLoc(loc[0])
-			v.HandleEvent(event)
+			if e.Rune() == 0 {
+				v.HandleEvent(event)
+			}
 			return
 		}
 	}
