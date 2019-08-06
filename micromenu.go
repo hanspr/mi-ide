@@ -166,6 +166,9 @@ func (m *microMenu) closeSubmenus() {
 
 func (m *microMenu) MenuItemClick(name, value, event, when string, x, y int) bool {
 	f := m.myapp.frames["menu"]
+	if f.elements == nil {
+		return false
+	}
 	if event == "mouseout" {
 		e := f.elements[name]
 		e.style = e.style.Bold(false).Foreground(tcell.ColorWhite)
@@ -352,6 +355,7 @@ func (m *microMenu) ValidateInteger(name, value, event, when string, x, y int) b
 // ---------------------------------------
 
 func (m *microMenu) KeyBindingsDialog() {
+	var f *Frame
 	if m.myapp == nil || m.myapp.name != "mi-keybindings" {
 		if m.myapp == nil {
 			m.myapp = new(MicroApp)
@@ -410,7 +414,7 @@ func (m *microMenu) KeyBindingsDialog() {
 		m.myapp.AddStyle("grn", "#00FF00,#262626")
 		m.myapp.AddStyle("yw", "#ffff00,#262626")
 		m.myapp.AddStyle("red", "#ff0000,#262626")
-		f := m.myapp.AddFrame("f", -1, -1, width, height, "relative")
+		f = m.myapp.AddFrame("f", -1, -1, width, height, "relative")
 		f.AddWindowBox("enc", Language.Translate("KeyBindings"), 0, 0, width, height, true, nil, "")
 		row := 2
 		col := 2
@@ -443,6 +447,7 @@ func (m *microMenu) KeyBindingsDialog() {
 	}
 	//m.myapp.debug = true
 	m.myapp.Start()
+	f.SetFocus("?test", "B")
 	apprunning = m.myapp
 }
 
@@ -456,15 +461,6 @@ func (m *microMenu) SetBinding(name, value, event, when string, x, y int) bool {
 		return true
 	}
 	if strings.Contains(event, "mouse") || strings.Contains(event, "Alt+Ctrl") || when == "POST" || Count(event) < 2 {
-		return false
-	}
-	switch event {
-	case "Left", "Right", "Down", "Up", "Esc", "Enter", "Tab", "Backspace2", "Backspace", "Delete", "F9", "F10", "F11", "F12", "PgDn", "PgUp", "Shift+Left", "Shift+Right", "Shift+Up", "Shift+Down":
-		f.SetLabel("?msg", event+" {red}micro-ide{/red}")
-		if event == "Delete" || event == "Backspace" || event == "Backspace2" {
-			f.SetValue(name, "")
-		}
-		f.SetFocus(name, "B")
 		return false
 	}
 	if strings.Contains(event, "Alt") {
@@ -485,6 +481,19 @@ func (m *microMenu) SetBinding(name, value, event, when string, x, y int) bool {
 		if strings.Contains(event, "ShiftCtrl") {
 			event = strings.Replace(event, "ShiftCtrl", "CtrlShift", 1)
 		}
+	}
+	messenger.AddLog(event)
+	switch event {
+	case "Left", "Right", "Down", "Up", "Esc", "Enter", "Tab", "Backspace2", "Backspace", "Delete", "PgDn", "PgUp", "Shift+Left", "Shift+Right", "Shift+Up", "Shift+Down":
+		f.SetLabel("?msg", event+" {red}micro-ide{/red}")
+		if event == "Delete" || event == "Backspace" || event == "Backspace2" {
+			f.SetValue(name, "")
+		}
+		f.SetFocus(name, "B")
+		return false
+	case "Alt-0", "Alt-1", "Alt-2", "Alt-3", "Alt-4", "Alt-5", "Alt-6", "Alt-7", "Alt-8", "Alt-9", "F9", "F10", "F11", "F12":
+		f.SetLabel("?msg", event+" {red}reserved plugins{/red}")
+		return false
 	}
 	free := true
 	for _, e := range f.elements {
