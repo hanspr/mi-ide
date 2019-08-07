@@ -17,7 +17,7 @@
     "matchbraceleft": false,
     "mouse": true,
     "pluginchannels": [
-        "https://raw.githubusercontent.com/micro-editor/plugin-channel/master/channel.json"
+        "https://raw.githubusercontent.com/hanspr/mi-channel/master/plugins.json"
     ],
     "pluginrepos": [],
     "rmtrailingws": true,

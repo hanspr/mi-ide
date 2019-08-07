@@ -12,7 +12,7 @@ rules:
         end: "( |\\\\W|-)"
         rules: []
 
-    - constant.string: "\".*\"|qq\\|.*\\|"
+    - constant.string: "\".*?\"|qq\\|.*\\|"
     - default: "[sm]/.*/"
     - preproc:
         start: "(^use| = new)"

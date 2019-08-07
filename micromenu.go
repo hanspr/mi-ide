@@ -482,7 +482,6 @@ func (m *microMenu) SetBinding(name, value, event, when string, x, y int) bool {
 			event = strings.Replace(event, "ShiftCtrl", "CtrlShift", 1)
 		}
 	}
-	messenger.AddLog(event)
 	switch event {
 	case "Left", "Right", "Down", "Up", "Esc", "Enter", "Tab", "Backspace2", "Backspace", "Delete", "PgDn", "PgUp", "Shift+Left", "Shift+Right", "Shift+Up", "Shift+Down":
 		f.SetLabel("?msg", event+" {red}micro-ide{/red}")

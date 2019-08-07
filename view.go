@@ -641,7 +641,6 @@ func (v *View) HandleEvent(event tcell.Event) {
 		}
 	case *tcell.EventKey:
 		// Check first if input is a key binding, if it is we 'eat' the input and don't insert a rune
-		//messenger.Message(e.Name(), ":", e.Key(), "?", e.Rune(), " M ", e.EscSeq())
 		isBinding := false
 		for key, actions := range bindings {
 			if e.Key() == key.keyCode {
@@ -651,10 +650,14 @@ func (v *View) HandleEvent(event tcell.Event) {
 					}
 				}
 				if e.Modifiers() == key.modifiers {
-					// Reverse cursor order so it works with newline inserts
 					var cursors []*Cursor
-					for i := len(v.Buf.cursors) - 1; i >= 0; i-- {
-						cursors = append(cursors, v.Buf.cursors[i])
+					if len(v.Buf.cursors) > 1 && e.Name() == "Enter" {
+						// Multicursor, newline. Reverse cursor order so it works
+						for i := len(v.Buf.cursors) - 1; i >= 0; i-- {
+							cursors = append(cursors, v.Buf.cursors[i])
+						}
+					} else {
+						cursors = v.Buf.cursors
 					}
 					for _, c := range cursors {
 						ok := v.SetCursor(c)

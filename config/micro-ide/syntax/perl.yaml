@@ -20,7 +20,7 @@ rules:
     - symbol.brackets: "(\\[|\\])"
     - symbol.operator: "\\b(x|lt|gt|le|ge|eq|ne|cmp|not|and|or|xor)\\b"
     - preproc: "use .+?$"
-    - constant.string: "\".*\""
+    - constant.string: "\"[^\"\\\\]*(?:\\\\.[^\"\\\\]*)*\""
     - constant.string: "qq“.*“"
     - symbol.tag: "</?[A-Za-z0-9:]+/?[ >]"
     - identifier.var: "([\\$@%]|\\$\\#)\\$*[a-zA-Z_][a-zA-Z0-9_]*"
