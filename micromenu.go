@@ -8,6 +8,7 @@ import (
 	"strconv"
 	"strings"
 
+	"github.com/hanspr/microidelibs/highlight"
 	"github.com/hanspr/tcell"
 )
 
@@ -776,7 +777,6 @@ func (m *microMenu) SubmitSearchOnEnter(name, value, event, when string, x, y in
 		if event == "Backspace2" || event == "Delete" || event == "Ctrl+V" || event == "Paste" {
 			event = ""
 		} else {
-			messenger.AddLog("UUUPS?")
 			return true
 		}
 	}
@@ -893,6 +893,78 @@ func (m *microMenu) SaveFile(name, value, event, when string, x, y int) bool {
 	}
 	m.myapp.WindowFinish(resp)
 	m.Finish("Save As")
+	return true
+}
+
+// ---------------------------------------
+// Set Buffer FileType
+// ---------------------------------------
+
+func (m *microMenu) SelFileType() {
+	if m.myapp == nil || m.myapp.name != "mi-ftype" {
+		var ftypes []string
+		if m.myapp == nil {
+			m.myapp = new(MicroApp)
+			m.myapp.New("mi-ftype")
+		} else {
+			m.myapp.name = "mi-ftype"
+		}
+		m.myapp.Reset()
+		m.myapp.defStyle = StringToStyle("#ffffff,#262626")
+		col := 2
+		row := 2
+		width := 130
+		height := 35
+		m.myapp.Reset()
+		m.myapp.defStyle = StringToStyle("#ffffff,#262626")
+		f := m.myapp.AddFrame("f", -1, -1, width, height, "relative")
+		f.AddWindowBox("enc", Language.Translate("Set file type"), 0, 0, width, height, true, nil, "")
+		for _, rtf := range ListRuntimeFiles(RTSyntax) {
+			data, err := rtf.Data()
+			if err == nil {
+				file, err := highlight.ParseFile(data)
+				if err == nil {
+					if len(file.FileType) > 12 {
+						ftypes = append(ftypes, file.FileType[0:13])
+					} else {
+						ftypes = append(ftypes, file.FileType)
+					}
+				}
+			}
+		}
+		pft := ""
+		value := ""
+		sort.Strings(ftypes)
+		for _, ft := range ftypes {
+			if pft == ft {
+				continue
+			}
+			pft = ft
+			if len(ft) < 12 {
+				sp := (13 - len(ft)) / 2
+				value = strings.Repeat(" ", sp) + ft + strings.Repeat(" ", sp)
+				if len(value) < 13 {
+					value = value + " "
+				}
+			}
+			f.AddWindowButton(ft, value, "", col, row, m.SetFtype, "")
+			row += 2
+			if row > height-1 {
+				row = 2
+				col += 16
+			}
+		}
+	}
+	m.myapp.Start()
+	apprunning = m.myapp
+}
+
+func (m *microMenu) SetFtype(name, value, event, when string, x, y int) bool {
+	if event != "mouse-click1" {
+		return true
+	}
+	SetLocalOption("filetype", name, CurView())
+	m.Finish("FileType")
 	return true
 }
 

@@ -4,10 +4,9 @@ detect:
     filename: "^\\w+$"
 
 rules:
-    - comment: "^[[:space:]]*[#]+.*"
-    - statement: "^.+?[[:space:]]*[:=]"
-    - special: "(Host|Cipher|Protocol|HostName|User|IdentityFile|Compression|TCPKeepAlive|ServerAliveInterval)"
-    - constant.string: "[[:space:]]*[\\*\\+\\-] \\w+"
-    - constant.string: "['\"].*?['\"]"
-    
+    - constant.tag: "^[[:space:]]*[\\*\\-][[:space:]]"
+    - constant.tag: "^[[:space:]]*([\\dA-Za-z]+([\\.\\-\\)])+\\w*)+[[:space:]]"
+    - constant.string: "\".*?\""
+    - constant.string: "'.*?'"
+    - statement: "^[[:space:]]*[A-Z ]{3,}"
 

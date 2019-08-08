@@ -38,6 +38,8 @@ func (sline *Statusline) MouseEvent(e *tcell.EventMouse, rx, ry int) {
 		if rx >= hs.X && rx <= hs.Y {
 			if action == "ENCODER" {
 				micromenu.SelEncoding(sline.view.Buf.encoder, sline.EncodingSelected)
+			} else if action == "FILETYPE" {
+				micromenu.SelFileType()
 			} else if action == "FILEFORMAT" {
 				if sline.view.Buf.Settings["fileformat"].(string) == "unix" {
 					sline.view.Buf.Settings["fileformat"] = "dos"
@@ -121,6 +123,7 @@ func (sline *Statusline) Display() {
 	// bellow 66 begin hidding information even more
 	if w > 65 {
 		// Add the filetype, minor style changes
+		sline.hotspot["FILETYPE"] = Loc{Count(file) + 1 + offset, Count(file) + offset + Count(sline.view.Buf.FileType())}
 		file += " " + sline.view.Buf.FileType()
 
 		if size > 12 {
@@ -170,6 +173,8 @@ func (sline *Statusline) Display() {
 		if x < 3 && fvstyle {
 			tStyle = StringToStyle("#ffd700,#5f87af")
 		} else if w > 65 && sline.hotspot["ENCODER"].X-offset <= x && x <= sline.hotspot["ENCODER"].Y-offset && sline.view.Num == CurView().Num {
+			tStyle = StringToStyle("#ffd700,#585858")
+		} else if w > 65 && sline.hotspot["FILETYPE"].X-offset <= x && x <= sline.hotspot["FILETYPE"].Y-offset && sline.view.Num == CurView().Num {
 			tStyle = StringToStyle("#ffd700,#585858")
 		} else if w > 65 && sline.hotspot["FILEFORMAT"].X-offset <= x && x <= sline.hotspot["FILEFORMAT"].Y-offset && sline.view.Num == CurView().Num {
 			tStyle = StringToStyle("#ffd700,#585858")
