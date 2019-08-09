@@ -154,7 +154,6 @@ func (pr PluginRepository) Fetch() PluginPackages {
 		return PluginPackages{}
 	}
 	if len(plugins) > 0 {
-		//return PluginPackages{plugins[0]}
 		return plugins
 	}
 	return nil
@@ -617,4 +616,23 @@ func UpdatePlugins(plugins []string) {
 		return
 	}
 	selected.install()
+}
+
+func GetAvailableLanguages() map[string]string {
+	langs := make(map[string]string)
+	resp, err := http.Get("https://raw.githubusercontent.com/hanspr/mi-channel/master/langs.json")
+	if err != nil {
+		TermMessage("Failed to query langs repository:\n", err)
+		return nil
+	}
+	defer resp.Body.Close()
+	decoder := json5.NewDecoder(resp.Body)
+	if err := decoder.Decode(&langs); err != nil {
+		TermMessage("Failed to decode language data:\n", err)
+		return nil
+	}
+	if len(langs) > 0 {
+		return langs
+	}
+	return nil
 }

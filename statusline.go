@@ -128,8 +128,8 @@ func (sline *Statusline) Display() {
 			offset++
 		}
 
-		sline.hotspot["FILETYPE"] = Loc{Count(file) + 1 + offset, Count(file) + offset + Count(sline.view.Buf.FileType())}
-		file += " " + sline.view.Buf.FileType()
+		sline.hotspot["FILETYPE"] = Loc{Count(file) + 1 + offset, Count(file) + offset + 1 + Count(sline.view.Buf.FileType())}
+		file += " " + sline.view.Buf.FileType() + "▲"
 
 		if size > 12 {
 			sline.hotspot["FILEFORMAT"] = Loc{Count(file) + 2 + offset, Count(file) + offset + 3 + Count(sline.view.Buf.Settings["fileformat"].(string))}

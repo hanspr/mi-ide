@@ -12,7 +12,7 @@ import (
 	"github.com/hanspr/tcell"
 )
 
-const ENCODINGS = "UTF-8:|ISO-8859-1:|ISO-8859-2:|ISO-8859-15:|WINDOWS-1250:|WINDOWS-1251:|WINDOWS-1252:|WINDOWS-1256:|SHIFT-JIS:|GB2312:|EUC-KR:|EUC-JP:|GBK:|BIG-5:|ASCII:"
+const ENCODINGS = "UTF-8|}ISO-8859-1|}ISO-8859-2|}ISO-8859-15|}WINDOWS-1250|}WINDOWS-1251|}WINDOWS-1252|}WINDOWS-1256|}SHIFT-JIS|}GB2312|}EUC-KR|}EUC-JP|}GBK|}BIG-5|}ASCII|"
 
 type menuElements struct {
 	label    string
@@ -170,6 +170,11 @@ func (m *microMenu) MenuItemClick(name, value, event, when string, x, y int) boo
 	if f.elements == nil {
 		return false
 	}
+	_, err := f.elements[name]
+	if err == false {
+		TermMessage("Error en menu," + name + " no existe")
+		return false
+	}
 	if event == "mouseout" {
 		e := f.elements[name]
 		e.style = e.style.Bold(false).Foreground(tcell.ColorWhite)
@@ -224,7 +229,7 @@ func (m *microMenu) GlobalConfigDialog() {
 		col := 2
 		for _, k := range keys {
 			if k == "fileformat" {
-				f.AddWindowSelect(k, k+" ", globalSettings[k].(string), "unix:|dos:", col, row, 0, 1, nil, "")
+				f.AddWindowSelect(k, k+" ", globalSettings[k].(string), "unix|}dos|", col, row, 0, 1, nil, "")
 			} else if k == "colorcolumn" {
 				f.AddWindowTextBox(k, k+" ", fmt.Sprintf("%g", globalSettings[k].(float64)), "string", col, row, 4, 3, m.ValidateInteger, "")
 			} else if k == "indentchar" {
@@ -232,20 +237,20 @@ func (m *microMenu) GlobalConfigDialog() {
 				if globalSettings[k].(string) != " " {
 					char = "t"
 				}
-				f.AddWindowSelect(k, k+" ", char, "t:Tab|s:Space", col, row, 0, 1, nil, "")
+				f.AddWindowSelect(k, k+" ", char, "t|Tab}s|Space", col, row, 0, 1, nil, "")
 			} else if k == "scrollmargin" {
-				f.AddWindowSelect(k, k+" ", fmt.Sprintf("%g", globalSettings[k].(float64)), "0:|1:|2:|3:|4:|5:|6:|7:|8:|9:|10:", col, row, 3, 1, nil, "")
+				f.AddWindowSelect(k, k+" ", fmt.Sprintf("%g", globalSettings[k].(float64)), "0|}1|}2|}3|}4|}5|}6|}7|}8|}9|}10|", col, row, 3, 1, nil, "")
 				f.SetIndex(k, 3)
 			} else if k == "tabsize" {
-				f.AddWindowSelect(k, k+" ", fmt.Sprintf("%g", globalSettings[k].(float64)), "1:|2:|3:|4:|5:|6:|7:|8:|9:|10:", col, row, 3, 1, nil, "")
+				f.AddWindowSelect(k, k+" ", fmt.Sprintf("%g", globalSettings[k].(float64)), "1|}2|}3|}4|}5|}6|}7|}8|}9|}10|", col, row, 3, 1, nil, "")
 			} else if k == "lang" {
 				Langs := ""
 				langs := GeTFileListFromPath(configDir+"/langs", "lang")
 				for _, l := range langs {
 					if Langs == "" {
-						Langs = Langs + l + ":"
+						Langs = l + "|"
 					} else {
-						Langs = Langs + "|" + l + ":"
+						Langs = Langs + "}" + l + "|"
 					}
 				}
 				f.AddWindowSelect(k, k+" ", globalSettings[k].(string), Langs, col, row, 0, 1, nil, "")
@@ -254,12 +259,12 @@ func (m *microMenu) GlobalConfigDialog() {
 				colors := GeTFileListFromPath(configDir+"/colorschemes", "micro")
 				for _, c := range colors {
 					if Colors == "" {
-						Colors = Colors + c + ":"
+						Colors = c + "|"
 					} else {
-						Colors = Colors + "|" + c + ":"
+						Colors = Colors + "}" + c + "|"
 					}
 				}
-				f.AddWindowSelect(k, k+" ", globalSettings[k].(string), Colors, col, row, 0, 1, nil, "")
+				f.AddWindowSelect(k, k+" ", globalSettings["colorscheme"].(string), Colors, col, row, 0, 1, nil, "")
 				f.SetIndex(k, 3)
 			} else {
 				kind := reflect.TypeOf(globalSettings[k]).Kind()
@@ -446,7 +451,6 @@ func (m *microMenu) KeyBindingsDialog() {
 		lbl = Language.Translate("Save")
 		f.AddWindowButton("?save", " "+lbl+" ", "ok", width-Count(lbl)-5, 32, m.SaveKeyBindings, "")
 	}
-	//m.myapp.debug = true
 	m.myapp.Start()
 	f.SetFocus("?test", "B")
 	apprunning = m.myapp
@@ -589,21 +593,74 @@ func (m *microMenu) PluginManagerDialog() {
 		height := 25
 		m.myapp.Reset()
 		m.myapp.defStyle = StringToStyle("#ffffff,#262626")
+		m.myapp.AddStyle("gold", "#ffd700,#262626")
 		f := m.myapp.AddFrame("f", -1, -1, width, height, "relative")
 		f.AddWindowBox("enc", Language.Translate("Plugin Manager"), 0, 0, width, height, true, nil, "")
-		lbl := Language.Translate("Languages")
-		f.AddWindowButton("langs", lbl, "", 1, 2, m.ChangeSource, "")
-		f.AddWindowButton("plugins", Language.Translate("Plugins"), "", 1+Count(lbl)+3, 2, m.ChangeSource, "")
-		lbl = Language.Translate("Exit")
-		f.AddWindowButton("exit", lbl, "ok", width-Count(lbl)-3, 2, m.ButtonFinish, "")
-		f.AddWindowLabel("msg", "", 1, 4, nil, "")
-		f.AddWindowSelect("list", Language.Translate("Plugins")+" ", "test", "test:", 1, 6, 0, 1, nil, "")
+		lbl0 := Language.Translate("Languages")
+		f.AddWindowButton("langs", lbl0, "", 1, 2, m.ChangeSource, "")
+		lbl1 := Language.Translate("Coding Plugins")
+		offset := 1 + Count(lbl0) + 3
+		f.AddWindowButton("plugins", lbl1, "", offset, 2, m.ChangeSource, "")
+		lbl0 = Language.Translate("Application Plugins")
+		offset += Count(lbl1) + 3
+		f.AddWindowButton("apps", lbl0, "", offset, 2, m.ChangeSource, "")
+		lbl0 = Language.Translate("Exit")
+		f.AddWindowButton("exit", lbl0, "ok", width-Count(lbl0)-3, 2, m.ButtonFinish, "")
+		f.AddWindowLabel("msg", "", 1, height-2, nil, "gold")
+		f.AddWindowSelect("list", "list", "x", "x|", 1, 4, 0, 1, nil, "")
+		f.SetVisible("list", false)
 	}
+	//m.myapp.debug = true
 	m.myapp.Start()
 	apprunning = m.myapp
 }
 
 func (m *microMenu) ChangeSource(name, value, event, when string, x, y int) bool {
+	if when == "PRE" {
+		return true
+	}
+	if event != "mouse-click1" {
+		return true
+	}
+	if name == "langs" {
+		sel := ""
+		height := 0
+		f := m.myapp.frames["f"]
+		f.DeleteElement("list")
+		f.SetLabel("msg", Language.Translate("Downloading list of available languages")+", "+Language.Translate("please wait")+"...")
+		langs := GetAvailableLanguages()
+		list := ""
+		for l, url := range langs {
+			if list == "" {
+				list = url + "|" + l
+				sel = url
+			} else {
+				list = list + "}" + url + "|" + l
+			}
+		}
+		if len(langs) > 10 {
+			height = 10
+		} else {
+			height = len(langs)
+		}
+		f.AddWindowSelect("list", Language.Translate("Install")+" ", sel, list, 1, 4, 0, height, nil, "")
+		f.elements["list"].Draw()
+		f.SetLabel("msg", "")
+		return true
+	} else if name == "plugins" {
+		//sel := ""
+		//height := 0
+		f := m.myapp.frames["f"]
+		f.DeleteElement("list")
+		f.SetLabel("msg", Language.Translate("Downloading list of available coding plugins")+", "+Language.Translate("please wait")+"...")
+	} else if name == "apps" {
+		//sel := ""
+		//height := 0
+		f := m.myapp.frames["f"]
+		f.DeleteElement("list")
+		f.SetLabel("msg", Language.Translate("Downloading list of available application plugins")+", "+Language.Translate("please wait")+"...")
+
+	}
 	return true
 }
 
@@ -815,7 +872,7 @@ func (m *microMenu) SaveAs(b *Buffer, usePlugin bool, callback func(map[string]s
 		lbl := Language.Translate("File name :")
 		f.AddWindowTextBox("filename", lbl+" ", "", "string", 2, 2, 76-Count(lbl), 200, m.SaveFile, "")
 		lbl = Language.Translate("Encoding:")
-		f.AddWindowSelect("encoding", lbl+" ", b.encoder, ENCODINGS+"|"+b.encoder+":"+b.encoder, 2, 4, 0, 1, m.SaveAsEncodingEvent, "")
+		f.AddWindowSelect("encoding", lbl+" ", b.encoder, ENCODINGS+"}"+b.encoder+"|"+b.encoder, 2, 4, 0, 1, m.SaveAsEncodingEvent, "")
 		lbl = Language.Translate("Use this encoding:")
 		f.AddWindowTextBox("encode", lbl+" ", "", "string", 55-Count(lbl), 4, 15, 15, nil, "")
 		lbl = Language.Translate("Cancel")
@@ -929,8 +986,7 @@ func (m *microMenu) SelFileType(x int) {
 	}
 	col := 0
 	row := 0
-	messenger.AddLog("X=", x)
-	f := m.myapp.AddFrame("f", h-height-2, x-8, 1, height, "relative")
+	f := m.myapp.AddFrame("f", h-height-2, x-8, 1, height, "close")
 	pft := ""
 	value := ""
 	sort.Strings(ftypes)
@@ -939,12 +995,8 @@ func (m *microMenu) SelFileType(x int) {
 			continue
 		}
 		pft = ft
-		if len(ft) < 13 {
-			sp := (13 - len(ft)) / 2
-			value = strings.Repeat(" ", sp) + ft + strings.Repeat(" ", sp)
-			if len(value) < 13 {
-				value = value + " "
-			}
+		if len(ft) < 14 {
+			value = fmt.Sprintf("%-14s", ft)
 		} else {
 			value = ft
 		}
@@ -952,7 +1004,7 @@ func (m *microMenu) SelFileType(x int) {
 		row++
 		if row > height-1 {
 			row = 0
-			col += 13
+			col += 14
 		}
 	}
 	m.myapp.Start()
@@ -960,6 +1012,9 @@ func (m *microMenu) SelFileType(x int) {
 }
 
 func (m *microMenu) SetFtype(name, value, event, when string, x, y int) bool {
+	if when == "POST" {
+		return true
+	}
 	e := m.myapp.frames[m.myapp.activeFrame].elements[name]
 	if event == "mouseout" {
 		e.style = m.myapp.defStyle

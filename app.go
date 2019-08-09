@@ -106,8 +106,8 @@ func (a *MicroApp) AddFrame(name string, top, left, width, height int, position 
 			top = h/2 - height/2
 		}
 	}
-	if position != "fixed" && position != "relative" {
-		position = "relative"
+	if position != "fixed" && position != "relative" && position != "close" {
+		position = "close"
 	}
 	f.top = top
 	f.left = left
@@ -229,10 +229,10 @@ func (a *MicroApp) AddWindowElement(frame, name, label, form, value, value_type 
 		e.offset = -1
 		e.aposb = Loc{x + lblwidth, y}
 		e.apose = Loc{x + lblwidth + w, y + h}
-		opts := strings.Split(e.value_type, "|")
+		opts := strings.Split(e.value_type, "}")
 		e.cursor.X = len(opts)
 		for i := 0; i < len(opts); i++ {
-			opt := strings.Split(opts[i], ":")
+			opt := strings.Split(opts[i], "|")
 			if opt[0] == e.value {
 				e.offset = i
 				break
@@ -317,12 +317,12 @@ func (f *Frame) AddWindowSelect(name, label, value string, options string, x, y,
 		return false
 	}
 	if width == 0 {
-		opts := strings.Split(options, "|")
+		opts := strings.Split(options, "}")
 		for _, opt := range opts {
-			if strings.Contains(opt, ":") == false {
+			if strings.Contains(opt, "|") == false {
 				return false
 			}
-			v := strings.Split(opt, ":")
+			v := strings.Split(opt, "|")
 			if v[1] == "" {
 				v[1] = v[0]
 			}
@@ -700,12 +700,10 @@ func (e *AppElement) DrawBox() {
 	if e.label != "" {
 		e.frame.PrintStyle(e.label, e.pos.X+1, e.pos.Y, &e.style)
 	}
-	a.screen.Show()
 }
 
 func (e *AppElement) DrawLabel() {
 	e.frame.PrintStyle(e.label, e.pos.X, e.pos.Y, &e.style)
-	e.microapp.screen.Show()
 }
 
 func (e *AppElement) DrawTextBox() {
@@ -745,7 +743,6 @@ func (e *AppElement) DrawTextBox() {
 		}
 		a.screen.SetContent(e.aposb.X+W+f.left, e.pos.Y+f.top, r, nil, style)
 	}
-	a.screen.Show()
 }
 
 func (e *AppElement) DrawRadio() {
@@ -756,7 +753,6 @@ func (e *AppElement) DrawRadio() {
 		radio = "◉ "
 	}
 	e.frame.PrintStyle(radio+e.label, e.pos.X, e.pos.Y, &e.style)
-	e.microapp.screen.Show()
 }
 
 func (e *AppElement) DrawCheckBox() {
@@ -766,7 +762,6 @@ func (e *AppElement) DrawCheckBox() {
 		check = "☒ "
 	}
 	e.frame.PrintStyle(check+e.label, e.pos.X, e.pos.Y, &e.style)
-	e.microapp.screen.Show()
 }
 
 func (e *AppElement) DrawSelect() {
@@ -779,7 +774,7 @@ func (e *AppElement) DrawSelect() {
 	chr := ""
 	ft := "%-" + strconv.Itoa(e.width) + "s"
 	e.frame.PrintStyle(e.label, e.pos.X, e.pos.Y, &e.style)
-	opts := strings.Split(e.value_type, "|")
+	opts := strings.Split(e.value_type, "}")
 	if e.height > 1 && e.height < len(opts) && e.offset >= e.height {
 		// Overflow, find the starting point
 		start = e.offset - e.height + 1
@@ -791,7 +786,7 @@ func (e *AppElement) DrawSelect() {
 		style = e.style
 	}
 	for i := start; i < len(opts); i++ {
-		opt := strings.SplitN(opts[i], ":", 2)
+		opt := strings.SplitN(opts[i], "|", 2)
 		if opt[1] == "" {
 			opt[1] = opt[0]
 		}
@@ -827,7 +822,6 @@ func (e *AppElement) DrawSelect() {
 			return
 		}
 	}
-	a.screen.Show()
 }
 
 func (e *AppElement) DrawButton() {
@@ -847,7 +841,6 @@ func (e *AppElement) DrawButton() {
 }
 
 func (e *AppElement) DrawTextArea() {
-	a := e.microapp
 	y := e.aposb.Y
 	e.DrawBox()
 	str := e.value
@@ -860,7 +853,6 @@ func (e *AppElement) DrawTextArea() {
 			break
 		}
 	}
-	a.screen.Show()
 }
 
 func WordWrap(str string, w int) string {
@@ -962,7 +954,6 @@ func (a *MicroApp) DrawAll() {
 		if f.visible == true {
 			for i := 0; i <= f.maxindex; i++ {
 				for _, e := range f.elements {
-					//e.frame = &f
 					if e.index == i {
 						e.Draw()
 					}
@@ -996,8 +987,11 @@ func (a *MicroApp) Resize() {
 				f.right = f.left + f.owidth
 				f.bottom = f.top + f.oheight
 			}
+		} else if f.position == "close" {
+			MicroAppStop()
+			RedrawAll(true)
+			return
 		}
-		//a.frames[fn] = f
 	}
 	RedrawAll(false)
 	a.DrawAll()
@@ -1177,6 +1171,7 @@ func (e *AppElement) SelectClickEvent(event string, x, y int) {
 		}
 	}
 	e.Draw()
+	a.screen.Show()
 }
 
 func (e *AppElement) RadioCheckboxClickEvent(event string, x, y int) {
