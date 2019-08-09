@@ -11,7 +11,6 @@ import (
 	"time"
 
 	"github.com/go-errors/errors"
-	//"github.com/hanspr/microidelibs/clipboard"
 	"github.com/hanspr/microidelibs/lang"
 	"github.com/hanspr/microidelibs/terminfo"
 	"github.com/hanspr/tcell"
@@ -188,7 +187,7 @@ func InitConfigDir() {
 	if _, err := os.Stat(configDir); os.IsNotExist(err) {
 		// Copy files from /etc/micro-ide if they exists (installed by root)?
 		// If the micro specific config directory doesn't exist we should download a basic one
-		TermMessage("Missing configuration files.\nmicro-ide will download the necessary config files to run.\nFiles will be downloaded from\n\nhttps://raw.githubusercontent.com/hanspr/mi-sources/master/config.zip\n\nIf you do not agree, type Ctrl-C to abort, and install manually")
+		TermMessage("Missing configuration files.\nmicro-ide will download the necessary config files to run.\nFiles will be downloaded from\n\nhttps://raw.githubusercontent.com/hanspr/mi-channel/master/config.zip\n\nIf you do not agree, type Ctrl-C to abort, and install manually")
 		err := DownLoadExtractZip("https://raw.githubusercontent.com/hanspr/mi-channel/master/config.zip", configDir)
 		if err != nil {
 			TermMessage("Could not download config files, please install manually.\n\nHave to abort.")
@@ -432,7 +431,6 @@ func main() {
 			for _, v := range t.Views {
 				v.Center(false)
 			}
-
 			t.Resize()
 		}
 	}

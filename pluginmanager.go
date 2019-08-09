@@ -120,7 +120,6 @@ func (pc PluginChannels) Fetch() PluginPackages {
 
 // Fetch retrieves all available PluginPackages from the given channel
 func (pc PluginChannel) Fetch() PluginPackages {
-	// messenger.AddLog(fmt.Sprintf("Fetching channel: %q", string(pc)))
 	resp, err := http.Get(string(pc))
 	if err != nil {
 		TermMessage("Failed to query plugin channel:\n", err)
@@ -141,7 +140,6 @@ func (pc PluginChannel) Fetch() PluginPackages {
 
 // Fetch retrieves all available PluginPackages from the given repository
 func (pr PluginRepository) Fetch() PluginPackages {
-	// messenger.AddLog(fmt.Sprintf("Fetching repository: %q", string(pr)))
 	resp, err := http.Get(string(pr))
 	if err != nil {
 		TermMessage("Failed to query plugin repository:\n", err)
@@ -156,10 +154,10 @@ func (pr PluginRepository) Fetch() PluginPackages {
 		return PluginPackages{}
 	}
 	if len(plugins) > 0 {
-		return PluginPackages{plugins[0]}
+		//return PluginPackages{plugins[0]}
+		return plugins
 	}
 	return nil
-	// return plugins
 }
 
 // UnmarshalJSON unmarshals raw json to a PluginVersion
@@ -286,10 +284,12 @@ func (pp PluginPackage) Match(text string) bool {
 		}
 	}
 	if strings.Contains(strings.ToLower(pp.Name), text) {
+		messenger.AddLog("True")
 		return true
 	}
 
 	if strings.Contains(strings.ToLower(pp.Description), text) {
+		messenger.AddLog("True")
 		return true
 	}
 

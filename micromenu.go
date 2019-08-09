@@ -900,59 +900,59 @@ func (m *microMenu) SaveFile(name, value, event, when string, x, y int) bool {
 // Set Buffer FileType
 // ---------------------------------------
 
-func (m *microMenu) SelFileType() {
-	if m.myapp == nil || m.myapp.name != "mi-ftype" {
-		var ftypes []string
-		if m.myapp == nil {
-			m.myapp = new(MicroApp)
-			m.myapp.New("mi-ftype")
-		} else {
-			m.myapp.name = "mi-ftype"
-		}
-		m.myapp.Reset()
-		m.myapp.defStyle = StringToStyle("#ffffff,#262626")
-		col := 2
-		row := 2
-		width := 130
-		height := 35
-		m.myapp.Reset()
-		m.myapp.defStyle = StringToStyle("#ffffff,#262626")
-		f := m.myapp.AddFrame("f", -1, -1, width, height, "relative")
-		f.AddWindowBox("enc", Language.Translate("Set file type"), 0, 0, width, height, true, nil, "")
-		for _, rtf := range ListRuntimeFiles(RTSyntax) {
-			data, err := rtf.Data()
+func (m *microMenu) SelFileType(x int) {
+	// For this case we need to always rebuild, because the hotspots move depending on the window and view where is located
+	var ftypes []string
+	m.myapp = nil
+	m.myapp = new(MicroApp)
+	m.myapp.New("mi-ftype")
+	m.myapp.Reset()
+	m.myapp.defStyle = StringToStyle("#ffffff,#3a3a3a")
+	m.myapp.AddStyle("normal", "#ffffff,#3a3a3a")
+	_, h := screen.Size()
+	for _, rtf := range ListRuntimeFiles(RTSyntax) {
+		data, err := rtf.Data()
+		if err == nil {
+			file, err := highlight.ParseFile(data)
 			if err == nil {
-				file, err := highlight.ParseFile(data)
-				if err == nil {
-					if len(file.FileType) > 12 {
-						ftypes = append(ftypes, file.FileType[0:13])
-					} else {
-						ftypes = append(ftypes, file.FileType)
-					}
+				if len(file.FileType) > 12 {
+					ftypes = append(ftypes, file.FileType[0:13])
+				} else {
+					ftypes = append(ftypes, file.FileType)
 				}
 			}
 		}
-		pft := ""
-		value := ""
-		sort.Strings(ftypes)
-		for _, ft := range ftypes {
-			if pft == ft {
-				continue
+	}
+	height := h - 4
+	if len(ftypes) < height {
+		height = len(ftypes)
+	}
+	col := 0
+	row := 0
+	messenger.AddLog("X=", x)
+	f := m.myapp.AddFrame("f", h-height-2, x-8, 1, height, "relative")
+	pft := ""
+	value := ""
+	sort.Strings(ftypes)
+	for _, ft := range ftypes {
+		if pft == ft {
+			continue
+		}
+		pft = ft
+		if len(ft) < 13 {
+			sp := (13 - len(ft)) / 2
+			value = strings.Repeat(" ", sp) + ft + strings.Repeat(" ", sp)
+			if len(value) < 13 {
+				value = value + " "
 			}
-			pft = ft
-			if len(ft) < 12 {
-				sp := (13 - len(ft)) / 2
-				value = strings.Repeat(" ", sp) + ft + strings.Repeat(" ", sp)
-				if len(value) < 13 {
-					value = value + " "
-				}
-			}
-			f.AddWindowButton(ft, value, "", col, row, m.SetFtype, "")
-			row += 2
-			if row > height-1 {
-				row = 2
-				col += 16
-			}
+		} else {
+			value = ft
+		}
+		f.AddWindowLabel(ft, value, col, row, m.SetFtype, "normal")
+		row++
+		if row > height-1 {
+			row = 0
+			col += 13
 		}
 	}
 	m.myapp.Start()
@@ -960,6 +960,17 @@ func (m *microMenu) SelFileType() {
 }
 
 func (m *microMenu) SetFtype(name, value, event, when string, x, y int) bool {
+	e := m.myapp.frames[m.myapp.activeFrame].elements[name]
+	if event == "mouseout" {
+		e.style = m.myapp.defStyle
+		e.Draw()
+		return true
+	}
+	if event == "mousein" {
+		e.style = e.style.Foreground(tcell.ColorBlack).Background(tcell.Color220)
+		e.Draw()
+		return true
+	}
 	if event != "mouse-click1" {
 		return true
 	}

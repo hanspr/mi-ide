@@ -39,7 +39,9 @@ func (sline *Statusline) MouseEvent(e *tcell.EventMouse, rx, ry int) {
 			if action == "ENCODER" {
 				micromenu.SelEncoding(sline.view.Buf.encoder, sline.EncodingSelected)
 			} else if action == "FILETYPE" {
-				micromenu.SelFileType()
+				x, _ := e.Position()
+				diff := (hs.X + (hs.Y-hs.X+1)/2) - rx + 2
+				micromenu.SelFileType(x + diff)
 			} else if action == "FILEFORMAT" {
 				if sline.view.Buf.Settings["fileformat"].(string) == "unix" {
 					sline.view.Buf.Settings["fileformat"] = "dos"
@@ -122,17 +124,16 @@ func (sline *Statusline) Display() {
 
 	// bellow 66 begin hidding information even more
 	if w > 65 {
-		// Add the filetype, minor style changes
+		if sline.view.x != 0 {
+			offset++
+		}
+
 		sline.hotspot["FILETYPE"] = Loc{Count(file) + 1 + offset, Count(file) + offset + Count(sline.view.Buf.FileType())}
 		file += " " + sline.view.Buf.FileType()
 
 		if size > 12 {
 			sline.hotspot["FILEFORMAT"] = Loc{Count(file) + 2 + offset, Count(file) + offset + 3 + Count(sline.view.Buf.Settings["fileformat"].(string))}
 			file += "  (" + sline.view.Buf.Settings["fileformat"].(string) + ")  "
-		}
-
-		if sline.view.x != 0 {
-			offset++
 		}
 		sline.hotspot["ENCODER"] = Loc{Count(file) + 1 + offset, Count(file) + offset + Count(sline.view.Buf.encoder)}
 		file += " " + sline.view.Buf.encoder
