@@ -284,12 +284,10 @@ func (pp PluginPackage) Match(text string) bool {
 		}
 	}
 	if strings.Contains(strings.ToLower(pp.Name), text) {
-		messenger.AddLog("True")
 		return true
 	}
 
 	if strings.Contains(strings.ToLower(pp.Description), text) {
-		messenger.AddLog("True")
 		return true
 	}
 
