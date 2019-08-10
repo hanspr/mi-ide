@@ -626,16 +626,16 @@ func (m *microMenu) ChangeSource(name, value, event, when string, x, y int) bool
 		return true
 	}
 	const MAX = 30
+	f := m.myapp.frames["f"]
+	sel := ""
+	height := 0
+	f.DeleteElement("list")
 	if name == "langs" {
-		sel := ""
-		height := 0
-		f := m.myapp.frames["f"]
-		f.DeleteElement("list")
 		f.SetLabel("msg", Language.Translate("Downloading list of")+" "+Language.Translate("Languages")+", "+Language.Translate("please wait")+"...")
 		langs := GetAvailableLanguages()
 		list := ""
 		for l, url := range langs {
-			val := "langs?" + url
+			val := "langs?" + l + "?" + url
 			if list == "" {
 				list = val + "]" + l
 				sel = val
@@ -655,10 +655,6 @@ func (m *microMenu) ChangeSource(name, value, event, when string, x, y int) bool
 		f.SetLabel("msg", "")
 		return true
 	} else if name == "codeplugins" {
-		sel := ""
-		height := 0
-		f := m.myapp.frames["f"]
-		f.DeleteElement("list")
 		f.SetLabel("msg", Language.Translate("Downloading list of")+" "+Language.Translate("Coding Plugins")+", "+Language.Translate("please wait")+"...")
 		plugins := SearchPlugin([]string{"language"})
 		list := ""
@@ -686,10 +682,6 @@ func (m *microMenu) ChangeSource(name, value, event, when string, x, y int) bool
 		f.SetLabel("msg", "")
 		return true
 	} else if name == "apps" {
-		sel := ""
-		height := 0
-		f := m.myapp.frames["f"]
-		f.DeleteElement("list")
 		f.SetLabel("msg", Language.Translate("Downloading list of")+" "+Language.Translate("Application Plugins")+", "+Language.Translate("please wait")+"...")
 		plugins := SearchPlugin([]string{"plugin"})
 		list := ""
@@ -728,18 +720,22 @@ func (m *microMenu) InstallPlugin(name, value, event, when string, x, y int) boo
 	if event != "mouse-click1" {
 		return true
 	}
+	f := m.myapp.frames["f"]
 	values := m.myapp.getValues()
 	for a, b := range values {
-		if a == list {
+		if a == "list" {
 			plugin = strings.Split(b, "?")
 			break
 		}
 	}
 	if plugin[0] == "langs" {
-		// Install Language plugin[1]
-		ok, msg := InstallLanguage(plugin[1])
+		// Install Language plugin[2]
+		f.SetLabel("msg", Language.Translate("Installing")+" "+Language.Translate("Language")+" "+plugin[1]+", "+Language.Translate("please wait")+"...")
+		msg := InstallLanguage(plugin[2])
+		f.SetLabel("msg", msg)
 	} else {
 		// Locate plugin and install
+		f.SetLabel("msg", Language.Translate("Installing")+" "+plugin[1]+"/"+plugin[2]+" "+Language.Translate("please wait")+"...")
 	}
 	return true
 }
