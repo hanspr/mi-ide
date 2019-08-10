@@ -148,6 +148,14 @@ func (m *microMenu) ShowSubmenuItems(name, value, event, when string, x, y int) 
 	f.AddWindowMenuBottom("smenubottom", fmt.Sprintf("%-"+strconv.Itoa(width+1)+"s", " "), m.maxwidth+2, y, nil, "")
 	f.SetgName("smenubottom", "submenu")
 	m.myapp.DrawAll()
+	// Release memory from unused menus?
+	//for k, e := range f.elements {
+	//if e.gname == "submenu" {
+	//if f.elements[k].visible == false {
+	//delete(f.elements, k)
+	//}
+	//}
+	//}
 	return true
 }
 
@@ -159,7 +167,7 @@ func (m *microMenu) closeSubmenus() {
 	f := m.myapp.frames["menu"]
 	for k, e := range f.elements {
 		if e.gname == "submenu" {
-			delete(f.elements, k)
+			f.elements[k].visible = false
 		}
 	}
 	m.myapp.ResetFrames()
@@ -169,12 +177,6 @@ func (m *microMenu) closeSubmenus() {
 
 func (m *microMenu) MenuItemClick(name, value, event, when string, x, y int) bool {
 	f := m.myapp.frames["menu"]
-	if f == nil {
-		return false
-	}
-	if f.elements == nil {
-		return false
-	}
 	_, err := f.elements[name]
 	if err == false {
 		return false
@@ -680,6 +682,7 @@ func (m *microMenu) ChangeSource(name, value, event, when string, x, y int) bool
 		f.SetLabel("title", Language.Translate("Available"))
 		f.AddWindowSelect("list", "", "", list, 1, 5, 0, height, nil, "")
 		f.SetVisible("title", true)
+		f.SetVisible("remove", false)
 	} else {
 		var plugins PluginPackages
 		list := ""
@@ -710,16 +713,22 @@ func (m *microMenu) ChangeSource(name, value, event, when string, x, y int) bool
 					cver = pv.Version
 				}
 			}
-			val = name + "?" + p.Author + "?" + p.Name + "?" + cver.String()
-			version := GetPluginOption(strings.ToLower(p.Name), "version")
-			if version == nil {
-				str = fmt.Sprintf("%-20s%-10s %-10s%-20s%-44s  ", p.Name, " ", cver.String(), p.Author, p.Description)
+			val = name + "?" + p.Author + "?" + strings.ToLower(p.Name) + "?" + cver.String()
+			_, loaded := loadedPlugins[strings.ToLower(p.Name)]
+			if loaded == false {
+				str = fmt.Sprintf("%-20s%-11s %-11s%-18s%-44s  ", p.Name, " ", cver.String(), p.Author, p.Description)
 			} else {
-				iver, _ := semver.Make(version.(string))
-				if iver.LT(cver) {
-					str = fmt.Sprintf("%-20s%-10s %-10s%-20s%-44s  *", p.Name, version.(string)+"*", cver.String(), p.Author, p.Description)
+				version := GetPluginOption(strings.ToLower(p.Name), "version")
+				if version == nil {
+					str = fmt.Sprintf("%-20s%-11s %-11s%-18s%-44s  !", p.Name, Language.Translate("restart"), cver.String(), p.Author, p.Description)
 				} else {
-					str = fmt.Sprintf("%-20s%-10s %-10s%-20s%-44s  ✓", p.Name, version.(string), cver.String(), p.Author, p.Description)
+					sversion := version.(string)
+					iver, _ := semver.Make(sversion)
+					if iver.LT(cver) {
+						str = fmt.Sprintf("%-20s%-11s %-11s%-18s%-44s  *", p.Name, sversion+"*", cver.String(), p.Author, p.Description)
+					} else {
+						str = fmt.Sprintf("%-20s%-11s %-11s%-18s%-44s  ✓", p.Name, sversion, cver.String(), p.Author, p.Description)
+					}
 				}
 			}
 			if list == "" {
@@ -741,16 +750,16 @@ func (m *microMenu) ChangeSource(name, value, event, when string, x, y int) bool
 		} else {
 			height = len(plugins)
 		}
-		f.SetLabel("title", fmt.Sprintf("%-20s%-10s %-10s%-20s%-48s", Language.Translate("Name"), Language.Translate("Installed"), Language.Translate("Actual"), Language.Translate("Author"), Language.Translate("Description")))
+		f.SetLabel("title", fmt.Sprintf("%-20s%-11s %-11s%-18s%-48s", Language.Translate("Name"), Language.Translate("Installed"), Language.Translate("Actual"), Language.Translate("Author"), Language.Translate("Description")))
 		f.AddWindowSelect("list", "", sel, list, 1, 5, 0, height, nil, "")
 		f.SetVisible("title", true)
+		f.SetVisible("remove", true)
 	}
 	f.elements["langs"].Draw()
 	f.elements["codeplugins"].Draw()
 	f.elements["apps"].Draw()
 	f.elements["list"].Draw()
 	f.SetVisible("install", true)
-	f.SetVisible("remove", true)
 	f.SetLabel("msg", "")
 	return true
 }
@@ -814,6 +823,7 @@ func (m *microMenu) InstallPlugin(name, value, event, when string, x, y int) boo
 		}
 	Exit:
 	}
+	loadedPlugins[plugin[2]] = "disabled"
 	m.ChangeSource(plugin[0], "", "mouse-click1", "POST", 1, 1)
 	f.SetVisible("install", false)
 	f.SetVisible("remove", false)
@@ -832,12 +842,43 @@ func (m *microMenu) InstallPlugin(name, value, event, when string, x, y int) boo
 }
 
 func (m *microMenu) RemovePlugin(name, value, event, when string, x, y int) bool {
+	var plugin []string
 	if when == "PRE" {
 		return true
 	}
 	if event != "mouse-click1" {
 		return true
 	}
+	f := m.myapp.frames["f"]
+	values := m.myapp.getValues()
+	f.SetVisible("install", false)
+	f.SetVisible("remove", false)
+	for a, b := range values {
+		if a == "list" {
+			plugin = strings.Split(b, "?")
+			break
+		}
+	}
+	if plugin == nil || len(plugin) < 2 {
+		f.SetLabel("msg", "No selection made")
+		f.SetVisible("install", true)
+		f.SetVisible("remove", true)
+		return true
+	}
+	UninstallPlugin(plugin[2])
+	m.ChangeSource(plugin[0], "", "mouse-click1", "POST", 1, 1)
+	f.SetVisible("install", false)
+	f.SetVisible("remove", false)
+	f.SetLabel("msg", Language.Translate("Plugin uninstalled")+": "+plugin[2]+"-"+plugin[3])
+	go func() {
+		time.Sleep(1 * time.Second)
+		f.SetVisible("install", true)
+		f.SetVisible("remove", true)
+	}()
+	go func() {
+		time.Sleep(4 * time.Second)
+		f.SetLabel("msg", "")
+	}()
 	return true
 }
 
