@@ -721,6 +721,7 @@ func (m *microMenu) ChangeSource(name, value, event, when string, x, y int) bool
 }
 
 func (m *microMenu) InstallPlugin(name, value, event, when string, x, y int) bool {
+	var plugin []string
 	if when == "PRE" {
 		return true
 	}
@@ -729,7 +730,16 @@ func (m *microMenu) InstallPlugin(name, value, event, when string, x, y int) boo
 	}
 	values := m.myapp.getValues()
 	for a, b := range values {
-		messenger.AddLog(a, ":", b)
+		if a == list {
+			plugin = strings.Split(b, "?")
+			break
+		}
+	}
+	if plugin[0] == "langs" {
+		// Install Language plugin[1]
+		ok, msg := InstallLanguage(plugin[1])
+	} else {
+		// Locate plugin and install
 	}
 	return true
 }

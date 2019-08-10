@@ -636,3 +636,23 @@ func GetAvailableLanguages() map[string]string {
 	}
 	return nil
 }
+
+func InstallLanguage(url string) bool,string {
+	tokens := strings.Split(url, "/")
+	fileName := tokens[len(tokens)-1]
+	output, err := os.Create(configDir + "/langs/" + fileName)
+	if err != nil {
+		return false,err
+	}
+	defer output.Close()
+	resp, err := http.Get(url)
+	if err != nil {
+		return false,err
+	}
+	defer resp.Body.Close()
+	n, err := io.Copy(output, resp.Body)
+	if err != nil {
+		return false,err
+	}
+	return true,Language.Translate("Language")+" "+Language.Translate("Installed")
+}
