@@ -226,7 +226,7 @@ func (a *MicroApp) AddWindowElement(frame, name, label, form, value, value_type 
 	} else if form == "select" {
 		e.index++
 		h--
-		e.offset = 0
+		e.offset = -1
 		e.aposb = Loc{x + lblwidth, y}
 		e.apose = Loc{x + lblwidth + w, y + h}
 		opts := strings.Split(e.value_type, "|")
@@ -819,6 +819,7 @@ func (e *AppElement) DrawSelect() {
 		if Y >= e.height {
 			break
 		}
+		//f.PrintStyle(fmt.Sprintf(ft, opt[1])+chr, e.aposb.X, e.aposb.Y+Y, &style)
 		label := []rune(fmt.Sprintf(ft, opt[1]) + chr)
 		for N := 0; N < len(label); N++ {
 			a.screen.SetContent(e.aposb.X+N+f.left, e.aposb.Y+Y+f.top, label[N], nil, style)
@@ -837,8 +838,6 @@ func (e *AppElement) DrawButton() {
 		style = e.style.Background(tcell.ColorDarkRed).Foreground(tcell.ColorWhite).Bold(true)
 	} else if e.value_type == "ok" {
 		style = e.style.Background(tcell.ColorDarkGreen).Foreground(tcell.ColorWhite).Bold(true)
-	} else {
-		style = e.style.Background(tcell.ColorDarkSlateGray).Foreground(tcell.ColorWhite).Bold(true)
 	}
 	for x := 0; x < len(label); x++ {
 		e.microapp.screen.SetContent(e.pos.X+x+f.left, e.pos.Y+f.top, label[x], nil, style)

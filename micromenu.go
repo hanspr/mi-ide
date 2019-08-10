@@ -8,6 +8,7 @@ import (
 	"strconv"
 	"strings"
 
+	"github.com/blang/semver"
 	"github.com/hanspr/microidelibs/highlight"
 	"github.com/hanspr/tcell"
 )
@@ -589,29 +590,33 @@ func (m *microMenu) PluginManagerDialog() {
 		} else {
 			m.myapp.name = "mi-pluginmanager"
 		}
-		width := 100
-		height := 25
+		width := 110
+		height := 37
 		m.myapp.Reset()
 		m.myapp.defStyle = StringToStyle("#ffffff,#262626")
 		m.myapp.AddStyle("gold", "#ffd700,#262626")
+		m.myapp.AddStyle("title", "underline #0087d7,#262626")
+		m.myapp.AddStyle("button", "bold #ffffff,#4e4e4e")
 		f := m.myapp.AddFrame("f", -1, -1, width, height, "relative")
 		f.AddWindowBox("enc", Language.Translate("Plugin Manager"), 0, 0, width, height, true, nil, "")
 		lbl0 := Language.Translate("Install")
-		f.AddWindowButton("install", lbl0, "cancel", width-Count(lbl0)-3, height-3, m.InstallPlugin, "")
+		f.AddWindowButton("install", lbl0, "cancel", width-Count(lbl0)-3, height-1, m.InstallPlugin, "")
 		f.SetVisible("install", false)
 		lbl0 = Language.Translate("Languages")
-		f.AddWindowButton("langs", lbl0, "", 1, 2, m.ChangeSource, "")
+		f.AddWindowButton("langs", lbl0, "", 1, 2, m.ChangeSource, "button")
 		lbl1 := Language.Translate("Coding Plugins")
 		offset := 1 + Count(lbl0) + 3
-		f.AddWindowButton("codeplugins", lbl1, "", offset, 2, m.ChangeSource, "")
+		f.AddWindowButton("codeplugins", lbl1, "", offset, 2, m.ChangeSource, "button")
 		lbl0 = Language.Translate("Application Plugins")
 		offset += Count(lbl1) + 3
-		f.AddWindowButton("apps", lbl0, "", offset, 2, m.ChangeSource, "")
+		f.AddWindowButton("apps", lbl0, "", offset, 2, m.ChangeSource, "button")
 		lbl0 = Language.Translate("Exit")
 		f.AddWindowButton("exit", lbl0, "ok", width-Count(lbl0)-3, 2, m.ButtonFinish, "")
-		f.AddWindowLabel("msg", "", 1, height-2, nil, "gold")
-		f.AddWindowSelect("list", "list", "x", "x", 1, 4, 0, 1, nil, "")
+		f.AddWindowLabel("title", "", 1, 4, nil, "title")
+		f.AddWindowSelect("list", "list", "x", "x", 1, 5, 0, 1, nil, "")
+		f.AddWindowLabel("msg", "", 1, 3, nil, "gold")
 		f.SetVisible("list", false)
+		f.SetVisible("title", false)
 	}
 	//m.myapp.debug = true
 	m.myapp.Start()
@@ -627,20 +632,38 @@ func (m *microMenu) ChangeSource(name, value, event, when string, x, y int) bool
 	}
 	const MAX = 30
 	f := m.myapp.frames["f"]
+	f.elements["langs"].style = StringToStyle("bold #ffffff,#4e4e4e")
+	f.elements["codeplugins"].style = StringToStyle("bold #ffffff,#4e4e4e")
+	f.elements["apps"].style = StringToStyle("bold #ffffff,#4e4e4e")
 	sel := ""
+	val := ""
+	str := ""
 	height := 0
 	f.DeleteElement("list")
 	if name == "langs" {
+		var keys []string
+		f.elements["langs"].style = StringToStyle("bold #ffffff,#878700")
 		f.SetLabel("msg", Language.Translate("Downloading list of")+" "+Language.Translate("Languages")+", "+Language.Translate("please wait")+"...")
 		langs := GetAvailableLanguages()
+		for k, _ := range langs {
+			keys = append(keys, k)
+		}
+		sort.Strings(keys)
 		list := ""
-		for l, url := range langs {
-			val := "langs?" + l + "?" + url
-			if list == "" {
-				list = val + "]" + l
-				sel = val
+		for _, l := range keys {
+			url := langs[l]
+			tokens := strings.Split(url, "/")
+			fileName := tokens[len(tokens)-1]
+			val = "langs?" + l + "?" + url
+			if PathExists(configDir + "/langs/" + fileName) {
+				str = fmt.Sprintf("%-50s✓", l)
 			} else {
-				list = list + "|" + val + "]" + l
+				str = fmt.Sprintf("%-50s ", l)
+			}
+			if list == "" {
+				list = val + "]" + str
+			} else {
+				list = list + "|" + val + "]" + str
 			}
 		}
 		if len(langs) > MAX {
@@ -648,22 +671,49 @@ func (m *microMenu) ChangeSource(name, value, event, when string, x, y int) bool
 		} else {
 			height = len(langs)
 		}
-		f.AddWindowSelect("list", Language.Translate("Available")+" ", sel, list, 1, 4, 0, height, nil, "")
-		f.SetVisible("install", true)
-		f.elements["list"].Draw()
-		f.SetVisible("install", true)
-		f.SetLabel("msg", "")
-		return true
-	} else if name == "codeplugins" {
-		f.SetLabel("msg", Language.Translate("Downloading list of")+" "+Language.Translate("Coding Plugins")+", "+Language.Translate("please wait")+"...")
-		plugins := SearchPlugin([]string{"language"})
+		f.SetLabel("title", Language.Translate("Available"))
+		f.AddWindowSelect("list", "", "", list, 1, 5, 0, height, nil, "")
+		f.SetVisible("title", true)
+	} else {
+		var plugins PluginPackages
 		list := ""
+		if name == "codeplugins" {
+			f.elements["codeplugins"].style = StringToStyle("bold #ffffff,#878700")
+			f.SetLabel("msg", Language.Translate("Downloading list of")+" "+Language.Translate("Coding Plugins")+", "+Language.Translate("please wait")+"...")
+			plugins = SearchPlugin([]string{"language"})
+		} else {
+			f.elements["apps"].style = StringToStyle("bold #ffffff,#878700")
+			f.SetLabel("msg", Language.Translate("Downloading list of")+" "+Language.Translate("Application Plugins")+", "+Language.Translate("please wait")+"...")
+			plugins = SearchPlugin([]string{"application"})
+		}
 		for _, p := range plugins {
-			if p.Tags[0] != "language" {
+			if name == "codeplugins" && p.Tags[0] != "language" {
+				continue
+			} else if name == "apps" && p.Tags[0] != "application" {
 				continue
 			}
-			val := "codeplugin?" + p.Author + "?" + p.Name
-			str := fmt.Sprintf("%-20s%-20s%s", p.Name, p.Author, p.Description)
+			if Count(p.Description) > 42 {
+				desc := []rune(p.Description)
+				p.Description = string(desc[0:40])
+			}
+			cver, _ := semver.Make("0.0.0")
+			for _, pv := range p.Versions {
+				if pv.Version.GT(cver) {
+					cver = pv.Version
+				}
+			}
+			val = "codeplugin?" + p.Author + "?" + p.Name
+			version := GetPluginOption(strings.ToLower(p.Name), "version")
+			if version == nil {
+				str = fmt.Sprintf("%-20s%-10s %-10s%-20s%-44s  ", p.Name, " ", cver.String(), p.Author, p.Description)
+			} else {
+				iver, _ := semver.Make(version.(string))
+				if iver.LT(cver) {
+					str = fmt.Sprintf("%-20s%-10s %-10s%-20s%-44s  *", p.Name, version.(string)+"*", cver.String(), p.Author, p.Description)
+				} else {
+					str = fmt.Sprintf("%-20s%-10s %-10s%-20s%-44s  ✓", p.Name, version.(string), cver.String(), p.Author, p.Description)
+				}
+			}
 			if list == "" {
 				list = val + "]" + str
 				sel = val
@@ -671,44 +721,28 @@ func (m *microMenu) ChangeSource(name, value, event, when string, x, y int) bool
 				list = list + "|" + val + "]" + str
 			}
 		}
-		if len(plugins) > MAX {
-			height = MAX
-		} else {
-			height = len(plugins)
+		if list == "" {
+			f.SetLabel("msg", Language.Translate("No plugins found"))
+			return false
 		}
-		f.AddWindowSelect("list", Language.Translate("Available")+" ", sel, list, 1, 4, 0, height, nil, "")
-		f.elements["list"].Draw()
-		f.SetVisible("install", true)
-		f.SetLabel("msg", "")
-		return true
-	} else if name == "apps" {
-		f.SetLabel("msg", Language.Translate("Downloading list of")+" "+Language.Translate("Application Plugins")+", "+Language.Translate("please wait")+"...")
-		plugins := SearchPlugin([]string{"plugin"})
-		list := ""
-		for _, p := range plugins {
-			if p.Tags[0] != "plugin" {
-				continue
-			}
-			val := "apps?" + p.Author + "?" + p.Name
-			str := fmt.Sprintf("%-20s%-20s%s", p.Name, p.Author, p.Description)
-			if list == "" {
-				list = val + "]" + str
-				sel = val
-			} else {
-				list = list + "|" + val + "]" + str
-			}
+		if len(plugins) > 1 {
+			sel = ""
 		}
 		if len(plugins) > MAX {
 			height = MAX
 		} else {
 			height = len(plugins)
 		}
-		f.AddWindowSelect("list", Language.Translate("Available")+" ", sel, list, 1, 4, 0, height, nil, "")
-		f.elements["list"].Draw()
-		f.SetVisible("install", true)
-		f.SetLabel("msg", "")
-		return true
+		f.SetLabel("title", fmt.Sprintf("%-20s%-10s %-10s%-20s%-48s", Language.Translate("Name"), Language.Translate("Installed"), Language.Translate("Actual"), Language.Translate("Author"), Language.Translate("Description")))
+		f.AddWindowSelect("list", "", sel, list, 1, 5, 0, height, nil, "")
+		f.SetVisible("title", true)
 	}
+	f.elements["langs"].Draw()
+	f.elements["codeplugins"].Draw()
+	f.elements["apps"].Draw()
+	f.elements["list"].Draw()
+	f.SetVisible("install", true)
+	f.SetLabel("msg", "")
 	return true
 }
 
