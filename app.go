@@ -226,13 +226,13 @@ func (a *MicroApp) AddWindowElement(frame, name, label, form, value, value_type 
 	} else if form == "select" {
 		e.index++
 		h--
-		e.offset = -1
+		e.offset = 0
 		e.aposb = Loc{x + lblwidth, y}
 		e.apose = Loc{x + lblwidth + w, y + h}
-		opts := strings.Split(e.value_type, "}")
+		opts := strings.Split(e.value_type, "|")
 		e.cursor.X = len(opts)
 		for i := 0; i < len(opts); i++ {
-			opt := strings.Split(opts[i], "|")
+			opt := strings.Split(opts[i], "]")
 			if opt[0] == e.value {
 				e.offset = i
 				break
@@ -317,17 +317,20 @@ func (f *Frame) AddWindowSelect(name, label, value string, options string, x, y,
 		return false
 	}
 	if width == 0 {
-		opts := strings.Split(options, "}")
+		opts := strings.Split(options, "|")
 		for _, opt := range opts {
-			if strings.Contains(opt, "|") == false {
-				return false
-			}
-			v := strings.Split(opt, "|")
-			if v[1] == "" {
-				v[1] = v[0]
-			}
-			if Count(v[1]) > width {
-				width = Count(v[1])
+			if strings.Contains(opt, "]") {
+				v := strings.Split(opt, "]")
+				if v[1] == "" {
+					v[1] = v[0]
+				}
+				if Count(v[1]) > width {
+					width = Count(v[1])
+				}
+			} else {
+				if Count(opt) > width {
+					width = Count(opt)
+				}
 			}
 		}
 	}
@@ -774,28 +777,30 @@ func (e *AppElement) DrawSelect() {
 	chr := ""
 	ft := "%-" + strconv.Itoa(e.width) + "s"
 	e.frame.PrintStyle(e.label, e.pos.X, e.pos.Y, &e.style)
-	opts := strings.Split(e.value_type, "}")
+	opts := strings.Split(e.value_type, "|")
 	if e.height > 1 && e.height < len(opts) && e.offset >= e.height {
 		// Overflow, find the starting point
 		start = e.offset - e.height + 1
 	}
 	a.eint = start
-	if a.activeElement == e.name {
-		style = a.defStyle.Foreground(tcell.Color234).Background(tcell.Color230)
-	} else {
-		style = e.style
-	}
 	for i := start; i < len(opts); i++ {
-		opt := strings.SplitN(opts[i], "|", 2)
+		opt := strings.SplitN(opts[i], "]", 2)
+		if len(opt) == 1 {
+			opt = append(opt, opt[0])
+		}
 		if opt[1] == "" {
 			opt[1] = opt[0]
 		}
 		if i == e.offset {
-			style = style.Reverse(true).Bold(true)
+			if a.activeElement == e.name {
+				style = style.Foreground(tcell.ColorBlack).Background(tcell.Color220)
+			} else {
+				style = style.Reverse(true).Bold(true)
+			}
 		} else if e.height == 1 {
 			continue
 		} else {
-			style = style.Reverse(false).Bold(false)
+			style = a.defStyle.Foreground(tcell.ColorWhite).Background(tcell.Color234)
 		}
 		if e.height == 1 {
 			Y = 0
@@ -1133,7 +1138,7 @@ func (e *AppElement) SelectClickEvent(event string, x, y int) {
 		for i := 0; i < e.cursor.X; i++ {
 			if e.aposb.Y+i == y {
 				if i < e.cursor.X {
-					opt := strings.SplitN(opts[i], ":", 2)
+					opt := strings.SplitN(opts[i], "]", 2)
 					e.value = opt[0]
 					e.offset = i
 				}
@@ -1163,7 +1168,7 @@ func (e *AppElement) SelectClickEvent(event string, x, y int) {
 	for i := 0; i < e.cursor.X; i++ {
 		if e.aposb.Y+i == y {
 			if i+offset < e.cursor.X {
-				opt := strings.SplitN(opts[i+offset], ":", 2)
+				opt := strings.SplitN(opts[i+offset], "]", 2)
 				e.value = opt[0]
 				e.offset = i + offset
 			}
@@ -1301,7 +1306,7 @@ func (e *AppElement) SelectKeyEvent(key string, x, y int) {
 		}
 	}
 	opts := strings.Split(e.value_type, "|")
-	opt := strings.SplitN(opts[e.offset], ":", 2)
+	opt := strings.SplitN(opts[e.offset], "]", 2)
 	e.value = opt[0]
 	a.DrawAll()
 	a.screen.Show()

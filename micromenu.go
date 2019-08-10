@@ -12,7 +12,7 @@ import (
 	"github.com/hanspr/tcell"
 )
 
-const ENCODINGS = "UTF-8|}ISO-8859-1|}ISO-8859-2|}ISO-8859-15|}WINDOWS-1250|}WINDOWS-1251|}WINDOWS-1252|}WINDOWS-1256|}SHIFT-JIS|}GB2312|}EUC-KR|}EUC-JP|}GBK|}BIG-5|}ASCII|"
+const ENCODINGS = "UTF-8|ISO-8859-1|ISO-8859-2|ISO-8859-15|WINDOWS-1250|WINDOWS-1251|WINDOWS-1252|WINDOWS-1256|SHIFT-JIS|GB2312|EUC-KR|EUC-JP|GBK|BIG-5|ASCII"
 
 type menuElements struct {
 	label    string
@@ -229,7 +229,7 @@ func (m *microMenu) GlobalConfigDialog() {
 		col := 2
 		for _, k := range keys {
 			if k == "fileformat" {
-				f.AddWindowSelect(k, k+" ", globalSettings[k].(string), "unix|}dos|", col, row, 0, 1, nil, "")
+				f.AddWindowSelect(k, k+" ", globalSettings[k].(string), "unix|dos", col, row, 0, 1, nil, "")
 			} else if k == "colorcolumn" {
 				f.AddWindowTextBox(k, k+" ", fmt.Sprintf("%g", globalSettings[k].(float64)), "string", col, row, 4, 3, m.ValidateInteger, "")
 			} else if k == "indentchar" {
@@ -237,20 +237,20 @@ func (m *microMenu) GlobalConfigDialog() {
 				if globalSettings[k].(string) != " " {
 					char = "t"
 				}
-				f.AddWindowSelect(k, k+" ", char, "t|Tab}s|Space", col, row, 0, 1, nil, "")
+				f.AddWindowSelect(k, k+" ", char, "t]Tab|s]Space", col, row, 0, 1, nil, "")
 			} else if k == "scrollmargin" {
-				f.AddWindowSelect(k, k+" ", fmt.Sprintf("%g", globalSettings[k].(float64)), "0|}1|}2|}3|}4|}5|}6|}7|}8|}9|}10|", col, row, 3, 1, nil, "")
+				f.AddWindowSelect(k, k+" ", fmt.Sprintf("%g", globalSettings[k].(float64)), "0|1|2|3|4|5|6|7|8|9|10", col, row, 3, 1, nil, "")
 				f.SetIndex(k, 3)
 			} else if k == "tabsize" {
-				f.AddWindowSelect(k, k+" ", fmt.Sprintf("%g", globalSettings[k].(float64)), "1|}2|}3|}4|}5|}6|}7|}8|}9|}10|", col, row, 3, 1, nil, "")
+				f.AddWindowSelect(k, k+" ", fmt.Sprintf("%g", globalSettings[k].(float64)), "1|2|3|4|5|6|7|8|9|10", col, row, 3, 1, nil, "")
 			} else if k == "lang" {
 				Langs := ""
 				langs := GeTFileListFromPath(configDir+"/langs", "lang")
 				for _, l := range langs {
 					if Langs == "" {
-						Langs = l + "|"
+						Langs = l
 					} else {
-						Langs = Langs + "}" + l + "|"
+						Langs = Langs + "|" + l
 					}
 				}
 				f.AddWindowSelect(k, k+" ", globalSettings[k].(string), Langs, col, row, 0, 1, nil, "")
@@ -259,9 +259,9 @@ func (m *microMenu) GlobalConfigDialog() {
 				colors := GeTFileListFromPath(configDir+"/colorschemes", "micro")
 				for _, c := range colors {
 					if Colors == "" {
-						Colors = c + "|"
+						Colors = c
 					} else {
-						Colors = Colors + "}" + c + "|"
+						Colors = Colors + "|" + c
 					}
 				}
 				f.AddWindowSelect(k, k+" ", globalSettings["colorscheme"].(string), Colors, col, row, 0, 1, nil, "")
@@ -589,25 +589,28 @@ func (m *microMenu) PluginManagerDialog() {
 		} else {
 			m.myapp.name = "mi-pluginmanager"
 		}
-		width := 80
+		width := 100
 		height := 25
 		m.myapp.Reset()
 		m.myapp.defStyle = StringToStyle("#ffffff,#262626")
 		m.myapp.AddStyle("gold", "#ffd700,#262626")
 		f := m.myapp.AddFrame("f", -1, -1, width, height, "relative")
 		f.AddWindowBox("enc", Language.Translate("Plugin Manager"), 0, 0, width, height, true, nil, "")
-		lbl0 := Language.Translate("Languages")
+		lbl0 := Language.Translate("Install")
+		f.AddWindowButton("install", lbl0, "cancel", width-Count(lbl0)-3, height-3, m.InstallPlugin, "")
+		f.SetVisible("install", false)
+		lbl0 = Language.Translate("Languages")
 		f.AddWindowButton("langs", lbl0, "", 1, 2, m.ChangeSource, "")
 		lbl1 := Language.Translate("Coding Plugins")
 		offset := 1 + Count(lbl0) + 3
-		f.AddWindowButton("plugins", lbl1, "", offset, 2, m.ChangeSource, "")
+		f.AddWindowButton("codeplugins", lbl1, "", offset, 2, m.ChangeSource, "")
 		lbl0 = Language.Translate("Application Plugins")
 		offset += Count(lbl1) + 3
 		f.AddWindowButton("apps", lbl0, "", offset, 2, m.ChangeSource, "")
 		lbl0 = Language.Translate("Exit")
 		f.AddWindowButton("exit", lbl0, "ok", width-Count(lbl0)-3, 2, m.ButtonFinish, "")
 		f.AddWindowLabel("msg", "", 1, height-2, nil, "gold")
-		f.AddWindowSelect("list", "list", "x", "x|", 1, 4, 0, 1, nil, "")
+		f.AddWindowSelect("list", "list", "x", "x", 1, 4, 0, 1, nil, "")
 		f.SetVisible("list", false)
 	}
 	//m.myapp.debug = true
@@ -622,44 +625,111 @@ func (m *microMenu) ChangeSource(name, value, event, when string, x, y int) bool
 	if event != "mouse-click1" {
 		return true
 	}
+	const MAX = 30
 	if name == "langs" {
 		sel := ""
 		height := 0
 		f := m.myapp.frames["f"]
 		f.DeleteElement("list")
-		f.SetLabel("msg", Language.Translate("Downloading list of available languages")+", "+Language.Translate("please wait")+"...")
+		f.SetLabel("msg", Language.Translate("Downloading list of")+" "+Language.Translate("Languages")+", "+Language.Translate("please wait")+"...")
 		langs := GetAvailableLanguages()
 		list := ""
 		for l, url := range langs {
+			val := "langs?" + url
 			if list == "" {
-				list = url + "|" + l
-				sel = url
+				list = val + "]" + l
+				sel = val
 			} else {
-				list = list + "}" + url + "|" + l
+				list = list + "|" + val + "]" + l
 			}
 		}
-		if len(langs) > 10 {
-			height = 10
+		if len(langs) > MAX {
+			height = MAX
 		} else {
 			height = len(langs)
 		}
-		f.AddWindowSelect("list", Language.Translate("Install")+" ", sel, list, 1, 4, 0, height, nil, "")
+		f.AddWindowSelect("list", Language.Translate("Available")+" ", sel, list, 1, 4, 0, height, nil, "")
+		f.SetVisible("install", true)
 		f.elements["list"].Draw()
+		f.SetVisible("install", true)
 		f.SetLabel("msg", "")
 		return true
-	} else if name == "plugins" {
-		//sel := ""
-		//height := 0
+	} else if name == "codeplugins" {
+		sel := ""
+		height := 0
 		f := m.myapp.frames["f"]
 		f.DeleteElement("list")
-		f.SetLabel("msg", Language.Translate("Downloading list of available coding plugins")+", "+Language.Translate("please wait")+"...")
+		f.SetLabel("msg", Language.Translate("Downloading list of")+" "+Language.Translate("Coding Plugins")+", "+Language.Translate("please wait")+"...")
+		plugins := SearchPlugin([]string{"language"})
+		list := ""
+		for _, p := range plugins {
+			if p.Tags[0] != "language" {
+				continue
+			}
+			val := "codeplugin?" + p.Author + "?" + p.Name
+			str := fmt.Sprintf("%-20s%-20s%s", p.Name, p.Author, p.Description)
+			if list == "" {
+				list = val + "]" + str
+				sel = val
+			} else {
+				list = list + "|" + val + "]" + str
+			}
+		}
+		if len(plugins) > MAX {
+			height = MAX
+		} else {
+			height = len(plugins)
+		}
+		f.AddWindowSelect("list", Language.Translate("Available")+" ", sel, list, 1, 4, 0, height, nil, "")
+		f.elements["list"].Draw()
+		f.SetVisible("install", true)
+		f.SetLabel("msg", "")
+		return true
 	} else if name == "apps" {
-		//sel := ""
-		//height := 0
+		sel := ""
+		height := 0
 		f := m.myapp.frames["f"]
 		f.DeleteElement("list")
-		f.SetLabel("msg", Language.Translate("Downloading list of available application plugins")+", "+Language.Translate("please wait")+"...")
+		f.SetLabel("msg", Language.Translate("Downloading list of")+" "+Language.Translate("Application Plugins")+", "+Language.Translate("please wait")+"...")
+		plugins := SearchPlugin([]string{"plugin"})
+		list := ""
+		for _, p := range plugins {
+			if p.Tags[0] != "plugin" {
+				continue
+			}
+			val := "apps?" + p.Author + "?" + p.Name
+			str := fmt.Sprintf("%-20s%-20s%s", p.Name, p.Author, p.Description)
+			if list == "" {
+				list = val + "]" + str
+				sel = val
+			} else {
+				list = list + "|" + val + "]" + str
+			}
+		}
+		if len(plugins) > MAX {
+			height = MAX
+		} else {
+			height = len(plugins)
+		}
+		f.AddWindowSelect("list", Language.Translate("Available")+" ", sel, list, 1, 4, 0, height, nil, "")
+		f.elements["list"].Draw()
+		f.SetVisible("install", true)
+		f.SetLabel("msg", "")
+		return true
+	}
+	return true
+}
 
+func (m *microMenu) InstallPlugin(name, value, event, when string, x, y int) bool {
+	if when == "PRE" {
+		return true
+	}
+	if event != "mouse-click1" {
+		return true
+	}
+	values := m.myapp.getValues()
+	for a, b := range values {
+		messenger.AddLog(a, ":", b)
 	}
 	return true
 }
@@ -872,7 +942,7 @@ func (m *microMenu) SaveAs(b *Buffer, usePlugin bool, callback func(map[string]s
 		lbl := Language.Translate("File name :")
 		f.AddWindowTextBox("filename", lbl+" ", "", "string", 2, 2, 76-Count(lbl), 200, m.SaveFile, "")
 		lbl = Language.Translate("Encoding:")
-		f.AddWindowSelect("encoding", lbl+" ", b.encoder, ENCODINGS+"}"+b.encoder+"|"+b.encoder, 2, 4, 0, 1, m.SaveAsEncodingEvent, "")
+		f.AddWindowSelect("encoding", lbl+" ", b.encoder, ENCODINGS+"|"+b.encoder, 2, 4, 0, 1, m.SaveAsEncodingEvent, "")
 		lbl = Language.Translate("Use this encoding:")
 		f.AddWindowTextBox("encode", lbl+" ", "", "string", 55-Count(lbl), 4, 15, 15, nil, "")
 		lbl = Language.Translate("Cancel")
