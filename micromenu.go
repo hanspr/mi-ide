@@ -7,6 +7,7 @@ import (
 	"sort"
 	"strconv"
 	"strings"
+	"time"
 
 	"github.com/blang/semver"
 	"github.com/hanspr/microidelibs/highlight"
@@ -168,12 +169,14 @@ func (m *microMenu) closeSubmenus() {
 
 func (m *microMenu) MenuItemClick(name, value, event, when string, x, y int) bool {
 	f := m.myapp.frames["menu"]
+	if f == nil {
+		return false
+	}
 	if f.elements == nil {
 		return false
 	}
 	_, err := f.elements[name]
 	if err == false {
-		TermMessage("Error en menu," + name + " no existe")
 		return false
 	}
 	if event == "mouseout" {
@@ -601,10 +604,13 @@ func (m *microMenu) PluginManagerDialog() {
 		f.AddWindowBox("enc", Language.Translate("Plugin Manager"), 0, 0, width, height, true, nil, "")
 		lbl0 := Language.Translate("Install")
 		f.AddWindowButton("install", lbl0, "cancel", width-Count(lbl0)-3, height-1, m.InstallPlugin, "")
+		lbl1 := Language.Translate("Remove")
+		f.AddWindowButton("remove", lbl1, "cancel", width-Count(lbl0)-Count(lbl1)-8, height-1, m.RemovePlugin, "")
 		f.SetVisible("install", false)
+		f.SetVisible("remove", false)
 		lbl0 = Language.Translate("Languages")
 		f.AddWindowButton("langs", lbl0, "", 1, 2, m.ChangeSource, "button")
-		lbl1 := Language.Translate("Coding Plugins")
+		lbl1 = Language.Translate("Coding Plugins")
 		offset := 1 + Count(lbl0) + 3
 		f.AddWindowButton("codeplugins", lbl1, "", offset, 2, m.ChangeSource, "button")
 		lbl0 = Language.Translate("Application Plugins")
@@ -691,6 +697,8 @@ func (m *microMenu) ChangeSource(name, value, event, when string, x, y int) bool
 				continue
 			} else if name == "apps" && p.Tags[0] != "application" {
 				continue
+			} else if name == "codeplugin" && p.Filetype != p.Name {
+				continue
 			}
 			if Count(p.Description) > 42 {
 				desc := []rune(p.Description)
@@ -702,7 +710,7 @@ func (m *microMenu) ChangeSource(name, value, event, when string, x, y int) bool
 					cver = pv.Version
 				}
 			}
-			val = "codeplugin?" + p.Author + "?" + p.Name
+			val = name + "?" + p.Author + "?" + p.Name + "?" + cver.String()
 			version := GetPluginOption(strings.ToLower(p.Name), "version")
 			if version == nil {
 				str = fmt.Sprintf("%-20s%-10s %-10s%-20s%-44s  ", p.Name, " ", cver.String(), p.Author, p.Description)
@@ -742,6 +750,7 @@ func (m *microMenu) ChangeSource(name, value, event, when string, x, y int) bool
 	f.elements["apps"].Draw()
 	f.elements["list"].Draw()
 	f.SetVisible("install", true)
+	f.SetVisible("remove", true)
 	f.SetLabel("msg", "")
 	return true
 }
@@ -756,11 +765,19 @@ func (m *microMenu) InstallPlugin(name, value, event, when string, x, y int) boo
 	}
 	f := m.myapp.frames["f"]
 	values := m.myapp.getValues()
+	f.SetVisible("install", false)
+	f.SetVisible("remove", false)
 	for a, b := range values {
 		if a == "list" {
 			plugin = strings.Split(b, "?")
 			break
 		}
+	}
+	if plugin == nil || len(plugin) < 2 {
+		f.SetLabel("msg", "No selection made")
+		f.SetVisible("install", true)
+		f.SetVisible("remove", true)
+		return true
 	}
 	if plugin[0] == "langs" {
 		// Install Language plugin[2]
@@ -769,7 +786,57 @@ func (m *microMenu) InstallPlugin(name, value, event, when string, x, y int) boo
 		f.SetLabel("msg", msg)
 	} else {
 		// Locate plugin and install
-		f.SetLabel("msg", Language.Translate("Installing")+" "+plugin[1]+"/"+plugin[2]+" "+Language.Translate("please wait")+"...")
+		ptype := "language"
+		if plugin[0] == "apps" {
+			ptype = "application"
+		}
+		plugins := SearchPlugin([]string{ptype, plugin[2]})
+		if len(plugins) == 0 {
+			f.SetLabel("msg", "Plugin not found")
+			return true
+		}
+		cver, _ := semver.Make(plugin[3])
+		for _, p := range plugins {
+			if p.Author == plugin[1] && p.Tags[0] == ptype && p.Name == plugin[2] {
+				for _, v := range p.Versions {
+					if v.Version.EQ(cver) {
+						err := v.DownloadAndInstall()
+						if err != nil {
+							f.SetLabel("msg", "Error: "+err.Error())
+							f.SetVisible("install", true)
+							f.SetVisible("remove", true)
+							return true
+						}
+						goto Exit
+					}
+				}
+			}
+		}
+	Exit:
+	}
+	m.ChangeSource(plugin[0], "", "mouse-click1", "POST", 1, 1)
+	f.SetVisible("install", false)
+	f.SetVisible("remove", false)
+	f.SetLabel("msg", Language.Translate("Plugin installed")+": "+plugin[2]+"-"+plugin[3])
+	go func() {
+		time.Sleep(1 * time.Second)
+		f.SetVisible("install", true)
+		f.SetVisible("remove", true)
+	}()
+	go func() {
+		time.Sleep(4 * time.Second)
+		f.SetLabel("msg", "")
+	}()
+
+	return true
+}
+
+func (m *microMenu) RemovePlugin(name, value, event, when string, x, y int) bool {
+	if when == "PRE" {
+		return true
+	}
+	if event != "mouse-click1" {
+		return true
 	}
 	return true
 }

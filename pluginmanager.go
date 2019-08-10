@@ -39,6 +39,7 @@ type PluginPackage struct {
 	Name        string
 	Description string
 	Author      string
+	Filetype    string
 	Tags        []string
 	Versions    PluginVersions
 }

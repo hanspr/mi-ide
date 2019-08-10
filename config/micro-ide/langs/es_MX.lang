@@ -26,7 +26,7 @@ Jump to line: (1 - %v) :|Saltar a línea: (1 - %v) :
 Invalid line number|Número inválido
 Recording|Grabando
 Stopped recording|Grabación detenida
-Unknown plugin:|Extensión desconocida:
+Unknown plugin:|Complemento desconocida:
 Error installing|Error instalando
 is already installed but out-of-date: use 'plugin update|está instalado pero desactualizado: use 'plugin update
 ' to update|' para actualizar
@@ -35,7 +35,7 @@ Removed|Eliminado
 The requested plugins do not exist|La extensión solicitada no existe
 The following plugins are currently installed:|Las siguientes extensiones se encuentran instalados
 plugins found|extensiones encontradas
-Available Plugins:|Extensiones disponibles:
+Available Plugins:|Complementos disponibles:
 Not enough arguments|Argumentos insuficientes
 Warning: Showing raw event escape codes|Advertencia: mostrando códigos de eventos directos
 Use CtrlQ to exit|Use Ctrl+Q para salir
@@ -82,7 +82,7 @@ Select Encoding|Seleccionar codificación
 Set encoding|Codificar
 Global Settings|Configuración Global
 KeyBindings|Asignación de teclas
-Plugin Manager|Administrador de Extensiones
+Plugin Manager|Administrador de Complementos
 Error writing settings.json file|Error al salvar archivo de configuraciones
 Key check|Probar tecla
 Taken|Tomada
@@ -90,11 +90,11 @@ Free|Libre
 Could not save settings|No puse salvar configuración
 Language|Idioma
 Languages|Idiomas
-Plugins|Extensiones
+Plugins|Complementos
 Exit|Salir
 Set file type|Seleccione tipo de archivo
 Downloading list of|Descargando lista de
-Coding Plugins|Extensiones de código
+Coding Plugins|Complementos de código
 Application Plugins|Aplicaciones
 Available|Disponible
 Install|Instalar
@@ -106,3 +106,4 @@ Author|Autor
 Description|Descripción
 Actual|Actual
 No plugins found|No se localizaron extensiones
+Plugin installed|Complemento instalada
