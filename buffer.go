@@ -376,7 +376,7 @@ func (b *Buffer) UpdateRules() {
 			}
 
 			ft := b.Settings["filetype"].(string)
-			if (ft == "text" || ft == "") && !rehighlight {
+			if ft == "" && !rehighlight {
 				if highlight.MatchFiletype(ftdetect, b.Path, b.lines[0].data) {
 					header := new(highlight.Header)
 					header.FileType = file.FileType

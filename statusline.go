@@ -88,6 +88,7 @@ func (sline *Statusline) Display() {
 	}
 
 	if w > 80 || dirview.Open {
+		// If the screen is wide enough we can offer the treeview
 		if y >= h-3 && sline.view.x < 2 {
 			if dirview.Open {
 				file = fmt.Sprintf("<< %-"+strconv.Itoa(size)+"s", file)
@@ -103,7 +104,7 @@ func (sline *Statusline) Display() {
 		}
 		dirview.active = true
 	} else {
-		// Below 80 columns, treeview fails
+		// Below 80 columns, treeview fails there is not enough room
 		file = fmt.Sprintf("   %-"+strconv.Itoa(size)+"s", file)
 		fvstyle = false
 		dirview.active = false
@@ -122,12 +123,13 @@ func (sline *Statusline) Display() {
 	// Fix size of cursor position so it stays in the same place all the time
 	file += fmt.Sprintf(" %6s/%s,%-4s ", lineNum, totColumn, columnNum)
 
-	// bellow 66 begin hidding information even more
+	// bellow 66 colomns begin hidding information even more
 	if w > 65 {
 		if sline.view.x != 0 {
 			offset++
 		}
 
+		// Create hotspots for status line events
 		sline.hotspot["FILETYPE"] = Loc{Count(file) + 1 + offset, Count(file) + offset + 1 + Count(sline.view.Buf.FileType())}
 		file += " " + sline.view.Buf.FileType() + "▲"
 

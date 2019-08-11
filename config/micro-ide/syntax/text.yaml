@@ -1,7 +1,7 @@
 filetype: text
 
 detect:
-    filename: "^\\w+$"
+    filename: "\\.(text|txt)$"
 
 rules:
     - constant.tag: "^[[:space:]]*[\\*\\-][[:space:]]"
