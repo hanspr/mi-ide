@@ -262,12 +262,12 @@ func TabbarHandleMouseEvent(event tcell.Event) {
 // TabbarString returns the string that should be displayed in the tabbar
 // It also returns a map containing which indicies correspond to which tab number
 // This is useful when we know that the mouse click has occurred at an x location
-// but need to know which tab that corresponds to to accurately change the tab
 func TabbarString(toffset int) (string, map[int]int) {
 	var cv int
 
 	w, _ := screen.Size()
 	str := ""
+	middle := 0
 	tabIndex := 0 // Reference to the first tab being displayed
 	curTabDisplayed := false
 	indicies := make(map[int]int)
@@ -281,28 +281,34 @@ func TabbarString(toffset int) (string, map[int]int) {
 		buf := t.Views[t.CurView].Buf
 		name := filepath.Base(buf.GetName())
 		if Count(str)+Count(name)+toffset+10 > w {
-			// The tabbar at this point will overflow the screen width
-			if curTabDisplayed {
-				// We have the current tab on view, no need to do no more processing
-				str = str + "➜ "
+			// Tabbar is longer than screen width
+			if middle == 0 {
+				middle = (i - tabIndex) / 2
+			}
+			if curTab > middle {
+				// We are past the midfdle of the tabbar, we have to shift everything to the left
+				// to leave some root to see next available tabs
+				offset := indicies[tabIndex]
+				olen := Count(str)
+				str = "←" + str[offset+1:]
+				diff := olen - Count(str)
+				for a, _ := range tabs {
+					if a < tabIndex {
+						indicies[a] = 0
+						continue
+					} else if a > i {
+						break
+					}
+					indicies[a] -= diff
+				}
+				tabIndex++
+			}
+			if curTabDisplayed && curTab-tabIndex <= middle {
+				// We have the current tab on view and in the middle, no need to do more processing
+				str = str + "→ "
 				indicies[i] = Count(str)
 				break
 			}
-			// No tab in view
-			// We have to shift everything to the left and continue until we display the current tab
-			// Current tab will be the last one in this cases
-			offset := indicies[tabIndex]
-			olen := Count(str)
-			str = str[offset:]
-			diff := olen - Count(str)
-			for a, _ := range tabs {
-				if a <= tabIndex {
-					indicies[a] = 0
-					continue
-				}
-				indicies[a] -= diff
-			}
-			tabIndex++
 		}
 		if name == "fileviewer" {
 			buf = t.Views[t.CurView+1].Buf
@@ -336,8 +342,7 @@ func TabbarString(toffset int) (string, map[int]int) {
 	return str, indicies
 }
 
-// DisplayTabs; always displays the tabbar at the top of the editor
-// The bar will eventually handle a menu
+// Display a Menu, Icons ToolBar, and Tabs
 func DisplayTabs() {
 	var tStyle tcell.Style
 	var tabActive bool = false
@@ -367,7 +372,7 @@ func DisplayTabs() {
 		MicroToolBar.active = false
 	}
 
-	// Get the current tabs to display
+	// Get the current Tabs to display
 	str, _ := TabbarString(toffset)
 
 	tabBarStyle := defStyle.Reverse(true)
@@ -380,10 +385,12 @@ func DisplayTabs() {
 	for x := 0; x < w; x++ {
 		if x < len(tabsRunes) {
 			if string(tabsRunes[x]) == tabOpen && tabActive == false {
+				// Hightlight the current tab
 				tStyle = StringToStyle("bold #ffd700,#000087")
 				tabActive = true
 			} else if tabActive {
 				if string(tabsRunes[x]) == tabClose {
+					// Hightlight off, end of current tab
 					tabActive = false
 				}
 			} else {
