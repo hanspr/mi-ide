@@ -597,7 +597,8 @@ func main() {
 				x, y := e.Position()
 				if y < 1 {
 					// Event is on tabbar, process all events there
-					didAction = TabbarHandleMouseEvent(event)
+					TabbarHandleMouseEvent(event)
+					didAction = true
 				} else if e.Buttons() == tcell.Button1 && e.HasMotion() == false {
 					MouseClick = true
 					// Mouse click event

@@ -2,7 +2,7 @@ package main
 
 import (
 	"path/filepath"
-	"sort"
+	//"sort"
 
 	"github.com/hanspr/tcell"
 )
@@ -182,6 +182,79 @@ func CurView() *View {
 	return curTab.Views[curTab.CurView]
 }
 
+// TabbarHandleMouseEvent checks the given mouse event if it is clicking on the tabbar
+// If it is it changes the current tab accordingly
+// This function returns true if the tab is changed
+func TabbarHandleMouseEvent(event tcell.Event) {
+	var tabnum int
+	//var keys []int
+
+	toffset := toolBarOffset
+	if MicroToolBar.active == false {
+		toffset = 0
+	}
+	switch e := event.(type) {
+	case *tcell.EventMouse:
+		button := e.Buttons()
+		// Accepted Mouse Click Events
+		if e.HasMotion() == false && (button == tcell.Button1 || button == tcell.Button3) {
+			// Find where is the mouse click
+			x, _ := e.Position()
+			if toffset > 0 {
+				if x < 3 {
+					// Click on Menu Icon
+					micromenu.Menu()
+					return
+				}
+				if x < toffset {
+					// Click on Toolbar
+					if button == tcell.Button1 {
+						MicroToolBar.ToolbarHandleMouseEvent(x)
+					}
+					return
+				}
+			}
+			// Get the indices to know the hotspot for each tab
+			str, indicies := TabbarString(toffset)
+			// ignore if past last tab
+			if x >= Count(str)+toffset {
+				return
+			}
+			// Find which tab was clicked
+			for i, _ := range tabs {
+				if x+tabBarOffset < indicies[i]+toffset {
+					tabnum = i
+					break
+				}
+			}
+			// Ignore on current tab and not to close
+			if button == tcell.Button1 && curTab == tabnum {
+				return
+			}
+			// Change tab
+			dirview.onTabChange()
+			if button == tcell.Button1 {
+				// Left click = Select tab and display
+				curTab = tabnum
+				return
+			} else if button == tcell.Button3 {
+				// We allow to close only the current Tab, so user knows what he is doing
+				if curTab == tabnum {
+					// Right click = Close selected tab
+					CurView().Unsplit(false)
+					CurView().Quit(false)
+				} else {
+					// If not current, make current so he can click again
+					curTab = tabnum
+					return
+				}
+			}
+			return
+		}
+	}
+	return
+}
+
 // -------------------------------------------
 // Tabbar drawing
 // -------------------------------------------
@@ -193,7 +266,10 @@ func CurView() *View {
 func TabbarString(toffset int) (string, map[int]int) {
 	var cv int
 
+	w, _ := screen.Size()
 	str := ""
+	tabIndex := 0 // Reference to the first tab being displayed
+	curTabDisplayed := false
 	indicies := make(map[int]int)
 	unique := make(map[string]int)
 
@@ -204,6 +280,30 @@ func TabbarString(toffset int) (string, map[int]int) {
 	for i, t := range tabs {
 		buf := t.Views[t.CurView].Buf
 		name := filepath.Base(buf.GetName())
+		if Count(str)+Count(name)+toffset+10 > w {
+			// The tabbar at this point will overflow the screen width
+			if curTabDisplayed {
+				// We have the current tab on view, no need to do no more processing
+				str = str + "➜ "
+				indicies[i] = Count(str)
+				break
+			}
+			// No tab in view
+			// We have to shift everything to the left and continue until we display the current tab
+			// Current tab will be the last one in this cases
+			offset := indicies[tabIndex]
+			olen := Count(str)
+			str = str[offset:]
+			diff := olen - Count(str)
+			for a, _ := range tabs {
+				if a <= tabIndex {
+					indicies[a] = 0
+					continue
+				}
+				indicies[a] -= diff
+			}
+			tabIndex++
+		}
 		if name == "fileviewer" {
 			buf = t.Views[t.CurView+1].Buf
 			name = filepath.Base(buf.GetName())
@@ -214,6 +314,7 @@ func TabbarString(toffset int) (string, map[int]int) {
 
 		if i == curTab {
 			str += tabOpen + " "
+			curTabDisplayed = true
 		} else {
 			str += "  "
 		}
@@ -230,93 +331,9 @@ func TabbarString(toffset int) (string, map[int]int) {
 		} else {
 			str += "  "
 		}
-		//		indicies[Count(str)+1] = i + 1
-		indicies[Count(str)+toffset] = i + 1
+		indicies[i] = Count(str)
 	}
 	return str, indicies
-}
-
-// TabbarHandleMouseEvent checks the given mouse event if it is clicking on the tabbar
-// If it is it changes the current tab accordingly
-// This function returns true if the tab is changed
-func TabbarHandleMouseEvent(event tcell.Event) bool {
-	var tabnum int
-	var keys []int
-
-	toffset := toolBarOffset
-	if MicroToolBar.active == false {
-		toffset = 0
-	}
-	switch e := event.(type) {
-	case *tcell.EventMouse:
-		button := e.Buttons()
-		// Accepted Mouse Click Events
-		if button == tcell.Button1 || button == tcell.Button3 {
-			// Find where is the mouse click
-			x, y := e.Position()
-			// ignore if not in tab line
-			if y != 0 {
-				return false
-			}
-			if e.HasMotion() == true {
-				return true
-			}
-			if toffset > 0 {
-				if x < 3 {
-					// Click on Menu Icon
-					micromenu.Menu()
-					return true
-				}
-				if x < toffset {
-					// Click on Toolbar
-					if button == tcell.Button1 {
-						MicroToolBar.ToolbarHandleMouseEvent(x)
-					}
-					return true
-				}
-			}
-			str, indicies := TabbarString(toffset)
-			// ignore if past last tab
-			if x >= Count(str)+toffset {
-				return true
-			}
-			// Find which tab was clicked
-			for k := range indicies {
-				keys = append(keys, k)
-			}
-			sort.Ints(keys)
-			for _, k := range keys {
-				if x+tabBarOffset <= k {
-					tabnum = indicies[k] - 1
-					break
-				}
-			}
-			// Ignore on current tab and not to close
-			if button == tcell.Button1 && curTab == tabnum {
-				return true
-			}
-			// Change tab
-			dirview.onTabChange()
-			if button == tcell.Button1 {
-				// Left click = Select tab and display
-				curTab = tabnum
-				return true
-			} else if button == tcell.Button3 {
-				// We allow to close only the current Tab, so user knows what he is doing
-				if curTab == tabnum {
-					// Right click = Close selected tab
-					CurView().Unsplit(false)
-					CurView().Quit(false)
-				} else {
-					// If not current, make current so he can click again
-					curTab = tabnum
-					return true
-				}
-			}
-			return true
-		}
-	}
-	return false
 }
 
 // DisplayTabs; always displays the tabbar at the top of the editor
@@ -326,7 +343,6 @@ func DisplayTabs() {
 	var tabActive bool = false
 
 	// Display ToolBar
-	//toolbarRunes := []rune(MicroToolBar.String())
 	w, _ := screen.Size()
 	toffset := 0
 	if w > 60 {
@@ -351,103 +367,14 @@ func DisplayTabs() {
 		MicroToolBar.active = false
 	}
 
-	str, indicies := TabbarString(toffset)
+	// Get the current tabs to display
+	str, _ := TabbarString(toffset)
 
 	tabBarStyle := defStyle.Reverse(true)
 	if style, ok := colorscheme["tabbar"]; ok {
 		tabBarStyle = style
 	}
-	// Maybe there is a unicode filename?
 	tabsRunes := []rune(str)
-	tooWide := (w < len(tabsRunes))
-
-	// if the entire tab-bar is longer than the screen is wide,
-	// then it should be truncated appropriately to keep the
-	// active tab visible on the UI.
-	if tooWide == true {
-		// first we have to work out where the selected tab is
-		// out of the total length of the tab bar. this is done
-		// by extracting the hit-areas from the indicies map
-		// that was constructed by `TabbarString()`
-		var keys []int
-		for offset := range indicies {
-			keys = append(keys, offset)
-		}
-		// sort them to be in ascending order so that values will
-		// correctly reflect the displayed ordering of the tabs
-		sort.Ints(keys)
-		// record the offset of each tab and the previous tab so
-		// we can find the position of the tab's hit-box.
-		previousTabOffset := 0
-		currentTabOffset := 0
-		for _, k := range keys {
-			tabIndex := indicies[k] - 1
-			if tabIndex == curTab {
-				currentTabOffset = k
-				break
-			}
-			// this is +2 because there are two padding spaces that aren't accounted
-			// for in the display. please note that this is for cosmetic purposes only.
-			previousTabOffset = k + 2
-		}
-		// get the width of the hitbox of the active tab, from there calculate the offsets
-		// to the left and right of it to approximately center it on the tab bar display.
-		centeringOffset := (w - (currentTabOffset - previousTabOffset))
-		leftBuffer := previousTabOffset - (centeringOffset / 2)
-		rightBuffer := currentTabOffset + (centeringOffset / 2)
-
-		// check to make sure we haven't overshot the bounds of the string,
-		// if we have, then take that remainder and put it on the left side
-		overshotRight := rightBuffer - len(tabsRunes)
-		if overshotRight > 0 {
-			leftBuffer = leftBuffer + overshotRight
-		}
-
-		overshotLeft := leftBuffer - 0
-		if overshotLeft < 0 {
-			leftBuffer = 0
-			rightBuffer = leftBuffer + (w - 1)
-		} else {
-			rightBuffer = leftBuffer + (w - 2)
-		}
-
-		if rightBuffer > len(tabsRunes)-1 {
-			rightBuffer = len(tabsRunes) - 1
-		}
-
-		// construct a new buffer of text to put the
-		// newly formatted tab bar text into.
-		var displayText []rune
-
-		// if the left-side of the tab bar isn't at the start
-		// of the constructed tab bar text, then show that are
-		// more tabs to the left by displaying a "+"
-		if leftBuffer != 0 {
-			displayText = append(displayText, '+')
-		}
-		// copy the runes in from the original tab bar text string
-		// into the new display buffer
-		for x := leftBuffer; x < rightBuffer; x++ {
-			displayText = append(displayText, tabsRunes[x])
-		}
-		// if there is more text to the right of the right-most
-		// column in the tab bar text, then indicate there are more
-		// tabs to the right by displaying a "+"
-		if rightBuffer < len(tabsRunes)-1 {
-			displayText = append(displayText, '+')
-		}
-
-		// now store the offset from zero of the left-most text
-		// that is being displayed. This is to ensure that when
-		// clicking on the tab bar, the correct tab gets selected.
-		tabBarOffset = leftBuffer
-
-		// use the constructed buffer as the display buffer to print
-		// onscreen.
-		tabsRunes = displayText
-	} else {
-		tabBarOffset = 0
-	}
 
 	// Display Tabs
 	for x := 0; x < w; x++ {
