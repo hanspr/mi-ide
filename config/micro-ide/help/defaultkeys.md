@@ -45,7 +45,7 @@ can change it!
 
 | Key    | Description of function   |
 |------- |---------------------------|
-| Alt+T  | Open a new tab            |
+| Alt+t  | Open a new tab            |
 | F7     | Previous tab              |
 | F8     | Next tab                  |
 
@@ -53,15 +53,15 @@ can change it!
 
 | Key     | Description of function           |
 |-------- |-----------------------------------|
-| Alt-v   | Split current window vertically   |
-| Alt-h   | Split current window horizontally |
+| Alt-V   | Split current window vertically   |
+| Alt-H   | Split current window horizontally |
 
 ### Find Operations
 
 | Key              | Description of function                   |
 |------------------|-------------------------------------------|
-| Ctrl+F           | Find (opens Search Dialog)                |
-| Ctrl+R           | Replace (opens Search / Replace Dialog)   |
+| Ctrl+F           | Find (open Search Dialog)                 |
+| Ctrl+R           | Replace (open Search / Replace Dialog)    |
 | F5 , Backspace   | Find previous instance of current search  |
 | F6 , Enter       | Find next instance of current search      |
 
@@ -97,7 +97,7 @@ can change it!
 | AltUpArrow                        | Move current line or selected lines up    |
 | AltDownArrow                      | Move current line of selected lines down  |
 | AltBackspace or AltCtrl+H         | Delete word left                          |
-| Alt+L                             | Delete line                               |
+| Alt+l                             | Delete line                               |
 | Ctrl+A                            | Select all                                |
 
 ### Power user
@@ -123,9 +123,9 @@ can change it!
 
 | Key    | Description of function                    |
 |--------|--------------------------------------------|
-| Alt+h  | Open help file                             |
+| Alt+?  | Open help file                             |
 | Ctrl+H | Backspace                                  |
-| Ctrl+R | Toggle the line number ruler               |
+| Alt-#  | Toggle the line number ruler               |
 | Alt+!  | Toggle soft wrap                           |
 
 ### Macros
