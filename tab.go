@@ -187,70 +187,63 @@ func CurView() *View {
 // This function returns true if the tab is changed
 func TabbarHandleMouseEvent(event tcell.Event) {
 	var tabnum int
-	//var keys []int
 
 	toffset := toolBarOffset
 	if MicroToolBar.active == false {
 		toffset = 0
 	}
-	switch e := event.(type) {
-	case *tcell.EventMouse:
-		button := e.Buttons()
-		// Accepted Mouse Click Events
-		if e.HasMotion() == false && (button == tcell.Button1 || button == tcell.Button3) {
-			// Find where is the mouse click
-			x, _ := e.Position()
-			if toffset > 0 {
-				if x < 3 {
-					// Click on Menu Icon
-					micromenu.Menu()
-					return
-				}
-				if x < toffset {
-					// Click on Toolbar
-					if button == tcell.Button1 {
-						MicroToolBar.ToolbarHandleMouseEvent(x)
-					}
-					return
-				}
-			}
-			// Get the indices to know the hotspot for each tab
-			str, indicies := TabbarString(toffset)
-			// ignore if past last tab
-			if x >= Count(str)+toffset {
+	if MouseButton == 1 || MouseButton == 3 {
+		x := MouseClickLoc.X
+		if toffset > 0 {
+			if x < 3 {
+				// Click on Menu Icon
+				micromenu.Menu()
 				return
 			}
-			// Find which tab was clicked
-			for i, _ := range tabs {
-				if x+tabBarOffset < indicies[i]+toffset {
-					tabnum = i
-					break
+			if x < toffset {
+				// Click on Toolbar
+				if MouseButton == 1 {
+					MicroToolBar.ToolbarHandleMouseEvent(x)
 				}
-			}
-			// Ignore on current tab and not to close
-			if button == tcell.Button1 && curTab == tabnum {
 				return
 			}
-			// Change tab
-			dirview.onTabChange()
-			if button == tcell.Button1 {
-				// Left click = Select tab and display
-				curTab = tabnum
-				return
-			} else if button == tcell.Button3 {
-				// We allow to close only the current Tab, so user knows what he is doing
-				if curTab == tabnum {
-					// Right click = Close selected tab
-					CurView().Unsplit(false)
-					CurView().Quit(false)
-				} else {
-					// If not current, make current so he can click again
-					curTab = tabnum
-					return
-				}
-			}
+		}
+		// Get the indices to know the hotspot for each tab
+		str, indicies := TabbarString(toffset)
+		// ignore if past last tab
+		if x >= Count(str)+toffset {
 			return
 		}
+		// Find which tab was clicked
+		for i, _ := range tabs {
+			if x+tabBarOffset < indicies[i]+toffset {
+				tabnum = i
+				break
+			}
+		}
+		// Ignore on current tab and not to close
+		if MouseButton == 1 && curTab == tabnum {
+			return
+		}
+		// Change tab
+		dirview.onTabChange()
+		if MouseButton == 1 {
+			// Left click = Select tab and display
+			curTab = tabnum
+			return
+		} else if MouseButton == 3 {
+			// We allow to close only the current Tab, so user knows what he is doing
+			if curTab == tabnum {
+				// Right click = Close selected tab
+				CurView().Unsplit(false)
+				CurView().Quit(false)
+			} else {
+				// If not current, make current so he can click again
+				curTab = tabnum
+				return
+			}
+		}
+		return
 	}
 	return
 }

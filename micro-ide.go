@@ -86,10 +86,12 @@ var (
 	scrollsince time.Time
 	scrollcount int
 
-	wheelbounce int
-
 	// Added to abort relocate cursor when changing views when using a mouse click
-	MouseClick bool
+	MouseClick    bool
+	MoseMoveSince time.Time
+	MouseClickLoc Loc
+	MouseDown     bool
+	MouseButton   int
 )
 
 // LoadInput determines which files should be loaded into buffers
@@ -592,16 +594,38 @@ func main() {
 				}
 				didAction = true
 			case *tcell.EventMouse:
-				MouseClick = false
 				_, h := screen.Size()
 				x, y := e.Position()
-				if y < 1 {
+				button := e.Buttons()
+				// Try to get real mouse clicks on different terminals
+				if button == tcell.ButtonNone && MouseDown == true {
+					if MouseClickLoc.X == x && MouseClickLoc.Y == y {
+						MouseClick = true
+					}
+					MouseDown = false
+				} else if button == tcell.ButtonNone {
+					MouseButton = 0
+					MouseClick = false
+				} else {
+					if button == tcell.Button1 {
+						MouseButton = 1
+					} else if button == tcell.Button2 {
+						MouseButton = 2
+					} else if button == tcell.Button3 {
+						MouseButton = 3
+					} else {
+						MouseButton = 99
+					}
+					MouseClickLoc.X, MouseClickLoc.Y = e.Position()
+					MouseDown = true
+					MouseClick = false
+				}
+				if MouseClick && y < 1 {
 					// Event is on tabbar, process all events there
 					TabbarHandleMouseEvent(event)
 					didAction = true
-				} else if e.Buttons() == tcell.Button1 && e.HasMotion() == false {
-					MouseClick = true
-					// Mouse click event
+				} else if MouseClick && MouseButton == 1 {
+					// Mouse 1 click events only
 					if searching {
 						// Happened during a search lock, release Search
 						ExitSearch(CurView())
@@ -616,7 +640,7 @@ func main() {
 						}
 						didAction = true
 					}
-					if !didAction && CurView().mouseReleased {
+					if !didAction {
 						// We loop through each view in the current tab and make sure the current view
 						// is the one being clicked in
 						for _, v := range tabs[curTab].Views {
@@ -625,7 +649,7 @@ func main() {
 							}
 						}
 					}
-				} else if (e.Buttons() == tcell.Button3 || e.Buttons() == tcell.Button2) && e.HasMotion() == false {
+				} else if MouseClick && (MouseButton == 3 || MouseButton == 2) {
 					// Butttons 2,3 click on dirview; open file in view next to it
 					if dirview.Open && dirview.tree_view == CurView() {
 						v := CurView()
@@ -635,14 +659,14 @@ func main() {
 						dirview.onExecuteAction("openonView", v)
 						didAction = true
 					}
-				} else if e.Buttons() == tcell.WheelUp || e.Buttons() == tcell.WheelDown {
+				} else if button == tcell.WheelUp || button == tcell.WheelDown {
 					// Scroll event
 					didAction = true
-					if wheelbounce > 0 {
-						wheelbounce = 0
+					// Some terminal send the event twice others not!
+					// Patch for that, don't know in how many it will work
+					if strings.Count(e.EscSeq(), "[") > 1 {
 						break
 					}
-					wheelbounce++
 					var view *View
 					for _, v := range tabs[curTab].Views {
 						if x >= v.x && x < v.x+v.Width && y >= v.y && y < v.y+v.Height {
