@@ -27,6 +27,14 @@ const (
 	autosaveTime         = 8   // Number of seconds to wait before autosaving
 )
 
+type MouseClick struct {
+	Click     bool
+	Since     time.Time
+	Pos       Loc
+	MouseDown bool
+	Button    int
+}
+
 var (
 	// The main screen
 	screen tcell.Screen
@@ -86,12 +94,8 @@ var (
 	scrollsince time.Time
 	scrollcount int
 
-	// Added to abort relocate cursor when changing views when using a mouse click
-	MouseClick    bool
-	MoseMoveSince time.Time
-	MouseClickLoc Loc
-	MouseDown     bool
-	MouseButton   int
+	// Follow MouseClick
+	Mouse MouseClick
 )
 
 // LoadInput determines which files should be loaded into buffers
@@ -597,34 +601,33 @@ func main() {
 				_, h := screen.Size()
 				x, y := e.Position()
 				button := e.Buttons()
-				// Try to get real mouse clicks on different terminals
-				if button == tcell.ButtonNone && MouseDown == true {
-					if MouseClickLoc.X == x && MouseClickLoc.Y == y {
-						MouseClick = true
+				// Try to get full mouse clicks on different terminals
+				if button == tcell.ButtonNone && Mouse.MouseDown == true {
+					if Mouse.Pos.X == x && Mouse.Pos.Y == y {
+						Mouse.Click = true
 					}
-					MouseDown = false
+					Mouse.MouseDown = false
 				} else if button == tcell.ButtonNone {
-					MouseButton = 0
-					MouseClick = false
+					Mouse.Click = false
 				} else {
 					if button == tcell.Button1 {
-						MouseButton = 1
+						Mouse.Button = 1
 					} else if button == tcell.Button2 {
-						MouseButton = 2
+						Mouse.Button = 2
 					} else if button == tcell.Button3 {
-						MouseButton = 3
+						Mouse.Button = 3
 					} else {
-						MouseButton = 99
+						Mouse.Button = 99
 					}
-					MouseClickLoc.X, MouseClickLoc.Y = e.Position()
-					MouseDown = true
-					MouseClick = false
+					Mouse.Pos.X, Mouse.Pos.Y = e.Position()
+					Mouse.MouseDown = true
+					Mouse.Click = false
 				}
-				if MouseClick && y < 1 {
+				if Mouse.Click && y < 1 {
 					// Event is on tabbar, process all events there
 					TabbarHandleMouseEvent(event)
 					didAction = true
-				} else if MouseClick && MouseButton == 1 {
+				} else if Mouse.Click && Mouse.Button == 1 {
 					// Mouse 1 click events only
 					if searching {
 						// Happened during a search lock, release Search
@@ -634,11 +637,8 @@ func main() {
 						if x < 3 {
 							// Click on treeview icon area
 							dirview.onIconClick()
-						} else {
-							// Other status lines events to handle
-							CurView().HandleEvent(event)
+							didAction = true
 						}
-						didAction = true
 					}
 					if !didAction {
 						// We loop through each view in the current tab and make sure the current view
@@ -649,7 +649,7 @@ func main() {
 							}
 						}
 					}
-				} else if MouseClick && (MouseButton == 3 || MouseButton == 2) {
+				} else if Mouse.Click && (Mouse.Button == 3 || Mouse.Button == 2) {
 					// Butttons 2,3 click on dirview; open file in view next to it
 					if dirview.Open && dirview.tree_view == CurView() {
 						v := CurView()
@@ -682,7 +682,7 @@ func main() {
 				// Search locks keyboard events to control move next/previous
 				HandleSearchEvent(event, CurView())
 			} else if !didAction {
-				// Send it to the view, is a view event (including its own status line)
+				// Handle view and own statusline events
 				CurView().HandleEvent(event)
 			}
 

@@ -192,8 +192,8 @@ func TabbarHandleMouseEvent(event tcell.Event) {
 	if MicroToolBar.active == false {
 		toffset = 0
 	}
-	if MouseButton == 1 || MouseButton == 3 {
-		x := MouseClickLoc.X
+	if Mouse.Button == 1 || Mouse.Button == 3 {
+		x := Mouse.Pos.X
 		if toffset > 0 {
 			if x < 3 {
 				// Click on Menu Icon
@@ -202,7 +202,7 @@ func TabbarHandleMouseEvent(event tcell.Event) {
 			}
 			if x < toffset {
 				// Click on Toolbar
-				if MouseButton == 1 {
+				if Mouse.Button == 1 {
 					MicroToolBar.ToolbarHandleMouseEvent(x)
 				}
 				return
@@ -222,16 +222,16 @@ func TabbarHandleMouseEvent(event tcell.Event) {
 			}
 		}
 		// Ignore on current tab and not to close
-		if MouseButton == 1 && curTab == tabnum {
+		if Mouse.Button == 1 && curTab == tabnum {
 			return
 		}
 		// Change tab
 		dirview.onTabChange()
-		if MouseButton == 1 {
+		if Mouse.Button == 1 {
 			// Left click = Select tab and display
 			curTab = tabnum
 			return
-		} else if MouseButton == 3 {
+		} else if Mouse.Button == 3 {
 			// We allow to close only the current Tab, so user knows what he is doing
 			if curTab == tabnum {
 				// Right click = Close selected tab

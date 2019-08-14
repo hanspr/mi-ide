@@ -967,7 +967,7 @@ func (v *View) DisplayView() {
 		v.Relocate()
 	}
 
-	if CurView().Type.Kind == 0 && LastView != CurView().Num && CurView().Cursor.Loc != CurView().savedLoc && MouseClick == false {
+	if CurView().Type.Kind == 0 && LastView != CurView().Num && CurView().Cursor.Loc != CurView().savedLoc && Mouse.Click == false {
 		// HP
 		// Set de cursor in last known position for this view
 		// It happens when 2+ views point to same buffer
