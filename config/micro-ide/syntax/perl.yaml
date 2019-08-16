@@ -62,7 +62,6 @@ rules:
             - constant: "\\\\[0-7][0-7]?[0-7]?|\\\\x[0-9a-fA-F]+|\\\\[bfnrt'\"\\?\\\\]"
             - comment: "^#!.*/(env +)?node( |$)"
             - identifier.var: "([\\$@%]|\\$\\#)\\$*[a-zA-Z_][a-zA-Z0-9_]*"
-            - comment: "^//.*$"
             - comment: "[ \\t;]// .*$"
             - symbol.tag: "</?.+?/?>"
             - symbol.tag: "</?[A-Za-z0-9:]+/?[ >]"
@@ -80,5 +79,6 @@ rules:
             - preproc: "<!DOCTYPE.+?>"
             - statement: "\\b(for|function|extends|get|if|import|from|of|instanceof|let|new|return|set)\\b"
             - identifier.var: "([\\$@%]|\\$\\#)\\$*[a-zA-Z_][a-zA-Z0-9_]*"
-    
-    
+            - comment: "^//.*$"
+
+
