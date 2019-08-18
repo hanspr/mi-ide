@@ -1,0 +1,16 @@
+{
+	"smartindent": false,
+    "autoclose": true,
+    "autoindent": true,
+    "indentchar": " ",
+    "keepautoindent": true,
+    "matchbrace": false,
+    "matchbraceleft": false,
+    "rmtrailingws": true,
+    "smartindent": false,
+    "smartpaste": true,
+    "softwrap": false,
+    "tabindents": true,
+    "tabmovement": false,
+    "tabstospaces": true
+}

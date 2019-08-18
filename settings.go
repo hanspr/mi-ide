@@ -122,6 +122,25 @@ func InitLocalSettings(buf *Buffer) {
 			}
 		}
 	}
+
+	// Load Local Settings based on settings/ftype.json
+	filename = configDir + "/settings/" + buf.Settings["filetype"].(string) + ".json"
+	if _, err := os.Stat(filename); err == nil {
+		var parsed map[string]interface{}
+		input, err := ioutil.ReadFile(filename)
+		if err != nil {
+			return
+		}
+		err = json5.Unmarshal(input, &parsed)
+		if err != nil {
+			return
+		}
+		for k, v := range parsed {
+			if !strings.HasPrefix(reflect.TypeOf(v).String(), "map") {
+				buf.Settings[k] = v
+			}
+		}
+	}
 }
 
 // WriteSettings writes the settings to the specified filename as JSON
