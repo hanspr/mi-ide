@@ -12,6 +12,11 @@ import (
 	"github.com/hanspr/tcell"
 )
 
+type Opt struct {
+	value string
+	lable string
+}
+
 type AppElement struct {
 	name       string // element name
 	label      string // element label if it applyes
@@ -30,8 +35,9 @@ type AppElement struct {
 	checked    bool                                                // Checkbox, Radio checked. Select is open
 	gname      string                                              // Original name, required for radio buttons
 	offset     int                                                 // Select = indexSelected, Text = offset from the age id box smaller than maxlength
-	visible    bool                                                //Set element vibilility attribute
-	iKey       int
+	visible    bool                                                // Set element vibilility attribute
+	iKey       int                                                 // Used to store temporary integer value
+	opts       []Opt                                               // Hold splited select data
 	microapp   *MicroApp
 	frame      *Frame
 }
@@ -224,6 +230,7 @@ func (a *MicroApp) AddWindowElement(frame, name, label, form, value, value_type 
 		e.aposb = Loc{x + lblwidth, y}
 		e.apose = Loc{x + lblwidth + w - 1, y}
 	} else if form == "select" {
+		var vp Opt
 		e.index++
 		h--
 		e.offset = -1
@@ -233,11 +240,17 @@ func (a *MicroApp) AddWindowElement(frame, name, label, form, value, value_type 
 		e.cursor.X = len(opts)
 		for i := 0; i < len(opts); i++ {
 			opt := strings.Split(opts[i], "]")
+			if len(opt) == 1 {
+				opt = append(opt, opt[0])
+			}
+			vp.value = opt[0]
+			vp.lable = opt[1]
+			e.opts = append(e.opts, vp)
 			if opt[0] == e.value {
 				e.offset = i
-				break
 			}
 		}
+		e.value_type = ""
 	} else if form == "textarea" {
 		e.aposb = Loc{x + 1, y + 1}
 		e.apose = Loc{x + w - 1, y + h - 1}
@@ -777,20 +790,12 @@ func (e *AppElement) DrawSelect() {
 	chr := ""
 	ft := "%-" + strconv.Itoa(e.width) + "s"
 	e.frame.PrintStyle(e.label, e.pos.X, e.pos.Y, &e.style)
-	opts := strings.Split(e.value_type, "|")
-	if e.height > 1 && e.height < len(opts) && e.offset >= e.height {
+	if e.height > 1 && e.height < len(e.opts) && e.offset >= e.height {
 		// Overflow, find the starting point
 		start = e.offset - e.height + 1
 	}
 	a.eint = start
-	for i := start; i < len(opts); i++ {
-		opt := strings.SplitN(opts[i], "]", 2)
-		if len(opt) == 1 {
-			opt = append(opt, opt[0])
-		}
-		if opt[1] == "" {
-			opt[1] = opt[0]
-		}
+	for i := start; i < len(e.opts); i++ {
 		if i == e.offset {
 			if a.activeElement == e.name {
 				style = style.Foreground(tcell.ColorBlack).Background(tcell.Color220)
@@ -810,7 +815,7 @@ func (e *AppElement) DrawSelect() {
 			Y++
 			if start > 0 && i == start {
 				chr = "▲"
-			} else if Y+1 == e.height && i+1 < len(opts) {
+			} else if Y+1 == e.height && i+1 < len(e.opts) {
 				chr = "▼"
 			} else {
 				chr = " "
@@ -819,8 +824,7 @@ func (e *AppElement) DrawSelect() {
 		if Y >= e.height {
 			break
 		}
-		//f.PrintStyle(fmt.Sprintf(ft, opt[1])+chr, e.aposb.X, e.aposb.Y+Y, &style)
-		label := []rune(fmt.Sprintf(ft, opt[1]) + chr)
+		label := []rune(fmt.Sprintf(ft, e.opts[i].lable) + chr)
 		for N := 0; N < len(label); N++ {
 			a.screen.SetContent(e.aposb.X+N+f.left, e.aposb.Y+Y+f.top, label[N], nil, style)
 		}
@@ -1122,9 +1126,8 @@ func (e *AppElement) SelectClickEvent(event string, x, y int) {
 	a.activeElement = e.name
 	// SELECT BEGIN
 	if e.height == 1 && e.checked == false {
-		// Set height, and new hotspot, save
-		opts := strings.Split(e.value_type, "|")
-		e.height = len(opts)
+		// Open select. Set height, and new hotspot, save
+		e.height = len(e.opts)
 		e.apose = Loc{e.apose.X, e.apose.Y + e.height - 1}
 		e.checked = true
 		// Lock events to this element until closed
@@ -1133,12 +1136,11 @@ func (e *AppElement) SelectClickEvent(event string, x, y int) {
 		a.DrawAll()
 		return
 	} else if e.checked == true {
-		opts := strings.Split(e.value_type, "|")
+		// Close select. Find element being clicked and saved as selected value
 		for i := 0; i < e.cursor.X; i++ {
 			if e.aposb.Y+i == y {
 				if i < e.cursor.X {
-					opt := strings.SplitN(opts[i], "]", 2)
-					e.value = opt[0]
+					e.value = e.opts[i].value
 					e.offset = i
 				}
 				break
@@ -1162,13 +1164,11 @@ func (e *AppElement) SelectClickEvent(event string, x, y int) {
 	// SELECT END
 
 	// LIST
-	opts := strings.Split(e.value_type, "|")
 	offset := a.eint
 	for i := 0; i < e.cursor.X; i++ {
 		if e.aposb.Y+i == y {
 			if i+offset < e.cursor.X {
-				opt := strings.SplitN(opts[i+offset], "]", 2)
-				e.value = opt[0]
+				e.value = e.opts[i].value
 				e.offset = i + offset
 			}
 			break
@@ -1304,10 +1304,9 @@ func (e *AppElement) SelectKeyEvent(key string, x, y int) {
 			e.checked = false
 		}
 	}
-	opts := strings.Split(e.value_type, "|")
-	opt := strings.SplitN(opts[e.offset], "]", 2)
-	e.value = opt[0]
-	a.DrawAll()
+	e.value = e.opts[e.offset].value
+	//a.DrawAll()
+	e.Draw()
 	a.screen.Show()
 }
 

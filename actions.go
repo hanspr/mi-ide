@@ -1356,6 +1356,7 @@ func (v *View) DuplicateLine(usePlugin bool) bool {
 			return false
 		}
 		loc := v.Cursor.Loc
+		loc.Y++
 		v.Cursor.End()
 		v.Buf.Insert(v.Cursor.Loc, "\n"+v.Buf.Line(v.Cursor.Y))
 		v.Cursor.GotoLoc(loc)

@@ -968,8 +968,7 @@ func (v *View) DisplayView() {
 	}
 
 	if CurView().Type.Kind == 0 && LastView != CurView().Num && CurView().Cursor.Loc != CurView().savedLoc && Mouse.Click == false {
-		// HP
-		// Set de cursor in last known position for this view
+		// HP : Set de cursor in last known position for this view
 		// It happens when 2+ views point to same buffer
 		// Set into current view boudaries
 		if CurView().savedLoc.Y > CurView().Buf.End().Y {
@@ -1307,8 +1306,7 @@ func (v *View) DisplayView() {
 		}
 	}
 	if (CurView().Type.Kind == 0 && LastView != CurView().Num) || (LastTab != curTab) {
-		// Only when View Has Changed
-		// Added onDisplayFocus Event.
+		// Added onDisplayFocus Event
 		LastView = CurView().Num
 		LastTab = curTab
 
