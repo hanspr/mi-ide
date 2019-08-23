@@ -141,6 +141,13 @@ func (sline *Statusline) Display() {
 		file += " " + sline.view.Buf.encoder
 
 		if size > 12 {
+			if sline.view.isOverwriteMode {
+				file += "  Over"
+			} else {
+				file += "  Inst"
+			}
+		}
+		if size > 12 {
 			if sline.view.Type.Readonly == true {
 				file += " ro"
 			}
