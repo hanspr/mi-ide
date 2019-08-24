@@ -1362,9 +1362,6 @@ func (v *View) DisplayView() {
 	// onDisplayFocus Event
 	// ---------------------------------------------------
 	if (CurView().Type.Kind == 0 && LastView != CurView().Num) || (LastTab != curTab) {
-		if LastView > -1 && CurView().isOverwriteMode != tabs[LastTab].Views[LastView].isOverwriteMode {
-			v.SetCursorColorShape()
-		}
 		LastView = CurView().Num
 		LastTab = curTab
 

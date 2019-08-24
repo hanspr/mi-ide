@@ -98,10 +98,11 @@ var (
 	// Follow MouseClick
 	Mouse MouseClick
 
-	CursorInsert    string
-	CursorOverwrite string
-	CursorHadShape  bool = false
-	CursorHadColor  bool = false
+	CursorInsert        string
+	CursorOverwrite     string
+	CursorHadShape      bool = false
+	CursorHadColor      bool = false
+	LastOverwriteStatus bool = false
 
 	Clip *clipboard.Clipboard
 )

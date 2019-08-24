@@ -165,6 +165,11 @@ func (sline *Statusline) Display() {
 		}
 	}
 
+	if sline.view.Num == CurView().Num && LastOverwriteStatus != sline.view.isOverwriteMode {
+		sline.view.SetCursorColorShape()
+		LastOverwriteStatus = sline.view.isOverwriteMode
+	}
+
 	// Maybe there is a unicode filename?
 	fileRunes := []rune(file)
 
