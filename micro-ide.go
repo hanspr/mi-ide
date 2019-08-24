@@ -99,6 +99,7 @@ var (
 
 	CursorInsert    string
 	CursorOverwrite string
+	CursorHadShape  bool = false
 )
 
 // LoadInput determines which files should be loaded into buffers
@@ -315,6 +316,11 @@ func LoadAll() {
 // One Place Global Exit
 // to control anything that could be necesary (to have a clean exit) in a sinlge point
 func Finish(status int) {
+	if CursorHadShape {
+		os.Stdout.WriteString("\033]12;white\007\033[0 q")
+	} else {
+		os.Stdout.WriteString("\033]12;white\007")
+	}
 	screen.Fini()
 	os.Exit(status)
 }

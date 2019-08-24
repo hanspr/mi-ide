@@ -955,9 +955,6 @@ func (v *View) SetCursorEscapeString() {
 	co := CursorOverwrite
 
 	if cursorcolor == "disabled" {
-		if ci != "" {
-			os.Stdout.WriteString("\033]12;white\007\033[0 q")
-		}
 		CursorInsert = ""
 		CursorOverwrite = ""
 	} else {
@@ -968,14 +965,23 @@ func (v *View) SetCursorEscapeString() {
 		// Set cursor normal to block, overwrite to underline
 		CursorInsert = CursorInsert + "\033[0 q"
 		CursorOverwrite = CursorOverwrite + "\033[3 q"
+		CursorHadShape = true
 	} else if cursorshape == "ibeam" {
 		// Set cursor normal to ibeam, overwrite to underline
 		CursorInsert = CursorInsert + "\033[5 q"
 		CursorOverwrite = CursorOverwrite + "\033[3 q"
+		CursorHadShape = true
 	} else if cursorshape == "underline" {
 		// Set cursor normal to underline, overwrite to block
 		CursorInsert = CursorInsert + "\033[3 q"
 		CursorOverwrite = CursorOverwrite + "\033[0 q"
+		CursorHadShape = true
+	} else {
+		if CursorHadShape {
+			os.Stdout.WriteString("\033]12;white\007\033[0 q")
+			CursorHadShape = false
+		}
+
 	}
 	if (ci != CursorInsert && v.isOverwriteMode == false) || (co != CursorOverwrite && v.isOverwriteMode) {
 		v.SetCursorColorShape()
