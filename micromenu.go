@@ -272,6 +272,8 @@ func (m *microMenu) GlobalConfigDialog() {
 				}
 				f.AddWindowSelect(k, k+" ", globalSettings["colorscheme"].(string), Colors, col, row, 0, 1, nil, "")
 				f.SetIndex(k, 3)
+			} else if k == "cursorshape" {
+				f.AddWindowSelect(k, k+" ", globalSettings["cursorshape"].(string), "disabled|block|ibeam|underline", col, row, 0, 1, nil, "")
 			} else {
 				kind := reflect.TypeOf(globalSettings[k]).Kind()
 				if kind == reflect.Bool {
@@ -343,6 +345,7 @@ func (m *microMenu) SaveSettings(name, value, event, when string, x, y int) bool
 			messenger.Error(Language.Translate("Error writing settings.json file"), ": ", err.Error())
 		}
 	}
+	CurView().SetCursorEscapeString()
 	return true
 }
 

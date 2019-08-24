@@ -1932,6 +1932,7 @@ func (v *View) ToggleOverwriteMode(usePlugin bool) bool {
 		}
 
 		v.isOverwriteMode = !v.isOverwriteMode
+		v.SetCursorColorShape()
 
 		if usePlugin {
 			return PostActionCall("ToggleOverwriteMode", v)

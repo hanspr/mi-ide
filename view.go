@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"os"
 	"reflect"
 	"strconv"
 	"strings"
@@ -947,6 +948,48 @@ func (v *View) FindCurLine(n int, s string) Loc {
 	return newLoc
 }
 
+func (v *View) SetCursorEscapeString() {
+	cursorshape := v.Buf.Settings["cursorshape"].(string)
+	cursorcolor := v.Buf.Settings["cursorcolor"].(string)
+	ci := CursorInsert
+	co := CursorOverwrite
+
+	if cursorcolor == "disabled" {
+		if ci != "" {
+			os.Stdout.WriteString("\033]12;white\007\033[0 q")
+		}
+		CursorInsert = ""
+		CursorOverwrite = ""
+	} else {
+		CursorInsert = "\033]12;" + cursorcolor + "\007"
+		CursorOverwrite = "\033]12;red\007"
+	}
+	if cursorshape == "block" {
+		// Set cursor normal to block, overwrite to underline
+		CursorInsert = CursorInsert + "\033[0 q"
+		CursorOverwrite = CursorOverwrite + "\033[3 q"
+	} else if cursorshape == "ibeam" {
+		// Set cursor normal to ibeam, overwrite to underline
+		CursorInsert = CursorInsert + "\033[5 q"
+		CursorOverwrite = CursorOverwrite + "\033[3 q"
+	} else if cursorshape == "underline" {
+		// Set cursor normal to underline, overwrite to block
+		CursorInsert = CursorInsert + "\033[3 q"
+		CursorOverwrite = CursorOverwrite + "\033[0 q"
+	}
+	if (ci != CursorInsert && v.isOverwriteMode == false) || (co != CursorOverwrite && v.isOverwriteMode) {
+		v.SetCursorColorShape()
+	}
+}
+
+func (v *View) SetCursorColorShape() {
+	if v.isOverwriteMode {
+		os.Stdout.WriteString(CursorOverwrite)
+	} else {
+		os.Stdout.WriteString(CursorInsert)
+	}
+}
+
 // DisplayView draws the view to the screen
 func (v *View) DisplayView() {
 	ActiveView := true
@@ -1305,8 +1348,14 @@ func (v *View) DisplayView() {
 			screen.SetContent(v.x, yOffset+i, tcell.RuneVLine, nil, dividerStyle.Reverse(true))
 		}
 	}
+
+	// ---------------------------------------------------
+	// onDisplayFocus Event
+	// ---------------------------------------------------
 	if (CurView().Type.Kind == 0 && LastView != CurView().Num) || (LastTab != curTab) {
-		// Added onDisplayFocus Event
+		if LastView > -1 && CurView().isOverwriteMode != tabs[LastTab].Views[LastView].isOverwriteMode {
+			v.SetCursorColorShape()
+		}
 		LastView = CurView().Num
 		LastTab = curTab
 

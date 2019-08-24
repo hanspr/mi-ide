@@ -96,6 +96,9 @@ var (
 
 	// Follow MouseClick
 	Mouse MouseClick
+
+	CursorInsert    string
+	CursorOverwrite string
 )
 
 // LoadInput determines which files should be loaded into buffers
@@ -256,7 +259,6 @@ func InitScreen() {
 
 	os.Setenv("TCELLDB", tcelldb)
 
-	// screen.SetStyle(defStyle)
 }
 
 // RedrawAll redraws everything -- all the views and the messenger
@@ -538,6 +540,7 @@ func main() {
 
 	InitColorscheme()
 	messenger.style = defStyle
+	CurView().SetCursorEscapeString()
 
 	// Here is the event loop which runs in a separate thread
 	go func() {
