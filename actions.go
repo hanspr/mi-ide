@@ -1296,9 +1296,7 @@ func (v *View) CutLine(usePlugin bool) bool {
 	}
 	v.freshClip = true
 	v.lastCutTime = time.Now()
-	v.Cursor.DeleteSelection()
-	v.Cursor.ResetSelection()
-	// Force cursor to begin of line, or it junps to the end of next line afterwards
+	v.DeleteLine(true)
 	v.Cursor.GotoLoc(Loc{0, v.Cursor.Y})
 
 	if usePlugin {
