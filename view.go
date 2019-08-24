@@ -203,11 +203,9 @@ func (v *View) paste(clip string) {
 	v.Buf.Insert(v.Cursor.Loc, clip)
 
 	if v.Buf.Settings["smartindent"].(bool) || v.Buf.Settings["smartpaste"].(bool) {
-		//re, _ := regexp.Compile(`\n`)
 		x := v.Cursor.Loc.X
 		spc := CountLeadingWhitespace(v.Buf.Line(v.Cursor.Y))
 		v.Buf.SmartIndent(Start, v.Cursor.Loc, false)
-		//if re.MatchString(clip) {
 		if strings.Contains(clip, "\n") {
 			// Multiline paste, move cursor to begging of last line, is the safest option
 			v.Cursor.GotoLoc(Loc{0, v.Cursor.Loc.Y})

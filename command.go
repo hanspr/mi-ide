@@ -11,7 +11,7 @@ import (
 	"unicode/utf8"
 
 	humanize "github.com/dustin/go-humanize"
-	"github.com/hanspr/microidelibs/shellwords"
+	"github.com/hanspr/shellwords"
 )
 
 // A Command contains a action (a function to call) as well as information about how to autocomplete the command

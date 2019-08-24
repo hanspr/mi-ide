@@ -10,7 +10,7 @@ import (
 	"time"
 
 	"github.com/blang/semver"
-	"github.com/hanspr/microidelibs/highlight"
+	"github.com/hanspr/highlight"
 	"github.com/hanspr/tcell"
 )
 

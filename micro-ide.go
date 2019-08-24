@@ -11,10 +11,11 @@ import (
 	"time"
 
 	"github.com/go-errors/errors"
-	"github.com/hanspr/microidelibs/lang"
-	"github.com/hanspr/microidelibs/terminfo"
+	"github.com/hanspr/clipboard"
+	"github.com/hanspr/lang"
 	"github.com/hanspr/tcell"
 	"github.com/hanspr/tcell/encoding"
+	"github.com/hanspr/terminfo"
 	"github.com/mattn/go-isatty"
 	"github.com/mitchellh/go-homedir"
 	"github.com/yuin/gopher-lua"
@@ -101,6 +102,8 @@ var (
 	CursorOverwrite string
 	CursorHadShape  bool = false
 	CursorHadColor  bool = false
+
+	Clip *clipboard.Clipboard
 )
 
 // LoadInput determines which files should be loaded into buffers
@@ -205,6 +208,8 @@ func InitConfigDir() {
 			os.Exit(0)
 		}
 	}
+	Clip = clipboard.New()
+	Clip.SetLocalPath(configDir + "/buffers/clips.txt")
 }
 
 // InitScreen creates and initializes the tcell screen

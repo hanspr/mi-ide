@@ -8,7 +8,6 @@ import (
 	"strings"
 	"time"
 
-	"github.com/hanspr/microidelibs/clipboard"
 	"github.com/hanspr/tcell"
 )
 
@@ -1366,7 +1365,7 @@ func (e *AppElement) TextAreaKeyEvent(key string, x, y int) {
 		} else if key == "Enter" {
 			return
 		} else if key == "Ctrl+V" {
-			clip, _ := clipboard.ReadAll("clipboard")
+			clip := Clip.ReadFrom("local")
 			e.value = e.value + clip
 			e.TextAreaKeyEvent("End", x, y)
 			return
@@ -1444,7 +1443,7 @@ func (e *AppElement) TextBoxKeyEvent(key string, x, y int) {
 			f.SetFocusPreviousInputElement(e.name)
 			return
 		} else if key == "Ctrl+V" {
-			clip, _ := clipboard.ReadAll("clipboard")
+			clip := Clip.ReadFrom("local")
 			e.value = e.value + clip
 			e.TextBoxKeyEvent("End", x, y)
 			return

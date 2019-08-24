@@ -10,8 +10,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/hanspr/microidelibs/clipboard"
-	"github.com/hanspr/microidelibs/shellwords"
+	"github.com/hanspr/shellwords"
 	"github.com/hanspr/tcell"
 	"github.com/mattn/go-runewidth"
 )
@@ -455,7 +454,7 @@ func (m *Messenger) Backspace() {
 
 // Paste pastes the clipboard
 func (m *Messenger) Paste() {
-	clip, _ := clipboard.ReadAll("clipboard")
+	clip := Clip.ReadFrom("local")
 	m.response = Insert(m.response, m.cursorx, clip)
 	m.cursorx += Count(clip)
 }

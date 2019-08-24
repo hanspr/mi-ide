@@ -1,8 +1,8 @@
 package main
 
-import (
-	"github.com/hanspr/microidelibs/clipboard"
-)
+//import (
+//	"github.com/hanspr/clipboard"
+//)
 
 // The Cursor struct stores the location of the cursor in the view
 // The complicated part about the cursor is storing its location.
@@ -42,13 +42,11 @@ func (c *Cursor) GotoLoc(l Loc) {
 	c.LastVisualX = c.GetVisualX()
 }
 
-// CopySelection copies the user's selection to either "primary"
-// or "clipboard"
+// CopySelection copies the user's selection
 func (c *Cursor) CopySelection(target string) {
 	if c.HasSelection() {
-		if target != "primary" || c.buf.Settings["useprimary"].(bool) {
-			clipboard.WriteAll(c.GetSelection(), target)
-		}
+		text := c.GetSelection()
+		Clip.WriteTo(&text, target)
 	}
 }
 

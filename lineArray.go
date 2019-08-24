@@ -5,7 +5,7 @@ import (
 	"io"
 	"unicode/utf8"
 
-	"github.com/hanspr/microidelibs/highlight"
+	"github.com/hanspr/highlight"
 )
 
 func runeToByteIndex(n int, txt []byte) int {

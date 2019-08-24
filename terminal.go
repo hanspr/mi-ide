@@ -8,7 +8,6 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/hanspr/microidelibs/clipboard"
 	"github.com/hanspr/tcell"
 	"github.com/hanspr/terminal"
 )
@@ -117,7 +116,8 @@ func (t *Terminal) HandleEvent(event tcell.Event) {
 			}
 		}
 		if e.Key() == tcell.KeyCtrlC && t.HasSelection() {
-			clipboard.WriteAll(t.GetSelection(t.view.Width), "clipboard")
+			text := t.GetSelection(t.view.Width)
+			Clip.WriteTo(&text, "local")
 		} else if t.status != VTDone {
 			t.WriteString(event.EscSeq())
 		}

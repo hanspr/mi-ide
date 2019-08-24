@@ -8,7 +8,6 @@ import (
 	"time"
 	"unicode/utf8"
 
-	"github.com/hanspr/microidelibs/clipboard"
 	"github.com/hanspr/tcell"
 	"github.com/yuin/gopher-lua"
 )
@@ -1138,7 +1137,6 @@ func (v *View) FindNext(usePlugin bool) bool {
 
 	if v.Cursor.HasSelection() {
 		searchStart = v.Cursor.CurSelection[1]
-		// lastSearch = v.Cursor.GetSelection()
 	} else {
 		searchStart = v.Cursor.Loc
 	}
@@ -1244,7 +1242,7 @@ func (v *View) SelectionTooBig() bool {
 	return false
 }
 
-// Copy the selection to the system clipboard
+// Copy the selection to the clipboard
 func (v *View) Copy(usePlugin bool) bool {
 	if v.mainCursor() {
 		if usePlugin && !PreActionCall("Copy", v) {
@@ -1256,7 +1254,7 @@ func (v *View) Copy(usePlugin bool) bool {
 				messenger.Error(Language.Translate("Selection is to big, can not copy. You may move (up/down) or delete only."))
 			} else {
 				loc := v.Cursor.CurSelection
-				v.Cursor.CopySelection("clipboard")
+				v.Cursor.CopySelection("local")
 				v.freshClip = true
 				v.Cursor.ResetSelection()
 				v.Cursor.GotoLoc(loc[0])
@@ -1285,11 +1283,8 @@ func (v *View) CutLine(usePlugin bool) bool {
 	}
 	if v.freshClip == true {
 		if v.Cursor.HasSelection() {
-			if clip, err := clipboard.ReadAll("clipboard"); err != nil {
-				messenger.Error(err)
-			} else {
-				clipboard.WriteAll(clip+v.Cursor.GetSelection(), "clipboard")
-			}
+			text := v.Cursor.GetSelection()
+			Clip.AppendTo(&text, "local")
 		}
 	} else if time.Since(v.lastCutTime)/time.Second > 10*time.Second || v.freshClip == false {
 		v.Copy(true)
@@ -1316,7 +1311,7 @@ func (v *View) Cut(usePlugin bool) bool {
 			messenger.Error(Language.Translate("Selection is to big, can not copy. You may move (up/down) or delete only."))
 			return false
 		} else {
-			v.Cursor.CopySelection("clipboard")
+			v.Cursor.CopySelection("local")
 			v.Cursor.DeleteSelection()
 			v.Cursor.ResetSelection()
 			v.freshClip = true
@@ -1469,7 +1464,8 @@ func (v *View) Paste(usePlugin bool) bool {
 		return false
 	}
 
-	clip, _ := clipboard.ReadAll("clipboard")
+	//clip, _ := clipboard.ReadAll("clipboard")
+	clip := Clip.ReadFrom("local")
 	v.paste(clip)
 
 	if usePlugin {
@@ -1484,7 +1480,7 @@ func (v *View) PastePrimary(usePlugin bool) bool {
 		return false
 	}
 
-	clip, _ := clipboard.ReadAll("primary")
+	clip := Clip.ReadFrom("cloud")
 	v.paste(clip)
 
 	if usePlugin {
