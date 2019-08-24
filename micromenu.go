@@ -317,6 +317,9 @@ func (m *microMenu) SaveSettings(name, value, event, when string, x, y int) bool
 	} else {
 		values["indentchar"] = " "
 	}
+	if values["cursorcolor"] == "" {
+		values["cursorcolor"] = "disabled"
+	}
 	for k, _ := range globalSettings {
 		kind := reflect.TypeOf(globalSettings[k]).Kind()
 		if kind == reflect.Bool {

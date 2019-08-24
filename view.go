@@ -957,9 +957,14 @@ func (v *View) SetCursorEscapeString() {
 	if cursorcolor == "disabled" {
 		CursorInsert = ""
 		CursorOverwrite = ""
+		if CursorHadColor {
+			os.Stdout.WriteString("\033]12;white\007")
+			CursorHadColor = false
+		}
 	} else {
 		CursorInsert = "\033]12;" + cursorcolor + "\007"
 		CursorOverwrite = "\033]12;red\007"
+		CursorHadColor = true
 	}
 	if cursorshape == "block" {
 		// Set cursor normal to block, overwrite to underline
