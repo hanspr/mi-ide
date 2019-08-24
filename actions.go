@@ -1296,7 +1296,7 @@ func (v *View) CutLine(usePlugin bool) bool {
 	}
 	v.freshClip = true
 	v.lastCutTime = time.Now()
-	v.DeleteLine(true)
+	v.DeleteLine(false)
 	v.Cursor.GotoLoc(Loc{0, v.Cursor.Y})
 
 	if usePlugin {
