@@ -2,7 +2,6 @@ package main
 
 import (
 	"fmt"
-	"os"
 	"reflect"
 	"strconv"
 	"strings"
@@ -941,38 +940,32 @@ func (v *View) SetCursorEscapeString() {
 	co := CursorOverwrite
 
 	if cursorcolor == "disabled" {
-		CursorInsert = ""
-		CursorOverwrite = ""
+		CursorInsert.color = ""
+		CursorOverwrite.color = ""
 		if CursorHadColor {
-			os.Stdout.WriteString("\033]12;white\007")
+			screen.SetCursorColorShape("white", "")
 			CursorHadColor = false
 		}
 	} else {
-		CursorInsert = "\033]12;" + cursorcolor + "\007"
-		CursorOverwrite = "\033]12;red\007"
+		CursorInsert.color = cursorcolor
+		CursorOverwrite.color = "red"
 		CursorHadColor = true
 	}
-	if cursorshape == "block" {
-		// Set cursor normal to block, overwrite to underline
-		CursorInsert = CursorInsert + "\033[0 q"
-		CursorOverwrite = CursorOverwrite + "\033[3 q"
-		CursorHadShape = true
-	} else if cursorshape == "ibeam" {
-		// Set cursor normal to ibeam, overwrite to underline
-		CursorInsert = CursorInsert + "\033[5 q"
-		CursorOverwrite = CursorOverwrite + "\033[3 q"
-		CursorHadShape = true
-	} else if cursorshape == "underline" {
-		// Set cursor normal to underline, overwrite to block
-		CursorInsert = CursorInsert + "\033[3 q"
-		CursorOverwrite = CursorOverwrite + "\033[0 q"
-		CursorHadShape = true
-	} else {
+	if cursorshape == "disabled" {
+		CursorInsert.shape = ""
+		CursorOverwrite.shape = ""
 		if CursorHadShape {
-			os.Stdout.WriteString("\033]12;white\007\033[0 q")
+			screen.SetCursorColorShape("", "block")
 			CursorHadShape = false
 		}
-
+	} else {
+		CursorHadShape = true
+		CursorInsert.shape = cursorshape
+		if cursorshape == "underline" {
+			CursorOverwrite.shape = "block"
+		} else {
+			CursorOverwrite.shape = "underline"
+		}
 	}
 	if (ci != CursorInsert && v.isOverwriteMode == false) || (co != CursorOverwrite && v.isOverwriteMode) {
 		v.SetCursorColorShape()
@@ -981,9 +974,9 @@ func (v *View) SetCursorEscapeString() {
 
 func (v *View) SetCursorColorShape() {
 	if v.isOverwriteMode {
-		os.Stdout.WriteString(CursorOverwrite)
+		screen.SetCursorColorShape(CursorOverwrite.color, CursorOverwrite.shape)
 	} else {
-		os.Stdout.WriteString(CursorInsert)
+		screen.SetCursorColorShape(CursorInsert.color, CursorInsert.shape)
 	}
 }
 

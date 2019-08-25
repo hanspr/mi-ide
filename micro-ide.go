@@ -36,6 +36,11 @@ type MouseClick struct {
 	Button    int
 }
 
+type CursorType struct {
+	color string
+	shape string
+}
+
 var (
 	// The main screen
 	screen tcell.Screen
@@ -98,8 +103,8 @@ var (
 	// Follow MouseClick
 	Mouse MouseClick
 
-	CursorInsert        string
-	CursorOverwrite     string
+	CursorInsert        CursorType
+	CursorOverwrite     CursorType
 	CursorHadShape      bool = false
 	CursorHadColor      bool = false
 	LastOverwriteStatus bool = false
@@ -324,10 +329,10 @@ func LoadAll() {
 // to control anything that could be necesary (to have a clean exit) in a sinlge point
 func Finish(status int) {
 	if CursorHadColor {
-		os.Stdout.WriteString("\033]12;white\007")
+		screen.SetCursorColorShape("white", "")
 	}
 	if CursorHadShape {
-		os.Stdout.WriteString("\033[0 q")
+		screen.SetCursorColorShape("white", "block")
 	}
 	screen.Fini()
 	os.Exit(status)
