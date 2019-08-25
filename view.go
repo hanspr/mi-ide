@@ -967,7 +967,7 @@ func (v *View) SetCursorEscapeString() {
 			CursorOverwrite.shape = "underline"
 		}
 	}
-	if (ci != CursorInsert && v.isOverwriteMode == false) || (co != CursorOverwrite && v.isOverwriteMode) {
+	if ((ci.color != CursorInsert.color || ci.shape != CursorInsert.shape) && v.isOverwriteMode == false) || ((co.color != CursorOverwrite.color || co.shape != CursorOverwrite.shape) && v.isOverwriteMode) {
 		v.SetCursorColorShape()
 	}
 }
