@@ -113,10 +113,10 @@ func (v *View) MousePress(usePlugin bool, e *tcell.EventMouse) bool {
 		if res == 0 {
 			if v.tripleClick == true {
 				v.Cursor.SelectLine()
-				v.Cursor.CopySelection("primary")
+				v.Cursor.CopySelection("local")
 			} else if v.doubleClick == true {
 				v.Cursor.SelectWord()
-				v.Cursor.CopySelection("primary")
+				v.Cursor.CopySelection("local")
 			} else {
 				v.Cursor.OrigSelection[0] = v.Cursor.Loc
 				v.Cursor.CurSelection[0] = v.Cursor.Loc
@@ -135,7 +135,7 @@ func (v *View) MousePress(usePlugin bool, e *tcell.EventMouse) bool {
 			v.Cursor.AddWordToSelection()
 		} else {
 			v.Cursor.SetSelectionEnd(v.Cursor.Loc)
-			v.Cursor.CopySelection("primary")
+			v.Cursor.CopySelection("local")
 		}
 	}
 

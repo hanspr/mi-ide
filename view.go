@@ -825,18 +825,6 @@ func (v *View) HandleEvent(event tcell.Event) {
 				x, y := e.Position()
 				x -= v.lineNumOffset - v.leftCol + v.x
 				y += v.Topline - v.y
-
-				// HP: This code does not work if you can not track mousedrag events, it selects text when jumping between views
-
-				// If we are running in a terminal that doesn't support mouse motion
-				// events, this still allows the user to make selections, except only after they
-				// release the mouse
-				//if !v.doubleClick && !v.tripleClick && v != dirview.tree_view && LastView == CurView().Num {
-				//	v.MoveToMouseClick(x, y)
-				//	v.Cursor.SetSelectionEnd(v.Cursor.Loc)
-				//	v.Cursor.CopySelection("primary")
-				//}
-
 				v.MoveToMouseClick(x, y)
 				v.savedLoc = Loc{x, y}
 				v.mouseReleased = true
