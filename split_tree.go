@@ -61,11 +61,6 @@ var posView = make(map[string]int)
 
 // VSplit creates a vertical split
 func (l *LeafNode) VSplit(buf *Buffer, splitIndex int) {
-	w, _ := screen.Size()
-	if w < 80 || l.view.Width < 80 {
-		messenger.Error("There is not enough Window Width to split properlly")
-		return
-	}
 	if splitIndex < 0 {
 		splitIndex = 0
 	}
@@ -124,12 +119,6 @@ func (l *LeafNode) VSplit(buf *Buffer, splitIndex int) {
 
 // HSplit creates a horizontal split
 func (l *LeafNode) HSplit(buf *Buffer, splitIndex int) {
-	h, _ := screen.Size()
-	if h < 40 || l.view.Height < 40 {
-		messenger.Error("There is not enough Window Height to split properlly")
-		return
-	}
-
 	if splitIndex < 0 {
 		splitIndex = 0
 	}
