@@ -547,7 +547,6 @@ func (v *View) ExecuteActions(actions []func(*View, bool) bool) bool {
 		readonlyBindingsResult := false
 		funcName := ShortFuncName(action)
 		// Check check for not allowed actions
-		_ = dirview.onExecuteAction(funcName, v)
 		if v.Type.Readonly == true {
 			// check for readonly and if true only let key bindings get called if they do not change the contents.
 			for _, readonlyBindings := range readonlyBindingsList {
@@ -559,11 +558,6 @@ func (v *View) ExecuteActions(actions []func(*View, bool) bool) bool {
 		if !readonlyBindingsResult {
 			// call the key binding
 			relocate = action(v, true) || relocate
-			// Check for allowed actions
-			if dirview.onExecuteAction(funcName, v) == true {
-				// Action was taken, do not do anything else
-				return relocate
-			}
 			// Macro
 			if funcName != "ToggleMacro" && funcName != "PlayMacro" {
 				if recordingMacro {

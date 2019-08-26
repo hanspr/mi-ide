@@ -14,6 +14,7 @@ import (
 type Opt struct {
 	value string
 	lable string
+	style *AppStyle
 }
 
 type AppElement struct {
@@ -241,6 +242,18 @@ func (a *MicroApp) AddWindowElement(frame, name, label, form, value, value_type 
 			opt := strings.Split(opts[i], "]")
 			if len(opt) == 1 {
 				opt = append(opt, opt[0])
+			}
+			re := regexp.MustCompile(`{/?(\w+)}`)
+			name := re.FindStringSubmatch(opt[1])
+			vp.style = nil
+			if len(name) > 0 {
+				if val, ok := a.styles[name[1]]; ok {
+					vp.style = &val
+				}
+			}
+			opt[1] = re.ReplaceAllString(opt[1], "")
+			if opt[1] == "" {
+				opt[1] = opt[0]
 			}
 			vp.value = opt[0]
 			vp.lable = opt[1]
@@ -797,14 +810,21 @@ func (e *AppElement) DrawSelect() {
 	for i := start; i < len(e.opts); i++ {
 		if i == e.offset {
 			if a.activeElement == e.name {
+				// Show active
 				style = style.Foreground(tcell.ColorBlack).Background(tcell.Color220)
 			} else {
+				// Show selected not active
 				style = style.Reverse(true).Bold(true)
 			}
 		} else if e.height == 1 {
 			continue
 		} else {
-			style = a.defStyle.Foreground(tcell.ColorWhite).Background(tcell.Color234)
+			// Show with selected style
+			if e.opts[i].style != nil {
+				style = e.opts[i].style.style
+			} else {
+				style = a.defStyle.Foreground(tcell.ColorWhite).Background(tcell.Color234)
+			}
 		}
 		if e.height == 1 {
 			Y = 0

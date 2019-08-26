@@ -3,6 +3,7 @@ package main
 
 import (
 	"fmt"
+	"io/ioutil"
 	"reflect"
 	"sort"
 	"strconv"
@@ -14,7 +15,7 @@ import (
 	"github.com/hanspr/tcell"
 )
 
-const ENCODINGS = "UTF-8|ISO-8859-1|ISO-8859-2|ISO-8859-15|WINDOWS-1250|WINDOWS-1251|WINDOWS-1252|WINDOWS-1256|SHIFT-JIS|GB2312|EUC-KR|EUC-JP|GBK|BIG-5|ASCII"
+const ENCODINGS = "UTF-8|ISO-8859-1|ISO-8859-2|ISO-8859-15|WINDOWS-1250|WINDOWS-1251|WINDOWS-1252|WINDOWS-1256|SHIFT-JIS|GB2312|EUC-KR|EUC-JP|GBK|BIG5|ASCII"
 
 type menuElements struct {
 	label    string
@@ -30,6 +31,7 @@ type microMenu struct {
 	submenuWidth    map[string]int
 	maxwidth        int
 	activemenu      string
+	LastPath        string
 }
 
 // ---------------------------------------
@@ -1331,4 +1333,112 @@ func (m *microMenu) ButtonFinish(name, value, event, when string, x, y int) bool
 	}
 	m.Finish("Abort")
 	return true
+}
+
+func (m *microMenu) DirTreeView() {
+	m.myapp = nil
+	m.myapp = new(MicroApp)
+	m.myapp.New("mi-dirview")
+	dir, width := m.getDir()
+	_, height := screen.Size()
+	height -= 2
+	m.myapp.Reset()
+	m.myapp.defStyle = StringToStyle("#ffffff,#1c1c1c")
+	m.myapp.AddStyle("d", "#A6E22E,#1c1c1c")
+	f := m.myapp.AddFrame("f", 1, 0, width+2, height, "fixed")
+	f.AddWindowBox("dbox", "", 0, 0, width+2, height, true, nil, "")
+	f.AddWindowSelect("dirview", "", "", dir, 1, 1, width, height-1, m.TreeViewEvent, "")
+	m.myapp.Start()
+	apprunning = m.myapp
+}
+
+func (m *microMenu) TreeViewEvent(name, value, event, when string, x, y int) bool {
+	if event == "mouse-click1" {
+		return true
+	} else if when == "POST" {
+		return false
+	}
+	reset := false
+	f := m.myapp.frames["f"]
+	if event == "mouse-doubleclick1" {
+		// Open file in new Tab
+		if strings.Contains(value, "/") {
+			if strings.Contains(value, "../") {
+				x := strings.LastIndex(m.LastPath, "/")
+				fname := string([]rune(m.LastPath)[:x])
+				x = strings.LastIndex(fname, "/") + 1
+				fname = string([]rune(m.LastPath)[:x])
+				m.LastPath = fname
+			} else {
+				m.LastPath = m.LastPath + value
+			}
+			dir, width := m.getDir()
+			height := m.myapp.frames["f"].oheight - 1
+			if f.elements["dbox"].width > width {
+				reset = true
+			}
+			f.elements["dbox"].width = width + 2
+			f.DeleteElement("dirview")
+			f.AddWindowSelect("dirview", "", "", dir, 1, 1, width, height-1, m.TreeViewEvent, "")
+			m.myapp.activeElement = name
+			if reset {
+				m.myapp.ResetFrames()
+			} else {
+				m.myapp.DrawAll()
+			}
+			return false
+		} else {
+			for i, t := range tabs {
+				for _, v := range t.Views {
+					if strings.Contains(v.Buf.Path, value) {
+						curTab = i
+						messenger.Information(value, " : Focused")
+						m.Finish("focuse same file")
+						return false
+					}
+				}
+			}
+			m.myapp.activeElement = name
+			NewTab([]string{m.LastPath + value})
+			CurView().Buf.name = value
+			m.myapp.ResetFrames()
+			return false
+		}
+	} else if event == "mouse-click3" || event == "mouse-click2" {
+		if CurView().Buf.Modified() {
+			messenger.Error(Language.Translate("You need to save view first"))
+			m.Finish("file dirty")
+			return false
+		}
+		CurView().Open(m.LastPath + value)
+		CurView().Buf.name = value
+		m.myapp.activeElement = name
+		m.myapp.ResetFrames()
+		messenger.Information(value, " "+Language.Translate("opened in View"))
+	}
+	return false
+}
+
+func (m *microMenu) getDir() (string, int) {
+	var dir string
+	var s string
+
+	if m.LastPath == "" {
+		m.LastPath = "/"
+	}
+	width := 0
+	dir = "../]{d}🖿   ../"
+	files, _ := ioutil.ReadDir(m.LastPath)
+	for _, f := range files {
+		if f.IsDir() {
+			s = "/]{d}🖿  " + f.Name() + "/"
+		} else {
+			s = "] 🗎 " + f.Name()
+		}
+		if Count(s) > width {
+			width = Count(s)
+		}
+		dir = dir + "|" + f.Name() + s
+	}
+	return dir, width
 }

@@ -58,9 +58,7 @@ func (sline *Statusline) MouseEvent(e *tcell.EventMouse, rx, ry int) {
 func (sline *Statusline) Display() {
 	var size int
 
-	fvstyle := true
 	offset := 0
-	_, h := screen.Size()
 	w := sline.view.Width
 
 	// We'll draw the line at the lowest line in the view
@@ -87,28 +85,7 @@ func (sline *Statusline) Display() {
 		size = 40
 	}
 
-	if w > 80 || dirview.Open {
-		// If the screen is wide enough we can offer the treeview
-		if y >= h-3 && sline.view.x < 2 {
-			if dirview.Open {
-				file = fmt.Sprintf("<< %-"+strconv.Itoa(size)+"s", file)
-				fvstyle = true
-			} else {
-				file = fmt.Sprintf(">> %-"+strconv.Itoa(size)+"s", file)
-				fvstyle = true
-			}
-		} else {
-			file = fmt.Sprintf("   %-"+strconv.Itoa(size)+"s", file)
-			fvstyle = false
-			dirview.active = false
-		}
-		dirview.active = true
-	} else {
-		// Below 80 columns, treeview fails there is not enough room
-		file = fmt.Sprintf("   %-"+strconv.Itoa(size)+"s", file)
-		fvstyle = false
-		dirview.active = false
-	}
+	file = fmt.Sprintf("   %-"+strconv.Itoa(size)+"s", file)
 
 	// Add one to cursor.x and cursor.y because (0,0) is the top left,
 	// but users will be used to (1,1) (first line,first column)
@@ -185,9 +162,7 @@ func (sline *Statusline) Display() {
 	}
 	for x := 0; x < w; x++ {
 		tStyle := statusLineStyle
-		if x < 3 && fvstyle {
-			tStyle = StringToStyle("#ffd700,#5f87af")
-		} else if w > 65 && sline.hotspot["ENCODER"].X-offset <= x && x <= sline.hotspot["ENCODER"].Y-offset && sline.view.Num == CurView().Num {
+		if w > 65 && sline.hotspot["ENCODER"].X-offset <= x && x <= sline.hotspot["ENCODER"].Y-offset && sline.view.Num == CurView().Num {
 			tStyle = StringToStyle("#ffd700,#585858")
 		} else if w > 65 && sline.hotspot["FILETYPE"].X-offset <= x && x <= sline.hotspot["FILETYPE"].Y-offset && sline.view.Num == CurView().Num {
 			tStyle = StringToStyle("#ffd700,#585858")

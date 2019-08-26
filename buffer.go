@@ -103,7 +103,7 @@ func (b *Buffer) GetFileSettings(filename string) {
 		}
 	}
 	// Here it beggins the guessing game
-	// Use uchardet shipped with micro-ide
+	// Use uchardet shipped with micro-ide if exists
 	b.encoder = "UTF-8"
 	uchardet := configDir + "/libs/uchardet"
 	if _, err := os.Stat(uchardet); err == nil {

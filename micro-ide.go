@@ -85,9 +85,6 @@ var (
 	// How many redraws have happened
 	numRedraw uint
 
-	// Dir Tree View
-	dirview *DirTreeView
-
 	// Pointer Flag to check id App is running
 	apprunning *MicroApp = nil
 
@@ -469,15 +466,10 @@ func main() {
 	}
 
 	// Create micro-ide objects now to have them available to plugins
-
-	// Tree view
-	dirview = new(DirTreeView)
-	dirview.Open = false
-	x := strings.LastIndex(CurView().Buf.AbsPath, "/") + 1
-	dirview.LastPath = string([]rune(CurView().Buf.AbsPath)[:x])
-
 	// Menu
 	micromenu = new(microMenu)
+	x := strings.LastIndex(CurView().Buf.AbsPath, "/") + 1
+	micromenu.LastPath = string([]rune(CurView().Buf.AbsPath)[:x])
 
 	// Load all the plugin stuff
 	// We give plugins access to a bunch of variables here which could be useful to them
@@ -655,12 +647,7 @@ func main() {
 						// Happened during a search lock, release Search
 						ExitSearch(CurView())
 					} else if y == h-2 {
-						// Statusline event
-						if x < 3 {
-							// Click on treeview icon area
-							dirview.onIconClick()
-							didAction = true
-						}
+						didAction = true
 					}
 					if !didAction {
 						// We loop through each view in the current tab and make sure the current view
@@ -670,16 +657,6 @@ func main() {
 								tabs[curTab].CurView = v.Num
 							}
 						}
-					}
-				} else if Mouse.Click && (Mouse.Button == 3 || Mouse.Button == 2) {
-					// Butttons 2,3 click on dirview; open file in view next to it
-					if dirview.Open && dirview.tree_view == CurView() {
-						v := CurView()
-						x -= v.lineNumOffset - v.leftCol + v.x
-						y += v.Topline - v.y
-						v.MoveToMouseClick(x, y)
-						dirview.onExecuteAction("openonView", v)
-						didAction = true
 					}
 				} else if button == tcell.WheelUp || button == tcell.WheelDown {
 					// Scroll event

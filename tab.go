@@ -28,6 +28,7 @@ type ToolBar struct {
 
 func NewToolBar() *ToolBar {
 	t := new(ToolBar)
+	t.AddIcon('⌹', t.DirView)
 	t.AddIcon('↴', t.Save)
 	t.AddIcon('◨', t.VSplit)
 	t.AddIcon('⬓', t.HSplit)
@@ -72,6 +73,10 @@ func (t *ToolBar) Find() {
 
 func (t *ToolBar) Replace() {
 	CurView().SearchDialog(true)
+}
+
+func (t *ToolBar) DirView() {
+	micromenu.DirTreeView()
 }
 
 func (t *ToolBar) Void() {
@@ -226,7 +231,6 @@ func TabbarHandleMouseEvent(event tcell.Event) {
 			return
 		}
 		// Change tab
-		dirview.onTabChange()
 		if Mouse.Button == 1 {
 			// Left click = Select tab and display
 			curTab = tabnum
@@ -303,13 +307,7 @@ func TabbarString(toffset int) (string, map[int]int) {
 				break
 			}
 		}
-		if name == "fileviewer" {
-			buf = t.Views[t.CurView+1].Buf
-			name = filepath.Base(buf.GetName())
-			cv = t.CurView + 1
-		} else {
-			cv = t.CurView
-		}
+		cv = t.CurView
 
 		if i == curTab {
 			str += tabOpen + " "

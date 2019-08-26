@@ -63,12 +63,6 @@ func (v *View) deselect(index int) bool {
 // MousePress is the event that should happen when a normal click happens
 // This is almost always bound to left click
 func (v *View) MousePress(usePlugin bool, e *tcell.EventMouse) bool {
-	dirviewactive := false
-	// fileviewer, no plugins?
-	if v == dirview.tree_view {
-		usePlugin = false
-		dirviewactive = true
-	}
 
 	if usePlugin && !PreActionCall("MousePress", v, e) {
 		return false
@@ -109,26 +103,18 @@ func (v *View) MousePress(usePlugin bool, e *tcell.EventMouse) bool {
 			v.lastClickTime = time.Now()
 		}
 		v.mouseReleased = false
-		res := dirview.onMouseClick(v)
-		if res == 0 {
-			if v.tripleClick == true {
-				v.Cursor.SelectLine()
-				v.Cursor.CopySelection("local")
-			} else if v.doubleClick == true {
-				v.Cursor.SelectWord()
-				v.Cursor.CopySelection("local")
-			} else {
-				v.Cursor.OrigSelection[0] = v.Cursor.Loc
-				v.Cursor.CurSelection[0] = v.Cursor.Loc
-				v.Cursor.CurSelection[1] = v.Cursor.Loc
-			}
-		} else if res == 99 {
+		if v.tripleClick == true {
+			v.Cursor.SelectLine()
+			v.Cursor.CopySelection("local")
+		} else if v.doubleClick == true {
+			v.Cursor.SelectWord()
+			v.Cursor.CopySelection("local")
+		} else {
 			v.Cursor.OrigSelection[0] = v.Cursor.Loc
 			v.Cursor.CurSelection[0] = v.Cursor.Loc
 			v.Cursor.CurSelection[1] = v.Cursor.Loc
-			return true
 		}
-	} else if !v.mouseReleased && dirviewactive == false {
+	} else if !v.mouseReleased {
 		if v.tripleClick {
 			v.Cursor.AddLineToSelection()
 		} else if v.doubleClick {
@@ -1967,11 +1953,6 @@ func (v *View) SafeQuit(usePlugin bool) bool {
 // Quit this will close the current tab or view that is open
 func (v *View) Quit(usePlugin bool) bool {
 
-	if dirview.tree_view == v {
-		dirview.Open = false
-		dirview.tree_view = nil
-	}
-
 	if v.mainCursor() {
 		if usePlugin && !PreActionCall("Quit", v) {
 			return false
@@ -2065,7 +2046,6 @@ func (v *View) AddTab(usePlugin bool) bool {
 		if usePlugin && !PreActionCall("AddTab", v) {
 			return false
 		}
-		dirview.onTabChange()
 		tab := NewTabFromView(NewView(NewBufferFromString("", "")))
 		tab.SetNum(len(tabs))
 		tabs = append(tabs, tab)
@@ -2088,7 +2068,6 @@ func (v *View) AddTab(usePlugin bool) bool {
 // PreviousTab switches to the previous tab in the tab list
 func (v *View) PreviousTab(usePlugin bool) bool {
 	if v.mainCursor() {
-		dirview.onTabChange()
 		if usePlugin && !PreActionCall("PreviousTab", v) {
 			return false
 		}
@@ -2107,7 +2086,6 @@ func (v *View) PreviousTab(usePlugin bool) bool {
 // NextTab switches to the next tab in the tab list
 func (v *View) NextTab(usePlugin bool) bool {
 	if v.mainCursor() {
-		dirview.onTabChange()
 		if usePlugin && !PreActionCall("NextTab", v) {
 			return false
 		}
