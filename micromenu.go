@@ -1335,6 +1335,8 @@ func (m *microMenu) ButtonFinish(name, value, event, when string, x, y int) bool
 	return true
 }
 
+const MINWIDTH = 26
+
 func (m *microMenu) DirTreeView() {
 	m.myapp = nil
 	m.myapp = new(MicroApp)
@@ -1342,6 +1344,9 @@ func (m *microMenu) DirTreeView() {
 	dir, width := m.getDir()
 	_, height := screen.Size()
 	height -= 2
+	if width < MINWIDTH {
+		width = MINWIDTH
+	}
 	m.myapp.Reset()
 	m.myapp.defStyle = StringToStyle("#ffffff,#1c1c1c")
 	m.myapp.AddStyle("d", "#A6E22E,#1c1c1c")
@@ -1373,12 +1378,15 @@ func (m *microMenu) TreeViewEvent(name, value, event, when string, x, y int) boo
 				m.LastPath = m.LastPath + value
 			}
 			dir, width := m.getDir()
+			if width < MINWIDTH {
+				width = MINWIDTH
+			}
 			height := m.myapp.frames["f"].oheight - 1
 			if f.elements["dbox"].width > width {
 				reset = true
 			}
 			f.elements["dbox"].width = width + 2
-			f.DeleteElement("dirview")
+			//f.DeleteElement("dirview")
 			f.AddWindowSelect("dirview", "", "", dir, 1, 1, width, height-1, m.TreeViewEvent, "")
 			m.myapp.activeElement = name
 			if reset {

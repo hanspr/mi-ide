@@ -1038,12 +1038,14 @@ func (a *MicroApp) Resize() {
 // Clear the entire screen from any app drawings
 func (a *MicroApp) ClearScreen() {
 	RedrawAll(false)
+	a.screen.HideCursor()
 	a.screen.Show()
 }
 
 // Redraw Frame
 func (a *MicroApp) ResetFrames() {
 	RedrawAll(false)
+	a.screen.HideCursor()
 	a.DrawAll()
 }
 

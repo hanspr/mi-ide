@@ -8,6 +8,7 @@ import (
 	"io/ioutil"
 	"os"
 	"reflect"
+	"regexp"
 	"strconv"
 	"strings"
 	"sync"
@@ -140,6 +141,49 @@ func InitLocalSettings(buf *Buffer) {
 				buf.Settings[k] = v
 			}
 		}
+	}
+
+	// Some smart!? detections or am I creating more problems?
+	// Detect indentation type (space, tab, ammount of spaces for space)
+	end := buf.LinesNum()
+	tablines := 0
+	spacelines := 0
+	spclen := 999
+	found := false
+	if end > 50 {
+		end = 50
+	}
+	retab := regexp.MustCompile(`^\t+`)
+	respc := regexp.MustCompile(`^   +`)
+	for i := 0; i < end; i++ {
+		l := buf.Line(i)
+		if Count(l) < 3 {
+			continue
+		}
+		if retab.FindString(l) != "" {
+			tablines++
+			found = true
+		} else {
+			spc := respc.FindString(l)
+			if spc != "" {
+				spacelines++
+				found = true
+				if len(spc) < spclen {
+					spclen = len(spc)
+				}
+			}
+		}
+	}
+	if found {
+		if tablines > spacelines {
+			buf.Settings["indentchar"] = "\t"
+		} else {
+			buf.Settings["indentchar"] = " "
+			if spclen > 1 {
+				buf.Settings["tabsize"] = float64(spclen)
+			}
+		}
+		TermMessage("Indentchar:", buf.Settings["indentchar"], ":", buf.Settings["tabsize"])
 	}
 }
 

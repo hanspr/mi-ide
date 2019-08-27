@@ -461,6 +461,11 @@ func (b *Buffer) SmartIndent(Start, Stop Loc, once bool) {
 	sCursor := b.Cursor.Loc
 	sMod := b.IsModified
 	iChar := b.Settings["indentchar"].(string)
+	iMult := 1
+	if iChar == " " {
+		iMult = int(b.Settings["tabsize"].(float64))
+		iChar = strings.Repeat(" ", iMult)
+	}
 	iStr := ""
 	n := 0
 	B := 0
@@ -473,7 +478,7 @@ func (b *Buffer) SmartIndent(Start, Stop Loc, once bool) {
 		// Look back for the first line that is not empty, get that indentation as reference
 		for y := Ys; y >= 0; y-- {
 			if len(b.Line(y)) > 0 {
-				n = CountLeadingWhitespace(b.Line(y))
+				n = CountLeadingWhitespace(b.Line(y)) / iMult
 				B = BracePairsAreBalanced(b.Line(y))
 				break
 			}
