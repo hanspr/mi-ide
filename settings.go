@@ -183,7 +183,6 @@ func InitLocalSettings(buf *Buffer) {
 				buf.Settings["tabsize"] = float64(spclen)
 			}
 		}
-		TermMessage("Indentchar:", buf.Settings["indentchar"], ":", buf.Settings["tabsize"])
 	}
 }
 
