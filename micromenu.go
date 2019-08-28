@@ -1275,7 +1275,7 @@ func (m *microMenu) SelTabSpace(x, y int) {
 	m.myapp.AddStyle("spc", "#ffffff,#3a3a3a")
 	height := 14
 	row := 0
-	f := m.myapp.AddFrame("f", y-height, x-5, 1, height, "close")
+	f := m.myapp.AddFrame("f", y-height, x-3, 1, height, "close")
 	for i := 2; i < 9; i++ {
 		ft := " Tab " + strconv.Itoa(i) + " "
 		f.AddWindowLabel(ft, ft, 0, row, m.SetTabSpace, "tab")
@@ -1325,6 +1325,37 @@ func (m *microMenu) SetTabSpace(name, value, event, when string, x, y int) bool 
 	SetLocalOption("tabsize", value, CurView())
 	m.Finish("TabSpaceType")
 	return true
+}
+
+// ---------------------------------------
+// Local Configuracions for language or file
+// ---------------------------------------
+
+func (m *microMenu) SelLocalSettings(b *Buffer) {
+	var f *Frame
+	if m.myapp == nil || m.myapp.name != "mi-localsettings" {
+		if m.myapp == nil {
+			m.myapp = new(MicroApp)
+			m.myapp.New("mi-localsettings")
+		} else {
+			m.myapp.name = "mi-localsettings"
+		}
+		m.myapp.Reset()
+		m.myapp.defStyle = StringToStyle("#ffffff,#262626")
+		width := 60
+		heigth := 12
+		f = m.myapp.AddFrame("f", -1, -1, width, heigth, "relative")
+		f.AddWindowBox("enc", Language.Translate("Buffer Settings"), 0, 0, width, heigth, true, nil, "")
+		lbl := Language.Translate("Cancel")
+		f.AddWindowButton("cancel", " "+lbl+" ", "cancel", 33-Count(lbl), 6, m.ButtonFinish, "")
+		lbl = Language.Translate("Save")
+		f.AddWindowButton("set", " "+lbl+" ", "ok", 43, 6, nil, "")
+	} else {
+		f = m.myapp.frames["f"]
+	}
+	f.SetValue("encode", "")
+	m.myapp.Start()
+	apprunning = m.myapp
 }
 
 // ---------------------------------------
@@ -1383,24 +1414,8 @@ func (m *microMenu) SetEncoding(name, value, event, when string, x, y int) bool 
 }
 
 // ---------------------------------------
-// General Routines
+// Directory view
 // ---------------------------------------
-
-func (m *microMenu) Finish(s string) {
-	apprunning = nil
-	MicroToolBar.FixTabsIconArea()
-}
-
-func (m *microMenu) ButtonFinish(name, value, event, when string, x, y int) bool {
-	if event != "mouse-click1" {
-		return true
-	}
-	if when == "POST" {
-		return true
-	}
-	m.Finish("Abort")
-	return true
-}
 
 const MINWIDTH = 26
 
@@ -1516,4 +1531,24 @@ func (m *microMenu) getDir() (string, int) {
 		dir = dir + "|" + f.Name() + s
 	}
 	return dir, width
+}
+
+// ---------------------------------------
+// General Routines
+// ---------------------------------------
+
+func (m *microMenu) Finish(s string) {
+	apprunning = nil
+	MicroToolBar.FixTabsIconArea()
+}
+
+func (m *microMenu) ButtonFinish(name, value, event, when string, x, y int) bool {
+	if event != "mouse-click1" {
+		return true
+	}
+	if when == "POST" {
+		return true
+	}
+	m.Finish("Abort")
+	return true
 }
