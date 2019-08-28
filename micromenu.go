@@ -1264,7 +1264,7 @@ func (m *microMenu) SetFtype(name, value, event, when string, x, y int) bool {
 // Set Buffer Tab Space indent
 // ---------------------------------------
 
-func (m *microMenu) SelTabSpace(x int) {
+func (m *microMenu) SelTabSpace(x, y int) {
 	// For this case we need to always rebuild, because the hotspots move depending on the window and view where is located
 	m.myapp = nil
 	m.myapp = new(MicroApp)
@@ -1273,10 +1273,9 @@ func (m *microMenu) SelTabSpace(x int) {
 	m.myapp.defStyle = StringToStyle("#ffffff,#3a3a3a")
 	m.myapp.AddStyle("tab", "#afd7ff,#3a3a3a")
 	m.myapp.AddStyle("spc", "#ffffff,#3a3a3a")
-	_, h := screen.Size()
 	height := 14
 	row := 0
-	f := m.myapp.AddFrame("f", h-height-2, x-5, 1, height, "close")
+	f := m.myapp.AddFrame("f", y-height, x-5, 1, height, "close")
 	for i := 2; i < 9; i++ {
 		ft := " Tab " + strconv.Itoa(i) + " "
 		f.AddWindowLabel(ft, ft, 0, row, m.SetTabSpace, "tab")
@@ -1319,6 +1318,9 @@ func (m *microMenu) SetTabSpace(name, value, event, when string, x, y int) bool 
 	if strings.Contains(name, "Spc") {
 		iChar = " "
 	}
+	b := CurView().Buf
+	n, _ := strconv.ParseFloat(value, 10)
+	b.ChangeIndentation(b.Settings["indentchar"].(string), iChar, int(b.Settings["tabsize"].(float64)), int(n))
 	SetLocalOption("indentchar", iChar, CurView())
 	SetLocalOption("tabsize", value, CurView())
 	m.Finish("TabSpaceType")

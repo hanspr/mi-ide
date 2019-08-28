@@ -1120,3 +1120,25 @@ func (b *Buffer) FindMatchingBrace(braceType [2]rune, start Loc) Loc {
 	}
 	return start
 }
+
+func (b *Buffer) ChangeIndentation(cfrom, cto string, nfrom, nto int) {
+	var ss, sr string
+	if cfrom == "\t" {
+		ss = cfrom
+	} else {
+		ss = strings.Repeat(" ", nfrom)
+	}
+	if cto == "\t" {
+		sr = cto
+	} else {
+		sr = strings.Repeat(" ", nto)
+	}
+	for y := 0; y < b.LinesNum()-1; y++ {
+		l := b.Line(y)
+		ws := GetLeadingWhitespace(l)
+		wt := strings.ReplaceAll(ws, ss, sr)
+		newline := strings.Replace(l, ws, wt, 1)
+		b.lines[y].data = []byte(newline)
+	}
+	b.IsModified = true
+}

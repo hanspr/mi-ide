@@ -43,9 +43,10 @@ func (sline *Statusline) MouseEvent(e *tcell.EventMouse, rx, ry int) {
 				diff := (hs.X + (hs.Y-hs.X+1)/2) - rx + 2
 				micromenu.SelFileType(x + diff)
 			} else if action == "TABSPACE" {
+				_, y := e.Position()
 				x, _ := e.Position()
 				diff := (hs.X + (hs.Y-hs.X+1)/2) - rx + 2
-				micromenu.SelTabSpace(x + diff)
+				micromenu.SelTabSpace(x+diff, y)
 			} else if action == "FILEFORMAT" {
 				if sline.view.Buf.Settings["fileformat"].(string) == "unix" {
 					sline.view.Buf.Settings["fileformat"] = "dos"
