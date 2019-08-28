@@ -42,6 +42,10 @@ func (sline *Statusline) MouseEvent(e *tcell.EventMouse, rx, ry int) {
 				x, _ := e.Position()
 				diff := (hs.X + (hs.Y-hs.X+1)/2) - rx + 2
 				micromenu.SelFileType(x + diff)
+			} else if action == "TABSPACE" {
+				x, _ := e.Position()
+				diff := (hs.X + (hs.Y-hs.X+1)/2) - rx + 2
+				micromenu.SelTabSpace(x + diff)
 			} else if action == "FILEFORMAT" {
 				if sline.view.Buf.Settings["fileformat"].(string) == "unix" {
 					sline.view.Buf.Settings["fileformat"] = "dos"
@@ -75,17 +79,17 @@ func (sline *Statusline) Display() {
 		file += "*"
 	}
 
-	// Fix length of strings to help eyes find information in the same place
-	if 40 > w/4 {
+	// Fix length of file name to help eyes find information in the same place
+	if 30 > w/4 {
 		size = w / 4
 		if len(file) > size {
 			file = ".. " + file[len(file)-size+1:]
 		}
 	} else {
-		size = 40
+		size = 30
 	}
 
-	file = fmt.Sprintf("   %-"+strconv.Itoa(size)+"s", file)
+	file = fmt.Sprintf("%-"+strconv.Itoa(size)+"s", file)
 
 	// Add one to cursor.x and cursor.y because (0,0) is the top left,
 	// but users will be used to (1,1) (first line,first column)
@@ -100,28 +104,41 @@ func (sline *Statusline) Display() {
 	// Fix size of cursor position so it stays in the same place all the time
 	file += fmt.Sprintf(" %6s/%s,%-4s ", lineNum, totColumn, columnNum)
 
-	// bellow 66 colomns begin hidding information even more
-	if w > 65 {
+	// bellow 66 columns begin hidding information
+	if w > 55 {
+		var ff string
+
 		if sline.view.x != 0 {
 			offset++
 		}
 
 		// Create hotspots for status line events
-		sline.hotspot["FILETYPE"] = Loc{Count(file) + 1 + offset, Count(file) + offset + 1 + Count(sline.view.Buf.FileType())}
-		file += " " + sline.view.Buf.FileType() + "▲"
+		if sline.view.Buf.Settings["indentchar"] == "\t" {
+			ff = "Tab"
+		} else {
+			ff = "Spc"
+		}
+		ff = fmt.Sprintf("%-4s%-2d▲", ff, int(sline.view.Buf.Settings["tabsize"].(float64)))
+		sline.hotspot["TABSPACE"] = Loc{Count(file) + 1 + offset, Count(file) + offset + Count(ff)}
+		file += " " + ff + " "
+
+		sline.hotspot["FILETYPE"] = Loc{Count(file) + 1 + offset, Count(file) + offset + 2 + Count(sline.view.Buf.FileType())}
+		file += " " + sline.view.Buf.FileType() + " ▲"
 
 		if size > 12 {
-			sline.hotspot["FILEFORMAT"] = Loc{Count(file) + 2 + offset, Count(file) + offset + 3 + Count(sline.view.Buf.Settings["fileformat"].(string))}
-			file += "  (" + sline.view.Buf.Settings["fileformat"].(string) + ")  "
+			ff = fmt.Sprintf("%-4s", sline.view.Buf.Settings["fileformat"].(string))
+			sline.hotspot["FILEFORMAT"] = Loc{Count(file) + 2 + offset, Count(file) + offset + 5}
+			file += "  " + ff + "  "
+
+			sline.hotspot["ENCODER"] = Loc{Count(file) + offset, Count(file) + offset + Count(sline.view.Buf.encoder) - 1}
+			file += sline.view.Buf.encoder
 		}
-		sline.hotspot["ENCODER"] = Loc{Count(file) + 1 + offset, Count(file) + offset + Count(sline.view.Buf.encoder)}
-		file += " " + sline.view.Buf.encoder
 
 		if size > 12 {
 			if sline.view.isOverwriteMode {
-				file += "  Over"
+				file += " Over"
 			} else {
-				file += "  Inst"
+				file += " Ins "
 			}
 		}
 		if size > 12 {
@@ -167,6 +184,8 @@ func (sline *Statusline) Display() {
 		} else if w > 65 && sline.hotspot["FILETYPE"].X-offset <= x && x <= sline.hotspot["FILETYPE"].Y-offset && sline.view.Num == CurView().Num {
 			tStyle = StringToStyle("#ffd700,#585858")
 		} else if w > 65 && sline.hotspot["FILEFORMAT"].X-offset <= x && x <= sline.hotspot["FILEFORMAT"].Y-offset && sline.view.Num == CurView().Num {
+			tStyle = StringToStyle("#ffd700,#585858")
+		} else if w > 65 && sline.hotspot["TABSPACE"].X-offset <= x && x <= sline.hotspot["TABSPACE"].Y-offset && sline.view.Num == CurView().Num {
 			tStyle = StringToStyle("#ffd700,#585858")
 		}
 		if x < len(fileRunes) {

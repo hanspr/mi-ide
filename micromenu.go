@@ -1261,6 +1261,71 @@ func (m *microMenu) SetFtype(name, value, event, when string, x, y int) bool {
 }
 
 // ---------------------------------------
+// Set Buffer Tab Space indent
+// ---------------------------------------
+
+func (m *microMenu) SelTabSpace(x int) {
+	// For this case we need to always rebuild, because the hotspots move depending on the window and view where is located
+	m.myapp = nil
+	m.myapp = new(MicroApp)
+	m.myapp.New("mi-tabspc")
+	m.myapp.Reset()
+	m.myapp.defStyle = StringToStyle("#ffffff,#3a3a3a")
+	m.myapp.AddStyle("tab", "#afd7ff,#3a3a3a")
+	m.myapp.AddStyle("spc", "#ffffff,#3a3a3a")
+	_, h := screen.Size()
+	height := 14
+	row := 0
+	f := m.myapp.AddFrame("f", h-height-2, x-5, 1, height, "close")
+	for i := 2; i < 9; i++ {
+		ft := " Tab " + strconv.Itoa(i) + " "
+		f.AddWindowLabel(ft, ft, 0, row, m.SetTabSpace, "tab")
+		f.SetValue(ft, strconv.Itoa(i))
+		row++
+	}
+	for i := 2; i < 9; i++ {
+		ft := " Spc " + strconv.Itoa(i) + " "
+		f.AddWindowLabel(ft, ft, 0, row, m.SetTabSpace, "spc")
+		f.SetValue(ft, strconv.Itoa(i))
+		row++
+	}
+	m.myapp.Start()
+	apprunning = m.myapp
+}
+
+func (m *microMenu) SetTabSpace(name, value, event, when string, x, y int) bool {
+	if when == "POST" {
+		return true
+	}
+	e := m.myapp.frames[m.myapp.activeFrame].elements[name]
+	if event == "mouseout" {
+		if strings.Contains(name, "Spc") {
+			e.style = m.myapp.styles["spc"].style
+		} else {
+			e.style = m.myapp.styles["tab"].style
+		}
+		e.Draw()
+		return true
+	}
+	if event == "mousein" {
+		e.style = e.style.Foreground(tcell.ColorBlack).Background(tcell.Color220)
+		e.Draw()
+		return true
+	}
+	if event != "mouse-click1" {
+		return true
+	}
+	iChar := "\t"
+	if strings.Contains(name, "Spc") {
+		iChar = " "
+	}
+	SetLocalOption("indentchar", iChar, CurView())
+	SetLocalOption("tabsize", value, CurView())
+	m.Finish("TabSpaceType")
+	return true
+}
+
+// ---------------------------------------
 // Set Buffer Encoding
 // ---------------------------------------
 

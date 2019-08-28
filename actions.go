@@ -1961,6 +1961,7 @@ func (v *View) Quit(usePlugin bool) bool {
 		// Make sure not to quit if there are unsaved changes
 		if v.CanClose() {
 			v.CloseBuffer()
+			LastView = -1
 			if len(tabs[curTab].Views) > 1 {
 				pos := v.splitNode.GetViewNumPosition(v.Num)
 				v.splitNode.Delete()

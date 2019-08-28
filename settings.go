@@ -145,20 +145,22 @@ func InitLocalSettings(buf *Buffer) {
 
 	// Some smart!? detections or am I creating more problems?
 	// Detect indentation type (space, tab, ammount of spaces for space)
+	check := 0
 	end := buf.LinesNum()
 	tablines := 0
 	spacelines := 0
 	spclen := 999
 	found := false
-	if end > 50 {
-		end = 50
-	}
 	retab := regexp.MustCompile(`^\t+`)
 	respc := regexp.MustCompile(`^   +`)
 	for i := 0; i < end; i++ {
 		l := buf.Line(i)
 		if Count(l) < 3 {
 			continue
+		}
+		// Check 40 lines, after we find the first indent
+		if check > 40 {
+			break
 		}
 		if retab.FindString(l) != "" {
 			tablines++
@@ -173,12 +175,17 @@ func InitLocalSettings(buf *Buffer) {
 				}
 			}
 		}
+		if found {
+			check++
+		}
 	}
 	if found {
 		if tablines > spacelines {
 			buf.Settings["indentchar"] = "\t"
+			buf.Settings["tabtospaces"] = false
 		} else {
 			buf.Settings["indentchar"] = " "
+			buf.Settings["tabtospaces"] = true
 			if spclen > 1 {
 				buf.Settings["tabsize"] = float64(spclen)
 			}
