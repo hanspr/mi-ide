@@ -1342,14 +1342,16 @@ func (m *microMenu) SelLocalSettings(b *Buffer) {
 		}
 		m.myapp.Reset()
 		m.myapp.defStyle = StringToStyle("#ffffff,#262626")
-		width := 60
-		heigth := 12
+		width := 70
+		heigth := 15
 		f = m.myapp.AddFrame("f", -1, -1, width, heigth, "relative")
 		f.AddWindowBox("enc", Language.Translate("Buffer Settings"), 0, 0, width, heigth, true, nil, "")
-		lbl := Language.Translate("Cancel")
-		f.AddWindowButton("cancel", " "+lbl+" ", "cancel", 33-Count(lbl), 6, m.ButtonFinish, "")
-		lbl = Language.Translate("Save")
-		f.AddWindowButton("set", " "+lbl+" ", "ok", 43, 6, nil, "")
+		f.AddWindowRadio("savefor", Language.Translate("Save as this file settings only"), "file", 2, heigth-4, true, nil, "")
+		f.AddWindowRadio("savefor", fmt.Sprintf(Language.Translate("Save as default settings for all (%s) files"), b.FileType()), "file", 2, heigth-3, false, nil, "")
+		lbl := Language.Translate("Save")
+		f.AddWindowButton("set", lbl, "ok", width-Count(lbl)-3, heigth-1, nil, "")
+		w := Count(Language.Translate("Cancel"))
+		f.AddWindowButton("cancel", Language.Translate("Cancel"), "cancel", width-Count(lbl)-w-8, heigth-1, m.ButtonFinish, "")
 	} else {
 		f = m.myapp.frames["f"]
 	}
