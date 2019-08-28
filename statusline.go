@@ -64,9 +64,15 @@ func (sline *Statusline) MouseEvent(e *tcell.EventMouse, rx, ry int) {
 // Display draws the statusline to the screen
 func (sline *Statusline) Display() {
 	var size int
+	var columnNum, lineNum, totColumn string
 
+	active := true
 	offset := 0
 	w := sline.view.Width
+
+	if sline.view.Num != CurView().Num {
+		active = false
+	}
 
 	// We'll draw the line at the lowest line in the view
 	y := sline.view.Height + sline.view.y
@@ -98,11 +104,16 @@ func (sline *Statusline) Display() {
 	// but users will be used to (1,1) (first line,first column)
 	// We use GetVisualX() here because otherwise we get the column number in runes
 	// so a '\t' is only 1, when it should be tabSize
-	columnNum := strconv.Itoa(sline.view.Cursor.GetVisualX() + 1)
-	lineNum := strconv.Itoa(sline.view.Cursor.Y + 1)
-
 	// Find buffer total lines and add to status
-	totColumn := strconv.Itoa(sline.view.Buf.End().Y + 1)
+
+	if active {
+		columnNum = strconv.Itoa(sline.view.Cursor.GetVisualX() + 1)
+		lineNum = strconv.Itoa(sline.view.Cursor.Y + 1)
+	} else {
+		columnNum = strconv.Itoa(sline.view.savedLoc.X + 1)
+		lineNum = strconv.Itoa(sline.view.savedLoc.Y + 1)
+	}
+	totColumn = strconv.Itoa(sline.view.Buf.End().Y + 1)
 
 	// Fix size of cursor position so it stays in the same place all the time
 	file += fmt.Sprintf(" %6s/%s,%-4s ", lineNum, totColumn, columnNum)
@@ -159,13 +170,13 @@ func (sline *Statusline) Display() {
 	if style, ok := colorscheme["statusline"]; ok {
 		statusLineStyle = style
 	}
-	if style, ok := colorscheme["unfocused"]; ok {
-		if sline.view.Num != CurView().Num {
+	if active == false {
+		if style, ok := colorscheme["unfocused"]; ok {
 			statusLineStyle = style
 		}
 	}
 
-	if sline.view.Num == CurView().Num && LastOverwriteStatus != sline.view.isOverwriteMode {
+	if active && LastOverwriteStatus != sline.view.isOverwriteMode {
 		sline.view.SetCursorColorShape()
 		LastOverwriteStatus = sline.view.isOverwriteMode
 	}
@@ -185,15 +196,15 @@ func (sline *Statusline) Display() {
 	}
 	for x := 0; x < w; x++ {
 		tStyle := statusLineStyle
-		if w > 65 && sline.hotspot["BUFERSET"].X-offset <= x && x <= sline.hotspot["BUFERSET"].Y-offset && sline.view.Num == CurView().Num {
+		if w > 65 && sline.hotspot["BUFERSET"].X-offset <= x && x <= sline.hotspot["BUFERSET"].Y-offset && active {
 			tStyle = StringToStyle("#ffffff,#4e4e4e")
-		} else if w > 65 && sline.hotspot["TABSPACE"].X-offset <= x && x <= sline.hotspot["TABSPACE"].Y-offset && sline.view.Num == CurView().Num {
+		} else if w > 65 && sline.hotspot["TABSPACE"].X-offset <= x && x <= sline.hotspot["TABSPACE"].Y-offset && active {
 			tStyle = StringToStyle("#ffffff,#444444")
-		} else if w > 65 && sline.hotspot["FILETYPE"].X-offset <= x && x <= sline.hotspot["FILETYPE"].Y-offset && sline.view.Num == CurView().Num {
+		} else if w > 65 && sline.hotspot["FILETYPE"].X-offset <= x && x <= sline.hotspot["FILETYPE"].Y-offset && active {
 			tStyle = StringToStyle("#ffffff,#4e4e4e")
-		} else if w > 65 && sline.hotspot["FILEFORMAT"].X-offset <= x && x <= sline.hotspot["FILEFORMAT"].Y-offset && sline.view.Num == CurView().Num {
+		} else if w > 65 && sline.hotspot["FILEFORMAT"].X-offset <= x && x <= sline.hotspot["FILEFORMAT"].Y-offset && active {
 			tStyle = StringToStyle("#ffffff,#444444")
-		} else if w > 65 && sline.hotspot["ENCODER"].X-offset <= x && x <= sline.hotspot["ENCODER"].Y-offset && sline.view.Num == CurView().Num {
+		} else if w > 65 && sline.hotspot["ENCODER"].X-offset <= x && x <= sline.hotspot["ENCODER"].Y-offset && active {
 			tStyle = StringToStyle("#ffffff,#4e4e4e")
 		}
 		if x < len(fileRunes) {
