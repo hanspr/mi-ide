@@ -8,7 +8,6 @@ import (
 	"io/ioutil"
 	"os"
 	"reflect"
-	"regexp"
 	"strconv"
 	"strings"
 	"sync"
@@ -78,12 +77,15 @@ func InitGlobalSettings() {
 	}
 }
 
-// InitLocalSettings scans the json in settings.json and sets the options locally based
-// on whether the buffer matches the glob
+// InitLocalSettings
+// 1.- scans the congig/settings.json and sets the options
+// 2.- scans language settings for that particular filetype
+// 3.- scans users saved settings for this particular file
 func InitLocalSettings(buf *Buffer) {
 	invalidSettings = false
 	var parsed map[string]interface{}
 
+	// 1.- Load Micro-Ide Settings
 	filename := configDir + "/settings.json"
 	if _, e := os.Stat(filename); e == nil {
 		input, err := ioutil.ReadFile(filename)
@@ -124,72 +126,27 @@ func InitLocalSettings(buf *Buffer) {
 		}
 	}
 
-	// Load Local Settings based on settings/ftype.json
+	// 2.- Load Settings based on settings/filetype.json
 	filename = configDir + "/settings/" + buf.Settings["filetype"].(string) + ".json"
-	if _, err := os.Stat(filename); err == nil {
-		var parsed map[string]interface{}
-		input, err := ioutil.ReadFile(filename)
-		if err != nil {
-			return
-		}
-		err = json5.Unmarshal(input, &parsed)
-		if err != nil {
-			return
-		}
-		for k, v := range parsed {
-			if !strings.HasPrefix(reflect.TypeOf(v).String(), "map") {
-				buf.Settings[k] = v
-			}
+	ftyp_settings, err := ReadFileJSON(filename)
+	if err == nil {
+		for k, v := range ftyp_settings {
+			buf.Settings[k] = v
 		}
 	}
 
-	// Some smart!? detections or am I creating more problems?
-	// Detect indentation type (space, tab, ammount of spaces for space)
-	check := 0
-	end := buf.LinesNum()
-	tablines := 0
-	spacelines := 0
-	spclen := 999
-	found := false
-	retab := regexp.MustCompile(`^\t+`)
-	respc := regexp.MustCompile(`^   +`)
-	for i := 0; i < end; i++ {
-		l := buf.Line(i)
-		if Count(l) < 3 {
-			continue
+	// 3.- Load Settings based on buffer/thisfile.settings
+	filename = configDir + "/buffers/" + strings.ReplaceAll(ReplaceHome(buf.AbsPath)+".settings", "/", "")
+	f_settings, err := ReadFileJSON(filename)
+	if err == nil {
+		// Load previous saved settings for this file
+		for k, v := range f_settings {
+			buf.Settings[k] = v
 		}
-		// Check 40 lines, after we find the first indent
-		if check > 40 {
-			break
-		}
-		if retab.FindString(l) != "" {
-			tablines++
-			found = true
-		} else {
-			spc := respc.FindString(l)
-			if spc != "" {
-				spacelines++
-				found = true
-				if len(spc) < spclen {
-					spclen = len(spc)
-				}
-			}
-		}
-		if found {
-			check++
-		}
-	}
-	if found {
-		if tablines > spacelines {
-			buf.Settings["indentchar"] = "\t"
-			buf.Settings["tabtospaces"] = false
-		} else {
-			buf.Settings["indentchar"] = " "
-			buf.Settings["tabtospaces"] = true
-			if spclen > 1 {
-				buf.Settings["tabsize"] = float64(spclen)
-			}
-		}
+	} else {
+		// No previous saved knowledge of this file
+		// Try to get some useful parameters from scanning file
+		buf.SmartDetections()
 	}
 }
 
@@ -202,9 +159,8 @@ func WriteSettings(filename string) error {
 
 	var err error
 	if _, e := os.Stat(configDir); e == nil {
-		parsed := make(map[string]interface{})
-
 		filename := configDir + "/settings.json"
+		parsed := make(map[string]interface{})
 		for k, v := range globalSettings {
 			parsed[k] = v
 		}

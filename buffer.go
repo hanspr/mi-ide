@@ -97,7 +97,7 @@ func (b *Buffer) GetFileSettings(filename string) {
 	settings, jerr := ReadFileJSON(cachename)
 	if jerr == nil {
 		if settings["encoder"] != "" {
-			b.encoder = settings["encoder"]
+			b.encoder = settings["encoder"].(string)
 			b.sencoder = b.encoder
 			return
 		}
@@ -790,7 +790,7 @@ func (b *Buffer) SaveAs(filename string) error {
 		cachename, _ := filepath.Abs(filename)
 		cachename = configDir + "/buffers/" + strings.ReplaceAll(cachename+".settings", "/", "")
 		settings["encoder"] = b.encoder
-		err := WriteFileJSON(cachename, settings)
+		err := UpdateFileJSON(cachename, settings)
 		if err != nil {
 			messenger.Error(Language.Translate("Could not save settings") + " : " + err.Error())
 		}
@@ -1141,4 +1141,55 @@ func (b *Buffer) ChangeIndentation(cfrom, cto string, nfrom, nto int) {
 		b.lines[y].data = []byte(newline)
 	}
 	b.IsModified = true
+}
+
+// Some smart!? detections or am I creating more problems?
+// Detect indentation type (space, tab, ammount of spaces for space)
+func (buf *Buffer) SmartDetections() {
+	check := 0
+	end := buf.LinesNum()
+	tablines := 0
+	spacelines := 0
+	spclen := 999
+	found := false
+	retab := regexp.MustCompile(`^\t+`)
+	respc := regexp.MustCompile(`^   +`)
+	for i := 0; i < end; i++ {
+		l := buf.Line(i)
+		if Count(l) < 2 {
+			continue
+		}
+		// Check 40 lines, after we find the first indentation
+		if check > 40 {
+			break
+		}
+		if retab.FindString(l) != "" {
+			tablines++
+			found = true
+		} else {
+			spc := respc.FindString(l)
+			if spc != "" {
+				spacelines++
+				found = true
+				if len(spc) < spclen {
+					spclen = len(spc)
+				}
+			}
+		}
+		if found {
+			check++
+		}
+	}
+	if found {
+		if tablines > spacelines {
+			buf.Settings["indentchar"] = "\t"
+			buf.Settings["tabtospaces"] = false
+		} else {
+			buf.Settings["indentchar"] = " "
+			buf.Settings["tabtospaces"] = true
+			if spclen > 1 {
+				buf.Settings["tabsize"] = float64(spclen)
+			}
+		}
+	}
 }

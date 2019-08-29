@@ -250,7 +250,7 @@ func (m *microMenu) GlobalConfigDialog() {
 				f.AddWindowSelect(k, k+" ", fmt.Sprintf("%g", globalSettings[k].(float64)), "0|1|2|3|4|5|6|7|8|9|10", col, row, 3, 1, nil, "")
 				f.SetIndex(k, 3)
 			} else if k == "tabsize" {
-				f.AddWindowSelect(k, k+" ", fmt.Sprintf("%g", globalSettings[k].(float64)), "1|2|3|4|5|6|7|8|9|10", col, row, 3, 1, nil, "")
+				f.AddWindowSelect(k, k+" ", fmt.Sprintf("%g", globalSettings[k].(float64)), "2|3|4|5|6|7|8|9|10", col, row, 3, 1, nil, "")
 			} else if k == "lang" {
 				Langs := ""
 				langs := GeTFileListFromPath(configDir+"/langs", "lang")
@@ -908,10 +908,10 @@ func (m *microMenu) Search(callback func(map[string]string)) {
 		m.myapp.Reset()
 		m.myapp.defStyle = StringToStyle("#ffffff,#262626")
 		width := 70
-		heigth := 8
-		f = m.myapp.AddFrame("f", -1, -1, width, heigth, "relative")
+		height := 8
+		f = m.myapp.AddFrame("f", -1, -1, width, height, "relative")
 		m.myapp.AddStyle("f", "black,yellow")
-		f.AddWindowBox("enc", Language.Translate("Search"), 0, 0, width, heigth, true, nil, "")
+		f.AddWindowBox("enc", Language.Translate("Search"), 0, 0, width, height, true, nil, "")
 		lbl := Language.Translate("Search regex:")
 		f.AddWindowTextBox("find", lbl+" ", "", "string", 2, 2, 61-Count(lbl), 50, m.SubmitSearchOnEnter, "")
 		f.AddWindowCheckBox("i", "i", "i", 65, 2, false, m.SubmitSearchOnEnter, "")
@@ -952,10 +952,10 @@ func (m *microMenu) SearchReplace(callback func(map[string]string)) {
 		m.myapp.Reset()
 		m.myapp.defStyle = StringToStyle("#ffffff,#262626")
 		width := 70
-		heigth := 12
-		f = m.myapp.AddFrame("f", -1, -1, width, heigth, "relative")
+		height := 12
+		f = m.myapp.AddFrame("f", -1, -1, width, height, "relative")
 		m.myapp.AddStyle("f", "bold black,yellow")
-		f.AddWindowBox("enc", Language.Translate("Search / Replace"), 0, 0, width, heigth, true, nil, "")
+		f.AddWindowBox("enc", Language.Translate("Search / Replace"), 0, 0, width, height, true, nil, "")
 		lbl := Language.Translate("Search regex:")
 		f.AddWindowTextBox("search", lbl+" ", "", "string", 2, 2, 63-Count(lbl), 50, m.SubmitSearchOnEnter, "")
 		lbl = Language.Translate("Replace regex:")
@@ -1092,9 +1092,9 @@ func (m *microMenu) SaveAs(b *Buffer, usePlugin bool, callback func(map[string]s
 		m.myapp.Reset()
 		m.myapp.defStyle = StringToStyle("#ffffff,#262626")
 		width := 80
-		heigth := 8
-		f = m.myapp.AddFrame("f", -1, -1, width, heigth, "relative")
-		f.AddWindowBox("enc", Language.Translate("Save As ..."), 0, 0, width, heigth, true, nil, "")
+		height := 8
+		f = m.myapp.AddFrame("f", -1, -1, width, height, "relative")
+		f.AddWindowBox("enc", Language.Translate("Save As ..."), 0, 0, width, height, true, nil, "")
 		lbl := Language.Translate("File name :")
 		f.AddWindowTextBox("filename", lbl+" ", "", "string", 2, 2, 76-Count(lbl), 200, m.SaveFile, "")
 		lbl = Language.Translate("Encoding:")
@@ -1319,7 +1319,7 @@ func (m *microMenu) SetTabSpace(name, value, event, when string, x, y int) bool 
 		iChar = " "
 	}
 	b := CurView().Buf
-	n, _ := strconv.ParseFloat(value, 10)
+	n, _ := strconv.ParseFloat(value, 64)
 	b.ChangeIndentation(b.Settings["indentchar"].(string), iChar, int(b.Settings["tabsize"].(float64)), int(n))
 	SetLocalOption("indentchar", iChar, CurView())
 	SetLocalOption("tabsize", value, CurView())
@@ -1328,8 +1328,10 @@ func (m *microMenu) SetTabSpace(name, value, event, when string, x, y int) bool 
 }
 
 // ---------------------------------------
-// Local Configuracions for language or file
+// Local Configuracion : language or file
 // ---------------------------------------
+
+const mmBufferSettings = "autoclose,autoindent,eofnewline,fileformat,indentchar,keepautoindent,matchbrace,rmtrailingws,smartindent,smartpaste,softwrap,tabindents,tabstospaces,tabsize,filetype"
 
 func (m *microMenu) SelLocalSettings(b *Buffer) {
 	var f *Frame
@@ -1342,22 +1344,113 @@ func (m *microMenu) SelLocalSettings(b *Buffer) {
 		}
 		m.myapp.Reset()
 		m.myapp.defStyle = StringToStyle("#ffffff,#262626")
-		width := 70
-		heigth := 15
-		f = m.myapp.AddFrame("f", -1, -1, width, heigth, "relative")
-		f.AddWindowBox("enc", Language.Translate("Buffer Settings"), 0, 0, width, heigth, true, nil, "")
-		f.AddWindowRadio("savefor", Language.Translate("Save as this file settings only"), "file", 2, heigth-4, true, nil, "")
-		f.AddWindowRadio("savefor", fmt.Sprintf(Language.Translate("Save as default settings for all (%s) files"), b.FileType()), "file", 2, heigth-3, false, nil, "")
+		width := 80
+		height := 16
+		f = m.myapp.AddFrame("f", -1, -1, width, height, "relative")
+		f.AddWindowBox("enc", Language.Translate("Buffer Settings"), 0, 0, width, height, true, nil, "")
+		f.AddWindowRadio("savefor", Language.Translate("Save as this file settings only"), "file", 2, height-3, true, nil, "")
+		f.AddWindowRadio("savefor", fmt.Sprintf(Language.Translate("Save as default settings for all (%s) files"), b.FileType()), "lang", 2, height-2, false, nil, "")
 		lbl := Language.Translate("Save")
-		f.AddWindowButton("set", lbl, "ok", width-Count(lbl)-3, heigth-1, nil, "")
+		f.AddWindowButton("set", lbl, "ok", width-Count(lbl)-3, height-1, m.SetLocalSettings, "")
 		w := Count(Language.Translate("Cancel"))
-		f.AddWindowButton("cancel", Language.Translate("Cancel"), "cancel", width-Count(lbl)-w-8, heigth-1, m.ButtonFinish, "")
+		f.AddWindowButton("cancel", Language.Translate("Cancel"), "cancel", width-Count(lbl)-w-8, height-1, m.ButtonFinish, "")
+		keys := make([]string, 0, len(b.Settings))
+		for k := range b.Settings {
+			if strings.Contains(mmBufferSettings, k) {
+				keys = append(keys, k)
+			}
+		}
+		sort.Strings(keys)
+		row := 2
+		col := 2
+		for _, k := range keys {
+			if k == "fileformat" {
+				f.AddWindowSelect(k, k+" ", b.Settings[k].(string), "unix|dos", col, row, 0, 1, nil, "")
+			} else if k == "indentchar" {
+				char := "s"
+				if b.Settings[k].(string) != " " {
+					char = "t"
+				}
+				f.AddWindowSelect(k, k+" ", char, "t]Tab|s]Space", col, row, 0, 1, nil, "")
+			} else if k == "tabsize" {
+				f.AddWindowSelect(k, k+" ", fmt.Sprintf("%g", b.Settings[k].(float64)), "2|3|4|5|6|7|8|9|10", col, row, 3, 1, nil, "")
+			} else if k == "filetype" {
+				f.AddWindowLabel(k, "filetype: "+b.FileType(), col, row, nil, "")
+			} else {
+				kind := reflect.TypeOf(b.Settings[k]).Kind()
+				if kind == reflect.Bool {
+					f.AddWindowCheckBox(k, k, "true", col, row, b.Settings[k].(bool), nil, "")
+				} else if kind == reflect.String {
+					f.AddWindowTextBox(k, k+" ", b.Settings[k].(string), "string", col, row, 10, 20, nil, "")
+				} else if kind == reflect.Float64 {
+					f.AddWindowTextBox(k, k+" ", fmt.Sprintf("%g", b.Settings[k].(float64)), "integer", col, row, 5, 10, nil, "")
+				} else {
+					continue
+				}
+			}
+			row += 2
+			if row > height-6 {
+				row = 2
+				col += 20
+			}
+		}
 	} else {
 		f = m.myapp.frames["f"]
 	}
 	f.SetValue("encode", "")
 	m.myapp.Start()
 	apprunning = m.myapp
+}
+
+func (m *microMenu) SetLocalSettings(name, value, event, when string, x, y int) bool {
+	if when == "POST" {
+		return true
+	}
+	if event != "mouse-click1" {
+		return true
+	}
+	values := m.myapp.getValues()
+	if values["indentchar"] == "t" {
+		values["indentchar"] = "\t"
+	} else {
+		values["indentchar"] = " "
+	}
+	// Check if we need to indent buffer
+	b := CurView().Buf
+	n, _ := strconv.ParseFloat(values["tabsize"], 64)
+	if b.Settings["indentchar"].(string) != values["indentchar"] || int(b.Settings["tabsize"].(float64)) != int(n) {
+		b.ChangeIndentation(b.Settings["indentchar"].(string), values["indentchar"], int(b.Settings["tabsize"].(float64)), int(n))
+	}
+	// Get all keys we need, checkboxes return no values if not selected
+	keys := strings.Split(mmBufferSettings, ",")
+	values["filetype"] = b.FileType()
+	for _, k := range keys {
+		if _, ok := values[k]; !ok {
+			values[k] = "false"
+		}
+	}
+	// Assing options selected to current view
+	for k, v := range values {
+		if k != "savefor" && k != "filetype" {
+			SetLocalOption(k, v, CurView())
+		}
+	}
+	// Set destination for this settings, default language
+	fname := configDir + "/settings/" + b.FileType() + ".json"
+	if values["savefor"] == "file" {
+		// Change destintation to this file only
+		absFilename := ReplaceHome(b.AbsPath)
+		fname = configDir + "/buffers/" + strings.ReplaceAll(absFilename+".settings", "/", "")
+	} else {
+		// Do not save file type for language settings makes no sence
+		delete(values, "filetype")
+	}
+	// Remove non buffer settings values
+	delete(values, "savefor")
+	// Update JSON file
+	UpdateFileJSON(fname, values)
+	m.Finish("settings")
+	return true
 }
 
 // ---------------------------------------
@@ -1376,9 +1469,9 @@ func (m *microMenu) SelEncoding(encoder string, callback func(map[string]string)
 		m.myapp.Reset()
 		m.myapp.defStyle = StringToStyle("#ffffff,#262626")
 		width := 60
-		heigth := 8
-		f = m.myapp.AddFrame("f", -1, -1, width, heigth, "relative")
-		f.AddWindowBox("enc", Language.Translate("Select Encoding"), 0, 0, width, heigth, true, nil, "")
+		height := 8
+		f = m.myapp.AddFrame("f", -1, -1, width, height, "relative")
+		f.AddWindowBox("enc", Language.Translate("Select Encoding"), 0, 0, width, height, true, nil, "")
 		lbl := Language.Translate("Encoding:")
 		f.AddWindowSelect("encoding", lbl+" ", encoder, ENCODINGS, 2, 2, 0, 1, nil, "")
 		lbl = Language.Translate("Use this encoding:")

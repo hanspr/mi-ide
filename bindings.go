@@ -494,7 +494,7 @@ func BindKey(k, v string) {
 func WriteBindings(values map[string]string) {
 	if _, e := os.Stat(configDir); e == nil {
 		filename := configDir + "/bindings.json"
-		err := WriteFileJSON(filename, values)
+		err := WriteFileJSON(filename, values, false)
 		if err != nil {
 			TermMessage(err.Error())
 		}

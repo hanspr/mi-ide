@@ -197,15 +197,15 @@ func (sline *Statusline) Display() {
 	for x := 0; x < w; x++ {
 		tStyle := statusLineStyle
 		if w > 65 && sline.hotspot["BUFERSET"].X-offset <= x && x <= sline.hotspot["BUFERSET"].Y-offset && active {
-			tStyle = StringToStyle("#ffffff,#4e4e4e")
+			tStyle = StringToStyle("#ffffff,#585858")
 		} else if w > 65 && sline.hotspot["TABSPACE"].X-offset <= x && x <= sline.hotspot["TABSPACE"].Y-offset && active {
 			tStyle = StringToStyle("#ffffff,#444444")
 		} else if w > 65 && sline.hotspot["FILETYPE"].X-offset <= x && x <= sline.hotspot["FILETYPE"].Y-offset && active {
-			tStyle = StringToStyle("#ffffff,#4e4e4e")
+			tStyle = StringToStyle("#ffffff,#585858")
 		} else if w > 65 && sline.hotspot["FILEFORMAT"].X-offset <= x && x <= sline.hotspot["FILEFORMAT"].Y-offset && active {
 			tStyle = StringToStyle("#ffffff,#444444")
 		} else if w > 65 && sline.hotspot["ENCODER"].X-offset <= x && x <= sline.hotspot["ENCODER"].Y-offset && active {
-			tStyle = StringToStyle("#ffffff,#4e4e4e")
+			tStyle = StringToStyle("#ffffff,#585858")
 		}
 		if x < len(fileRunes) {
 			screen.SetContent(viewX+x, y, fileRunes[x], nil, tStyle)

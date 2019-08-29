@@ -568,8 +568,59 @@ func GeTFileListFromPath(path, extension string) []string {
 	return Files
 }
 
-func WriteFileJSON(filename string, values map[string]string) error {
-	txt, _ := json.MarshalIndent(values, "", "    ")
+// Open an existint JSON file and update existing values and add new ones
+// Does not remove existing values not updated
+func UpdateFileJSON(filename string, values map[string]string) error {
+	// Read JSON FILE, ignore open errors
+	ovalues, _ := ReadFileJSON(filename)
+	svalues := make(map[string]string)
+	// Transform into strings, because we need strings for WriteJSON and we received strings
+	for k, v := range ovalues {
+		kind := reflect.TypeOf(v).Kind()
+		if kind == reflect.Bool {
+			svalues[k] = strconv.FormatBool(v.(bool))
+		} else if kind == reflect.String {
+			svalues[k] = v.(string)
+		} else if kind == reflect.Float64 {
+			svalues[k] = strconv.FormatFloat(v.(float64), 'f', -1, 64)
+		}
+	}
+	// Now Merge
+	for k, v := range values {
+		svalues[k] = v
+	}
+	// Save merged values to JSON FILE
+	err := WriteFileJSON(filename, svalues, true)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func WriteFileJSON(filename string, values map[string]string, parsedValues bool) error {
+	var txt []byte
+
+	if parsedValues {
+		parsed := make(map[string]interface{})
+		for k, v := range values {
+			if v == "true" || v == "false" || v == "on" || v == "off" {
+				vb, err := strconv.ParseBool(v)
+				if err == nil {
+					parsed[k] = vb
+					continue
+				}
+			}
+			vf, err := strconv.ParseFloat(v, 64)
+			if err == nil {
+				parsed[k] = vf
+				continue
+			}
+			parsed[k] = v
+		}
+		txt, _ = json.MarshalIndent(parsed, "", "    ")
+	} else {
+		txt, _ = json.MarshalIndent(values, "", "    ")
+	}
 	err := ioutil.WriteFile(filename, append(txt, '\n'), 0644)
 	if err != nil {
 		return errors.New("Could not write " + filename)
@@ -577,8 +628,8 @@ func WriteFileJSON(filename string, values map[string]string) error {
 	return nil
 }
 
-func ReadFileJSON(filename string) (map[string]string, error) {
-	var parsed map[string]string
+func ReadFileJSON(filename string) (map[string]interface{}, error) {
+	var parsed map[string]interface{}
 
 	if _, e := os.Stat(filename); e == nil {
 		input, err := ioutil.ReadFile(filename)
