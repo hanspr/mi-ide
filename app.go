@@ -801,12 +801,12 @@ func (e *AppElement) DrawSelect() {
 	chr := ""
 	ft := "%-" + strconv.Itoa(e.width) + "s"
 	e.frame.PrintStyle(e.label, e.pos.X, e.pos.Y, &e.style)
-	if e.offset < e.aposb.Y+e.cursor.Y {
+	if e.offset < e.cursor.Y && e.height > 1 {
 		e.cursor.Y = e.aposb.Y + e.offset - 1
 		if e.cursor.Y < 0 {
 			e.cursor.Y = 0
 		}
-	} else if e.height > 1 && e.height < len(e.opts) && e.offset >= e.height {
+	} else if e.height > 1 && e.offset >= e.height+e.cursor.Y {
 		// Overflow, find the starting point
 		if e.offset >= e.height+e.cursor.Y {
 			e.cursor.Y = e.offset - e.height + 1
@@ -1154,11 +1154,12 @@ func (e *AppElement) SelectClickEvent(event string, x, y int) {
 
 	f := e.frame
 	a.activeElement = e.name
-	// SELECT BEGIN
+	// SELECT COMBO BEGIN
 	if e.height == 1 && e.checked == false {
 		// Open select. Set height, and new hotspot, save
-		e.height = len(e.opts)
+		e.height = len(e.opts) + 1
 		e.apose = Loc{e.apose.X, e.apose.Y + e.height - 1}
+		e.cursor.Y = 0
 		e.checked = true
 		// Lock events to this element until closed
 		a.lockActive = true
@@ -1356,14 +1357,15 @@ func (e *AppElement) SelectKeyEvent(key string, x, y int) {
 			if e.aposb.Y+e.height > f.maxheigth {
 				RedrawAll(false)
 			}
+			a.activeElement = ""
 			e.height = 1
 			e.apose = Loc{e.apose.X, e.aposb.Y}
 			a.lockActive = false
 			e.checked = false
+			a.DrawAll()
 		}
 	}
 	e.value = e.opts[e.offset].value
-	//a.DrawAll()
 	e.Draw()
 	a.screen.Show()
 }
