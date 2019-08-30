@@ -801,18 +801,18 @@ func (e *AppElement) DrawSelect() {
 	chr := ""
 	ft := "%-" + strconv.Itoa(e.width) + "s"
 	e.frame.PrintStyle(e.label, e.pos.X, e.pos.Y, &e.style)
-	if e.height > 1 && e.height < len(e.opts) && e.offset >= e.height {
+	if e.offset < e.aposb.Y+e.cursor.Y {
+		e.cursor.Y = e.aposb.Y + e.offset - 1
+		if e.cursor.Y < 0 {
+			e.cursor.Y = 0
+		}
+	} else if e.height > 1 && e.height < len(e.opts) && e.offset >= e.height {
 		// Overflow, find the starting point
 		if e.offset >= e.height+e.cursor.Y {
 			e.cursor.Y = e.offset - e.height + 1
 		}
 		if e.cursor.Y >= len(e.opts) {
 			e.cursor.Y = len(e.opts) - 1
-		}
-	} else if e.offset < e.aposb.Y+e.cursor.Y {
-		e.cursor.Y = e.aposb.Y + e.offset - 1
-		if e.cursor.Y < 0 {
-			e.cursor.Y = 0
 		}
 	}
 	start := e.cursor.Y
