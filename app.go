@@ -1331,12 +1331,12 @@ func (e *AppElement) SelectKeyEvent(key string, x, y int) {
 		}
 		e.offset++
 	} else if key == "PgUp" {
-		e.offset -= 10
+		e.offset -= e.height / 2
 		if e.offset < 0 {
 			e.offset = 0
 		}
 	} else if key == "PgDn" {
-		e.offset += 10
+		e.offset += e.height / 2
 		if e.offset >= e.cursor.X {
 			e.offset = e.cursor.X - 1
 		}
