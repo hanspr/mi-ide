@@ -81,7 +81,6 @@ type MicroApp struct {
 	lastloc          Loc
 	lastbutton       string
 	lastclick        time.Time
-	eint             int
 	frames           map[string]*Frame
 	activeFrame      string
 	mouseOver        string
@@ -234,6 +233,7 @@ func (a *MicroApp) AddWindowElement(frame, name, label, form, value, value_type 
 		e.index++
 		h--
 		e.offset = -1
+		e.cursor.Y = 0
 		e.aposb = Loc{x + lblwidth, y}
 		e.apose = Loc{x + lblwidth + w, y + h}
 		opts := strings.Split(e.value_type, "|")
@@ -797,16 +797,25 @@ func (e *AppElement) DrawSelect() {
 
 	a := e.microapp
 	f := e.frame
-	start := 0
 	Y := -1
 	chr := ""
 	ft := "%-" + strconv.Itoa(e.width) + "s"
 	e.frame.PrintStyle(e.label, e.pos.X, e.pos.Y, &e.style)
 	if e.height > 1 && e.height < len(e.opts) && e.offset >= e.height {
 		// Overflow, find the starting point
-		start = e.offset - e.height + 1
+		if e.offset >= e.height+e.cursor.Y {
+			e.cursor.Y = e.offset - e.height + 1
+		}
+		if e.cursor.Y >= len(e.opts) {
+			e.cursor.Y = len(e.opts) - 1
+		}
+	} else if e.offset < e.aposb.Y+e.cursor.Y {
+		e.cursor.Y = e.aposb.Y + e.offset - 1
+		if e.cursor.Y < 0 {
+			e.cursor.Y = 0
+		}
 	}
-	a.eint = start
+	start := e.cursor.Y
 	for i := start; i < len(e.opts); i++ {
 		if i == e.offset {
 			if a.activeElement == e.name {
@@ -1185,13 +1194,10 @@ func (e *AppElement) SelectClickEvent(event string, x, y int) {
 	// SELECT END
 
 	// LIST
-	offset := a.eint
 	for i := 0; i < e.cursor.X; i++ {
 		if e.aposb.Y+i == y {
-			if i+offset < e.cursor.X {
-				e.value = e.opts[i].value
-				e.offset = i + offset
-			}
+			e.offset = i + e.cursor.Y
+			e.value = e.opts[e.offset].value
 			break
 		}
 	}
@@ -1319,9 +1325,6 @@ func (e *AppElement) SelectKeyEvent(key string, x, y int) {
 	if len(r) <= 1 {
 		return
 	}
-	a.Debug(key, 100, 9)
-	a.Debug(fmt.Sprintf("%d", e.offset), 100, 10)
-	a.Debug(fmt.Sprintf("%d", e.cursor.X), 100, 11)
 	// Process Control Keys
 	if key == "Up" {
 		if e.offset < 1 {
@@ -1835,7 +1838,6 @@ func (a *MicroApp) Reset() {
 	a.activeElement = ""
 	a.activeFrame = ""
 	a.mousedown = false
-	a.eint = 0
 }
 
 func (a *MicroApp) getValues() map[string]string {

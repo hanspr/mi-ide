@@ -1568,7 +1568,6 @@ func (m *microMenu) TreeViewEvent(name, value, event, when string, x, y int) boo
 			f.elements["dbox"].width = width + 2
 			//f.DeleteElement("dirview")
 			f.AddWindowSelect("dirview", "", "", dir, 1, 1, width, height-1, m.TreeViewEvent, "")
-			m.myapp.activeElement = name
 			if reset {
 				m.myapp.ResetFrames()
 			} else {
@@ -1586,7 +1585,6 @@ func (m *microMenu) TreeViewEvent(name, value, event, when string, x, y int) boo
 					}
 				}
 			}
-			m.myapp.activeElement = name
 			NewTab([]string{m.LastPath + value})
 			CurView().Buf.name = value
 			m.myapp.ResetFrames()
@@ -1600,10 +1598,10 @@ func (m *microMenu) TreeViewEvent(name, value, event, when string, x, y int) boo
 		}
 		CurView().Open(m.LastPath + value)
 		CurView().Buf.name = value
-		m.myapp.activeElement = name
 		m.myapp.ResetFrames()
 		messenger.Information(value, " "+Language.Translate("opened in View"))
 	}
+	m.myapp.activeElement = name
 	return true
 }
 
