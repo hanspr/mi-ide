@@ -1284,7 +1284,28 @@ func (e *AppElement) ProcessElementMouseMove(event string, x, y int) {
 func (e *AppElement) ProcessElementMouseDown(event string, x, y int) {
 }
 
+func (e *AppElement) SelectWheelEvent(event string, x, y int) {
+	a := e.microapp
+	if event == "mouse-wheelUp" {
+		if e.offset < 1 {
+			return
+		}
+		e.offset--
+	} else if event == "mouse-wheelDown" {
+		if e.cursor.X <= e.offset+1 {
+			return
+		}
+		e.offset++
+	}
+	e.value = e.opts[e.offset].value
+	e.Draw()
+	a.screen.Show()
+}
+
 func (e *AppElement) ProcessElementMouseWheel(event string, x, y int) {
+	if e.form == "select" {
+		e.SelectWheelEvent(event, x, y)
+	}
 }
 
 // ------------------------------------------------
@@ -1298,6 +1319,9 @@ func (e *AppElement) SelectKeyEvent(key string, x, y int) {
 	if len(r) <= 1 {
 		return
 	}
+	a.Debug(key, 100, 9)
+	a.Debug(fmt.Sprintf("%d", e.offset), 100, 10)
+	a.Debug(fmt.Sprintf("%d", e.cursor.X), 100, 11)
 	// Process Control Keys
 	if key == "Up" {
 		if e.offset < 1 {
@@ -1309,6 +1333,16 @@ func (e *AppElement) SelectKeyEvent(key string, x, y int) {
 			return
 		}
 		e.offset++
+	} else if key == "PgUp" {
+		e.offset -= 10
+		if e.offset < 0 {
+			e.offset = 0
+		}
+	} else if key == "PgDn" {
+		e.offset += 10
+		if e.offset >= e.cursor.X {
+			e.offset = e.cursor.X - 1
+		}
 	} else if key == "Home" {
 		e.offset = 0
 	} else if key == "End" {
@@ -1706,6 +1740,10 @@ func (a *MicroApp) HandleEvents(event tcell.Event) {
 			action = "mousemove-drag" + a.lastbutton
 		} else if ev.HasMotion() == false {
 			a.mousedown = true
+
+			if strings.Count(ev.EscSeq(), "[") > 1 {
+				return
+			}
 			if button == tcell.Button1 {
 				action = "mouse-button1"
 				a.lastbutton = "1"

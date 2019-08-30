@@ -1529,9 +1529,12 @@ func (m *microMenu) DirTreeView() {
 	m.myapp.AddStyle("d", "#A6E22E,#1c1c1c")
 	f := m.myapp.AddFrame("f", 1, 0, width+2, height, "fixed")
 	f.AddWindowBox("dbox", "", 0, 0, width+2, height, true, nil, "")
-	f.AddWindowSelect("dirview", "", "", dir, 1, 1, width, height-1, m.TreeViewEvent, "")
+	f.AddWindowSelect("dirview", "", "../", dir, 1, 1, width, height-1, m.TreeViewEvent, "")
 	m.myapp.Start()
 	apprunning = m.myapp
+	m.myapp.CheckElementsActions("mouse-click1", 1, 1)
+	//m.myapp.activeElement = "dirview"
+	//f.elements["dirview"].SelectClickEvent("mouse_click1", 1, 1)
 }
 
 func (m *microMenu) TreeViewEvent(name, value, event, when string, x, y int) bool {
@@ -1542,7 +1545,7 @@ func (m *microMenu) TreeViewEvent(name, value, event, when string, x, y int) boo
 	}
 	reset := false
 	f := m.myapp.frames["f"]
-	if event == "mouse-doubleclick1" {
+	if event == "mouse-doubleclick1" || event == "Enter" {
 		// Open file in new Tab
 		if strings.Contains(value, "/") {
 			if strings.Contains(value, "../") {
@@ -1601,7 +1604,7 @@ func (m *microMenu) TreeViewEvent(name, value, event, when string, x, y int) boo
 		m.myapp.ResetFrames()
 		messenger.Information(value, " "+Language.Translate("opened in View"))
 	}
-	return false
+	return true
 }
 
 func (m *microMenu) getDir() (string, int) {
