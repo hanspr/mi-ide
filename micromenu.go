@@ -1565,7 +1565,7 @@ func (m *microMenu) TreeViewEvent(name, value, event, when string, x, y int) boo
 			}
 			f.elements["dbox"].width = width + 2
 			f.AddWindowSelect("dirview", "", "", dir, 1, 1, width, height-1, m.TreeViewEvent, "")
-			m.myapp.activeElement = name
+			m.myapp.CheckElementsActions("mouse-click1", 1, 1)
 			if reset {
 				m.myapp.ResetFrames()
 			} else {
