@@ -1233,13 +1233,6 @@ func (e *AppElement) RadioCheckboxClickEvent(event string, x, y int) {
 
 func (e *AppElement) ProcessElementClick(event string, x, y int) {
 	a := e.microapp
-	if a.lockActive == true {
-		if a.activeElement != e.name {
-			return
-		}
-		e.SelectClickEvent(event, x, y)
-		return
-	}
 	name := e.name
 	if a.activeElement != "" {
 		a.screen.HideCursor()
@@ -1570,7 +1563,15 @@ func (a *MicroApp) CheckElementsActions(event string, x, y int) bool {
 				}
 				// Check if location is inside the element hotspot
 				if x >= e.aposb.X && x <= e.apose.X && y >= e.aposb.Y && y <= e.apose.Y {
-					if a.activeElement != e.frame.name {
+					if a.lockActive == true && a.activeElement != e.name {
+						if strings.Contains(event, "click") {
+							// Close Select without selection
+							a.frames[a.activeFrame].elements[a.activeElement].SelectClickEvent("mouse-click1", -1, -1)
+						} else {
+							continue
+						}
+					}
+					if a.activeFrame != e.frame.name {
 						a.activeFrame = e.frame.name
 					}
 					if strings.Contains(event, "mouse") {
@@ -1611,7 +1612,17 @@ func (a *MicroApp) CheckElementsActions(event string, x, y int) bool {
 			}
 		}
 	}
-	if strings.Contains(event, "click") && a.lockActive == false {
+	if strings.Contains(event, "click") {
+		if a.lockActive {
+			e := a.frames[a.activeFrame].elements[a.activeElement]
+			if e.aposb.Y+e.height > a.frames[a.activeFrame].maxheigth {
+				RedrawAll(false)
+			}
+			a.lockActive = false
+			e.checked = false
+			e.height = 1
+			e.apose = Loc{e.apose.X, e.aposb.Y}
+		}
 		a.screen.HideCursor()
 		if a.activeElement != "" {
 			a.activeElement = ""
