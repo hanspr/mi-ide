@@ -1520,7 +1520,7 @@ func (m *microMenu) DirTreeView() {
 	m.myapp.New("mi-dirview")
 	dir, width := m.getDir()
 	_, height := screen.Size()
-	height -= 2
+	height -= 3
 	if width < MINWIDTH {
 		width = MINWIDTH
 	}
@@ -1533,8 +1533,6 @@ func (m *microMenu) DirTreeView() {
 	m.myapp.Start()
 	apprunning = m.myapp
 	m.myapp.CheckElementsActions("mouse-click1", 1, 1)
-	//m.myapp.activeElement = "dirview"
-	//f.elements["dirview"].SelectClickEvent("mouse_click1", 1, 1)
 }
 
 func (m *microMenu) TreeViewEvent(name, value, event, when string, x, y int) bool {
@@ -1566,8 +1564,8 @@ func (m *microMenu) TreeViewEvent(name, value, event, when string, x, y int) boo
 				reset = true
 			}
 			f.elements["dbox"].width = width + 2
-			//f.DeleteElement("dirview")
 			f.AddWindowSelect("dirview", "", "", dir, 1, 1, width, height-1, m.TreeViewEvent, "")
+			m.myapp.activeElement = name
 			if reset {
 				m.myapp.ResetFrames()
 			} else {
@@ -1587,7 +1585,10 @@ func (m *microMenu) TreeViewEvent(name, value, event, when string, x, y int) boo
 			}
 			NewTab([]string{m.LastPath + value})
 			CurView().Buf.name = value
+			m.myapp.activeElement = name
+			messenger.Information(value, " "+Language.Translate("opened in new Tab"))
 			m.myapp.ResetFrames()
+			m.myapp.CheckElementsActions("mouse-click1", x, y)
 			return false
 		}
 	} else if event == "mouse-click3" || event == "mouse-click2" {
@@ -1596,10 +1597,11 @@ func (m *microMenu) TreeViewEvent(name, value, event, when string, x, y int) boo
 			m.Finish("file dirty")
 			return false
 		}
+		messenger.Information(value, " "+Language.Translate("opened in View"))
 		CurView().Open(m.LastPath + value)
 		CurView().Buf.name = value
+		m.myapp.activeElement = name
 		m.myapp.ResetFrames()
-		messenger.Information(value, " "+Language.Translate("opened in View"))
 	}
 	m.myapp.activeElement = name
 	return true

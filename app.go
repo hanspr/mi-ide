@@ -1241,10 +1241,10 @@ func (e *AppElement) ProcessElementClick(event string, x, y int) {
 	}
 	name := e.name
 	if a.activeElement != "" {
-		a.activeElement = ""
 		a.screen.HideCursor()
 		a.DrawAll()
 	}
+	a.activeElement = name
 	check := false
 	if e.form == "checkbox" || e.form == "radio" {
 		name = e.gname
@@ -1835,7 +1835,6 @@ func (a *MicroApp) Reset() {
 	a.activeElement = ""
 	a.mouseOver = ""
 	a.lastbutton = ""
-	a.activeElement = ""
 	a.activeFrame = ""
 	a.mousedown = false
 }
