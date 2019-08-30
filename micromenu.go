@@ -1588,7 +1588,6 @@ func (m *microMenu) TreeViewEvent(name, value, event, when string, x, y int) boo
 			m.myapp.activeElement = name
 			messenger.Information(value, " "+Language.Translate("opened in new Tab"))
 			m.myapp.ResetFrames()
-			m.myapp.CheckElementsActions("mouse-click1", x, y)
 			return false
 		}
 	} else if event == "mouse-click3" || event == "mouse-click2" {
