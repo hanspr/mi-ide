@@ -801,7 +801,7 @@ func (e *AppElement) DrawSelect() {
 	chr := ""
 	ft := "%-" + strconv.Itoa(e.width) + "s"
 	e.frame.PrintStyle(e.label, e.pos.X, e.pos.Y, &e.style)
-	if e.offset < e.cursor.Y && e.height > 1 {
+	if e.offset >= 0 && e.offset < e.cursor.Y && e.height > 1 {
 		e.cursor.Y = e.aposb.Y + e.offset - 1
 		if e.cursor.Y < 0 {
 			e.cursor.Y = 0

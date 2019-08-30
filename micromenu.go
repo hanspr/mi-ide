@@ -656,6 +656,7 @@ func (m *microMenu) ChangeSource(name, value, event, when string, x, y int) bool
 	str := ""
 	height := 0
 	f.DeleteElement("list")
+	messenger.AddLog("A")
 	if name == "langs" {
 		var keys []string
 		f.elements["langs"].style = StringToStyle("bold #ffffff,#878700")
@@ -687,6 +688,7 @@ func (m *microMenu) ChangeSource(name, value, event, when string, x, y int) bool
 		} else {
 			height = len(langs)
 		}
+		messenger.AddLog(list)
 		f.SetLabel("title", Language.Translate("Available"))
 		f.AddWindowSelect("list", "", "", list, 1, 5, 0, height, nil, "")
 		f.SetVisible("title", true)
