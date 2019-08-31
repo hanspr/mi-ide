@@ -1333,7 +1333,7 @@ func (m *microMenu) SetTabSpace(name, value, event, when string, x, y int) bool 
 // Local Configuracion : language or file
 // ---------------------------------------
 
-const mmBufferSettings = "autoclose,autoindent,eofnewline,fileformat,indentchar,keepautoindent,matchbrace,rmtrailingws,smartindent,smartpaste,softwrap,tabindents,tabstospaces,tabsize,filetype"
+const mmBufferSettings = "autoclose,autoindent,eofnewline,fileformat,indentchar,keepautoindent,matchbrace,rmtrailingws,smartindent,smartpaste,softwrap,tabindents,tabstospaces,tabsize"
 
 func (m *microMenu) SelLocalSettings(b *Buffer) {
 	var f *Frame
@@ -1376,8 +1376,6 @@ func (m *microMenu) SelLocalSettings(b *Buffer) {
 				f.AddWindowSelect(k, k+" ", char, "t]Tab|s]Space", col, row, 0, 1, nil, "")
 			} else if k == "tabsize" {
 				f.AddWindowSelect(k, k+" ", fmt.Sprintf("%g", b.Settings[k].(float64)), "2|3|4|5|6|7|8|9|10", col, row, 3, 1, nil, "")
-			} else if k == "filetype" {
-				f.AddWindowLabel(k, "filetype: "+b.FileType(), col, row, nil, "")
 			} else {
 				kind := reflect.TypeOf(b.Settings[k]).Kind()
 				if kind == reflect.Bool {
@@ -1425,7 +1423,6 @@ func (m *microMenu) SetLocalSettings(name, value, event, when string, x, y int) 
 	}
 	// Get all keys we need, checkboxes return no values if not selected
 	keys := strings.Split(mmBufferSettings, ",")
-	values["filetype"] = b.FileType()
 	for _, k := range keys {
 		if _, ok := values[k]; !ok {
 			values[k] = "false"
@@ -1433,19 +1430,18 @@ func (m *microMenu) SetLocalSettings(name, value, event, when string, x, y int) 
 	}
 	// Assing options selected to current view
 	for k, v := range values {
-		if k != "savefor" && k != "filetype" {
+		if k != "savefor" {
 			SetLocalOption(k, v, CurView())
 		}
 	}
 	// Set destination for this settings, default language
 	fname := configDir + "/settings/" + b.FileType() + ".json"
 	if values["savefor"] == "file" {
+		// Add current filetype selected too
+		values["filetype"] = b.FileType()
 		// Change destintation to this file only
 		absFilename := ReplaceHome(b.AbsPath)
 		fname = configDir + "/buffers/" + strings.ReplaceAll(absFilename+".settings", "/", "")
-	} else {
-		// Do not save file type for language settings makes no sence
-		delete(values, "filetype")
 	}
 	// Remove non buffer settings values
 	delete(values, "savefor")
@@ -1548,10 +1544,12 @@ func (m *microMenu) TreeViewEvent(name, value, event, when string, x, y int) boo
 	if event == "mouse-doubleclick1" || event == "Enter" {
 		// Open file in new Tab
 		if strings.Contains(value, "/") {
+			backdir := ""
 			if strings.Contains(value, "../") {
 				x := strings.LastIndex(m.LastPath, "/")
 				fname := string([]rune(m.LastPath)[:x])
 				x = strings.LastIndex(fname, "/") + 1
+				backdir = string([]rune(m.LastPath)[x:])
 				fname = string([]rune(m.LastPath)[:x])
 				m.LastPath = fname
 			} else {
@@ -1568,6 +1566,15 @@ func (m *microMenu) TreeViewEvent(name, value, event, when string, x, y int) boo
 			f.elements["dbox"].width = width + 2
 			f.AddWindowSelect("dirview", "", "", dir, 1, 1, width, height-1, m.TreeViewEvent, "")
 			m.myapp.CheckElementsActions("mouse-click1", 1, 1)
+			if backdir != "" {
+				for k, v := range f.elements["dirview"].opts {
+					if v.value == backdir {
+						f.elements["dirview"].offset = k
+						f.elements["dirview"].value = f.elements["dirview"].opts[k].value
+						break
+					}
+				}
+			}
 			if reset {
 				m.myapp.ResetFrames()
 			} else {
@@ -1592,7 +1599,7 @@ func (m *microMenu) TreeViewEvent(name, value, event, when string, x, y int) boo
 			m.myapp.ResetFrames()
 			return false
 		}
-	} else if event == "mouse-click3" || event == "mouse-click2" {
+	} else if event == "mouse-click3" || event == "mouse-click2" || event == "Right" {
 		if CurView().Buf.Modified() {
 			messenger.Error(Language.Translate("You need to save view first"))
 			m.Finish("file dirty")
