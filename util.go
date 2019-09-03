@@ -148,6 +148,21 @@ func IsStrWhitespace(str string) bool {
 	return true
 }
 
+func noAutoCloseChar(str string) bool {
+	x := IsStrWhitespace(str)
+	if x {
+		return x
+	}
+	x = IsWordChar(str)
+	if x {
+		return x
+	}
+	if str == "=" || str == `"` {
+		return true
+	}
+	return false
+}
+
 // Contains returns whether or not a string array contains a given string
 func Contains(list []string, a string) bool {
 	for _, b := range list {

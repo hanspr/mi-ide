@@ -588,7 +588,6 @@ func Replace(args []string) {
 
 	replace := string(args[1])
 	replace = ExpandString(replace)
-	replaceBytes := []byte(replace)
 	regex, err := regexp.Compile(search)
 	if err != nil {
 		// There was an error with the user's regex
@@ -602,15 +601,18 @@ func Replace(args []string) {
 	replaceAll := func() {
 		var deltas []Delta
 		for i := 0; i < view.Buf.LinesNum(); i++ {
-			newText := regex.ReplaceAllFunc(view.Buf.lines[i].data, func(in []byte) []byte {
-				found++
-				return replaceBytes
-			})
+			sel := view.Buf.Line(i)
+			rep := regex.ReplaceAllString(sel, replace)
+			messenger.AddLog(rep, ":", sel)
+			if rep == sel {
+				continue
+			}
+			messenger.AddLog("replace")
 
 			from := Loc{0, i}
 			to := Loc{utf8.RuneCount(view.Buf.lines[i].data), i}
 
-			deltas = append(deltas, Delta{string(newText), from, to})
+			deltas = append(deltas, Delta{rep, from, to})
 		}
 		view.Buf.MultipleReplace(deltas)
 	}

@@ -706,7 +706,7 @@ func (v *View) HandleEvent(event tcell.Event) {
 									// Test surrounding chars are not [ \w]
 									ch1 := string(v.Buf.LineRunes(v.Cursor.Y)[x-2 : x-1])
 									ch2 := string(v.Buf.LineRunes(v.Cursor.Y)[x : x+1])
-									if IsStrWhitespace(ch1) || IsStrWhitespace(ch2) || IsWordChar(ch1) || IsWordChar(ch2) {
+									if noAutoCloseChar(ch1) || noAutoCloseChar(ch2) {
 										n = -1
 									}
 								}
