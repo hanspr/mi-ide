@@ -603,11 +603,9 @@ func Replace(args []string) {
 		for i := 0; i < view.Buf.LinesNum(); i++ {
 			sel := view.Buf.Line(i)
 			rep := regex.ReplaceAllString(sel, replace)
-			messenger.AddLog(rep, ":", sel)
 			if rep == sel {
 				continue
 			}
-			messenger.AddLog("replace")
 
 			from := Loc{0, i}
 			to := Loc{utf8.RuneCount(view.Buf.lines[i].data), i}
