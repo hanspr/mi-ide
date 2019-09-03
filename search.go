@@ -92,7 +92,7 @@ func searchDown(r *regexp.Regexp, v *View, start, end Loc) bool {
 					v.Cursor.SetSelectionEnd(Loc{Y, i})
 					v.Cursor.OrigSelection[0] = v.Cursor.CurSelection[0]
 					v.Cursor.OrigSelection[1] = v.Cursor.CurSelection[1]
-					v.Cursor.Loc = v.Cursor.CurSelection[1]
+					v.Cursor.Loc = v.Cursor.CurSelection[0]
 					if v.Cursor.Y >= v.Bottomline()-2 || v.Cursor.Y <= v.Topline+2 {
 						v.Center(false)
 					}
@@ -131,7 +131,7 @@ func searchUp(r *regexp.Regexp, v *View, start, end Loc) bool {
 					v.Cursor.SetSelectionEnd(Loc{Y, i})
 					v.Cursor.OrigSelection[0] = v.Cursor.CurSelection[0]
 					v.Cursor.OrigSelection[1] = v.Cursor.CurSelection[1]
-					v.Cursor.Loc = v.Cursor.CurSelection[1]
+					v.Cursor.Loc = v.Cursor.CurSelection[0]
 					if v.Cursor.Y >= v.Bottomline()-2 || v.Cursor.Y <= v.Topline+2 {
 						v.Center(false)
 					}

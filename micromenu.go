@@ -1029,6 +1029,7 @@ func (m *microMenu) SubmitSearchOnEnter(name, value, event, when string, x, y in
 	if event == "Enter" && when == "PRE" && (name == "find" || name == "replace") {
 		if m.searchMatch == false {
 			f.SetValue("search", "")
+			f.SetValue("find", "")
 		}
 		m.myapp.WindowFinish(m.myapp.getValues())
 		m.Finish("Done")
