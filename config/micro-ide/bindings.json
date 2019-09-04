@@ -1,5 +1,5 @@
 {
     "CtrlS": "Save",
-    "AltEnter":"EndOfLine,InsertNewline",
+    "CtrlJ": "EndOfLine,InsertNewline",
     "F14": "SaveAll"
 }

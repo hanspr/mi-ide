@@ -2209,66 +2209,6 @@ func (v *View) PreviousSplit(usePlugin bool) bool {
 	return false
 }
 
-var curMacro []interface{}
-var recordingMacro bool
-
-// ToggleMacro toggles recording of a macro
-func (v *View) ToggleMacro(usePlugin bool) bool {
-	if v.mainCursor() {
-		if usePlugin && !PreActionCall("ToggleMacro", v) {
-			return false
-		}
-
-		recordingMacro = !recordingMacro
-
-		if recordingMacro {
-			curMacro = []interface{}{}
-			messenger.Message(Language.Translate("Recording"))
-		} else {
-			messenger.Message(Language.Translate("Stopped recording"))
-		}
-
-		if usePlugin {
-			return PostActionCall("ToggleMacro", v)
-		}
-	}
-	return true
-}
-
-// PlayMacro plays back the most recently recorded macro
-func (v *View) PlayMacro(usePlugin bool) bool {
-	if usePlugin && !PreActionCall("PlayMacro", v) {
-		return false
-	}
-
-	for _, action := range curMacro {
-		switch t := action.(type) {
-		case rune:
-			// Insert a character
-			if v.Cursor.HasSelection() {
-				v.Cursor.DeleteSelection()
-				v.Cursor.ResetSelection()
-			}
-			v.Buf.Insert(v.Cursor.Loc, string(t))
-			// v.Cursor.Right()
-
-			for pl := range loadedPlugins {
-				_, err := Call(pl+".onRuneonRune", string(t), v)
-				if err != nil && !strings.HasPrefix(err.Error(), "function does not exist") {
-					TermMessage(err)
-				}
-			}
-		case func(*View, bool) bool:
-			t(v, true)
-		}
-	}
-
-	if usePlugin {
-		return PostActionCall("PlayMacro", v)
-	}
-	return true
-}
-
 // SpawnMultiCursor creates a new multiple cursor at the next occurrence of the current selection or current word
 func (v *View) SpawnMultiCursor(usePlugin bool) bool {
 	spawner := v.Buf.cursors[len(v.Buf.cursors)-1]

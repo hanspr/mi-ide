@@ -542,7 +542,7 @@ func (v *View) MoveToMouseClick(x, y int) {
 // Execute actions executes the supplied actions
 func (v *View) ExecuteActions(actions []func(*View, bool) bool) bool {
 	relocate := false
-	readonlyBindingsList := []string{"Delete", "Insert", "Backspace", "Cut", "Play", "Paste", "Move", "Add", "DuplicateLine", "Macro"}
+	readonlyBindingsList := []string{"Delete", "Insert", "Backspace", "Cut", "Play", "Paste", "Move", "Add", "DuplicateLine"}
 	for _, action := range actions {
 		readonlyBindingsResult := false
 		funcName := ShortFuncName(action)
@@ -558,12 +558,6 @@ func (v *View) ExecuteActions(actions []func(*View, bool) bool) bool {
 		if !readonlyBindingsResult {
 			// call the key binding
 			relocate = action(v, true) || relocate
-			// Macro
-			if funcName != "ToggleMacro" && funcName != "PlayMacro" {
-				if recordingMacro {
-					curMacro = append(curMacro, action)
-				}
-			}
 		}
 	}
 
@@ -728,9 +722,6 @@ func (v *View) HandleEvent(event tcell.Event) {
 						}
 					}
 
-					if recordingMacro {
-						curMacro = append(curMacro, e.Rune())
-					}
 				}
 				v.SetCursor(&v.Buf.Cursor)
 			}
