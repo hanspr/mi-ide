@@ -703,7 +703,7 @@ func (v *View) HandleEvent(event tcell.Event) {
 									}
 								}
 								if n >= 0 && n < 3 && v.Cursor.X < len(v.Buf.LineRunes(v.Cursor.Y))-1 && v.Cursor.X > 1 {
-									// Test surrounding chars are not [ \w]
+									// Test surrounding chars
 									ch1 := string(v.Buf.LineRunes(v.Cursor.Y)[x-2 : x-1])
 									ch2 := string(v.Buf.LineRunes(v.Cursor.Y)[x : x+1])
 									if noAutoCloseChar(ch1) || noAutoCloseChar(ch2) {

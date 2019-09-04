@@ -149,15 +149,13 @@ func IsStrWhitespace(str string) bool {
 }
 
 func noAutoCloseChar(str string) bool {
-	x := IsStrWhitespace(str)
-	if x {
-		return x
-	}
+	var x bool
+
 	x = IsWordChar(str)
 	if x {
 		return x
 	}
-	if str == "=" || str == `"` {
+	if str == `"` || str == "'" || str == "`" {
 		return true
 	}
 	return false
