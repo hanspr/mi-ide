@@ -194,6 +194,8 @@ func (v *View) paste(clip string) {
 	}
 
 	Start := v.Cursor.Loc
+	v.Buf.pasteLoc = v.Cursor.Loc
+
 	if v.Buf.Settings["rmtrailingws"] == true {
 		v.Buf.RemoveTrailingSpace(v.Cursor.Loc)
 	}

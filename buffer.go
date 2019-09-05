@@ -79,6 +79,9 @@ type Buffer struct {
 
 	// Buffer local settings
 	Settings map[string]interface{}
+
+	pasteLoc Loc
+	//pasteTime time
 }
 
 // The SerializedBuffer holds the types that get serialized when a buffer is saved
@@ -278,7 +281,7 @@ func NewBuffer(reader io.Reader, size int64, path string, cursorPosition []strin
 	}
 
 	b.cursors = []*Cursor{&b.Cursor}
-
+	b.pasteLoc.X = -1
 	return b
 }
 

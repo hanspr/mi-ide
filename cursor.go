@@ -219,6 +219,7 @@ func (c *Cursor) WordRight() {
 		}
 		c.Right()
 	}
+	c.buf.pasteLoc.X = -1
 }
 
 // WordLeft moves the cursor one word to the left
@@ -238,6 +239,7 @@ func (c *Cursor) WordLeft() {
 		c.Left()
 	}
 	c.Right()
+	c.buf.pasteLoc.X = -1
 }
 
 // RuneUnder returns the rune under the given x position
@@ -281,11 +283,21 @@ func (c *Cursor) DownN(amount int) {
 // Up moves the cursor up one line (if possible)
 func (c *Cursor) Up() {
 	c.UpN(1)
+	if c.buf.pasteLoc.X >= 0 {
+		// Recent paste, move to previous x position
+		c.GotoLoc(Loc{c.buf.pasteLoc.X, c.Loc.Y})
+		c.buf.pasteLoc.X = -1
+	}
 }
 
 // Down moves the cursor down one line (if possible)
 func (c *Cursor) Down() {
 	c.DownN(1)
+	if c.buf.pasteLoc.X >= 0 {
+		// Recent paste, move to previous x position
+		c.GotoLoc(Loc{c.buf.pasteLoc.X, c.Loc.Y})
+		c.buf.pasteLoc.X = -1
+	}
 }
 
 // Left moves the cursor left one cell (if possible) or to
@@ -301,6 +313,7 @@ func (c *Cursor) Left() {
 		c.End()
 	}
 	c.LastVisualX = c.GetVisualX()
+	c.buf.pasteLoc.X = -1
 }
 
 // Right moves the cursor right one cell (if possible) or
@@ -316,18 +329,21 @@ func (c *Cursor) Right() {
 		c.Start()
 	}
 	c.LastVisualX = c.GetVisualX()
+	c.buf.pasteLoc.X = -1
 }
 
 // End moves the cursor to the end of the line it is on
 func (c *Cursor) End() {
 	c.X = Count(c.buf.Line(c.Y))
 	c.LastVisualX = c.GetVisualX()
+	c.buf.pasteLoc.X = -1
 }
 
 // Start moves the cursor to the start of the line it is on
 func (c *Cursor) Start() {
 	c.X = 0
 	c.LastVisualX = c.GetVisualX()
+	c.buf.pasteLoc.X = -1
 }
 
 // StartOfText moves the cursor to the first non-whitespace rune of

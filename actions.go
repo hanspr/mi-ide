@@ -1450,7 +1450,6 @@ func (v *View) Paste(usePlugin bool) bool {
 		return false
 	}
 
-	//clip, _ := clipboard.ReadAll("clipboard")
 	clip := Clip.ReadFrom("local")
 	v.paste(clip)
 
@@ -1653,6 +1652,7 @@ func (v *View) CursorPageUp(usePlugin bool) bool {
 	}
 
 	v.deselect(0)
+	v.Buf.pasteLoc.X = -1
 
 	if v.Cursor.HasSelection() {
 		v.Cursor.Loc = v.Cursor.CurSelection[0]
@@ -1684,6 +1684,7 @@ func (v *View) CursorPageDown(usePlugin bool) bool {
 	}
 
 	v.deselect(0)
+	v.Buf.pasteLoc.X = -1
 
 	if v.Cursor.HasSelection() {
 		v.Cursor.Loc = v.Cursor.CurSelection[1]
