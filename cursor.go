@@ -205,6 +205,9 @@ func (c *Cursor) SelectTo(loc Loc) {
 
 // WordRight moves the cursor one word to the right
 func (c *Cursor) WordRight() {
+	// Reset paste location
+	c.buf.pasteLoc.X = -1
+
 	for IsWhitespace(c.RuneUnder(c.X)) {
 		if c.X == Count(c.buf.Line(c.Y)) {
 			c.Right()
@@ -219,11 +222,13 @@ func (c *Cursor) WordRight() {
 		}
 		c.Right()
 	}
-	c.buf.pasteLoc.X = -1
 }
 
 // WordLeft moves the cursor one word to the left
 func (c *Cursor) WordLeft() {
+	// Reset paste location
+	c.buf.pasteLoc.X = -1
+
 	c.Left()
 	for IsWhitespace(c.RuneUnder(c.X)) {
 		if c.X == 0 {
@@ -239,7 +244,6 @@ func (c *Cursor) WordLeft() {
 		c.Left()
 	}
 	c.Right()
-	c.buf.pasteLoc.X = -1
 }
 
 // RuneUnder returns the rune under the given x position
@@ -286,6 +290,7 @@ func (c *Cursor) Up() {
 	if c.buf.pasteLoc.X >= 0 {
 		// Recent paste, move to previous x position
 		c.GotoLoc(Loc{c.buf.pasteLoc.X, c.Loc.Y})
+		// Reset to do it only once
 		c.buf.pasteLoc.X = -1
 	}
 }
@@ -296,6 +301,7 @@ func (c *Cursor) Down() {
 	if c.buf.pasteLoc.X >= 0 {
 		// Recent paste, move to previous x position
 		c.GotoLoc(Loc{c.buf.pasteLoc.X, c.Loc.Y})
+		// Reset to do it only once
 		c.buf.pasteLoc.X = -1
 	}
 }
@@ -313,6 +319,7 @@ func (c *Cursor) Left() {
 		c.End()
 	}
 	c.LastVisualX = c.GetVisualX()
+	// Reset paste location
 	c.buf.pasteLoc.X = -1
 }
 
@@ -329,6 +336,7 @@ func (c *Cursor) Right() {
 		c.Start()
 	}
 	c.LastVisualX = c.GetVisualX()
+	// Reset paste location
 	c.buf.pasteLoc.X = -1
 }
 
@@ -336,6 +344,7 @@ func (c *Cursor) Right() {
 func (c *Cursor) End() {
 	c.X = Count(c.buf.Line(c.Y))
 	c.LastVisualX = c.GetVisualX()
+	// Reset paste location
 	c.buf.pasteLoc.X = -1
 }
 
@@ -343,6 +352,7 @@ func (c *Cursor) End() {
 func (c *Cursor) Start() {
 	c.X = 0
 	c.LastVisualX = c.GetVisualX()
+	// Reset paste location
 	c.buf.pasteLoc.X = -1
 }
 
