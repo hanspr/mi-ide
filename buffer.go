@@ -465,7 +465,7 @@ func (b *Buffer) SmartIndent(Start, Stop Loc, once bool) {
 	sMod := b.IsModified
 	iChar := b.Settings["indentchar"].(string)
 	iMult := 1
-	if iChar == " " && b.Settings["tabstospaces"].(bool) == false {
+	if iChar == " " {
 		iMult = int(b.Settings["tabsize"].(float64))
 		iChar = strings.Repeat(" ", iMult)
 	}
