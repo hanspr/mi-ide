@@ -1334,7 +1334,7 @@ func (m *microMenu) SetTabSpace(name, value, event, when string, x, y int) bool 
 // Local Configuracion : language or file
 // ---------------------------------------
 
-const mmBufferSettings = "autoclose,autoindent,eofnewline,fileformat,indentchar,keepautoindent,matchbrace,rmtrailingws,smartindent,smartpaste,softwrap,tabindents,tabstospaces,tabsize"
+const mmBufferSettings = "autoclose,autoindent,eofnewline,fileformat,indentchar,keepautoindent,matchbrace,rmtrailingws,smartindent,smartpaste,softwrap,tabindents,tabmovement,tabstospaces,tabsize"
 
 func (m *microMenu) SelLocalSettings(b *Buffer) {
 	var f *Frame
@@ -1351,8 +1351,9 @@ func (m *microMenu) SelLocalSettings(b *Buffer) {
 		height := 16
 		f = m.myapp.AddFrame("f", -1, -1, width, height, "relative")
 		f.AddWindowBox("enc", Language.Translate("Buffer Settings"), 0, 0, width, height, true, nil, "")
-		f.AddWindowRadio("savefor", Language.Translate("Save as this file settings only"), "file", 2, height-3, true, nil, "")
-		f.AddWindowRadio("savefor", fmt.Sprintf(Language.Translate("Save as default settings for all (%s) files"), b.FileType()), "lang", 2, height-2, false, nil, "")
+		f.AddWindowRadio("savefor", Language.Translate("Save as this file settings only"), "file", 2, height-4, false, nil, "")
+		f.AddWindowRadio("savefor", fmt.Sprintf(Language.Translate("Save as default settings for all (%s) files"), b.FileType()), "lang", 2, height-3, false, nil, "")
+		f.AddWindowRadio("savefor", Language.Translate("Change settings for this session only"), "none", 2, height-2, true, nil, "")
 		lbl := Language.Translate("Save")
 		f.AddWindowButton("set", lbl, "ok", width-Count(lbl)-3, height-1, m.SetLocalSettings, "")
 		w := Count(Language.Translate("Cancel"))
@@ -1439,15 +1440,18 @@ func (m *microMenu) SetLocalSettings(name, value, event, when string, x, y int) 
 	fname := configDir + "/settings/" + b.FileType() + ".json"
 	if values["savefor"] == "file" {
 		// Add current filetype selected too
+		values["encoder"] = b.buf.encoder
 		values["filetype"] = b.FileType()
 		// Change destintation to this file only
 		absFilename := ReplaceHome(b.AbsPath)
 		fname = configDir + "/buffers/" + strings.ReplaceAll(absFilename+".settings", "/", "")
 	}
-	// Remove non buffer settings values
-	delete(values, "savefor")
-	// Update JSON file
-	UpdateFileJSON(fname, values)
+	if values["savefor"] != "none" {
+		// Remove non buffer settings values
+		delete(values, "savefor")
+		// Update JSON file
+		UpdateFileJSON(fname, values)
+	}
 	m.Finish("settings")
 	return true
 }

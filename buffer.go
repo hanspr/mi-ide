@@ -99,7 +99,7 @@ func (b *Buffer) GetFileSettings(filename string) {
 	cachename = configDir + "/buffers/" + strings.ReplaceAll(cachename, "/", "")
 	settings, jerr := ReadFileJSON(cachename)
 	if jerr == nil {
-		if settings["encoder"] != "" {
+		if settings["encoder"] != nil {
 			b.encoder = settings["encoder"].(string)
 			b.sencoder = b.encoder
 			return
@@ -465,7 +465,7 @@ func (b *Buffer) SmartIndent(Start, Stop Loc, once bool) {
 	sMod := b.IsModified
 	iChar := b.Settings["indentchar"].(string)
 	iMult := 1
-	if iChar == " " {
+	if iChar == " " && b.Settings["tabstospaces"].(bool) == false {
 		iMult = int(b.Settings["tabsize"].(float64))
 		iChar = strings.Repeat(" ", iMult)
 	}
@@ -1186,10 +1186,12 @@ func (buf *Buffer) SmartDetections() {
 	if found {
 		if tablines > spacelines {
 			buf.Settings["indentchar"] = "\t"
-			buf.Settings["tabtospaces"] = false
+			buf.Settings["tabstospaces"] = false
+			buf.Settings["tabmovement"] = false
 		} else {
 			buf.Settings["indentchar"] = " "
-			buf.Settings["tabtospaces"] = true
+			buf.Settings["tabstospaces"] = true
+			buf.Settings["tabmovement"] = true
 			if spclen > 1 {
 				buf.Settings["tabsize"] = float64(spclen)
 			}
