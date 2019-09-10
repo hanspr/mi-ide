@@ -471,7 +471,7 @@ func (v *View) Relocate() bool {
 	if !v.Buf.Settings["softwrap"].(bool) {
 		cx := v.Cursor.GetVisualX()
 		// Force go all the way to the left when visual X in range to fit at the begging
-		// This avoids having shited lines close to the begining of the window
+		// This avoids having shifted lines close to the begining of the window
 		if cx < v.Width*10/11 {
 			cx = 0
 		}
@@ -1056,13 +1056,14 @@ func (v *View) DisplayView() {
 
 	if ActiveView {
 		// Have a window margin on edges for long lines if the windows is not wide enough
+		//messenger.AddLog("A:", StringWidth(v.Buf.Line(v.Cursor.Loc.Y), int(v.Buf.Settings["tabsize"].(float64))), " > ", width-v.lineNumOffset)
 		if v.Buf.Settings["softwrap"].(bool) == false && StringWidth(v.Buf.Line(v.Cursor.Loc.Y), int(v.Buf.Settings["tabsize"].(float64))) > width-v.lineNumOffset {
 			shift := 0
-			if v.Cursor.GetVisualX()+1 < width-v.lineNumOffset && v.Cursor.GetVisualX()+1 > width-v.lineNumOffset-WindowOffset {
+			if v.Cursor.GetVisualX()+1 < width-v.lineNumOffset && v.Cursor.GetVisualX()+1 > width-v.lineNumOffset-WindowOffset && left == 0 {
 				shift = WindowOffset - (width - v.lineNumOffset - v.Cursor.GetVisualX())
 			} else if v.Cursor.GetVisualX()+1 >= width-v.lineNumOffset && v.Cursor.GetVisualX()-WindowOffset > left+WindowOffset {
 				shift = WindowOffset
-			} else if v.Cursor.GetVisualX()+1 >= width-v.lineNumOffset && v.Cursor.GetVisualX()-WindowOffset <= left+WindowOffset {
+			} else if (v.Cursor.GetVisualX()+1 >= width-v.lineNumOffset && v.Cursor.GetVisualX()-WindowOffset <= left+WindowOffset) || left > 0 {
 				shift = v.Cursor.GetVisualX() - left - WindowOffset
 			}
 			left += shift

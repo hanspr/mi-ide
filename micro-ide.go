@@ -85,7 +85,7 @@ var (
 	// How many redraws have happened
 	numRedraw uint
 
-	// Pointer Flag to check id App is running
+	// Pointer Flag to check if App is running
 	apprunning *MicroApp = nil
 
 	micromenu *microMenu
