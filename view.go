@@ -1056,7 +1056,6 @@ func (v *View) DisplayView() {
 
 	if ActiveView {
 		// Have a window margin on edges for long lines if the windows is not wide enough
-		//messenger.AddLog("A:", StringWidth(v.Buf.Line(v.Cursor.Loc.Y), int(v.Buf.Settings["tabsize"].(float64))), " > ", width-v.lineNumOffset)
 		if v.Buf.Settings["softwrap"].(bool) == false && StringWidth(v.Buf.Line(v.Cursor.Loc.Y), int(v.Buf.Settings["tabsize"].(float64))) > width-v.lineNumOffset {
 			shift := 0
 			if v.Cursor.GetVisualX()+1 < width-v.lineNumOffset && v.Cursor.GetVisualX()+1 > width-v.lineNumOffset-WindowOffset && left == 0 {
