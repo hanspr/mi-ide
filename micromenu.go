@@ -1605,6 +1605,10 @@ func (m *microMenu) TreeViewEvent(name, value, event, when string, x, y int) boo
 			return false
 		}
 	} else if event == "mouse-click3" || event == "mouse-click2" || event == "Right" {
+		if event == "Right" && strings.Contains(value, "/") {
+			m.myapp.activeElement = name
+			return true
+		}
 		if CurView().Buf.Modified() {
 			messenger.Error(Language.Translate("You need to save view first"))
 			m.Finish("file dirty")
