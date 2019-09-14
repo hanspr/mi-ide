@@ -12,10 +12,9 @@ import (
 
 	"github.com/blang/semver"
 	"github.com/hanspr/highlight"
+	"github.com/hanspr/ioencoder"
 	"github.com/hanspr/tcell"
 )
-
-const ENCODINGS = "UTF-8|ISO-8859-1|ISO-8859-2|ISO-8859-15|WINDOWS-1250|WINDOWS-1251|WINDOWS-1252|WINDOWS-1256|SHIFT-JIS|GB2312|EUC-KR|EUC-JP|GBK|BIG5|ASCII"
 
 type menuElements struct {
 	label    string
@@ -1092,35 +1091,32 @@ func (m *microMenu) SaveAs(b *Buffer, usePlugin bool, callback func(map[string]s
 		} else {
 			m.myapp.name = "mi-saveas"
 		}
+		enc := ioencoder.New()
+		ENCODINGS := enc.GetAvailableEncodingsAsString("|")
+		ENCODINGS = "UTF8|" + ENCODINGS
+		encoder := b.encoder
+		encoder = strings.ReplaceAll(encoder, "-", "")
+		encoder = strings.ReplaceAll(encoder, "_", "")
 		m.myapp.Reset()
 		m.myapp.defStyle = StringToStyle("#ffffff,#262626")
 		width := 80
-		height := 8
+		height := 17
 		f = m.myapp.AddFrame("f", -1, -1, width, height, "relative")
 		f.AddWindowBox("enc", Language.Translate("Save As ..."), 0, 0, width, height, true, nil, "")
 		lbl := Language.Translate("File name :")
 		f.AddWindowTextBox("filename", lbl+" ", "", "string", 2, 2, 76-Count(lbl), 200, m.SaveFile, "")
 		lbl = Language.Translate("Encoding:")
-		f.AddWindowSelect("encoding", lbl+" ", b.encoder, ENCODINGS+"|"+b.encoder, 2, 4, 0, 1, m.SaveAsEncodingEvent, "")
-		lbl = Language.Translate("Use this encoding:")
-		f.AddWindowTextBox("encode", lbl+" ", "", "string", 55-Count(lbl), 4, 15, 15, nil, "")
+		f.AddWindowSelect("encoding", lbl+" ", encoder, ENCODINGS, 2, 4, 0, 12, m.SaveAsEncodingEvent, "")
 		lbl = Language.Translate("Cancel")
-		f.AddWindowButton("cancel", " "+lbl+" ", "cancel", 56-Count(lbl), 6, m.SaveAsButtonFinish, "")
+		f.AddWindowButton("cancel", " "+lbl+" ", "cancel", 56-Count(lbl), height-2, m.SaveAsButtonFinish, "")
 		lbl = Language.Translate("Save")
-		f.AddWindowButton("set", " "+lbl+" ", "ok", 75-Count(lbl), 6, m.SaveFile, "")
+		f.AddWindowButton("set", " "+lbl+" ", "ok", 75-Count(lbl), height-2, m.SaveFile, "")
 		m.myapp.WindowFinish = callback
 	} else {
 		f = m.myapp.frames["f"]
 	}
 	m.usePlugin = usePlugin
 	f.SetValue("filename", b.Path)
-	if strings.Contains(ENCODINGS, b.encoder) {
-		f.SetValue("encoding", b.encoder)
-		f.SetValue("encode", "")
-	} else {
-		f.SetValue("encoding", "UTF-8")
-		f.SetValue("encode", b.encoder)
-	}
 	m.myapp.Finish = m.SaveAsFinish
 	m.myapp.Start()
 	f.SetFocus("filename", "E")
@@ -1469,20 +1465,23 @@ func (m *microMenu) SelEncoding(encoder string, callback func(map[string]string)
 		} else {
 			m.myapp.name = "mi-selencoding"
 		}
+		enc := ioencoder.New()
+		ENCODINGS := enc.GetAvailableEncodingsAsString("|")
+		ENCODINGS = "UTF8|" + ENCODINGS
 		m.myapp.Reset()
 		m.myapp.defStyle = StringToStyle("#ffffff,#262626")
 		width := 60
-		height := 8
+		height := 15
+		encoder = strings.ReplaceAll(encoder, "-", "")
+		encoder = strings.ReplaceAll(encoder, "_", "")
 		f = m.myapp.AddFrame("f", -1, -1, width, height, "relative")
 		f.AddWindowBox("enc", Language.Translate("Select Encoding"), 0, 0, width, height, true, nil, "")
 		lbl := Language.Translate("Encoding:")
-		f.AddWindowSelect("encoding", lbl+" ", encoder, ENCODINGS, 2, 2, 0, 1, nil, "")
-		lbl = Language.Translate("Use this encoding:")
-		f.AddWindowTextBox("encode", lbl+" ", "", "string", 2, 4, 15, 15, nil, "")
+		f.AddWindowSelect("encoding", lbl+" ", encoder, ENCODINGS, 2, 2, 0, 12, nil, "")
 		lbl = Language.Translate("Cancel")
-		f.AddWindowButton("cancel", " "+lbl+" ", "cancel", 33-Count(lbl), 6, m.ButtonFinish, "")
+		f.AddWindowButton("cancel", " "+lbl+" ", "cancel", 43, height-4, m.ButtonFinish, "")
 		lbl = Language.Translate("Set encoding")
-		f.AddWindowButton("set", " "+lbl+" ", "ok", 43, 6, m.SetEncoding, "")
+		f.AddWindowButton("set", " "+lbl+" ", "ok", 43, height-2, m.SetEncoding, "")
 		m.myapp.WindowFinish = callback
 	} else {
 		f = m.myapp.frames["f"]

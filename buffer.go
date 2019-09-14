@@ -20,8 +20,8 @@ import (
 	"unicode"
 	"unicode/utf8"
 
-	iconv "github.com/djimenez/iconv-go"
 	"github.com/hanspr/highlight"
+	"github.com/hanspr/ioencoder"
 )
 
 const LargeFileThreshold = 50000
@@ -106,7 +106,7 @@ func (b *Buffer) GetFileSettings(filename string) {
 		}
 	}
 	// Here it beggins the guessing game
-	// Use uchardet shipped with micro-ide if exists
+	// Use uchardet shipped with micro-ide if exists and it runs
 	b.encoder = "UTF-8"
 	uchardet := configDir + "/libs/uchardet"
 	if _, err := os.Stat(uchardet); err == nil {
@@ -118,6 +118,10 @@ func (b *Buffer) GetFileSettings(filename string) {
 			return
 		}
 		b.encoder = strings.TrimSuffix(strings.ToUpper(string(msg)), "\n")
+	}
+	// Open ASCII files as UTF8
+	if b.encoder == "ASCII" {
+		b.encoder = "UTF-8"
 	}
 	if b.encoder != "UTF-8" {
 		// Double check, file -b has better guessing for UTF-8 files
@@ -186,15 +190,14 @@ func NewBuffer(reader io.Reader, size int64, path string, cursorPosition []strin
 			utf8reader = reader
 			b.encoding = false
 		} else {
-			// wrap reader around iconv-go
 			var err error
-			utf8reader, err = iconv.NewReader(reader, b.encoder, "utf-8")
-			if err != nil {
-				utf8reader = reader
+			enc := ioencoder.New()
+			utf8reader, err = enc.GetReader(b.encoder, reader)
+			if err == nil {
+				b.encoding = true
+			} else {
 				b.encoder = "UTF-8"
 				b.encoding = false
-			} else {
-				b.encoding = true
 			}
 		}
 	} else {
@@ -578,7 +581,8 @@ func (b *Buffer) ReOpen() {
 	var txt string
 	data, err := ioutil.ReadFile(b.Path)
 	if b.encoding == true {
-		txt, _ = iconv.ConvertString(string(data), b.encoder, "UTF-8")
+		enc := ioencoder.New()
+		txt = enc.DecodeString(b.encoder, string(data))
 	} else {
 		txt = string(data)
 	}
@@ -593,6 +597,9 @@ func (b *Buffer) ReOpen() {
 	b.IsModified = false
 	b.Update()
 	b.Cursor.Relocate()
+	if b.encoding == true {
+		screen.Sync()
+	}
 }
 
 // Update fetches the string from the rope and updates the `text` and `lines` in the buffer
@@ -720,9 +727,10 @@ func (b *Buffer) SaveAs(filename string) error {
 		var fileutf8 io.Writer
 		var err error
 		var eol []byte
+		enc := ioencoder.New()
 
 		if b.encoding == true {
-			fileutf8, err = iconv.NewWriter(file, "utf-8", b.encoder)
+			fileutf8, err = enc.GetWriter(b.encoder, file)
 			if err != nil {
 				messenger.AddLog("Error!:", err.Error())
 				messenger.AddLog("Original encoding:", b.encoder)
