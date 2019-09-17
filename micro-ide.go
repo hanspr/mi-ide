@@ -413,6 +413,8 @@ func main() {
 	// Load the user's settings
 	InitGlobalSettings()
 
+	utf8ToShare, _ := CompileLua(configDir + "/libs/utf8.lua")
+	DoCompiledFile(L, utf8ToShare)
 	// Create translation object, to begin translating messeges
 	Language = lang.NewLang(globalSettings["lang"].(string), configDir+"/langs/"+globalSettings["lang"].(string)+".lang")
 
