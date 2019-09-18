@@ -4,7 +4,7 @@ Micro ide is a spin-off version of the great micro editor project at https://git
 
 This version is a highly customized and modified versión with many of the features that I always wanted in a ssh terminal editor and that are some how missing in all the editors I tried (or some has all of them, but there learning curve has always been to steep for me).
 
-Many of those features were already provided by micro editor :+1:. But some others were still missing :star:, and there inclusion are personal and not necessarily everyone would agree. This are some of this features:
+Many of those features were already provided by micro editor :+1:. But some others were still missing :star:, and there inclusion are personal and not necessarily useful to everyone. This are some of these features:
 
 * Low learning curve :+1:
 * Great syntax highlighting and easily customizable :+1:
@@ -12,7 +12,7 @@ Many of those features were already provided by micro editor :+1:. But some othe
 * Multiple language support :star:
 * Auto detect file encoding, open encode and decode: UTF8, ISO8859, WINDOWS, etc :star:
 * Replace the need to learn too many key combinations and commands by the use (and abuse) of good mouse support with: icons, buttons, dialog boxes. Similar to windowed editors. :star:
-* Use and abuse color to easily find the cursor, selected text, etc.
+* Use and abuse color to easily find the cursor, selected text, etc. :star:
 * Good and powerful plugin system to hack the editor to my personal needs (:+1::star:)
     - Without the need to compile or setup a complicated environment
     - Resilient to editor new versions
