@@ -1,26 +1,36 @@
 # ![Micro](./assets/logo.png)
 
-Micro ide is a spin-of version of the great micro editor project at https://github.com/zyedidia/micro.
+Micro ide is a spin-off version of the great micro editor project at https://github.com/zyedidia/micro.
 
-This version is a highly customized and modified versión with many of the features that I always wanted in a ssh terminal editor and that are some how missing in all the editors I tried (or some has all of them but there learning curve has always been to steep for me). Many of those features were already provided by micro editor (!). But some others were still missing (+), and there inclusion are personal and not necessarily everyone would agree. This are some of this features:
+This version is a highly customized and modified versión with many of the features that I always wanted in a ssh terminal editor and that are some how missing in all the editors I tried (or some has all of them, but there learning curve has always been to steep for me).
 
-* Low learning curve (!)
-* Great syntax highlighting and easily customizable (!)
-* Good cursor positioning after paste, cuts, duplicate a line, moving on the edges of the window, reposition on search, etc. (+)
-* Multiple language support (+)
-* Auto detect open encode and decode UTF8, ISO8859, WINDOWS, etc (+)
-* Internal copy paste between terminals without the need of shift-key and mouse dragging (+)
-* Replace the need to learn too many key combinations and commands by the use (abuse) of good mouse support with: icons, buttons, dialog boxes. Similar to windowed editors. (+)
-* Good and powerful plugin system to hack the editor to my personal needs (!+)
+Many of those features were already provided by micro editor :+1:. But some others were still missing :star:, and there inclusion are personal and not necessarily everyone would agree. This are some of this features:
+
+* Low learning curve :+1:
+* Great syntax highlighting and easily customizable :+1:
+* Good cursor positioning after paste, cuts, duplicate a line, moving on the edges of the window, reposition on search, etc. :star:
+* Multiple language support :star:
+* Auto detect file encoding, open encode and decode: UTF8, ISO8859, WINDOWS, etc :star:
+* Replace the need to learn too many key combinations and commands by the use (and abuse) of good mouse support with: icons, buttons, dialog boxes. Similar to windowed editors. :star:
+* Use and abuse color to easily find the cursor, selected text, etc.
+* Good and powerful plugin system to hack the editor to my personal needs (:+1::star:)
     - Without the need to compile or setup a complicated environment
     - Resilient to editor new versions
-* Save settings for (+)
+* Save settings for :star:
     - a coding language (c,php,python,perl,..)
     - or single file
-* A more powerful auto indent (+)
-* Auto complete (+)
+* A more powerful auto indent :star:
+* Auto complete :star:
+* Internal copy paste between terminals in the same server without the need of shift-key and mouse dragging :star:
+* Features that require an external server to work :star:
+    - Internal copy paste between terminals in different servers without the need of shift-key and mouse dragging
+    - Package my full editor to install on new servers
+    - Package and retrieve my settings to quickly sync my editor's choices and hacks across different servers I work on
+    - Transfer a single script, text file quickly from one server to another
+    - See [Support the project & Services](#support-the-project) for these features
 
 ![Screenshot](./assets/features.gif)
+
 
 # Table of Contents
 - [Features](#features)
@@ -30,6 +40,7 @@ This version is a highly customized and modified versión with many of the featu
 - [Documentation and Help](#documentation-and-help)
 - [Plugin Development](#plugin)
 - [Contributing](#contributing)
+- [Support the project & Services](#support-the-project)
 
 - - -
 
@@ -88,7 +99,7 @@ If you find any bugs, please report them! I am also happy to accept pull request
 
 You can use the [GitHub issue tracker](https://github.com/hanspr/micro-ide/issues) to report bugs, ask questions, or suggest new features.
 
-# Support the project / Services
+# Support the project
 
 If you find this project useful and want to support it, please use the following page to process your contribution.
 
