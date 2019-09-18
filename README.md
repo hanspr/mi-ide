@@ -2,13 +2,13 @@
 
 Micro ide is a spin-off version of the great micro editor project at https://github.com/zyedidia/micro.
 
-This version is a highly customized and modified versión with many of the features that I always wanted in a ssh terminal editor; and that are, some how, missing in all the editors I tried. Or some editors have all of them, but there learning curve has always been to steep for me (which is the first feature that I always wanted : _low learning curve_).
+This version is a highly customized and modified versión with many of the features that I always wanted in a ssh terminal editor; and that are, some how, missing in all the editors I tried. Or some editors have all of them, but there learning curve has always been to steep for me (which is the first feature that I always wanted : _short learning curve_).
 
 This version is also targeted to work on Linux servers. It does compile and may run under other platforms, but not all features will work. I'm mainly focused on **improving the working experience of coding remotely over ssh on headless Linux servers**.
 
-Many of those features were already provided by [micro editor](https://github.com/zyedidia/micro) :+1:. But some others were still missing :star:, and there inclusion are personal and not necessarily useful to everyone. These are some of those features:
+Many of those features were already provided by [micro editor](https://github.com/zyedidia/micro) :+1:. But some others were still missing :star:, and there inclusion are personal and not necessarily useful to everyone. This is the list of the most important features to me:
 
-* :+1: Low learning curve
+* :+1: Short learning curve
 * :+1: Great syntax highlighting and easily customizable
 * :star: Good cursor positioning after paste, cuts, duplicate a line, moving on the edges of the window, reposition on search, etc.
 * :star: Multiple language support
@@ -53,8 +53,16 @@ To install micro, you can download a [prebuilt binary](https://github.com/hanspr
 
 ### Colors and syntax highlighting
 
-If you open micro and it doesn't seem like syntax highlighting is working, this is probably because you are using a terminal which does not support 256 color. Try changing the colorscheme to `default16` going to Menu > System Settings : Select "cholorscheme".
+If your terminal does not support 256 color. Try changing the colorscheme to `default16`, by going to Menu > System Settings : Select "cholorscheme".
 
+If your terminal supports 256 colors but you do not see the full colors available you may try these commands:
+
+```
+export TERM=xterm-256color
+
+#Add this line to your .bashrc
+export TERM=xterm-256color
+```
 
 
 # Usage
@@ -65,7 +73,7 @@ You can move the cursor around with the arrow keys and mouse.
 
 You can also use the mouse to manipulate the text. Simply clicking and dragging will select text. You can also double click to enable word selection, and triple click to enable line selection.
 
-For a brief introduction you may watch this video
+[For a full introduction you may watch this video]()
 
 # Documentation and Help
 
@@ -73,9 +81,9 @@ Micro-ide has a built-in help system which you can access by pressing `Alt-?` or
 
 # Plugin
 
-The plugin system has been modified in this version, you should be able to make any previous plugin you develop by doing some minor adjustments.
+The plugin system has been modified in this version, you should be able to run any plugin you develop for micro editor, by doing some minor adjustments.
 
-Please visit the developers page with full instructions at:
+Please visit the [developers page](https://github.com/hanspr/micro-ide/wiki) with full instructions and videos about the plugin framework
 
 # Contributing
 
@@ -100,6 +108,8 @@ You may find the translation file in your config directory under : langs
     - Clone : https://github.com/hanspr/mi-sources
     - Copy your file or update the current translation in the langs directory
     - Create a pull request
+
+For more detailed instructions on how to translate micro-ide visit the [Wiki pages](https://github.com/hanspr/micro-ide/wiki)
 
 # Support the project
 
