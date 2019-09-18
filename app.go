@@ -173,7 +173,7 @@ func (a *MicroApp) AddStyle(name, style string) {
 	a.styles[name] = s
 }
 
-func (a *MicroApp) AddWindowElement(frame, name, label, form, value, value_type string, x, y, w, h int, chk bool, callback func(string, string, string, string, int, int) bool, style string) {
+func (a *MicroApp) AddWindowElement(frame, name, label, form, value, value_type string, x, y, w, h int, chk bool, callback func(string, string, string, string, int, int) bool, style, luacallback string) {
 	var e AppElement
 
 	f := a.frames[frame]
@@ -188,6 +188,7 @@ func (a *MicroApp) AddWindowElement(frame, name, label, form, value, value_type 
 	e.height = h
 	e.index = 1
 	e.callback = callback
+	e.luacallback = luacallback
 	e.checked = chk
 	e.offset = 0
 	e.microapp = a
@@ -271,73 +272,73 @@ func (a *MicroApp) AddWindowElement(frame, name, label, form, value, value_type 
 	a.frames[frame].elements[e.name] = &e
 }
 
-func (f *Frame) AddWindowBox(name, title string, x, y, width, height int, border bool, callback func(string, string, string, string, int, int) bool, style string) {
+func (f *Frame) AddWindowBox(name, title string, x, y, width, height int, border bool, callback func(string, string, string, string, int, int) bool, style, luacallback string) {
 	a := f.microapp
 	if width < 1 || height < 1 {
 		return
 	}
-	a.AddWindowElement(f.name, name, title, "box", "", "", x, y, width, height, border, callback, style)
+	a.AddWindowElement(f.name, name, title, "box", "", "", x, y, width, height, border, callback, style, luacallback)
 }
 
-func (f *Frame) AddWindowLabel(name, label string, x, y int, callback func(string, string, string, string, int, int) bool, style string) {
+func (f *Frame) AddWindowLabel(name, label string, x, y int, callback func(string, string, string, string, int, int) bool, style, luacallback string) {
 	a := f.microapp
-	a.AddWindowElement(f.name, name, label, "label", "", "", x, y, 0, 0, false, callback, style)
+	a.AddWindowElement(f.name, name, label, "label", "", "", x, y, 0, 0, false, callback, style, luacallback)
 }
 
-func (f *Frame) AddWindowMenuLabel(name, label, kind string, x, y int, callback func(string, string, string, string, int, int) bool, style string) {
+func (f *Frame) AddWindowMenuLabel(name, label, kind string, x, y int, callback func(string, string, string, string, int, int) bool, style, luacallback string) {
 	a := f.microapp
 	if kind == "r" {
-		a.AddWindowElement(f.name, name, " "+label+string(tcell.RuneVLine), "label", "", "", x, y, 0, 0, false, callback, style)
+		a.AddWindowElement(f.name, name, " "+label+string(tcell.RuneVLine), "label", "", "", x, y, 0, 0, false, callback, style, luacallback)
 	} else if kind == "l" {
-		a.AddWindowElement(f.name, name, string(tcell.RuneVLine)+label+" ", "label", "", "", x, y, 0, 0, false, callback, style)
+		a.AddWindowElement(f.name, name, string(tcell.RuneVLine)+label+" ", "label", "", "", x, y, 0, 0, false, callback, style, luacallback)
 	} else if kind == "cl" {
-		a.AddWindowElement(f.name, name, string('┐')+label+string(tcell.RuneVLine), "label", "", "", x, y, 0, 0, false, callback, style)
+		a.AddWindowElement(f.name, name, string('┐')+label+string(tcell.RuneVLine), "label", "", "", x, y, 0, 0, false, callback, style, luacallback)
 	} else {
-		a.AddWindowElement(f.name, name, string(tcell.RuneVLine)+label+string(tcell.RuneVLine), "label", "", "", x, y, 0, 0, false, callback, style)
+		a.AddWindowElement(f.name, name, string(tcell.RuneVLine)+label+string(tcell.RuneVLine), "label", "", "", x, y, 0, 0, false, callback, style, luacallback)
 	}
 }
 
-func (f *Frame) AddWindowMenuTop(name, label string, x, y int, callback func(string, string, string, string, int, int) bool, style string) {
+func (f *Frame) AddWindowMenuTop(name, label string, x, y int, callback func(string, string, string, string, int, int) bool, style, luacallback string) {
 	a := f.microapp
 	label = strings.ReplaceAll(label, " ", string(tcell.RuneHLine))
-	a.AddWindowElement(f.name, name, string(tcell.RuneLLCorner)+label+string(tcell.RuneURCorner), "label", "", "", x, y, 0, 0, false, callback, style)
+	a.AddWindowElement(f.name, name, string(tcell.RuneLLCorner)+label+string(tcell.RuneURCorner), "label", "", "", x, y, 0, 0, false, callback, style, luacallback)
 }
 
-func (f *Frame) AddWindowMenuBottom(name, label string, x, y int, callback func(string, string, string, string, int, int) bool, style string) {
+func (f *Frame) AddWindowMenuBottom(name, label string, x, y int, callback func(string, string, string, string, int, int) bool, style, luacallback string) {
 	a := f.microapp
 	label = strings.ReplaceAll(label, " ", string(tcell.RuneHLine))
-	a.AddWindowElement(f.name, name, string(tcell.RuneLLCorner)+label+string(tcell.RuneLRCorner), "label", "", "", x, y, 0, 0, false, callback, style)
+	a.AddWindowElement(f.name, name, string(tcell.RuneLLCorner)+label+string(tcell.RuneLRCorner), "label", "", "", x, y, 0, 0, false, callback, style, luacallback)
 }
 
-func (f *Frame) AddWindowTextBox(name, label, value, value_type string, x, y, width, maxlength int, callback func(string, string, string, string, int, int) bool, style string) {
+func (f *Frame) AddWindowTextBox(name, label, value, value_type string, x, y, width, maxlength int, callback func(string, string, string, string, int, int) bool, style, luacallback string) {
 	a := f.microapp
 	if width < 1 {
 		return
 	} else if width <= 3 && maxlength > 3 {
 		maxlength = width
 	}
-	a.AddWindowElement(f.name, name, label, "textbox", value, value_type, x, y, width, maxlength, false, callback, style)
+	a.AddWindowElement(f.name, name, label, "textbox", value, value_type, x, y, width, maxlength, false, callback, style, luacallback)
 }
 
-func (f *Frame) AddWindowCheckBox(name, label, value string, x, y int, checked bool, callback func(string, string, string, string, int, int) bool, style string) {
+func (f *Frame) AddWindowCheckBox(name, label, value string, x, y int, checked bool, callback func(string, string, string, string, int, int) bool, style, luacallback string) {
 	a := f.microapp
-	a.AddWindowElement(f.name, name, label, "checkbox", value, "", x, y, 0, 0, checked, callback, style)
+	a.AddWindowElement(f.name, name, label, "checkbox", value, "", x, y, 0, 0, checked, callback, style, luacallback)
 }
 
-func (f *Frame) AddWindowRadio(name, label, value string, x, y int, checked bool, callback func(string, string, string, string, int, int) bool, style string) {
+func (f *Frame) AddWindowRadio(name, label, value string, x, y int, checked bool, callback func(string, string, string, string, int, int) bool, style, luacallback string) {
 	a := f.microapp
-	a.AddWindowElement(f.name, name, label, "radio", value, "", x, y, 0, 0, checked, callback, style)
+	a.AddWindowElement(f.name, name, label, "radio", value, "", x, y, 0, 0, checked, callback, style, luacallback)
 }
 
-func (f *Frame) AddWindowTextArea(name, label, value string, x, y, columns, rows int, readonly bool, callback func(string, string, string, string, int, int) bool, style string) {
+func (f *Frame) AddWindowTextArea(name, label, value string, x, y, columns, rows int, readonly bool, callback func(string, string, string, string, int, int) bool, style, luacallback string) {
 	a := f.microapp
 	if columns < 5 || rows < 2 {
 		return
 	}
-	a.AddWindowElement(f.name, name, label, "textarea", value, "", x, y, columns+2, rows+2, readonly, callback, style)
+	a.AddWindowElement(f.name, name, label, "textarea", value, "", x, y, columns+2, rows+2, readonly, callback, style, luacallback)
 }
 
-func (f *Frame) AddWindowSelect(name, label, value string, options string, x, y, width, height int, callback func(string, string, string, string, int, int) bool, style string) bool {
+func (f *Frame) AddWindowSelect(name, label, value string, options string, x, y, width, height int, callback func(string, string, string, string, int, int) bool, style, luacallback string) bool {
 	a := f.microapp
 	if options == "" {
 		return false
@@ -360,22 +361,13 @@ func (f *Frame) AddWindowSelect(name, label, value string, options string, x, y,
 			}
 		}
 	}
-	a.AddWindowElement(f.name, name, label, "select", value, options, x, y, width, height, false, callback, style)
+	a.AddWindowElement(f.name, name, label, "select", value, options, x, y, width, height, false, callback, style, luacallback)
 	return true
 }
 
-func (f *Frame) AddWindowButton(name, label, button_type string, x, y int, callback func(string, string, string, string, int, int) bool, style string) {
+func (f *Frame) AddWindowButton(name, label, button_type string, x, y int, callback func(string, string, string, string, int, int) bool, style, luacallback string) {
 	a := f.microapp
-	a.AddWindowElement(f.name, name, label, "button", "", button_type, x, y, 0, 0, false, callback, style)
-}
-
-func (f *Frame) AddPluginWindowElement(name, label, etype, form, value, value_type string, x, y, w, h int, chk bool, luacb, style string) {
-	a := f.microapp
-	a.AddWindowElement(f.name, name, label, etype, value, value_type, x, y, w, h, chk, nil, style)
-	e, ok := f.elements[name]
-	if ok {
-		e.luacallback = luacb
-	}
+	a.AddWindowElement(f.name, name, label, "button", "", button_type, x, y, 0, 0, false, callback, style, luacallback)
 }
 
 // ------------------------------------------------
@@ -1884,7 +1876,7 @@ func (a *MicroApp) Reset() {
 	a.mousedown = false
 }
 
-func (a *MicroApp) getValues() map[string]string {
+func (a *MicroApp) GetValues() map[string]string {
 	var values = make(map[string]string)
 
 	for _, f := range a.frames {
@@ -1909,4 +1901,14 @@ func (a *MicroApp) getValues() map[string]string {
 		}
 	}
 	return values
+}
+
+func (a *MicroApp) GetValuesAsString() string {
+	var str string
+
+	vals := a.GetValues()
+	for k, v := range vals {
+		str = str + k + "=" + v + "\n"
+	}
+	return str
 }

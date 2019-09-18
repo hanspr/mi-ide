@@ -156,3 +156,31 @@ function utf8replace (s, mapping)
 
     return newstr
 end
+
+-- END utf8 functions
+
+-- Hans Peyrot, shared functions for micro-ide
+-- Free to copy and do what ever you want with this code below.
+
+function GetLuaTable(s)
+	local values = {}
+	local vpairs = {}
+	
+	vpairs = gsplit(s,"\n")
+	for k,v in pairs(vpairs) do
+		val = gsplit(v,"=")
+		values[val[1]]= val[2]
+	end
+	return values
+end
+
+function gsplit(s, delimiter)
+    result = {}
+    for match in (s..delimiter):gmatch("(.-)"..delimiter) do
+        table.insert(result, match);
+    end
+    return result
+end
+
+
+

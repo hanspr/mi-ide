@@ -62,7 +62,7 @@ func (m *microMenu) Menu() {
 		row := 0
 		f := m.myapp.AddFrame("menu", 1, 0, 1, 1, "fixed")
 		m.AddSubmenu(name, "Micro-ide")
-		f.AddWindowMenuLabel(name, fmt.Sprintf("%-"+strconv.Itoa(m.maxwidth+1)+"s", "Micro-ide"), "", 0, row, m.ShowSubmenuItems, "")
+		f.AddWindowMenuLabel(name, fmt.Sprintf("%-"+strconv.Itoa(m.maxwidth+1)+"s", "Micro-ide"), "", 0, row, m.ShowSubmenuItems, "", "")
 		m.AddSubMenuItem("microide", Language.Translate("Global Settings"), m.GlobalConfigDialog)
 		m.AddSubMenuItem("microide", Language.Translate("KeyBindings"), m.KeyBindingsDialog)
 		m.AddSubMenuItem("microide", Language.Translate("Plugin Manager"), m.PluginManagerDialog)
@@ -70,11 +70,11 @@ func (m *microMenu) Menu() {
 		for _, name := range keys {
 			if name != "microide" {
 				label := fmt.Sprintf("%-"+strconv.Itoa(m.maxwidth+1)+"s", m.submenu[name])
-				f.AddWindowMenuLabel(name, label, "", 0, row, m.ShowSubmenuItems, "")
+				f.AddWindowMenuLabel(name, label, "", 0, row, m.ShowSubmenuItems, "", "")
 			}
 			row++
 		}
-		f.AddWindowMenuBottom("menubottom", fmt.Sprintf("%-"+strconv.Itoa(m.maxwidth+1)+"s", " "), 0, row, nil, "")
+		f.AddWindowMenuBottom("menubottom", fmt.Sprintf("%-"+strconv.Itoa(m.maxwidth+1)+"s", " "), 0, row, nil, "", "")
 		row++
 		f.ChangeFrame(1, 0, m.maxwidth, row-1, "fixed")
 		m.myapp.Finish = m.MenuFinish
@@ -128,25 +128,25 @@ func (m *microMenu) ShowSubmenuItems(name, value, event, when string, x, y int) 
 	width := m.submenuWidth[name]
 	f := m.myapp.frames["menu"]
 	if y > 1 {
-		f.AddWindowMenuTop("smenubottom", fmt.Sprintf("%-"+strconv.Itoa(width+1)+"s", " "), m.maxwidth+2, y, nil, "")
+		f.AddWindowMenuTop("smenubottom", fmt.Sprintf("%-"+strconv.Itoa(width+1)+"s", " "), m.maxwidth+2, y, nil, "", "")
 	}
 	// Show new submenu
 	items := m.submenuElements[name]
 	for i, s := range items {
 		name := "submenu" + strconv.Itoa(i)
 		if i == 0 {
-			f.AddWindowMenuLabel(name, fmt.Sprintf("%-"+strconv.Itoa(width+1)+"s", s.label), "r", m.maxwidth+2, y, m.MenuItemClick, "")
+			f.AddWindowMenuLabel(name, fmt.Sprintf("%-"+strconv.Itoa(width+1)+"s", s.label), "r", m.maxwidth+2, y, m.MenuItemClick, "", "")
 		} else if i == 1 {
-			f.AddWindowMenuLabel(name, fmt.Sprintf("%-"+strconv.Itoa(width+1)+"s", s.label), "cl", m.maxwidth+2, y, m.MenuItemClick, "")
+			f.AddWindowMenuLabel(name, fmt.Sprintf("%-"+strconv.Itoa(width+1)+"s", s.label), "cl", m.maxwidth+2, y, m.MenuItemClick, "", "")
 		} else {
-			f.AddWindowMenuLabel(name, fmt.Sprintf("%-"+strconv.Itoa(width+1)+"s", s.label), "", m.maxwidth+2, y, m.MenuItemClick, "")
+			f.AddWindowMenuLabel(name, fmt.Sprintf("%-"+strconv.Itoa(width+1)+"s", s.label), "", m.maxwidth+2, y, m.MenuItemClick, "", "")
 		}
 		f.SetIndex(name, 3)
 		f.SetgName(name, "submenu")
 		f.SetiKey(name, i)
 		y++
 	}
-	f.AddWindowMenuBottom("smenubottom", fmt.Sprintf("%-"+strconv.Itoa(width+1)+"s", " "), m.maxwidth+2, y, nil, "")
+	f.AddWindowMenuBottom("smenubottom", fmt.Sprintf("%-"+strconv.Itoa(width+1)+"s", " "), m.maxwidth+2, y, nil, "", "")
 	f.SetgName("smenubottom", "submenu")
 	m.myapp.DrawAll()
 	// Release memory from unused menus?
@@ -226,7 +226,7 @@ func (m *microMenu) GlobalConfigDialog() {
 		m.myapp.Reset()
 		m.myapp.defStyle = StringToStyle("#ffffff,#262626")
 		f := m.myapp.AddFrame("f", -1, -1, width, height, "relative")
-		f.AddWindowBox("enc", Language.Translate("Global Settings"), 0, 0, width, height, true, nil, "")
+		f.AddWindowBox("enc", Language.Translate("Global Settings"), 0, 0, width, height, true, nil, "", "")
 		keys := make([]string, 0, len(globalSettings))
 		for k := range globalSettings {
 			keys = append(keys, k)
@@ -236,20 +236,20 @@ func (m *microMenu) GlobalConfigDialog() {
 		col := 2
 		for _, k := range keys {
 			if k == "fileformat" {
-				f.AddWindowSelect(k, k+" ", globalSettings[k].(string), "unix|dos", col, row, 0, 1, nil, "")
+				f.AddWindowSelect(k, k+" ", globalSettings[k].(string), "unix|dos", col, row, 0, 1, nil, "", "")
 			} else if k == "colorcolumn" {
-				f.AddWindowTextBox(k, k+" ", fmt.Sprintf("%g", globalSettings[k].(float64)), "string", col, row, 4, 3, m.ValidateInteger, "")
+				f.AddWindowTextBox(k, k+" ", fmt.Sprintf("%g", globalSettings[k].(float64)), "string", col, row, 4, 3, m.ValidateInteger, "", "")
 			} else if k == "indentchar" {
 				char := "s"
 				if globalSettings[k].(string) != " " {
 					char = "t"
 				}
-				f.AddWindowSelect(k, k+" ", char, "t]Tab|s]Space", col, row, 0, 1, nil, "")
+				f.AddWindowSelect(k, k+" ", char, "t]Tab|s]Space", col, row, 0, 1, nil, "", "")
 			} else if k == "scrollmargin" {
-				f.AddWindowSelect(k, k+" ", fmt.Sprintf("%g", globalSettings[k].(float64)), "0|1|2|3|4|5|6|7|8|9|10", col, row, 3, 1, nil, "")
+				f.AddWindowSelect(k, k+" ", fmt.Sprintf("%g", globalSettings[k].(float64)), "0|1|2|3|4|5|6|7|8|9|10", col, row, 3, 1, nil, "", "")
 				f.SetIndex(k, 3)
 			} else if k == "tabsize" {
-				f.AddWindowSelect(k, k+" ", fmt.Sprintf("%g", globalSettings[k].(float64)), "2|3|4|5|6|7|8|9|10", col, row, 3, 1, nil, "")
+				f.AddWindowSelect(k, k+" ", fmt.Sprintf("%g", globalSettings[k].(float64)), "2|3|4|5|6|7|8|9|10", col, row, 3, 1, nil, "", "")
 			} else if k == "lang" {
 				Langs := ""
 				langs := GeTFileListFromPath(configDir+"/langs", "lang")
@@ -260,7 +260,7 @@ func (m *microMenu) GlobalConfigDialog() {
 						Langs = Langs + "|" + l
 					}
 				}
-				f.AddWindowSelect(k, k+" ", globalSettings[k].(string), Langs, col, row, 0, 1, nil, "")
+				f.AddWindowSelect(k, k+" ", globalSettings[k].(string), Langs, col, row, 0, 1, nil, "", "")
 			} else if k == "colorscheme" {
 				Colors := ""
 				colors := GeTFileListFromPath(configDir+"/colorschemes", "micro")
@@ -271,18 +271,18 @@ func (m *microMenu) GlobalConfigDialog() {
 						Colors = Colors + "|" + c
 					}
 				}
-				f.AddWindowSelect(k, k+" ", globalSettings["colorscheme"].(string), Colors, col, row, 0, 1, nil, "")
+				f.AddWindowSelect(k, k+" ", globalSettings["colorscheme"].(string), Colors, col, row, 0, 1, nil, "", "")
 				f.SetIndex(k, 3)
 			} else if k == "cursorshape" {
-				f.AddWindowSelect(k, k+" ", globalSettings["cursorshape"].(string), "disabled|block|ibeam|underline", col, row, 0, 1, nil, "")
+				f.AddWindowSelect(k, k+" ", globalSettings["cursorshape"].(string), "disabled|block|ibeam|underline", col, row, 0, 1, nil, "", "")
 			} else {
 				kind := reflect.TypeOf(globalSettings[k]).Kind()
 				if kind == reflect.Bool {
-					f.AddWindowCheckBox(k, k, "true", col, row, globalSettings[k].(bool), nil, "")
+					f.AddWindowCheckBox(k, k, "true", col, row, globalSettings[k].(bool), nil, "", "")
 				} else if kind == reflect.String {
-					f.AddWindowTextBox(k, k+" ", globalSettings[k].(string), "string", col, row, 10, 20, nil, "")
+					f.AddWindowTextBox(k, k+" ", globalSettings[k].(string), "string", col, row, 10, 20, nil, "", "")
 				} else if kind == reflect.Float64 {
-					f.AddWindowTextBox(k, k+" ", fmt.Sprintf("%g", globalSettings[k].(float64)), "integer", col, row, 5, 10, nil, "")
+					f.AddWindowTextBox(k, k+" ", fmt.Sprintf("%g", globalSettings[k].(float64)), "integer", col, row, 5, 10, nil, "", "")
 				} else {
 					continue
 				}
@@ -294,9 +294,9 @@ func (m *microMenu) GlobalConfigDialog() {
 			}
 		}
 		lbl := Language.Translate("Cancel")
-		f.AddWindowButton("cancel", " "+lbl+" ", "cancel", width-Count(lbl)-20, height-1, m.ButtonFinish, "")
+		f.AddWindowButton("cancel", " "+lbl+" ", "cancel", width-Count(lbl)-20, height-1, m.ButtonFinish, "", "")
 		lbl = Language.Translate("Save")
-		f.AddWindowButton("save", " "+lbl+" ", "ok", width-Count(lbl)-5, height-1, m.SaveSettings, "")
+		f.AddWindowButton("save", " "+lbl+" ", "ok", width-Count(lbl)-5, height-1, m.SaveSettings, "", "")
 	}
 	m.myapp.Start()
 	apprunning = m.myapp
@@ -312,7 +312,7 @@ func (m *microMenu) SaveSettings(name, value, event, when string, x, y int) bool
 	m.Finish("")
 	save := false
 	v := ""
-	values := m.myapp.getValues()
+	values := m.myapp.GetValues()
 	if values["indentchar"] == "t" {
 		values["indentchar"] = "\t"
 	} else {
@@ -434,7 +434,7 @@ func (m *microMenu) KeyBindingsDialog() {
 		m.myapp.AddStyle("yw", "#ffff00,#262626")
 		m.myapp.AddStyle("red", "#ff0000,#262626")
 		f = m.myapp.AddFrame("f", -1, -1, width, height, "relative")
-		f.AddWindowBox("enc", Language.Translate("KeyBindings"), 0, 0, width, height, true, nil, "")
+		f.AddWindowBox("enc", Language.Translate("KeyBindings"), 0, 0, width, height, true, nil, "", "")
 		row := 2
 		col := 2
 		for _, k := range keys {
@@ -444,9 +444,9 @@ func (m *microMenu) KeyBindingsDialog() {
 			}
 			str := strings.Split(k, "!")
 			if len(str) == 1 {
-				f.AddWindowTextBox(k, fmt.Sprintf("%-23s", str[0]), bindings[k], "string", col, row, 17, 40, m.SetBinding, "")
+				f.AddWindowTextBox(k, fmt.Sprintf("%-23s", str[0]), bindings[k], "string", col, row, 17, 40, m.SetBinding, "", "")
 			} else {
-				f.AddWindowTextBox(k, fmt.Sprintf("{grn}%-23s{/grn}", str[0]), bindings[k], "string", col, row, 17, 40, m.SetBinding, "")
+				f.AddWindowTextBox(k, fmt.Sprintf("{grn}%-23s{/grn}", str[0]), bindings[k], "string", col, row, 17, 40, m.SetBinding, "", "")
 			}
 			f.SetgName(k, f.elements[k].value)
 			row++
@@ -456,13 +456,13 @@ func (m *microMenu) KeyBindingsDialog() {
 			}
 		}
 		row++
-		f.AddWindowTextBox("?test", fmt.Sprintf("{yw}%-23s{/yw}", Language.Translate("Key check")), "", "string", col, row, 17, 40, m.SetBinding, "")
+		f.AddWindowTextBox("?test", fmt.Sprintf("{yw}%-23s{/yw}", Language.Translate("Key check")), "", "string", col, row, 17, 40, m.SetBinding, "", "")
 		row++
-		f.AddWindowLabel("?msg", "", col, row, nil, "")
+		f.AddWindowLabel("?msg", "", col, row, nil, "", "")
 		lbl := Language.Translate("Cancel")
-		f.AddWindowButton("?cancel", " "+lbl+" ", "cancel", width-Count(lbl)-20, 32, m.ButtonFinish, "")
+		f.AddWindowButton("?cancel", " "+lbl+" ", "cancel", width-Count(lbl)-20, 32, m.ButtonFinish, "", "")
 		lbl = Language.Translate("Save")
-		f.AddWindowButton("?save", " "+lbl+" ", "ok", width-Count(lbl)-5, 32, m.SaveKeyBindings, "")
+		f.AddWindowButton("?save", " "+lbl+" ", "ok", width-Count(lbl)-5, 32, m.SaveKeyBindings, "", "")
 	}
 	m.myapp.Start()
 	f.SetFocus("?test", "B")
@@ -551,7 +551,7 @@ func (m *microMenu) SaveKeyBindings(name, value, event, when string, x, y int) b
 	write := false
 	save := make(map[string]string)
 	actionToKey := make(map[string]string)
-	values := m.myapp.getValues()
+	values := m.myapp.GetValues()
 	defaults := DefaultBindings()
 	for k, a := range defaults {
 		if strings.Contains(a, "Mouse") || strings.Contains(k, "Mouse") {
@@ -610,26 +610,26 @@ func (m *microMenu) PluginManagerDialog() {
 		m.myapp.AddStyle("title", "underline #0087d7,#262626")
 		m.myapp.AddStyle("button", "bold #ffffff,#4e4e4e")
 		f := m.myapp.AddFrame("f", -1, -1, width, height, "relative")
-		f.AddWindowBox("enc", Language.Translate("Plugin Manager"), 0, 0, width, height, true, nil, "")
+		f.AddWindowBox("enc", Language.Translate("Plugin Manager"), 0, 0, width, height, true, nil, "", "")
 		lbl0 := Language.Translate("Install")
-		f.AddWindowButton("install", lbl0, "cancel", width-Count(lbl0)-3, height-1, m.InstallPlugin, "")
+		f.AddWindowButton("install", lbl0, "cancel", width-Count(lbl0)-3, height-1, m.InstallPlugin, "", "")
 		lbl1 := Language.Translate("Remove")
-		f.AddWindowButton("remove", lbl1, "cancel", width-Count(lbl0)-Count(lbl1)-8, height-1, m.RemovePlugin, "")
+		f.AddWindowButton("remove", lbl1, "cancel", width-Count(lbl0)-Count(lbl1)-8, height-1, m.RemovePlugin, "", "")
 		f.SetVisible("install", false)
 		f.SetVisible("remove", false)
 		lbl0 = Language.Translate("Languages")
-		f.AddWindowButton("langs", lbl0, "", 1, 2, m.ChangeSource, "button")
+		f.AddWindowButton("langs", lbl0, "", 1, 2, m.ChangeSource, "button", "")
 		lbl1 = Language.Translate("Coding Plugins")
 		offset := 1 + Count(lbl0) + 3
-		f.AddWindowButton("codeplugins", lbl1, "", offset, 2, m.ChangeSource, "button")
+		f.AddWindowButton("codeplugins", lbl1, "", offset, 2, m.ChangeSource, "button", "")
 		lbl0 = Language.Translate("Application Plugins")
 		offset += Count(lbl1) + 3
-		f.AddWindowButton("apps", lbl0, "", offset, 2, m.ChangeSource, "button")
+		f.AddWindowButton("apps", lbl0, "", offset, 2, m.ChangeSource, "button", "")
 		lbl0 = Language.Translate("Exit")
-		f.AddWindowButton("exit", lbl0, "ok", width-Count(lbl0)-3, 2, m.ButtonFinish, "")
-		f.AddWindowLabel("title", "", 1, 4, nil, "title")
-		f.AddWindowSelect("list", "list", "x", "x", 1, 5, 0, 1, nil, "")
-		f.AddWindowLabel("msg", "", 1, 3, nil, "gold")
+		f.AddWindowButton("exit", lbl0, "ok", width-Count(lbl0)-3, 2, m.ButtonFinish, "", "")
+		f.AddWindowLabel("title", "", 1, 4, nil, "title", "")
+		f.AddWindowSelect("list", "list", "x", "x", 1, 5, 0, 1, nil, "", "")
+		f.AddWindowLabel("msg", "", 1, 3, nil, "gold", "")
 		f.SetVisible("list", false)
 		f.SetVisible("title", false)
 	}
@@ -689,7 +689,7 @@ func (m *microMenu) ChangeSource(name, value, event, when string, x, y int) bool
 		}
 		messenger.AddLog(list)
 		f.SetLabel("title", Language.Translate("Available"))
-		f.AddWindowSelect("list", "", "", list, 1, 5, 0, height, nil, "")
+		f.AddWindowSelect("list", "", "", list, 1, 5, 0, height, nil, "", "")
 		f.SetVisible("title", true)
 		f.SetVisible("remove", false)
 	} else {
@@ -760,7 +760,7 @@ func (m *microMenu) ChangeSource(name, value, event, when string, x, y int) bool
 			height = len(plugins)
 		}
 		f.SetLabel("title", fmt.Sprintf("%-20s%-11s %-11s%-18s%-48s", Language.Translate("Name"), Language.Translate("Installed"), Language.Translate("Actual"), Language.Translate("Author"), Language.Translate("Description")))
-		f.AddWindowSelect("list", "", sel, list, 1, 5, 0, height, nil, "")
+		f.AddWindowSelect("list", "", sel, list, 1, 5, 0, height, nil, "", "")
 		f.SetVisible("title", true)
 		f.SetVisible("remove", true)
 	}
@@ -782,7 +782,7 @@ func (m *microMenu) InstallPlugin(name, value, event, when string, x, y int) boo
 		return true
 	}
 	f := m.myapp.frames["f"]
-	values := m.myapp.getValues()
+	values := m.myapp.GetValues()
 	f.SetVisible("install", false)
 	f.SetVisible("remove", false)
 	for a, b := range values {
@@ -859,7 +859,7 @@ func (m *microMenu) RemovePlugin(name, value, event, when string, x, y int) bool
 		return true
 	}
 	f := m.myapp.frames["f"]
-	values := m.myapp.getValues()
+	values := m.myapp.GetValues()
 	f.SetVisible("install", false)
 	f.SetVisible("remove", false)
 	for a, b := range values {
@@ -912,15 +912,15 @@ func (m *microMenu) Search(callback func(map[string]string)) {
 		height := 8
 		f = m.myapp.AddFrame("f", -1, -1, width, height, "relative")
 		m.myapp.AddStyle("f", "black,yellow")
-		f.AddWindowBox("enc", Language.Translate("Search"), 0, 0, width, height, true, nil, "")
+		f.AddWindowBox("enc", Language.Translate("Search"), 0, 0, width, height, true, nil, "", "")
 		lbl := Language.Translate("Search regex:")
-		f.AddWindowTextBox("find", lbl+" ", "", "string", 2, 2, 61-Count(lbl), 50, m.SubmitSearchOnEnter, "")
-		f.AddWindowCheckBox("i", "i", "i", 65, 2, false, m.SubmitSearchOnEnter, "")
-		f.AddWindowLabel("found", "", 2, 4, nil, "")
+		f.AddWindowTextBox("find", lbl+" ", "", "string", 2, 2, 61-Count(lbl), 50, m.SubmitSearchOnEnter, "", "")
+		f.AddWindowCheckBox("i", "i", "i", 65, 2, false, m.SubmitSearchOnEnter, "", "")
+		f.AddWindowLabel("found", "", 2, 4, nil, "", "")
 		lbl = Language.Translate("Cancel")
-		f.AddWindowButton("cancel", " "+lbl+" ", "cancel", 46-Count(lbl), 6, m.ButtonFinish, "")
+		f.AddWindowButton("cancel", " "+lbl+" ", "cancel", 46-Count(lbl), 6, m.ButtonFinish, "", "")
 		lbl = Language.Translate("Search")
-		f.AddWindowButton("set", " "+lbl+" ", "ok", 64-Count(lbl), 6, m.StartSearch, "")
+		f.AddWindowButton("set", " "+lbl+" ", "ok", 64-Count(lbl), 6, m.StartSearch, "", "")
 		m.myapp.Finish = m.AbortSearch
 		m.myapp.WindowFinish = callback
 	} else {
@@ -956,26 +956,26 @@ func (m *microMenu) SearchReplace(callback func(map[string]string)) {
 		height := 12
 		f = m.myapp.AddFrame("f", -1, -1, width, height, "relative")
 		m.myapp.AddStyle("f", "bold black,yellow")
-		f.AddWindowBox("enc", Language.Translate("Search / Replace"), 0, 0, width, height, true, nil, "")
+		f.AddWindowBox("enc", Language.Translate("Search / Replace"), 0, 0, width, height, true, nil, "", "")
 		lbl := Language.Translate("Search regex:")
-		f.AddWindowTextBox("search", lbl+" ", "", "string", 2, 2, 63-Count(lbl), 50, m.SubmitSearchOnEnter, "")
+		f.AddWindowTextBox("search", lbl+" ", "", "string", 2, 2, 63-Count(lbl), 50, m.SubmitSearchOnEnter, "", "")
 		lbl = Language.Translate("Replace regex:")
-		f.AddWindowTextBox("replace", lbl+" ", "", "string", 2, 4, 54-Count(lbl), 40, m.SubmitSearchOnEnter, "")
+		f.AddWindowTextBox("replace", lbl+" ", "", "string", 2, 4, 54-Count(lbl), 40, m.SubmitSearchOnEnter, "", "")
 		lbl = Language.Translate("ignore case")
 		offset := Count(lbl) + 6
-		f.AddWindowCheckBox("i", lbl, "i", 2, 6, false, m.SubmitSearchOnEnter, "")
+		f.AddWindowCheckBox("i", lbl, "i", 2, 6, false, m.SubmitSearchOnEnter, "", "")
 		lbl = Language.Translate("all")
-		f.AddWindowCheckBox("a", lbl, "a", offset, 6, false, m.SubmitSearchOnEnter, "")
+		f.AddWindowCheckBox("a", lbl, "a", offset, 6, false, m.SubmitSearchOnEnter, "", "")
 		offset += Count(lbl) + 4
-		f.AddWindowCheckBox("s", `s (\n)`, "s", offset, 6, false, m.SubmitSearchOnEnter, "")
+		f.AddWindowCheckBox("s", `s (\n)`, "s", offset, 6, false, m.SubmitSearchOnEnter, "", "")
 		offset += Count(`s (\n)`) + 4
 		lbl = Language.Translate("No regexp")
-		f.AddWindowCheckBox("l", lbl, "l", offset, 6, false, m.SubmitSearchOnEnter, "")
-		f.AddWindowLabel("found", "", 2, 8, nil, "")
+		f.AddWindowCheckBox("l", lbl, "l", offset, 6, false, m.SubmitSearchOnEnter, "", "")
+		f.AddWindowLabel("found", "", 2, 8, nil, "", "")
 		lbl = Language.Translate("Cancel")
-		f.AddWindowButton("cancel", " "+lbl+" ", "cancel", 46-Count(lbl), 10, m.ButtonFinish, "")
+		f.AddWindowButton("cancel", " "+lbl+" ", "cancel", 46-Count(lbl), 10, m.ButtonFinish, "", "")
 		lbl = Language.Translate("Search")
-		f.AddWindowButton("set", " "+lbl+" ", "ok", 64-Count(lbl), 10, m.StartSearch, "")
+		f.AddWindowButton("set", " "+lbl+" ", "ok", 64-Count(lbl), 10, m.StartSearch, "", "")
 		m.myapp.Finish = m.AbortSearch
 		m.myapp.WindowFinish = callback
 	} else {
@@ -1015,7 +1015,7 @@ func (m *microMenu) StartSearch(name, value, event, when string, x, y int) bool 
 	if m.searchMatch == false {
 		f.SetValue("search", "")
 	}
-	m.myapp.WindowFinish(m.myapp.getValues())
+	m.myapp.WindowFinish(m.myapp.GetValues())
 	m.Finish("Done")
 	return true
 }
@@ -1030,7 +1030,7 @@ func (m *microMenu) SubmitSearchOnEnter(name, value, event, when string, x, y in
 			f.SetValue("search", "")
 			f.SetValue("find", "")
 		}
-		m.myapp.WindowFinish(m.myapp.getValues())
+		m.myapp.WindowFinish(m.myapp.GetValues())
 		m.Finish("Done")
 		return false
 	}
@@ -1102,15 +1102,15 @@ func (m *microMenu) SaveAs(b *Buffer, usePlugin bool, callback func(map[string]s
 		width := 80
 		height := 17
 		f = m.myapp.AddFrame("f", -1, -1, width, height, "relative")
-		f.AddWindowBox("enc", Language.Translate("Save As ..."), 0, 0, width, height, true, nil, "")
+		f.AddWindowBox("enc", Language.Translate("Save As ..."), 0, 0, width, height, true, nil, "", "")
 		lbl := Language.Translate("File name :")
-		f.AddWindowTextBox("filename", lbl+" ", "", "string", 2, 2, 76-Count(lbl), 200, m.SaveFile, "")
+		f.AddWindowTextBox("filename", lbl+" ", "", "string", 2, 2, 76-Count(lbl), 200, m.SaveFile, "", "")
 		lbl = Language.Translate("Encoding:")
-		f.AddWindowSelect("encoding", lbl+" ", encoder, ENCODINGS, 2, 4, 0, 12, m.SaveAsEncodingEvent, "")
+		f.AddWindowSelect("encoding", lbl+" ", encoder, ENCODINGS, 2, 4, 0, 12, m.SaveAsEncodingEvent, "", "")
 		lbl = Language.Translate("Cancel")
-		f.AddWindowButton("cancel", " "+lbl+" ", "cancel", 56-Count(lbl), height-2, m.SaveAsButtonFinish, "")
+		f.AddWindowButton("cancel", " "+lbl+" ", "cancel", 56-Count(lbl), height-2, m.SaveAsButtonFinish, "", "")
 		lbl = Language.Translate("Save")
-		f.AddWindowButton("set", " "+lbl+" ", "ok", 75-Count(lbl), height-2, m.SaveFile, "")
+		f.AddWindowButton("set", " "+lbl+" ", "ok", 75-Count(lbl), height-2, m.SaveFile, "", "")
 		m.myapp.WindowFinish = callback
 	} else {
 		f = m.myapp.frames["f"]
@@ -1161,7 +1161,7 @@ func (m *microMenu) SaveFile(name, value, event, when string, x, y int) bool {
 		return true
 	}
 	var resp = make(map[string]string)
-	values := m.myapp.getValues()
+	values := m.myapp.GetValues()
 	if values["encode"] != "" {
 		resp["encoding"] = strings.ToUpper(values["encode"])
 	} else {
@@ -1225,7 +1225,7 @@ func (m *microMenu) SelFileType(x int) {
 		} else {
 			value = ft
 		}
-		f.AddWindowLabel(ft, value, col, row, m.SetFtype, "normal")
+		f.AddWindowLabel(ft, value, col, row, m.SetFtype, "normal", "")
 		row++
 		if row > height-1 {
 			row = 0
@@ -1277,13 +1277,13 @@ func (m *microMenu) SelTabSpace(x, y int) {
 	f := m.myapp.AddFrame("f", y-height, x-3, 1, height, "close")
 	for i := 2; i < 9; i++ {
 		ft := " Tab " + strconv.Itoa(i) + " "
-		f.AddWindowLabel(ft, ft, 0, row, m.SetTabSpace, "tab")
+		f.AddWindowLabel(ft, ft, 0, row, m.SetTabSpace, "tab", "")
 		f.SetValue(ft, strconv.Itoa(i))
 		row++
 	}
 	for i := 2; i < 9; i++ {
 		ft := " Spc " + strconv.Itoa(i) + " "
-		f.AddWindowLabel(ft, ft, 0, row, m.SetTabSpace, "spc")
+		f.AddWindowLabel(ft, ft, 0, row, m.SetTabSpace, "spc", "")
 		f.SetValue(ft, strconv.Itoa(i))
 		row++
 	}
@@ -1346,14 +1346,14 @@ func (m *microMenu) SelLocalSettings(b *Buffer) {
 		width := 80
 		height := 16
 		f = m.myapp.AddFrame("f", -1, -1, width, height, "relative")
-		f.AddWindowBox("enc", Language.Translate("Buffer Settings"), 0, 0, width, height, true, nil, "")
-		f.AddWindowRadio("savefor", Language.Translate("Save as this file settings only"), "file", 2, height-4, false, nil, "")
-		f.AddWindowRadio("savefor", fmt.Sprintf(Language.Translate("Save as default settings for all (%s) files"), b.FileType()), "lang", 2, height-3, false, nil, "")
-		f.AddWindowRadio("savefor", Language.Translate("Change settings for this session only"), "none", 2, height-2, true, nil, "")
+		f.AddWindowBox("enc", Language.Translate("Buffer Settings"), 0, 0, width, height, true, nil, "", "")
+		f.AddWindowRadio("savefor", Language.Translate("Save as this file settings only"), "file", 2, height-4, false, nil, "", "")
+		f.AddWindowRadio("savefor", fmt.Sprintf(Language.Translate("Save as default settings for all (%s) files"), b.FileType()), "lang", 2, height-3, false, nil, "", "")
+		f.AddWindowRadio("savefor", Language.Translate("Change settings for this session only"), "none", 2, height-2, true, nil, "", "")
 		lbl := Language.Translate("Save")
-		f.AddWindowButton("set", lbl, "ok", width-Count(lbl)-3, height-1, m.SetLocalSettings, "")
+		f.AddWindowButton("set", lbl, "ok", width-Count(lbl)-3, height-1, m.SetLocalSettings, "", "")
 		w := Count(Language.Translate("Cancel"))
-		f.AddWindowButton("cancel", Language.Translate("Cancel"), "cancel", width-Count(lbl)-w-8, height-1, m.ButtonFinish, "")
+		f.AddWindowButton("cancel", Language.Translate("Cancel"), "cancel", width-Count(lbl)-w-8, height-1, m.ButtonFinish, "", "")
 		keys := make([]string, 0, len(b.Settings))
 		for k := range b.Settings {
 			if strings.Contains(mmBufferSettings, k) {
@@ -1365,23 +1365,23 @@ func (m *microMenu) SelLocalSettings(b *Buffer) {
 		col := 2
 		for _, k := range keys {
 			if k == "fileformat" {
-				f.AddWindowSelect(k, k+" ", b.Settings[k].(string), "unix|dos", col, row, 0, 1, nil, "")
+				f.AddWindowSelect(k, k+" ", b.Settings[k].(string), "unix|dos", col, row, 0, 1, nil, "", "")
 			} else if k == "indentchar" {
 				char := "s"
 				if b.Settings[k].(string) != " " {
 					char = "t"
 				}
-				f.AddWindowSelect(k, k+" ", char, "t]Tab|s]Space", col, row, 0, 1, nil, "")
+				f.AddWindowSelect(k, k+" ", char, "t]Tab|s]Space", col, row, 0, 1, nil, "", "")
 			} else if k == "tabsize" {
-				f.AddWindowSelect(k, k+" ", fmt.Sprintf("%g", b.Settings[k].(float64)), "2|3|4|5|6|7|8|9|10", col, row, 3, 1, nil, "")
+				f.AddWindowSelect(k, k+" ", fmt.Sprintf("%g", b.Settings[k].(float64)), "2|3|4|5|6|7|8|9|10", col, row, 3, 1, nil, "", "")
 			} else {
 				kind := reflect.TypeOf(b.Settings[k]).Kind()
 				if kind == reflect.Bool {
-					f.AddWindowCheckBox(k, k, "true", col, row, b.Settings[k].(bool), nil, "")
+					f.AddWindowCheckBox(k, k, "true", col, row, b.Settings[k].(bool), nil, "", "")
 				} else if kind == reflect.String {
-					f.AddWindowTextBox(k, k+" ", b.Settings[k].(string), "string", col, row, 10, 20, nil, "")
+					f.AddWindowTextBox(k, k+" ", b.Settings[k].(string), "string", col, row, 10, 20, nil, "", "")
 				} else if kind == reflect.Float64 {
-					f.AddWindowTextBox(k, k+" ", fmt.Sprintf("%g", b.Settings[k].(float64)), "integer", col, row, 5, 10, nil, "")
+					f.AddWindowTextBox(k, k+" ", fmt.Sprintf("%g", b.Settings[k].(float64)), "integer", col, row, 5, 10, nil, "", "")
 				} else {
 					continue
 				}
@@ -1407,7 +1407,7 @@ func (m *microMenu) SetLocalSettings(name, value, event, when string, x, y int) 
 	if event != "mouse-click1" {
 		return true
 	}
-	values := m.myapp.getValues()
+	values := m.myapp.GetValues()
 	if values["indentchar"] == "t" {
 		values["indentchar"] = "\t"
 	} else {
@@ -1475,13 +1475,13 @@ func (m *microMenu) SelEncoding(encoder string, callback func(map[string]string)
 		encoder = strings.ReplaceAll(encoder, "-", "")
 		encoder = strings.ReplaceAll(encoder, "_", "")
 		f = m.myapp.AddFrame("f", -1, -1, width, height, "relative")
-		f.AddWindowBox("enc", Language.Translate("Select Encoding"), 0, 0, width, height, true, nil, "")
+		f.AddWindowBox("enc", Language.Translate("Select Encoding"), 0, 0, width, height, true, nil, "", "")
 		lbl := Language.Translate("Encoding:")
-		f.AddWindowSelect("encoding", lbl+" ", encoder, ENCODINGS, 2, 2, 0, 12, nil, "")
+		f.AddWindowSelect("encoding", lbl+" ", encoder, ENCODINGS, 2, 2, 0, 12, nil, "", "")
 		lbl = Language.Translate("Cancel")
-		f.AddWindowButton("cancel", " "+lbl+" ", "cancel", 43, height-4, m.ButtonFinish, "")
+		f.AddWindowButton("cancel", " "+lbl+" ", "cancel", 43, height-4, m.ButtonFinish, "", "")
 		lbl = Language.Translate("Set encoding")
-		f.AddWindowButton("set", " "+lbl+" ", "ok", 43, height-2, m.SetEncoding, "")
+		f.AddWindowButton("set", " "+lbl+" ", "ok", 43, height-2, m.SetEncoding, "", "")
 		m.myapp.WindowFinish = callback
 	} else {
 		f = m.myapp.frames["f"]
@@ -1499,7 +1499,7 @@ func (m *microMenu) SetEncoding(name, value, event, when string, x, y int) bool 
 		return true
 	}
 	var resp = make(map[string]string)
-	values := m.myapp.getValues()
+	values := m.myapp.GetValues()
 	if values["encode"] != "" {
 		resp["encoding"] = strings.ToUpper(values["encode"])
 	} else {
@@ -1530,8 +1530,8 @@ func (m *microMenu) DirTreeView() {
 	m.myapp.defStyle = StringToStyle("#ffffff,#1c1c1c")
 	m.myapp.AddStyle("d", "#A6E22E,#1c1c1c")
 	f := m.myapp.AddFrame("f", 1, 0, width+2, height, "fixed")
-	f.AddWindowBox("dbox", "", 0, 0, width+2, height, true, nil, "")
-	f.AddWindowSelect("dirview", "", "../", dir, 1, 1, width, height-1, m.TreeViewEvent, "")
+	f.AddWindowBox("dbox", "", 0, 0, width+2, height, true, nil, "", "")
+	f.AddWindowSelect("dirview", "", "../", dir, 1, 1, width, height-1, m.TreeViewEvent, "", "")
 	m.myapp.Start()
 	apprunning = m.myapp
 	m.myapp.CheckElementsActions("mouse-click1", 1, 1)
@@ -1568,7 +1568,7 @@ func (m *microMenu) TreeViewEvent(name, value, event, when string, x, y int) boo
 				reset = true
 			}
 			f.elements["dbox"].width = width + 2
-			f.AddWindowSelect("dirview", "", "", dir, 1, 1, width, height-1, m.TreeViewEvent, "")
+			f.AddWindowSelect("dirview", "", "", dir, 1, 1, width, height-1, m.TreeViewEvent, "", "")
 			m.myapp.CheckElementsActions("mouse-click1", 1, 1)
 			if backdir != "" {
 				for k, v := range f.elements["dirview"].opts {
