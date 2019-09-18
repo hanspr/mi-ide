@@ -50,6 +50,23 @@ func Call(function string, args ...interface{}) (lua.LValue, error) {
 	return ret, err
 }
 
+func CallP(luaFunc lua.LValue, args ...interface{}) (lua.LValue, error) {
+	var luaArgs []lua.LValue
+	for _, v := range args {
+		luaArgs = append(luaArgs, luar.New(L, v))
+	}
+	err := L.CallByParam(lua.P{
+		Fn:      luaFunc,
+		NRet:    1,
+		Protect: true,
+	}, luaArgs...)
+	ret := L.Get(-1) // returned value
+	if ret.String() != "nil" {
+		L.Pop(1) // remove received value
+	}
+	return ret, err
+}
+
 // LuaFunctionBinding is a function generator which takes the name of a lua function
 // and creates a function that will call that lua function
 // Specifically it creates a function that can be called as a binding because this is used
@@ -260,4 +277,30 @@ func GetPluginOption(pname, option string) interface{} {
 		return nil
 	}
 	return value
+}
+
+func GetPluginApp() *MicroApp {
+	if apprunning != nil {
+		return nil
+	}
+	app := new(MicroApp)
+	return app
+}
+
+func RunPluginApp(app *MicroApp) bool {
+	if apprunning == nil {
+		apprunning = app
+		app.Start()
+		return true
+	}
+	return false
+}
+
+func StopPluginApp(app *MicroApp) {
+	if apprunning == nil {
+		return
+	}
+	if apprunning.name == app.name {
+		apprunning = nil
+	}
 }

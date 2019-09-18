@@ -18,28 +18,29 @@ type Opt struct {
 }
 
 type AppElement struct {
-	name       string // element name
-	label      string // element label if it applyes
-	form       string // types: box, textbox, textarea, label, checkbox, radio, button
-	value      string
-	value_type string                                              // string, number
-	pos        Loc                                                 // Top left corner where to position element
-	aposb      Loc                                                 // hotspot top,left
-	apose      Loc                                                 // hotspot bottom,right
-	cursor     Loc                                                 // cursor location inside text elements
-	width      int                                                 // text element width, text area width
-	height     int                                                 // Textbox: maxlength, text area have no predefined maxlength
-	index      int                                                 // order in which to draw
-	callback   func(string, string, string, string, int, int) bool // (element.name, element.value, event, x, y)
-	style      tcell.Style                                         // color style for this element
-	checked    bool                                                // Checkbox, Radio checked. Select is open
-	gname      string                                              // Original name, required for radio buttons
-	offset     int                                                 // Select = indexSelected, Text = offset from the age id box smaller than maxlength
-	visible    bool                                                // Set element vibilility attribute
-	iKey       int                                                 // Used to store temporary integer value
-	opts       []Opt                                               // Hold splited select data
-	microapp   *MicroApp
-	frame      *Frame
+	name        string // element name
+	label       string // element label if it applyes
+	form        string // types: box, textbox, textarea, label, checkbox, radio, button
+	value       string
+	value_type  string                                              // string, number
+	pos         Loc                                                 // Top left corner where to position element
+	aposb       Loc                                                 // hotspot top,left
+	apose       Loc                                                 // hotspot bottom,right
+	cursor      Loc                                                 // cursor location inside text elements
+	width       int                                                 // text element width, text area width
+	height      int                                                 // Textbox: maxlength, text area have no predefined maxlength
+	index       int                                                 // order in which to draw
+	callback    func(string, string, string, string, int, int) bool // (element.name, element.value, event, x, y)
+	style       tcell.Style                                         // color style for this element
+	checked     bool                                                // Checkbox, Radio checked. Select is open
+	gname       string                                              // Original name, required for radio buttons
+	offset      int                                                 // Select = indexSelected, Text = offset from the age id box smaller than maxlength
+	visible     bool                                                // Set element vibilility attribute
+	iKey        int                                                 // Used to store temporary integer value
+	opts        []Opt                                               // Hold splited select data
+	microapp    *MicroApp
+	frame       *Frame
+	luacallback string
 }
 
 type AppStyle struct {
@@ -366,6 +367,15 @@ func (f *Frame) AddWindowSelect(name, label, value string, options string, x, y,
 func (f *Frame) AddWindowButton(name, label, button_type string, x, y int, callback func(string, string, string, string, int, int) bool, style string) {
 	a := f.microapp
 	a.AddWindowElement(f.name, name, label, "button", "", button_type, x, y, 0, 0, false, callback, style)
+}
+
+func (f *Frame) AddPluginWindowElement(name, label, etype, form, value, value_type string, x, y, w, h int, chk bool, luacb, style string) {
+	a := f.microapp
+	a.AddWindowElement(f.name, name, label, etype, value, value_type, x, y, w, h, chk, nil, style)
+	e, ok := f.elements[name]
+	if ok {
+		e.luacallback = luacb
+	}
 }
 
 // ------------------------------------------------
@@ -1248,6 +1258,11 @@ func (e *AppElement) ProcessElementClick(event string, x, y int) {
 		if e.callback(name, e.value, event, "PRE", x, y) == false {
 			return
 		}
+	} else if e.luacallback != "" {
+		v, err := Call(e.luacallback, name, e.value, event, "PRE", x, y)
+		if err == nil && v.String() == "false" {
+			return
+		}
 	}
 	if event == "mouse-click1" {
 		if check == true {
@@ -1260,15 +1275,18 @@ func (e *AppElement) ProcessElementClick(event string, x, y int) {
 			e.SelectClickEvent(event, x, y)
 		}
 	}
-	if e.callback != nil {
+	if e.callback != nil || e.luacallback != "" {
+		value := e.value
 		if check == true {
-			value := "false"
+			value = "false"
 			if e.checked == true {
 				value = "true"
 			}
+		}
+		if e.callback != nil {
 			e.callback(name, value, event, "POST", x, y)
 		} else {
-			e.callback(name, e.value, event, "POST", x, y)
+			Call(e.luacallback, name, value, event, "POST", x, y)
 		}
 	}
 }
@@ -1276,6 +1294,11 @@ func (e *AppElement) ProcessElementClick(event string, x, y int) {
 func (e *AppElement) ProcessElementMouseMove(event string, x, y int) {
 	if e.callback != nil {
 		if e.callback(e.name, e.value, event, "", x, y) == false {
+			return
+		}
+	} else if e.luacallback != "" {
+		v, err := Call(e.luacallback, e.name, e.value, event, "", x, y)
+		if err == nil && v.String() == "false" {
 			return
 		}
 	}
@@ -1534,6 +1557,11 @@ func (e *AppElement) ProcessElementKey(key string, x, y int) {
 		if e.callback(e.name, e.value, key, "PRE", x, y) == false {
 			return
 		}
+	} else if e.luacallback != "" {
+		v, err := Call(e.luacallback, e.name, e.value, key, "PRE", x, y)
+		if err == nil && v.String() == "false" {
+			return
+		}
 	}
 	if e.form == "textbox" {
 		e.TextBoxKeyEvent(key, x, y)
@@ -1544,6 +1572,8 @@ func (e *AppElement) ProcessElementKey(key string, x, y int) {
 	}
 	if e.callback != nil {
 		e.callback(e.name, e.value, key, "POST", x, y)
+	} else if e.luacallback != "" {
+		Call(e.luacallback, e.name, e.value, key, "POST", x, y)
 	}
 }
 
@@ -1687,6 +1717,8 @@ func (a *MicroApp) HandleEvents(event tcell.Event) {
 			e := a.GetActiveElement(a.activeElement)
 			if e.callback != nil {
 				e.callback(e.name, e.value, "Paste", "POST", e.cursor.X, e.cursor.Y)
+			} else if e.luacallback != "" {
+				Call(e.luacallback, e.name, e.value, "Paste", "POST", e.cursor.X, e.cursor.Y)
 			}
 		}
 	case *tcell.EventResize:
