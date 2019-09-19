@@ -21,27 +21,43 @@ var toolBarOffset int
 // -------------------------------------------
 
 type ToolBar struct {
-	active   bool
-	icons    []rune
-	callback []func()
+	active      bool
+	icons       []rune
+	callback    []func()
+	luacallback string
 }
 
 func NewToolBar() *ToolBar {
 	t := new(ToolBar)
-	t.AddIcon('⌹', t.DirView)
-	t.AddIcon('↴', t.Save)
-	t.AddIcon('◨', t.VSplit)
-	t.AddIcon('⬓', t.HSplit)
-	t.AddIcon('🔎', t.Find)
-	t.AddIcon('℁', t.Replace)
-	t.AddIcon('❎', t.Quit)
+	t.AddIcon('⌹', t.DirView, "")
+	t.AddIcon('↴', t.Save, "")
+	t.AddIcon('◨', t.VSplit, "")
+	t.AddIcon('⬓', t.HSplit, "")
+	t.AddIcon('🔎', t.Find, "")
+	t.AddIcon('℁', t.Replace, "")
+	t.AddIcon('❎', t.Quit, "")
 	t.active = true
 	return t
 }
 
-func (t *ToolBar) AddIcon(icon rune, cb func()) {
-	t.icons = append(t.icons, icon)
-	t.callback = append(t.callback, cb)
+func (t *ToolBar) AddIcon(icon rune, cb func(), luacallback string) {
+	if cb == nil {
+		if luacallback == "" {
+			return
+		}
+		n := len(t.icons) - 1
+		cb = t.PluginCallBack
+		t.icons = append(t.icons, ' ')
+		copy(t.icons[n+1:], t.icons[n:])
+		t.icons[n] = icon
+		t.callback = append(t.callback, nil)
+		copy(t.callback[n+1:], t.callback[n:])
+		t.callback[n] = cb
+		t.luacallback = luacallback
+	} else {
+		t.icons = append(t.icons, icon)
+		t.callback = append(t.callback, cb)
+	}
 }
 
 func (t *ToolBar) Runes() []rune {
@@ -53,6 +69,10 @@ func (t *ToolBar) Runes() []rune {
 	}
 	str = append([]rune(tabMenuSymbol), str...)
 	return str
+}
+
+func (t *ToolBar) PluginCallBack() {
+	Call(t.luacallback)
 }
 
 func (t *ToolBar) Save() {

@@ -279,7 +279,7 @@ func GetPluginOption(pname, option string) interface{} {
 	return value
 }
 
-func GetPluginApp() *MicroApp {
+func PluginGetApp() *MicroApp {
 	if apprunning != nil {
 		return nil
 	}
@@ -287,7 +287,7 @@ func GetPluginApp() *MicroApp {
 	return app
 }
 
-func RunPluginApp(app *MicroApp) bool {
+func PluginRunApp(app *MicroApp) bool {
 	if apprunning == nil {
 		apprunning = app
 		app.Start()
@@ -296,11 +296,15 @@ func RunPluginApp(app *MicroApp) bool {
 	return false
 }
 
-func StopPluginApp(app *MicroApp) {
+func PluginStopApp(app *MicroApp) {
 	if apprunning == nil {
 		return
 	}
 	if apprunning.name == app.name {
-		apprunning = nil
+		MicroAppStop()
 	}
+}
+
+func PluginAddIcon(icon, callback string) {
+	MicroToolBar.AddIcon([]rune(icon)[0], nil, callback)
 }
