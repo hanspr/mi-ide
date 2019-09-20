@@ -152,6 +152,9 @@ func NewViewWidthHeight(buf *Buffer, w, h int) *View {
 		}
 	}
 
+	if v.Type.Kind == 0 && v.Buf.RO {
+		v.Type.Readonly = true
+	}
 	return v
 }
 
@@ -560,6 +563,8 @@ func (v *View) ExecuteActions(actions []func(*View, bool) bool) bool {
 		if !readonlyBindingsResult {
 			// call the key binding
 			relocate = action(v, true) || relocate
+		} else {
+			messenger.Error(Language.Translate("File is readonly"))
 		}
 	}
 
@@ -665,7 +670,9 @@ func (v *View) HandleEvent(event tcell.Event) {
 
 		if !isBinding && e.Key() == tcell.KeyRune {
 			// Check viewtype if readonly don't insert a rune (readonly help and log view etc.)
-			if v.Type.Readonly == false {
+			if v.Type.Readonly == true {
+				messenger.Error(Language.Translate("File is readonly"))
+			} else {
 				for _, c := range v.Buf.cursors {
 					v.SetCursor(c)
 
@@ -742,6 +749,8 @@ func (v *View) HandleEvent(event tcell.Event) {
 			v.SetCursor(&v.Buf.Cursor)
 
 			PostActionCall("Paste", v)
+		} else {
+			messenger.Error(Language.Translate("File is readonly"))
 		}
 	case *tcell.EventMouse:
 		// range validation

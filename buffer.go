@@ -10,18 +10,19 @@ import (
 	"io/ioutil"
 	"os"
 	"os/exec"
-	"os/signal"
 	"path/filepath"
 	"reflect"
 	"regexp"
 	"strconv"
 	"strings"
+	"syscall"
 	"time"
 	"unicode"
 	"unicode/utf8"
 
 	"github.com/hanspr/highlight"
 	"github.com/hanspr/ioencoder"
+	"github.com/phayes/permbits"
 )
 
 const LargeFileThreshold = 50000
@@ -60,6 +61,7 @@ type Buffer struct {
 
 	// Whether or not the buffer has been modified since it was opened
 	IsModified bool
+	RO         bool
 
 	// Stack Reference since saved, used to set buffer clean if undos arrives to
 	// last clean state (monitors in Undo Redo Actions)
@@ -94,6 +96,29 @@ type SerializedBuffer struct {
 
 func (b *Buffer) GetFileSettings(filename string) {
 	filename, _ = filepath.Abs(filename)
+	if CurrEnv.OS != "windows" {
+		// Test if file is write enabled
+		if fi, err := os.Stat(filename); err == nil {
+			b.RO = true
+			perm, _ := permbits.Stat(filename)
+			uid := fi.Sys().(*syscall.Stat_t).Uid
+			gid := fi.Sys().(*syscall.Stat_t).Gid
+			if uint32(CurrEnv.Uid) == uid && perm.UserWrite() {
+				b.RO = false
+			} else if uint32(CurrEnv.Gid) == gid && perm.GroupWrite() {
+				b.RO = false
+			} else if perm.OtherWrite() {
+				b.RO = false
+			} else if perm.GroupWrite() {
+				for _, g := range CurrEnv.Groups {
+					if uint32(g) == gid {
+						b.RO = false
+						break
+					}
+				}
+			}
+		}
+	}
 	// Find last encoding used for this file
 	cachename := filename + ".settings"
 	cachename = configDir + "/buffers/" + strings.ReplaceAll(cachename, "/", "")
@@ -647,11 +672,6 @@ func (b *Buffer) Save() error {
 	return b.SaveAs(b.Path)
 }
 
-// SaveWithSudo saves the buffer to the default path with sudo
-func (b *Buffer) SaveWithSudo() error {
-	return b.SaveAsWithSudo(b.Path)
-}
-
 // Serialize serializes the buffer to configDir/buffers
 func (b *Buffer) Serialize() error {
 	if !b.Settings["savecursor"].(bool) && !b.Settings["saveundo"].(bool) {
@@ -864,44 +884,6 @@ func calcHash(b *Buffer, out *[md5.Size]byte) {
 	}
 
 	h.Sum((*out)[:0])
-}
-
-// SaveAsWithSudo is the same as SaveAs except it uses a neat trick
-// with tee to use sudo so the user doesn't have to reopen micro with sudo
-func (b *Buffer) SaveAsWithSudo(filename string) error {
-	b.UpdateRules()
-	b.Path = filename
-
-	// Shut down the screen because we're going to interact directly with the shell
-	screen.Fini()
-	screen = nil
-
-	// Set up everything for the command
-	cmd := exec.Command(globalSettings["sucmd"].(string), "tee", filename)
-	cmd.Stdin = bytes.NewBufferString(b.SaveString(b.Settings["fileformat"] == "dos"))
-
-	// This is a trap for Ctrl-C so that it doesn't kill micro
-	// Instead we trap Ctrl-C to kill the program we're running
-	c := make(chan os.Signal, 1)
-	signal.Notify(c, os.Interrupt)
-	go func() {
-		for range c {
-			cmd.Process.Kill()
-		}
-	}()
-
-	// Start the command
-	cmd.Start()
-	err := cmd.Wait()
-
-	// Start the screen back up
-	InitScreen()
-	if err == nil {
-		b.IsModified = false
-		b.ModTime, _ = GetModTime(filename)
-		b.Serialize()
-	}
-	return err
 }
 
 // Modified returns if this buffer has been modified since

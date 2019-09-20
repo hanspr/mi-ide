@@ -41,6 +41,13 @@ type CursorType struct {
 	shape string
 }
 
+type AppEnv struct {
+	OS     string
+	Uid    int
+	Gid    int
+	Groups []int
+}
+
 var (
 	// The main screen
 	screen tcell.Screen
@@ -107,6 +114,8 @@ var (
 	LastOverwriteStatus bool = false
 
 	Clip *clipboard.Clipboard
+
+	CurrEnv AppEnv
 )
 
 // LoadInput determines which files should be loaded into buffers
@@ -350,6 +359,10 @@ func main() {
 	// Create Toolbar object
 	MicroToolBar = NewToolBar()
 	apprunning = nil
+	CurrEnv.OS = runtime.GOOS
+	CurrEnv.Uid = os.Getuid()
+	CurrEnv.Gid = os.Getgid()
+	CurrEnv.Groups, _ = os.Getgroups()
 
 	flag.Usage = func() {
 		fmt.Println("Usage: micro [OPTIONS] [FILE]...")
@@ -474,10 +487,9 @@ func main() {
 	micromenu = new(microMenu)
 	x := strings.LastIndex(CurView().Buf.AbsPath, "/") + 1
 	micromenu.LastPath = string([]rune(CurView().Buf.AbsPath)[:x])
-
 	// Load all the plugin stuff
 	// We give plugins access to a bunch of variables here which could be useful to them
-	L.SetGlobal("OS", luar.New(L, runtime.GOOS))
+	L.SetGlobal("OS", luar.New(L, CurrEnv.OS))
 	L.SetGlobal("tabs", luar.New(L, tabs))
 	L.SetGlobal("GetTabs", luar.New(L, func() []*Tab {
 		return tabs
