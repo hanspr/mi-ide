@@ -17,7 +17,7 @@ do not exist. Create them? (y,n)|no existen. Crearlos? (s,n)
 Save aborted|Guardar abortado
 File saved as UTF-8|Archivo guardado como UTF-8
 File can not be saved with selected encoding|Archivo no se puede salvar con la codificación seleccionada
-Permission denied. Do you want to save this file using sudo? (y,n)|Permiso denegado. Deseas salvar archivo usando sudo? (s,n)
+File is readonly|Archivo de solo lectura
 Selection is to big, can not copy. You may move (up/down) or delete only.|Selección es demasiado grande, no puedo copiar. Puede mover la línea hacia (abajo/arriba) o eliminar únicamente.
 Line is to big, can not cut. You may move (up/down) or delete only.|Línea es muy grande, no puedo cortar. Puede mover la línea hacia (arriba/abajo) o eliminar únicamente.
 Line is to big to cut|Línea demasiado grande para cortar

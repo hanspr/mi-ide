@@ -17,7 +17,7 @@ do not exist. Create them? (y,n)|
 Save aborted|
 File saved as UTF-8|
 File can not be saved with selected encoding|
-Permission denied. Do you want to save this file using sudo? (y,n)|
+File is readonly|
 Selection is to big, can not copy. You may move (up/down) or delete only.|
 Line is to big, can not cut. You may move (up/down) or delete only.|
 Line is to big to cut|

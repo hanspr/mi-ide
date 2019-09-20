@@ -97,7 +97,7 @@ type SerializedBuffer struct {
 func (b *Buffer) GetFileSettings(filename string) {
 	filename, _ = filepath.Abs(filename)
 	if CurrEnv.OS != "windows" {
-		// Test if file is write enabled
+		// Test if file is write enabled for this user and file permissions
 		if fi, err := os.Stat(filename); err == nil {
 			b.RO = true
 			perm, _ := permbits.Stat(filename)
@@ -105,11 +105,11 @@ func (b *Buffer) GetFileSettings(filename string) {
 			gid := fi.Sys().(*syscall.Stat_t).Gid
 			if uint32(CurrEnv.Uid) == uid && perm.UserWrite() {
 				b.RO = false
-			} else if uint32(CurrEnv.Gid) == gid && perm.GroupWrite() {
+			} else if uint32(CurrEnv.Uid) != uid && uint32(CurrEnv.Gid) == gid && perm.GroupWrite() {
 				b.RO = false
-			} else if perm.OtherWrite() {
+			} else if uint32(CurrEnv.Uid) != uid && uint32(CurrEnv.Gid) != gid && perm.OtherWrite() {
 				b.RO = false
-			} else if perm.GroupWrite() {
+			} else if uint32(CurrEnv.Uid) != uid && uint32(CurrEnv.Gid) != gid && perm.GroupWrite() {
 				for _, g := range CurrEnv.Groups {
 					if uint32(g) == gid {
 						b.RO = false

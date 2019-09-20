@@ -160,7 +160,7 @@ func (sline *Statusline) Display() {
 		}
 		if size > 12 {
 			if sline.view.Type.Readonly == true || sline.view.Buf.RO {
-				file += " ro"
+				file += " (ro) "
 			}
 		}
 	}
