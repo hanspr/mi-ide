@@ -74,6 +74,10 @@ func (sline *Statusline) Display() {
 		active = false
 	}
 
+	if sline.view.x != 0 {
+		offset++
+	}
+
 	// We'll draw the line at the lowest line in the view
 	y := sline.view.Height + sline.view.y
 
@@ -124,10 +128,6 @@ func (sline *Statusline) Display() {
 	// bellow 66 columns begin hidding information
 	if w > 55 {
 		var ff string
-
-		if sline.view.x != 0 {
-			offset++
-		}
 
 		// Create hotspots for status line events
 		if sline.view.Buf.Settings["indentchar"] == "\t" {

@@ -920,10 +920,10 @@ func (m *microMenu) Search(callback func(map[string]string)) {
 		lbl = Language.Translate("Search")
 		f.AddWindowButton("set", " "+lbl+" ", "ok", 64-Count(lbl), 6, m.StartSearch, "", "")
 		m.myapp.Finish = m.AbortSearch
-		m.myapp.WindowFinish = callback
 	} else {
 		f = m.myapp.frames["f"]
 	}
+	m.myapp.WindowFinish = callback
 	m.searchMatch = false
 	m.myapp.Start()
 	if CurView().Cursor.HasSelection() {
@@ -975,10 +975,10 @@ func (m *microMenu) SearchReplace(callback func(map[string]string)) {
 		lbl = Language.Translate("Search")
 		f.AddWindowButton("set", " "+lbl+" ", "ok", 64-Count(lbl), 10, m.StartSearch, "", "")
 		m.myapp.Finish = m.AbortSearch
-		m.myapp.WindowFinish = callback
 	} else {
 		f = m.myapp.frames["f"]
 	}
+	m.myapp.WindowFinish = callback
 	m.searchMatch = false
 	m.myapp.Start()
 	if CurView().Cursor.HasSelection() {
@@ -1092,9 +1092,6 @@ func (m *microMenu) SaveAs(b *Buffer, usePlugin bool, callback func(map[string]s
 		enc := ioencoder.New()
 		ENCODINGS := enc.GetAvailableEncodingsAsString("|")
 		ENCODINGS = "UTF8|" + ENCODINGS
-		encoder := b.encoder
-		encoder = strings.ReplaceAll(encoder, "-", "")
-		encoder = strings.ReplaceAll(encoder, "_", "")
 		m.myapp.Reset()
 		m.myapp.defStyle = StringToStyle("#ffffff,#262626")
 		width := 80
@@ -1104,16 +1101,20 @@ func (m *microMenu) SaveAs(b *Buffer, usePlugin bool, callback func(map[string]s
 		lbl := Language.Translate("File name :")
 		f.AddWindowTextBox("filename", lbl+" ", "", "string", 2, 2, 76-Count(lbl), 200, m.SaveFile, "", "")
 		lbl = Language.Translate("Encoding:")
-		f.AddWindowSelect("encoding", lbl+" ", encoder, ENCODINGS, 2, 4, 0, 12, m.SaveAsEncodingEvent, "", "")
+		f.AddWindowSelect("encoding", lbl+" ", "", ENCODINGS, 2, 4, 0, 12, m.SaveAsEncodingEvent, "", "")
 		lbl = Language.Translate("Cancel")
 		f.AddWindowButton("cancel", " "+lbl+" ", "cancel", 56-Count(lbl), height-2, m.SaveAsButtonFinish, "", "")
 		lbl = Language.Translate("Save")
 		f.AddWindowButton("set", " "+lbl+" ", "ok", 75-Count(lbl), height-2, m.SaveFile, "", "")
-		m.myapp.WindowFinish = callback
 	} else {
 		f = m.myapp.frames["f"]
 	}
+	m.myapp.WindowFinish = callback
 	m.usePlugin = usePlugin
+	encoder := b.encoder
+	encoder = strings.ReplaceAll(encoder, "-", "")
+	encoder = strings.ReplaceAll(encoder, "_", "")
+	f.SetValue("encoding", encoder)
 	f.SetValue("filename", b.Path)
 	m.myapp.Finish = m.SaveAsFinish
 	m.myapp.Start()
@@ -1332,12 +1333,12 @@ const mmBufferSettings = "autoclose,autoindent,eofnewline,fileformat,indentchar,
 
 func (m *microMenu) SelLocalSettings(b *Buffer) {
 	var f *Frame
-	if m.myapp == nil || m.myapp.name != "mi-localsettings" {
+	if m.myapp == nil || m.myapp.name != "mi-localsettings-"+b.name {
 		if m.myapp == nil {
 			m.myapp = new(MicroApp)
-			m.myapp.New("mi-localsettings")
+			m.myapp.New("mi-localsettings-" + b.name)
 		} else {
-			m.myapp.name = "mi-localsettings"
+			m.myapp.name = "mi-localsettings" + b.name
 		}
 		m.myapp.Reset()
 		m.myapp.defStyle = StringToStyle("#ffffff,#262626")
@@ -1470,20 +1471,21 @@ func (m *microMenu) SelEncoding(encoder string, callback func(map[string]string)
 		m.myapp.defStyle = StringToStyle("#ffffff,#262626")
 		width := 60
 		height := 15
-		encoder = strings.ReplaceAll(encoder, "-", "")
-		encoder = strings.ReplaceAll(encoder, "_", "")
 		f = m.myapp.AddFrame("f", -1, -1, width, height, "relative")
 		f.AddWindowBox("enc", Language.Translate("Select Encoding"), 0, 0, width, height, true, nil, "", "")
 		lbl := Language.Translate("Encoding:")
-		f.AddWindowSelect("encoding", lbl+" ", encoder, ENCODINGS, 2, 2, 0, 12, nil, "", "")
+		f.AddWindowSelect("encoding", lbl+" ", "", ENCODINGS, 2, 2, 0, 12, nil, "", "")
 		lbl = Language.Translate("Cancel")
 		f.AddWindowButton("cancel", " "+lbl+" ", "cancel", 43, height-4, m.ButtonFinish, "", "")
 		lbl = Language.Translate("Set encoding")
 		f.AddWindowButton("set", " "+lbl+" ", "ok", 43, height-2, m.SetEncoding, "", "")
-		m.myapp.WindowFinish = callback
 	} else {
 		f = m.myapp.frames["f"]
 	}
+	m.myapp.WindowFinish = callback
+	encoder = strings.ReplaceAll(encoder, "-", "")
+	encoder = strings.ReplaceAll(encoder, "_", "")
+	f.SetValue("encoding", encoder)
 	f.SetValue("encode", "")
 	m.myapp.Start()
 	apprunning = m.myapp

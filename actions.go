@@ -2379,13 +2379,12 @@ func (v *View) RemoveAllMultiCursors(usePlugin bool) bool {
 
 func (v *View) SearchDialog(usePlugin bool) bool {
 	v.searchSave = v.Cursor.Loc
-	micromenu.SearchReplace(SearchDialogFinished)
+	micromenu.SearchReplace(v.SearchDialogFinished)
 	return true
 }
 
 // Call command:Replace
-func SearchDialogFinished(values map[string]string) {
-	v := CurView()
+func (v *View) SearchDialogFinished(values map[string]string) {
 	searchStart = v.searchSave
 	v.Cursor.ResetSelection()
 	if values["search"] == "" {
@@ -2399,13 +2398,12 @@ func SearchDialogFinished(values map[string]string) {
 // FIND
 func (v *View) FindDialog(usePlugin bool) bool {
 	v.searchSave = v.Cursor.Loc
-	micromenu.Search(FindDialogFinished)
+	micromenu.Search(v.FindDialogFinished)
 	return true
 }
 
 // Call search:Search
-func FindDialogFinished(values map[string]string) {
-	v := CurView()
+func (v *View) FindDialogFinished(values map[string]string) {
 	searchStart = v.searchSave
 	v.Cursor.ResetSelection()
 	if values["find"] == "" {

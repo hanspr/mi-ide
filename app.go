@@ -469,6 +469,14 @@ func (f *Frame) SetValue(k, v string) {
 	}
 	a := f.microapp
 	e.value = v
+	if e.form == "select" {
+		for i := 0; i < len(e.opts); i++ {
+			if e.opts[i].value == v {
+				e.offset = i
+				break
+			}
+		}
+	}
 	e.Draw()
 	a.screen.Show()
 }
