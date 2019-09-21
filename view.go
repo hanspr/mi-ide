@@ -987,6 +987,11 @@ func (v *View) DisplayView() {
 		return
 	}
 
+	// If no better solution found, blank the screen
+	//if ActiveView == false && searching {
+	//return
+	//}
+
 	if v.Buf.Settings["softwrap"].(bool) && v.leftCol != 0 {
 		v.leftCol = 0
 	}
