@@ -1240,7 +1240,6 @@ func (e *AppElement) ProcessElementClick(event string, x, y int) {
 		a.screen.HideCursor()
 		a.DrawAll()
 	}
-	a.activeElement = name
 	check := false
 	if e.form == "checkbox" || e.form == "radio" {
 		name = e.gname
@@ -1257,6 +1256,7 @@ func (e *AppElement) ProcessElementClick(event string, x, y int) {
 		}
 	}
 	if event == "mouse-click1" {
+		a.activeElement = name
 		if check == true {
 			e.RadioCheckboxClickEvent(event, x, y)
 		} else if e.form == "textbox" {
@@ -1265,6 +1265,8 @@ func (e *AppElement) ProcessElementClick(event string, x, y int) {
 			e.TextAreaClickEvent(event, x, y)
 		} else if e.form == "select" {
 			e.SelectClickEvent(event, x, y)
+		} else {
+			a.activeElement = ""
 		}
 	}
 	if e.callback != nil || e.luacallback != "" {

@@ -444,6 +444,11 @@ func (pv *PluginVersion) DownloadAndInstall() error {
 				return err
 			}
 			defer content.Close()
+			if strings.Contains(targetName, "settings.json") {
+				if _, err := os.Stat(targetName); err == nil {
+					targetName = targetName + ".new"
+				}
+			}
 			target, err := os.Create(targetName)
 			if err != nil {
 				return err
