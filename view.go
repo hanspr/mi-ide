@@ -1027,6 +1027,9 @@ func (v *View) DisplayView() {
 			CurView().Cursor.GotoLoc(CurView().savedLoc)
 		}
 		CurView().Relocate()
+		if CurView().Cursor.Loc.Y > CurView().Height-3 {
+			CurView().Center(false)
+		}
 	}
 
 	// We need to know the string length of the largest line number
@@ -1214,6 +1217,7 @@ func (v *View) DisplayView() {
 			screenX++
 		}
 
+		// Cursor
 		var lastChar *Char
 		cursorSet := false
 		for _, char := range line {
@@ -1230,7 +1234,7 @@ func (v *View) DisplayView() {
 				charLoc := char.realLoc
 				for _, c := range v.Buf.cursors {
 					v.SetCursor(c)
-					if v.Cursor.HasSelection() &&
+					if ActiveView && v.Cursor.HasSelection() &&
 						(charLoc.GreaterEqual(v.Cursor.CurSelection[0]) && charLoc.LessThan(v.Cursor.CurSelection[1]) ||
 							charLoc.LessThan(v.Cursor.CurSelection[0]) && charLoc.GreaterEqual(v.Cursor.CurSelection[1])) {
 						// The current character is selected
@@ -1300,7 +1304,7 @@ func (v *View) DisplayView() {
 			visualLoc = Loc{0, visualLineN}
 		}
 
-		if v.Cursor.HasSelection() &&
+		if ActiveView && v.Cursor.HasSelection() &&
 			(realLoc.GreaterEqual(v.Cursor.CurSelection[0]) && realLoc.LessThan(v.Cursor.CurSelection[1]) ||
 				realLoc.LessThan(v.Cursor.CurSelection[0]) && realLoc.GreaterEqual(v.Cursor.CurSelection[1])) {
 			// The current character is selected
