@@ -987,11 +987,6 @@ func (v *View) DisplayView() {
 		return
 	}
 
-	// If no better solution found, blank the screen
-	//if ActiveView == false && searching {
-	//return
-	//}
-
 	if v.Buf.Settings["softwrap"].(bool) && v.leftCol != 0 {
 		v.leftCol = 0
 	}
@@ -1086,7 +1081,7 @@ func (v *View) DisplayView() {
 		}
 	}
 
-	v.cellview.Draw(v.Buf, top, height, left, width-v.lineNumOffset)
+	v.cellview.Draw(v.Buf, top, height, left, width-v.lineNumOffset, ActiveView)
 	_, bgDisabled, _ := defStyle.Decompose()
 	if ActiveView == false {
 		if style, ok := colorscheme["unfocused"]; ok {
@@ -1245,7 +1240,9 @@ func (v *View) DisplayView() {
 						}
 					}
 				}
-				v.SetCursor(&v.Buf.Cursor)
+				if ActiveView {
+					v.SetCursor(&v.Buf.Cursor)
+				}
 
 				if v.Buf.Settings["cursorline"].(bool) && ActiveView &&
 					!v.Cursor.HasSelection() && v.Cursor.Y == realLineN {
@@ -1266,7 +1263,9 @@ func (v *View) DisplayView() {
 						cursorSet = true
 					}
 				}
-				v.SetCursor(&v.Buf.Cursor)
+				if ActiveView {
+					v.SetCursor(&v.Buf.Cursor)
+				}
 
 				lastChar = char
 			}

@@ -64,14 +64,13 @@ type CellView struct {
 	lines [][]*Char
 }
 
-func (c *CellView) Draw(buf *Buffer, top, height, left, width int) {
+func (c *CellView) Draw(buf *Buffer, top, height, left, width int, ActiveView bool) {
 	if width <= 0 {
 		return
 	}
-
 	matchingBrace := Loc{-1, -1}
 	// bracePairs is defined in buffer.go
-	if buf.Settings["matchbrace"].(bool) {
+	if ActiveView && buf.Settings["matchbrace"].(bool) {
 		for _, bp := range bracePairs {
 			curX := buf.Cursor.X
 			curLoc := buf.Cursor.Loc
@@ -112,7 +111,7 @@ func (c *CellView) Draw(buf *Buffer, top, height, left, width int) {
 	}
 	// End of patch
 
-	// Hightlite Buffer
+	// Highlite Buffer
 	if buf.Settings["syntax"].(bool) && buf.syntaxDef != nil {
 		buf.highlighter.SetDimensions(top, left, width, height)
 		if start > 0 && buf.lines[start-1].rehighlight {
