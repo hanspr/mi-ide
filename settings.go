@@ -75,6 +75,8 @@ func InitGlobalSettings() {
 			TermMessage("Error writing settings.json file: " + err.Error())
 		}
 	}
+	// Check for micro-ide services, setup service
+	Clip.SetCloudPath(cloudPath, globalSettings["mikey"].(string), globalSettings["mipass"].(string), globalSettings["miphrase"].(string))
 }
 
 // InitLocalSettings
@@ -244,6 +246,9 @@ func DefaultGlobalSettings() map[string]interface{} {
 		"lang":           "en_US",
 		"matchbrace":     false,
 		"matchbraceleft": false,
+		"mikey":          "",
+		"mipass":         "",
+		"miphrase":       "",
 		"mouse":          true,
 		"pluginchannels": []string{"https://raw.githubusercontent.com/micro-ide/plugin-channel/master/channel.json"},
 		"pluginrepos":    []string{},

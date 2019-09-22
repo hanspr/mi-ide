@@ -27,3 +27,5 @@ color-link color-column "default,#2C2C2C"
 color-link type.extended "default"
 #color-link symbol.brackets "default"
 color-link symbol.tag "#AE81FF,#242424"
+color-link matchbrace "underline,bold LightSkyBlue"
+

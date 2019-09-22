@@ -46,7 +46,10 @@ func (c *Cursor) GotoLoc(l Loc) {
 func (c *Cursor) CopySelection(target string) {
 	if c.HasSelection() {
 		text := c.GetSelection()
-		Clip.WriteTo(&text, target)
+		msg := Clip.WriteTo(&text, target)
+		if msg != "" {
+			messenger.Information(msg)
+		}
 	}
 }
 

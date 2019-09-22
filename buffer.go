@@ -99,7 +99,7 @@ func (b *Buffer) GetFileSettings(filename string) {
 	if CurrEnv.OS != "windows" {
 		// Test if file is write enabled for this user and file permissions
 		if fi, err := os.Stat(filename); err == nil {
-			b.RO = true
+			b.RO = false
 			perm, _ := permbits.Stat(filename)
 			uid := fi.Sys().(*syscall.Stat_t).Uid
 			gid := fi.Sys().(*syscall.Stat_t).Gid
@@ -794,6 +794,7 @@ func (b *Buffer) SaveAs(filename string) error {
 	})
 
 	if err != nil {
+		messenger.AddLog(err.Error())
 		if b.encoding == true {
 			newerr := b.RetryOnceSaveAs(filename)
 			if newerr != nil {
@@ -808,7 +809,7 @@ func (b *Buffer) SaveAs(filename string) error {
 	if !b.Settings["fastdirty"].(bool) {
 		if fileSize > LargeFileThreshold {
 			// For large files 'fastdirty' needs to be on
-			b.RetryOnceSaveAs(filename)
+			b.Settings["fastdirty"] = true
 		} else {
 			calcHash(b, &b.origHash)
 		}

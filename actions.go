@@ -1032,6 +1032,11 @@ func (v *View) SaveAll(usePlugin bool) bool {
 
 // Save the buffer to disk
 func (v *View) Save(usePlugin bool) bool {
+	if !v.Buf.IsModified {
+		// Do not save if buffer is clean
+		messenger.Information(Language.Translate("Buffer has no changes to save"))
+		return false
+	}
 	if v.mainCursor() {
 		if usePlugin && !PreActionCall("Save", v) {
 			return false
@@ -1064,7 +1069,7 @@ func (v *View) saveToFile(filename string) {
 	} else {
 		v.Buf.Path = filename
 		v.Buf.name = filename
-		messenger.Message("Saved " + filename)
+		messenger.Message(Language.Translate("Saved") + " " + filename)
 	}
 }
 
@@ -1222,7 +1227,7 @@ func (v *View) Copy(usePlugin bool) bool {
 				messenger.Error(Language.Translate("Selection is to big, can not copy. You may move (up/down) or delete only."))
 			} else {
 				loc := v.Cursor.CurSelection
-				v.Cursor.CopySelection("local")
+				v.Cursor.CopySelection(CurrEnv.ClipWhere)
 				v.freshClip = true
 				v.Cursor.ResetSelection()
 				v.Cursor.GotoLoc(loc[0])
@@ -1233,6 +1238,13 @@ func (v *View) Copy(usePlugin bool) bool {
 			return PostActionCall("Copy", v)
 		}
 	}
+	return true
+}
+
+func (v *View) CopyToCloud(usePlugin bool) bool {
+	CurrEnv.ClipWhere = "cloud"
+	v.Copy(usePlugin)
+	CurrEnv.ClipWhere = "local"
 	return true
 }
 
@@ -1279,7 +1291,7 @@ func (v *View) Cut(usePlugin bool) bool {
 			messenger.Error(Language.Translate("Selection is to big, can not copy. You may move (up/down) or delete only."))
 			return false
 		} else {
-			v.Cursor.CopySelection("local")
+			v.Cursor.CopySelection(CurrEnv.ClipWhere)
 			v.Cursor.DeleteSelection()
 			v.Cursor.ResetSelection()
 			v.freshClip = true
@@ -1296,6 +1308,13 @@ func (v *View) Cut(usePlugin bool) bool {
 			return v.CutLine(usePlugin)
 		}
 	}
+	return true
+}
+
+func (v *View) CutToCloud(usePlugin bool) bool {
+	CurrEnv.ClipWhere = "cloud"
+	v.Cut(usePlugin)
+	CurrEnv.ClipWhere = "local"
 	return true
 }
 
@@ -1438,6 +1457,13 @@ func (v *View) Paste(usePlugin bool) bool {
 	if usePlugin {
 		return PostActionCall("Paste", v)
 	}
+	return true
+}
+
+func (v *View) PasteCloud(usePlugin bool) bool {
+	CurrEnv.ClipWhere = "cloud"
+	v.Paste(usePlugin)
+	CurrEnv.ClipWhere = "local"
 	return true
 }
 

@@ -26,6 +26,7 @@ const (
 	doubleClickThreshold = 400 // How many milliseconds to wait before a second click is not a double click
 	undoThreshold        = 500 // If two events are less than n milliseconds apart, undo both of them
 	autosaveTime         = 8   // Number of seconds to wait before autosaving
+	cloudPath            = "http://soporte.eflow.com.mx:8080"
 )
 
 type MouseClick struct {
@@ -42,10 +43,11 @@ type CursorType struct {
 }
 
 type AppEnv struct {
-	OS     string
-	Uid    int
-	Gid    int
-	Groups []int
+	OS        string
+	Uid       int
+	Gid       int
+	Groups    []int
+	ClipWhere string
 }
 
 var (
@@ -363,6 +365,7 @@ func main() {
 	CurrEnv.Uid = os.Getuid()
 	CurrEnv.Gid = os.Getgid()
 	CurrEnv.Groups, _ = os.Getgroups()
+	CurrEnv.ClipWhere = "local"
 
 	flag.Usage = func() {
 		fmt.Println("Usage: micro [OPTIONS] [FILE]...")

@@ -27,3 +27,5 @@ color-link cursor-line "black"
 color-link color-column "black"
 color-link symbol.brackets "yellow"
 color-link symbol.tag "blue"
+color-link matchbrace "underline,bold blue"
+
