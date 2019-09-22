@@ -591,7 +591,7 @@ func (f *Frame) SetFocusPreviousInputElement(k string) {
 			next = *e
 			break
 		}
-		if e.pos.Y < me.pos.Y && e.pos.Y >= next.pos.Y && e.pos.X > next.pos.X {
+		if e.pos.Y < me.pos.Y && e.pos.Y >= next.pos.Y && e.pos.X >= next.pos.X {
 			next = *e
 			continue
 		}
@@ -630,7 +630,7 @@ func (f *Frame) SetFocusNextInputElement(k string) {
 			next = *e
 			break
 		}
-		if e.pos.Y > me.pos.Y && e.pos.Y <= next.pos.Y && e.pos.X < next.pos.X {
+		if e.pos.Y > me.pos.Y && e.pos.Y <= next.pos.Y && e.pos.X <= next.pos.X {
 			next = *e
 			continue
 		}
