@@ -18,6 +18,8 @@ Save aborted|
 File saved as UTF-8|
 File can not be saved with selected encoding|
 File is readonly|
+Saved|
+Buffer has no changes to save|
 Selection is to big, can not copy. You may move (up/down) or delete only.|
 Line is to big, can not cut. You may move (up/down) or delete only.|
 Line is to big to cut|

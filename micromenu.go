@@ -66,6 +66,7 @@ func (m *microMenu) Menu() {
 		m.AddSubMenuItem("microide", Language.Translate("Global Settings"), m.GlobalConfigDialog)
 		m.AddSubMenuItem("microide", Language.Translate("KeyBindings"), m.KeyBindingsDialog)
 		m.AddSubMenuItem("microide", Language.Translate("Plugin Manager"), m.PluginManagerDialog)
+		m.AddSubMenuItem("microide", Language.Translate("Cloud Services"), m.MiCloudServices)
 		row++
 		for _, name := range keys {
 			if name != "microide" {
@@ -229,6 +230,9 @@ func (m *microMenu) GlobalConfigDialog() {
 		f.AddWindowBox("enc", Language.Translate("Global Settings"), 0, 0, width, height, true, nil, "", "")
 		keys := make([]string, 0, len(globalSettings))
 		for k := range globalSettings {
+			if strings.Contains(k, "mi-") {
+				continue
+			}
 			keys = append(keys, k)
 		}
 		sort.Strings(keys)
@@ -887,6 +891,70 @@ func (m *microMenu) RemovePlugin(name, value, event, when string, x, y int) bool
 		f.SetLabel("msg", "")
 	}()
 	return true
+}
+
+// ---------------------------------------
+// Micro Ide Cloud Services
+// ---------------------------------------
+
+func (m *microMenu) MiCloudServices() {
+	var f *Frame
+	if m.myapp == nil || m.myapp.name != "mi-cloud" {
+		if m.myapp == nil {
+			m.myapp = new(MicroApp)
+			m.myapp.New("mi-cloud")
+		} else {
+			m.myapp.name = "mi-cloud"
+		}
+		m.myapp.Reset()
+		m.myapp.defStyle = StringToStyle("#ffffff,#262626")
+		width := 70
+		height := 12
+		row := 2
+		f = m.myapp.AddFrame("f", -1, -1, width, height, "relative")
+		m.myapp.AddStyle("f", "black,yellow")
+		f.AddWindowBox("enc", Language.Translate("Micro Ide Cloud Services"), 0, 0, width, height, true, nil, "", "")
+		f.AddWindowTextBox("ukey", fmt.Sprintf("%25s ", Language.Translate("Key")), globalSettings["mi-key"].(string), "string", 2, row, 40, 40, nil, "", "")
+		row += 2
+		f.AddWindowTextBox("pass", fmt.Sprintf("%25s ", Language.Translate("Password")), globalSettings["mi-pass"].(string), "string", 2, row, 20, 20, nil, "", "")
+		row += 2
+		f.AddWindowTextBox("phrs", fmt.Sprintf("%25s ", Language.Translate("Passphrase")), globalSettings["mi-phrase"].(string), "string", 2, row, 20, 20, nil, "", "")
+		lbl := Language.Translate("Cancel")
+		f.AddWindowButton("cancel", " "+lbl+" ", "cancel", width-Count(lbl)-20, height-1, m.ButtonFinish, "", "")
+		lbl = Language.Translate("Save")
+		f.AddWindowButton("save", " "+lbl+" ", "ok", width-Count(lbl)-5, height-1, m.SaveCloudSettings, "", "")
+	} else {
+		f = m.myapp.frames["f"]
+	}
+	m.myapp.Start()
+	apprunning = m.myapp
+	f.SetFocus("ukey", "begin")
+}
+
+func (m *microMenu) SaveCloudSettings(name, value, event, when string, x, y int) bool {
+	if when == "PRE" {
+		return true
+	}
+	if event != "mouse-click1" {
+		return true
+	}
+	savesettings := false
+	values := m.myapp.GetValues()
+	if values["ukey"] != "" && values["ukey"] != globalSettings["mi-key"].(string) {
+		SetOption("mi-key", values["ukey"])
+		savesettings = true
+	}
+	if values["pass"] != "" && values["pass"] != globalSettings["mi-pass"].(string) {
+		// Set password on cloud (new or replace)
+		SetOption("mi-pass", values["pass"])
+		savesettings = true
+	}
+	if values["phrs"] != "" && values["phrs"] != globalSettings["mi-phrase"].(string) {
+		// Delete cloud stored data (will be useless)
+		SetOption("mi-phrase", values["phrs"])
+		savesettings = true
+	}
+	return savesettings
 }
 
 // ---------------------------------------

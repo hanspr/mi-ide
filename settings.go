@@ -76,7 +76,7 @@ func InitGlobalSettings() {
 		}
 	}
 	// Check for micro-ide services, setup service
-	Clip.SetCloudPath(cloudPath, globalSettings["mikey"].(string), globalSettings["mipass"].(string), globalSettings["miphrase"].(string))
+	Clip.SetCloudPath(cloudPath, globalSettings["mi-key"].(string), globalSettings["mi-pass"].(string), globalSettings["mi-phrase"].(string))
 }
 
 // InitLocalSettings
@@ -246,9 +246,9 @@ func DefaultGlobalSettings() map[string]interface{} {
 		"lang":           "en_US",
 		"matchbrace":     false,
 		"matchbraceleft": false,
-		"mikey":          "",
-		"mipass":         "",
-		"miphrase":       "",
+		"mi-key":         "",
+		"mi-pass":        "",
+		"mi-phrase":      "",
 		"mouse":          true,
 		"pluginchannels": []string{"https://raw.githubusercontent.com/micro-ide/plugin-channel/master/channel.json"},
 		"pluginrepos":    []string{},
