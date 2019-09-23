@@ -85,6 +85,7 @@ Set encoding|
 Global Settings|
 KeyBindings|
 Plugin Manager|
+Cloud Services|
 Error writing settings.json file|
 Key check|
 Taken|
@@ -117,3 +118,8 @@ Buffer Settings|
 Save as this file settings only|
 Save as default settings for all (%s) files|
 Change settings for this session only|
+Micro Ide Cloud Services|
+Key|
+Password|
+New Password|
+Passphrase|
