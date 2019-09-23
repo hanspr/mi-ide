@@ -476,6 +476,8 @@ func (f *Frame) SetValue(k, v string) {
 				break
 			}
 		}
+	} else if e.form == "textbox" || e.form == "textarea" {
+		f.SetFocus(k, "end")
 	}
 	e.Draw()
 	a.screen.Show()
@@ -1448,6 +1450,11 @@ func (e *AppElement) TextAreaKeyEvent(key string, x, y int) {
 			e.value = e.value + clip
 			e.TextAreaKeyEvent("End", x, y)
 			return
+		} else if key == "Ctrl+R" || key == "Ctrl+K" {
+			e.value = ""
+			a.cursor.X = e.aposb.X
+			e.cursor.X = 0
+			a.cursor.Y = e.aposb.Y
 		}
 		e.Draw()
 		e.setACursorFromECursor()
@@ -1526,6 +1533,11 @@ func (e *AppElement) TextBoxKeyEvent(key string, x, y int) {
 			e.value = e.value + clip
 			e.TextBoxKeyEvent("End", x, y)
 			return
+		} else if key == "Ctrl+R" || key == "Ctrl+K" {
+			e.value = ""
+			a.cursor.X = e.aposb.X
+			e.cursor.X = 0
+			e.offset = 0
 		}
 		e.DrawTextBox()
 		a.screen.ShowCursor(a.cursor.X+f.left, a.cursor.Y+f.top)

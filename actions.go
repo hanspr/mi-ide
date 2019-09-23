@@ -1949,10 +1949,33 @@ func (v *View) Escape(usePlugin bool) bool {
 }
 
 func (v *View) SafeQuit(usePlugin bool) bool {
-	for _, v := range tabs[curTab].Views {
-		if v.Type == vtLog || v.Type == vtTerm || v.Type == vtHelp {
-			v.Quit(false)
+	for _, vo := range tabs[curTab].Views {
+		if vo.Type == vtLog || vo.Type == vtTerm || vo.Type == vtHelp {
+			vo.Quit(false)
 			return false
+		}
+	}
+	v.Quit(true)
+	return true
+}
+
+func (v *View) QuitOthers(usePlugin bool) bool {
+	if v.Type == vtLog || v.Type == vtTerm || v.Type == vtHelp {
+		return false
+	}
+	curloc := v.Cursor.Loc
+	if len(tabs[curTab].Views) > 1 {
+		for _, vo := range tabs[curTab].Views {
+			if vo.Type == vtLog || vo.Type == vtTerm || vo.Type == vtHelp {
+				vo.Quit(false)
+				v.Cursor.GotoLoc(curloc)
+				return false
+			} else if v.Num != vo.Num {
+				vo.Quit(true)
+				tabs[curTab].CurView = v.Num
+				v.Cursor.GotoLoc(curloc)
+				return false
+			}
 		}
 	}
 	v.Quit(true)

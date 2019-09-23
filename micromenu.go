@@ -494,6 +494,8 @@ func (m *microMenu) SetBinding(name, value, event, when string, x, y int) bool {
 			} else {
 				event = strings.ReplaceAll(event, "+", "-")
 			}
+		} else if strings.Contains(event, "Backspace") {
+			event = strings.ReplaceAll(event, "+", "-")
 		} else {
 			event = strings.ReplaceAll(event, "+", "")
 		}
@@ -514,6 +516,9 @@ func (m *microMenu) SetBinding(name, value, event, when string, x, y int) bool {
 		return false
 	case "Alt-0", "Alt-1", "Alt-2", "Alt-3", "Alt-4", "Alt-5", "Alt-6", "Alt-7", "Alt-8", "Alt-9", "F9", "F10", "F11", "F12":
 		f.SetLabel("?msg", event+" {red}reserved plugins{/red}")
+		if name == "?test" {
+			f.SetValue(name, "")
+		}
 		return false
 	}
 	free := true
