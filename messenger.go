@@ -454,7 +454,7 @@ func (m *Messenger) Backspace() {
 
 // Paste pastes the clipboard
 func (m *Messenger) Paste() {
-	clip := Clip.ReadFrom("local")
+	clip := Clip.ReadFrom("local", "clip")
 	m.response = Insert(m.response, m.cursorx, clip)
 	m.cursorx += Count(clip)
 }

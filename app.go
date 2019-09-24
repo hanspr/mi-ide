@@ -1446,7 +1446,7 @@ func (e *AppElement) TextAreaKeyEvent(key string, x, y int) {
 		} else if key == "Enter" {
 			return
 		} else if key == "Ctrl+V" {
-			clip := Clip.ReadFrom("local")
+			clip := Clip.ReadFrom("local", "clip")
 			e.value = e.value + clip
 			e.TextAreaKeyEvent("End", x, y)
 			return
@@ -1529,7 +1529,7 @@ func (e *AppElement) TextBoxKeyEvent(key string, x, y int) {
 			f.SetFocusPreviousInputElement(e.name)
 			return
 		} else if key == "Ctrl+V" {
-			clip := Clip.ReadFrom("local")
+			clip := Clip.ReadFrom("local", "cip")
 			e.value = e.value + clip
 			e.TextBoxKeyEvent("End", x, y)
 			return

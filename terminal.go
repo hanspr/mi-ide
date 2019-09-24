@@ -117,7 +117,7 @@ func (t *Terminal) HandleEvent(event tcell.Event) {
 		}
 		if e.Key() == tcell.KeyCtrlC && t.HasSelection() {
 			text := t.GetSelection(t.view.Width)
-			Clip.WriteTo(&text, "local")
+			Clip.WriteTo(&text, "local", "clip")
 		} else if t.status != VTDone {
 			t.WriteString(event.EscSeq())
 		}

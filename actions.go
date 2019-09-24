@@ -1451,7 +1451,7 @@ func (v *View) Paste(usePlugin bool) bool {
 		return false
 	}
 
-	clip := Clip.ReadFrom("local")
+	clip := Clip.ReadFrom(CurrEnv.ClipWhere, "clip")
 	v.paste(clip)
 
 	if usePlugin {
@@ -1464,21 +1464,6 @@ func (v *View) PasteCloud(usePlugin bool) bool {
 	CurrEnv.ClipWhere = "cloud"
 	v.Paste(usePlugin)
 	CurrEnv.ClipWhere = "local"
-	return true
-}
-
-// PastePrimary pastes from the primary clipboard (only use on linux)
-func (v *View) PastePrimary(usePlugin bool) bool {
-	if usePlugin && !PreActionCall("Paste", v) {
-		return false
-	}
-
-	clip := Clip.ReadFrom("cloud")
-	v.paste(clip)
-
-	if usePlugin {
-		return PostActionCall("Paste", v)
-	}
 	return true
 }
 

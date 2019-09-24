@@ -73,7 +73,6 @@ var bindingActions = map[string]func(*View, bool) bool{
 	"OutdentLine":            (*View).OutdentLine,
 	"Paste":                  (*View).Paste,
 	"PasteCloud":             (*View).PasteCloud,
-	"PastePrimary":           (*View).PastePrimary,
 	"SelectAll":              (*View).SelectAll,
 	"OpenFile":               (*View).OpenFile,
 	"SelectPageUp":           (*View).SelectPageUp,
@@ -586,7 +585,6 @@ func DefaultBindings() map[string]string {
 		"MouseWheelUp":   "ScrollUp",
 		"MouseWheelDown": "ScrollDown",
 		"MouseLeft":      "MousePress",
-		"MouseMiddle":    "PastePrimary",
 		"Ctrl-MouseLeft": "MouseMultiCursor",
 
 		"Alt-n": "SpawnMultiCursor",
