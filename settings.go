@@ -14,6 +14,7 @@ import (
 
 	"github.com/flynn/json5"
 	"github.com/hanspr/glob"
+	"github.com/phayes/permbits"
 )
 
 type optionValidator func(string, interface{}) error
@@ -190,7 +191,11 @@ func WriteSettings(filename string) error {
 		}
 
 		txt, _ := json.MarshalIndent(parsed, "", "    ")
-		err = ioutil.WriteFile(filename, append(txt, '\n'), 0644)
+		err = ioutil.WriteFile(filename, append(txt, '\n'), 0600)
+		xerr := permbits.Chmod(filename, permbits.PermissionBits(0600))
+		if xerr != nil {
+			messenger.AddLog(xerr)
+		}
 	}
 	return err
 }

@@ -206,7 +206,7 @@ func InitConfigDir() {
 
 	if _, err := os.Stat(xdgHome); os.IsNotExist(err) {
 		// If the xdgHome doesn't exist we should create it
-		err = os.Mkdir(xdgHome, os.ModePerm)
+		err = os.Mkdir(xdgHome, 0700)
 		if err != nil {
 			TermMessage("Error creating XDG_CONFIG_HOME directory: " + err.Error())
 		}
