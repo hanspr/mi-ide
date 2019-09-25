@@ -506,11 +506,14 @@ func (b *Buffer) SmartIndent(Start, Stop Loc, once bool) {
 	if Ys < 0 {
 		Ys = 0
 	} else {
-		// Look back for the first line that is not empty, get that indentation as reference
+		// Look back for the first line that is not empty, is not a comment, get that indentation as reference
+		comment := regexp.MustCompile(`^(#|//|--|/\*)`)
 		for y := Ys; y >= 0; y-- {
-			if len(b.Line(y)) > 0 {
+			l := b.Line(y)
+			if len(l) > 0 && comment.MatchString(l) == false {
 				n = CountLeadingWhitespace(b.Line(y)) / iMult
 				B = BracePairsAreBalanced(b.Line(y))
+				Ys = y
 				break
 			}
 		}
