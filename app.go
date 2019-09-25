@@ -1608,12 +1608,7 @@ func (a *MicroApp) CheckElementsActions(event string, x, y int) bool {
 				// Check if location is inside the element hotspot
 				if x >= e.aposb.X && x <= e.apose.X && y >= e.aposb.Y && y <= e.apose.Y {
 					if a.lockActive == true && a.activeElement != e.name {
-						if strings.Contains(event, "click") {
-							// Close Select without selection
-							a.frames[a.activeFrame].elements[a.activeElement].SelectClickEvent("mouse-click1", -1, -1)
-						} else {
-							continue
-						}
+						continue
 					}
 					if a.activeFrame != e.frame.name {
 						a.activeFrame = e.frame.name

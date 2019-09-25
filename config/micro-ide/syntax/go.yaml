@@ -5,18 +5,22 @@ detect:
 
 rules:
     # Conditionals and control flow
+    - type: "func \\w+"
     - special: "\\b(break|case|continue|default|go|goto|range|return)\\b"
     - statement: "\\b(else|for|if|switch)\\b"
-    - preproc: "\\b(package|import|const|var|type|struct|func|go|defer|iota)\\b"
+    - statement: "\\b(package|import|const|var|type|struct|func|go|defer|iota)\\b"
     - symbol.operator: "[-+/*=<>!~%&|^]|:="
 
       # Types
     - symbol: "(,|\\.)"
-    - type: "\\b(u?int(8|16|32|64)?|float(32|64)|complex(64|128))\\b"
-    - type: "\\b(uintptr|byte|rune|string|interface|bool|map|chan|error)\\b"
+    - type.keyword: "\\b(u?int(8|16|32|64)?|float(32|64)|complex(64|128))\\b"
+    - type.keyword: "\\b(uintptr|byte|rune|string|interface|bool|map|chan|error)\\b"
     - type.keyword: "\\b(struct)\\b"
     - constant.bool: "\\b(true|false|nil)\\b"
 
+      # Methods
+    - method: "\\.\\w+\\b"
+    - normal: "\\."
       # Brackets
     - symbol.brackets: "(\\{|\\})"
     - symbol.brackets: "(\\(|\\))"

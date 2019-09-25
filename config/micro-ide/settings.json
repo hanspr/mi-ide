@@ -17,6 +17,9 @@
     "lang": "en_US",
     "matchbrace": true,
     "matchbraceleft": false,
+    "mi-key": "",
+    "mi-pass": "",
+    "mi-phrase": "",
     "mouse": true,
     "pluginchannels": [
         "https://raw.githubusercontent.com/hanspr/mi-channel/master/plugins.json"
