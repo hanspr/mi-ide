@@ -241,8 +241,8 @@ func DefaultGlobalSettings() map[string]interface{} {
 		"colorcolumn":    float64(0),
 		"colorscheme":    "default",
 		"cursorcolor":    "disabled",
-		"cursorshape":    "disabled",
 		"cursorline":     true,
+		"cursorshape":    "disabled",
 		"eofnewline":     false,
 		"fastdirty":      true,
 		"fileformat":     "unix",
@@ -269,14 +269,12 @@ func DefaultGlobalSettings() map[string]interface{} {
 		"splitbottom":    true,
 		"splitright":     true,
 		"splitempty":     false,
-		"sucmd":          "sudo",
 		"syntax":         true,
 		"tabmovement":    false,
 		"tabsize":        float64(4),
 		"tabstospaces":   false,
 		"tabindents":     false,
 		"termtitle":      false,
-		"useprimary":     true,
 	}
 }
 
@@ -316,7 +314,6 @@ func DefaultLocalSettings() map[string]interface{} {
 		"tabsize":        float64(4),
 		"tabstospaces":   false,
 		"tabindents":     false,
-		"useprimary":     true,
 	}
 }
 

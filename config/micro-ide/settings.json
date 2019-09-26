@@ -37,12 +37,10 @@
     "splitbottom": true,
     "splitempty": false,
     "splitright": true,
-    "sucmd": "sudo",
     "syntax": true,
     "tabindents": false,
     "tabmovement": true,
     "tabsize": 4,
     "tabstospaces": false,
-    "termtitle": false,
-    "useprimary": true
+    "termtitle": false
 }

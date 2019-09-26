@@ -12,9 +12,12 @@ can change it!
 | Key        | Description of function                  |
 |------------|------------------------------------------|
 | F1         | Open file                                |
+| F13        | Open file viewer                         |
 | F2         | Save                                     |
+| F14        | Save All                                 |
 | F3         | Save As ...                              |
 | F4         | Close focused window (Tab if empty)      |
+| F16        | Close the oposite window                 |
 | F5         | Move to previous window                  |
 | F6         | Move to next window                      |
 | F7         | Move to previous Tab                     |

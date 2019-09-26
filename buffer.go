@@ -99,7 +99,7 @@ func (b *Buffer) GetFileSettings(filename string) {
 	if CurrEnv.OS != "windows" {
 		// Test if file is write enabled for this user and file permissions
 		if fi, err := os.Stat(filename); err == nil {
-			b.RO = false
+			b.RO = true
 			perm, _ := permbits.Stat(filename)
 			uid := fi.Sys().(*syscall.Stat_t).Uid
 			gid := fi.Sys().(*syscall.Stat_t).Gid

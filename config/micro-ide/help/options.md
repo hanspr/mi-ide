@@ -81,29 +81,14 @@ Here are the options that you can set:
 	default value: this will be automatically set depending on the file you have
 	open
 
-* `ignorecase`: perform case-insensitive searches.
-
-	default value: `false`
-
 * `indentchar`: sets the indentation character.
 
 	default value: ` `
-
-* `infobar`: enables the line at the bottom of the editor where messages are
-   printed. This option is `global only`.
-
-	default value: `true`
 
 * `keepautoindent`: when using autoindent, whitespace is added for you. This
    option determines if when you move to the next line without any insertions
    the whitespace that was added should be deleted. By default the autoindent
    whitespace is deleted if the line was left empty.
-
-	default value: `false`
-
-* `keymenu`: display the nano-style key menu at the bottom of the screen. Note
-   that ToggleKeyMenu is bound to `Alt-g` by default and this is displayed in
-   the statusline. To disable this, simply by `Alt-g` to `UnbindKey`.
 
 	default value: `false`
 
@@ -120,7 +105,7 @@ Here are the options that you can set:
    contain metadata about the given plugin. See the `Plugin Manager` section of
    the `plugins` help topic for more information.
 
-	default value: `https://github.com/micro-editor/plugin-channel`
+   default value: `https://raw.githubusercontent.com/hanspr/mi-channel/master/plugins.json`
 
 * `pluginrepos`: contains all the 'repositories' micro-ide's plugin manager will
    search for plugins in. A repository consists of a `repo.json` file which
@@ -151,18 +136,16 @@ Here are the options that you can set:
 
 	default value: `false`
 
-* `scrollbar`: display a scroll bar
-
-    default value: `false`
-
 * `scrollmargin`: amount of lines you would like to see above and below the
    cursor.
 
 	default value: `3`
 
-* `scrollspeed`: amount of lines to scroll for one scroll event.
+* `smartindent`: It works only on languages that use braces to define blocks "C" like languages
+   When you type the Tab key micro-ide will attempt to indent the line to the correct depth of
+   indentation.
 
-	default value: `2`
+   default value: `false`
 
 * `smartpaste`: should micro-ide add leading whitespace when pasting multiple lines?
    This will attempt to preserve the current indentation level when pasting an
@@ -179,12 +162,11 @@ Here are the options that you can set:
 
 	default value: `true`
 
+* `splitfalse`: If splits should open empty or the current buffer on the new view
+   default value: `false`
+
 * `splitright`: when a vertical split is created, should it be created to the
    right of the current split?
-
-	default value: `true`
-
-* `statusline`: display the status line at the bottom of the screen.
 
 	default value: `true`
 
@@ -201,12 +183,6 @@ Here are the options that you can set:
 * `syntax`: turns syntax on or off.
 
 	default value: `true`
-
-* `sucmd`: specifies the super user command. On most systems this is "sudo" but
-   on BSD it can be "doas." This option can be customized and is only used when
-   saving with su.
-
-	default value: `sudo`
 
 * `tabmovement`: navigate spaces at the beginning of lines as if they are tabs
    (e.g. move over 4 spaces at once). This option only does anything if
@@ -227,8 +203,3 @@ Here are the options that you can set:
 
 	default value: `false`
 
-* `useprimary` (only useful on * nix): defines whether or not micro-ide will use the
-   primary clipboard to copy selections in the background. This does not affect
-   the normal clipboard using Ctrl-C and Ctrl-V.
-
-	default value: `true`

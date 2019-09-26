@@ -326,6 +326,9 @@ func (m *microMenu) SaveSettings(name, value, event, when string, x, y int) bool
 		values["cursorcolor"] = "disabled"
 	}
 	for k, _ := range globalSettings {
+		if strings.Contains(k, "mi-") {
+			continue
+		}
 		kind := reflect.TypeOf(globalSettings[k]).Kind()
 		if kind == reflect.Bool {
 			v = strconv.FormatBool(globalSettings[k].(bool))
