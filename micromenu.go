@@ -397,7 +397,7 @@ func (m *microMenu) KeyBindingsDialog() {
 				continue
 			}
 			switch k {
-			case "CursorDown", "CursorUp", "CursorLeft", "CursorRight", "FindNext", "FindPrevious", "SelectLeft", "SelectRight", "SelectDown", "SelectUp":
+			case "CursorDown", "CursorUp", "CursorLeft", "CursorRight", "FindNext", "FindPrevious", "SelectLeft", "SelectRight", "SelectDown", "SelectUp", "CursorPageDown", "CursorPageUp":
 				continue
 			}
 			keys = append(keys, k)
@@ -409,7 +409,7 @@ func (m *microMenu) KeyBindingsDialog() {
 				continue
 			}
 			switch k {
-			case "Left", "Up", "Down", "Right", "Backspace", "Delete", "CtrlH", "Esc", "Enter", "Backspace2", "ShiftLeft", "ShiftRight", "ShiftUp", "ShiftDown":
+			case "Left", "Up", "Down", "Right", "Backspace", "Delete", "CtrlH", "Esc", "Enter", "Backspace2", "ShiftLeft", "ShiftRight", "ShiftUp", "ShiftDown", "PageDown", "PageUp":
 				continue
 			}
 			_, ok := bindings[v]
