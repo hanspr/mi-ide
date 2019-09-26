@@ -35,6 +35,8 @@ func NewToolBar() *ToolBar {
 	t.AddIcon('⬓', t.HSplit, "")
 	t.AddIcon('🔎', t.Find, "")
 	t.AddIcon('℁', t.Replace, "")
+	t.AddIcon('↑', t.CloudUpload, "")
+	t.AddIcon('↓', t.CloudDownload, "")
 	t.AddIcon('❎', t.Quit, "")
 	t.active = true
 	return t
@@ -104,6 +106,14 @@ func (t *ToolBar) Void() {
 
 func (t *ToolBar) Quit() {
 	CurView().Quit(true)
+}
+
+func (t *ToolBar) CloudUpload() {
+	CurView().UploadToCloud(false)
+}
+
+func (t *ToolBar) CloudDownload() {
+	CurView().DownloadFromCloud(false)
 }
 
 // Handle ToolBarClick

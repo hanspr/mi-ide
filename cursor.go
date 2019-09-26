@@ -49,6 +49,8 @@ func (c *Cursor) CopySelection(target string) {
 		msg := Clip.WriteTo(&text, target, "clip")
 		if msg != "" {
 			messenger.Information(msg)
+		} else if target == "cloud" {
+			messenger.Success(Language.Translate("Clipboard uploaded to cloud"))
 		}
 	}
 }

@@ -1506,6 +1506,12 @@ func (v *View) SelectAll(usePlugin bool) bool {
 	return true
 }
 
+// OpenDirView. Keybinding to open the DirView
+func (v *View) OpenDirView(usePlugin bool) bool {
+	micromenu.DirTreeView()
+	return true
+}
+
 // OpenFile opens a new file in the buffer
 func (v *View) OpenFile(usePlugin bool) bool {
 	if v.mainCursor() {
@@ -1514,7 +1520,7 @@ func (v *View) OpenFile(usePlugin bool) bool {
 		}
 
 		if v.CanClose() {
-			input, canceled := messenger.Prompt("> ", "open ", "Open", CommandCompletion)
+			input, canceled := messenger.Prompt("> ", Language.Translate("open")+" ", "Open", CommandCompletion)
 			if !canceled {
 				HandleCommand(input)
 				if usePlugin {
@@ -2454,4 +2460,41 @@ func (v *View) FindDialogFinished(values map[string]string) {
 	lastSearch = search
 	Search(search, v, true)
 	StartSearchMode()
+}
+
+// Micro-Ide Services
+
+func (v *View) UploadToCloud(plugin bool) bool {
+	b := v.Buf
+	if b.Len() == 0 {
+		return true
+	}
+	file := b.String()
+	msg := Clip.WriteTo(&file, "cloud", "file")
+	if msg == "" {
+		messenger.Success(Language.Translate("File uploaded to cloud"))
+	} else {
+		messenger.Error(Language.Translate(msg))
+	}
+	return true
+}
+
+func (v *View) DownloadFromCloud(plugin bool) bool {
+	text := Clip.ReadFrom("cloud", "file")
+	if text == "" {
+		messenger.Message(Language.Translate("No files to donwload"))
+		return true
+	}
+	tab := NewTabFromView(NewView(NewBufferFromString(text, "")))
+	tab.SetNum(len(tabs))
+	tabs = append(tabs, tab)
+	curTab = len(tabs) - 1
+	if len(tabs) == 2 {
+		for _, t := range tabs {
+			for _, v := range t.Views {
+				v.AddTabbarSpace()
+			}
+		}
+	}
+	return true
 }

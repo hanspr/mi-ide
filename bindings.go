@@ -109,9 +109,14 @@ var bindingActions = map[string]func(*View, bool) bool{
 	"RemoveAllMultiCursors":  (*View).RemoveAllMultiCursors,
 	"SkipMultiCursor":        (*View).SkipMultiCursor,
 	"JumpToMatchingBrace":    (*View).JumpToMatchingBrace,
+	"OpenDirView":            (*View).OpenDirView,
 
 	// This was changed to InsertNewline but I don't want to break backwards compatibility
 	"InsertEnter": (*View).InsertNewline,
+
+	// Micro-Ide Services
+	"UploadToCloud":     (*View).UploadToCloud,
+	"DownloadFromCloud": (*View).DownloadFromCloud,
 }
 
 var bindingMouse = map[string]tcell.ButtonMask{
@@ -540,12 +545,9 @@ func DefaultBindings() map[string]string {
 		"CtrlY":          "Redo",
 		"CtrlC":          "Copy",
 		"CtrlX":          "Cut",
-		"Alt-c":          "CopyToCloud",
-		"Alt-x":          "CutToCloud",
 		"CtrlK":          "CutLine",
 		"CtrlD":          "DuplicateLine",
 		"CtrlV":          "Paste",
-		"Alt-v":          "PasteCloud",
 		"CtrlA":          "SelectAll",
 		"Home":           "StartOfLine",
 		"End":            "EndOfLine",
@@ -563,6 +565,7 @@ func DefaultBindings() map[string]string {
 
 		// Micro-Ide Defaults
 		"F1":        "OpenFile",
+		"F13":       "OpenDirView",
 		"F2":        "Save",
 		"F3":        "SaveAs",
 		"F4":        "Quit",
@@ -594,10 +597,10 @@ func DefaultBindings() map[string]string {
 		"Alt-;": "SkipMultiCursor",
 
 		// Micro-ide services
-		//		"Alt-c": "CopyToCloud",
-		//		"Alt-x": "CutToCloud",
-		//		"Alt-v": "PasteFromCloud",
-		//		"Alt-T": "TransferToCloud",
-		//		"Alt-D": "DownloadFromCloud",
+		"Alt-c": "CopyToCloud",
+		"Alt-x": "CutToCloud",
+		"Alt-v": "PasteCloud",
+		"Alt-T": "UploadToCloud",
+		"Alt-D": "DownloadFromCloud",
 	}
 }

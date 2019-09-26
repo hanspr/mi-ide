@@ -227,6 +227,7 @@ func NewBuffer(reader io.Reader, size int64, path string, cursorPosition []strin
 		}
 	} else {
 		utf8reader = reader
+		b.encoder = "UTF-8"
 		b.encoding = false
 	}
 
