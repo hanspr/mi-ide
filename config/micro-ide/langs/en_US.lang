@@ -1,3 +1,4 @@
+open|
 Find|
 F5,Backspace (Previous)  F6,Enter (Next)|
 is a directory|
@@ -123,3 +124,7 @@ Key|
 Password|
 New Password|
 Passphrase|
+File uploaded to cloud|
+No files to donwload|
+Clipboard uploaded to cloud|
+Bad credentials|

@@ -1,3 +1,4 @@
+open|abrir
 Find|Encontrar
 F5,Backspace (Previous)  F6,Enter (Next)|F5,Tecla borrar (Anterior)  F6,Enter (Siguiente)
 is a directory|es un directorio
@@ -123,3 +124,7 @@ Key|Llave
 Password|Contraseña
 New Password|Nueva contraseña
 Passphrase|Frase privada
+File uploaded to cloud|Archivo se subió a la nube
+No files to donwload|Sin archivos que descargar
+Clipboard uploaded to cloud|Copiado a la nube
+Bad credentials|Credenciales inválidas
