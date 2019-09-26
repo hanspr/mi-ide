@@ -514,8 +514,9 @@ func (b *Buffer) SmartIndent(Start, Stop Loc, once bool) {
 			if len(l) > 0 && comment.MatchString(l) == false {
 				n = CountLeadingWhitespace(b.Line(y)) / iMult
 				B = BracePairsAreBalanced(b.Line(y))
-				Ys = y
 				break
+			} else if comment.MatchString(l) == true {
+				Ys--
 			}
 		}
 	}
