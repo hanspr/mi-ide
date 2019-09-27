@@ -220,10 +220,12 @@ func (v *View) paste(clip string) {
 				v.Cursor.GotoLoc(Loc{x + spc2, v.Cursor.Loc.Y})
 			}
 		}
-	} else if v.Buf.Settings["smartpaste"].(bool) {
-		if v.Cursor.X > 0 && GetLeadingWhitespace(strings.TrimLeft(clip, "\r\n")) == "" {
-			leadingWS := GetLeadingWhitespace(v.Buf.Line(v.Cursor.Y))
-			clip = strings.Replace(clip, "\n", "\n"+leadingWS, -1)
+	} else {
+		if v.Buf.Settings["smartpaste"].(bool) {
+			if v.Cursor.X > 0 && GetLeadingWhitespace(strings.TrimLeft(clip, "\r\n")) == "" {
+				leadingWS := GetLeadingWhitespace(v.Buf.Line(v.Cursor.Y))
+				clip = strings.Replace(clip, "\n", "\n"+leadingWS, -1)
+			}
 		}
 		v.Buf.Insert(v.Cursor.Loc, clip)
 	}
