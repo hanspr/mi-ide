@@ -22,7 +22,7 @@ func (sline *Statusline) EncodingSelected(values map[string]string) {
 	b.encoding = true
 	b.encoder = values["encoding"]
 	b.ReOpen()
-	if values["encoding"] == "UTF-8" {
+	if values["encoding"] == "UTF8" {
 		b.encoding = false
 	} else {
 		b.encoding = true

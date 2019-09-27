@@ -87,6 +87,7 @@ Global Settings|Configuración Global
 KeyBindings|Asignación de teclas
 Plugin Manager|Administrador de Complementos
 Cloud Services|Servicios en la Nube
+Sync Settings|Sincronizar Configuraciones
 Error writing settings.json file|Error al salvar archivo de configuraciones
 Key check|Probar tecla
 Taken|Tomada
@@ -128,3 +129,8 @@ File uploaded to cloud|Archivo se subió a la nube
 No files to donwload|Sin archivos que descargar
 Clipboard uploaded to cloud|Copiado a la nube
 Bad credentials|Credenciales inválidas
+Do it|Hacerlo
+Upload my settings|Subir mis configuraciones
+Download my settings|Descargar mis configuraciones
+Settings uploaded ok|Configuración subida correctamente
+Could not download settings|No pude descargar la configuración

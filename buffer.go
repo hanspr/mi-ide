@@ -57,7 +57,7 @@ type Buffer struct {
 	//Encoding
 	encoder  string // encoder currently being used
 	sencoder string // encoder saved in buffers
-	encoding bool   // file requires encoding (any encoder different than UTF-8)
+	encoding bool   // file requires encoding (any encoder different than UTF8)
 
 	// Whether or not the buffer has been modified since it was opened
 	IsModified bool
@@ -132,30 +132,34 @@ func (b *Buffer) GetFileSettings(filename string) {
 	}
 	// Here it beggins the guessing game
 	// Use uchardet shipped with micro-ide if exists and it runs
-	b.encoder = "UTF-8"
+	b.encoder = "UTF8"
 	uchardet := configDir + "/libs/uchardet"
 	if _, err := os.Stat(uchardet); err == nil {
 		cmd := exec.Command(uchardet, filename)
 		cmd.Dir = configDir + "/libs"
 		msg, err := cmd.Output()
 		if err != nil {
-			b.encoder = "UTF-8"
+			b.encoder = "UTF8"
+			b.sencoder = b.encoder
 			return
 		}
 		b.encoder = strings.TrimSuffix(strings.ToUpper(string(msg)), "\n")
 	}
+	b.encoder = strings.ReplaceAll(b.encoder, "-", "")
+	b.encoder = strings.ReplaceAll(b.encoder, "_", "")
 	// Open ASCII files as UTF8
 	if b.encoder == "ASCII" {
-		b.encoder = "UTF-8"
+		b.encoder = "UTF8"
 	}
-	if b.encoder != "UTF-8" {
-		// Double check, file -b has better guessing for UTF-8 files
+	if b.encoder != "UTF8" {
+		// Double check, file -b has better guessing for UTF8 files
 		cmd := exec.Command("file", "-b", filename)
 		msg, err := cmd.Output()
-		if err == nil && strings.Contains(string(msg), "UTF-8") {
-			b.encoder = "UTF-8"
+		if err == nil && strings.Contains(string(msg), "UTF8") {
+			b.encoder = "UTF8"
 		}
 	}
+	b.sencoder = b.encoder
 	return
 }
 
@@ -211,7 +215,7 @@ func NewBuffer(reader io.Reader, size int64, path string, cursorPosition []strin
 	if reflect.TypeOf(reader).String() == "*os.File" && path != "" {
 		// Check for previous saved settings
 		b.GetFileSettings(path)
-		if b.encoder == "UTF-8" {
+		if b.encoder == "UTF8" {
 			utf8reader = reader
 			b.encoding = false
 		} else {
@@ -221,13 +225,13 @@ func NewBuffer(reader io.Reader, size int64, path string, cursorPosition []strin
 			if err == nil {
 				b.encoding = true
 			} else {
-				b.encoder = "UTF-8"
+				b.encoder = "UTF8"
 				b.encoding = false
 			}
 		}
 	} else {
 		utf8reader = reader
-		b.encoder = "UTF-8"
+		b.encoder = "UTF8"
 		b.encoding = false
 	}
 
@@ -759,10 +763,10 @@ func (b *Buffer) SaveAs(filename string) error {
 			if err != nil {
 				messenger.AddLog("Error!:", err.Error())
 				messenger.AddLog("Original encoding:", b.encoder)
-				messenger.AddLog("Save as UTF-8")
-				messenger.Information(Language.Translate("File saved as UTF-8"))
+				messenger.AddLog("Save as UTF8")
+				messenger.Information(Language.Translate("File saved as UTF8"))
 				fileutf8 = file
-				b.encoder = "UTF-8"
+				b.encoder = "UTF8"
 				b.encoding = false
 			}
 		} else {
@@ -822,7 +826,9 @@ func (b *Buffer) SaveAs(filename string) error {
 
 	b.Path = filename
 	b.IsModified = false
-	if b.sencoder != b.encoder {
+	//messenger.AddLog("Changed encoding: ", b.sencoder, " ? ", b.encoder)
+	if b.sencoder != "" && b.sencoder != b.encoder && b.encoder != "UTF8" {
+		//messenger.AddLog("Yes")
 		settings := make(map[string]string)
 		cachename, _ := filepath.Abs(filename)
 		cachename = configDir + "/buffers/" + strings.ReplaceAll(cachename+".settings", "/", "")
@@ -839,7 +845,7 @@ func (b *Buffer) SaveAs(filename string) error {
 
 func (b *Buffer) RetryOnceSaveAs(filename string) error {
 	enc := b.encoder
-	b.encoder = "UTF-8"
+	b.encoder = "UTF8"
 	b.encoding = false
 	err := b.SaveAs(filename)
 	if err != nil {

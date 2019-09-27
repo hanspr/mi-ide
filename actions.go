@@ -2498,3 +2498,8 @@ func (v *View) DownloadFromCloud(plugin bool) bool {
 	}
 	return true
 }
+
+func (v *View) CloudSettings(plugin bool) bool {
+	micromenu.MiCloudSync()
+	return true
+}

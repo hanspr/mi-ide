@@ -9,14 +9,14 @@ can change it!
 
 ### Function keys, and alternatives
 
-| Key        | Description of function                  |
+| Key       :| Description of function                  |
 |------------|------------------------------------------|
 | F1         | Open file                                |
-| Shift F1   | Open file viewer                         |
 | F2         | Save                                     |
-| Shift F2   | Save All                                 |
 | F3         | Save As ...                              |
 | F4         | Close focused window (Tab if empty)      |
+| Shift F1   | Open file viewer                         |
+| Shift F2   | Save All                                 |
 | Shift F4   | Close the oposite window                 |
 | F5         | Move to previous window                  |
 | F6         | Move to next window                      |
@@ -27,7 +27,7 @@ can change it!
 
 ### Navigation
 
-| Key                       | Description of function                              |
+| Key                      :| Description of function                              |
 |---------------------------|------------------------------------------------------|
 | Arrows                    | Move the cursor around                               |
 | Shift+arrows              | Move and select text                                 |
@@ -46,22 +46,24 @@ can change it!
 
 ### Tabs
 
-| Key    | Description of function   |
-|------- |---------------------------|
+| Key   :| Description of function   |
+|--------|---------------------------|
 | Alt+t  | Open a new tab            |
 | F7     | Previous tab              |
 | F8     | Next tab                  |
 
 ### Windows (Views)
 
-| Key     | Description of function           |
-|-------- |-----------------------------------|
-| Alt-V   | Split current window vertically   |
-| Alt-H   | Split current window horizontally |
+| Key     :| Description of function             |
+|----------|-------------------------------------|
+| Alt-V    | Split current window vertically     |
+| Alt-H    | Split current window horizontally   |
+| F4       | Close focused window (Tab if empty) |
+| Shift F4 | Close the oposite window            |
 
 ### Find Operations
 
-| Key              | Description of function                   |
+| Key             :| Description of function                   |
 |------------------|-------------------------------------------|
 | Ctrl+F           | Find (open Search Dialog)                 |
 | Ctrl+R           | Replace (open Search / Replace Dialog)    |
@@ -70,7 +72,7 @@ can change it!
 
 ### File Operations
 
-| Key    | Description of function                                               |
+| Key   :| Description of function                                               |
 |--------|-----------------------------------------------------------------------|
 | Ctrl+Q | Close All Windows, Tabs, and Exit (asks to save if a buffer is dirty) |
 | F1     | Open a file (prompts for filename)                                    |
@@ -80,7 +82,7 @@ can change it!
 
 ### Text operations
 
-| Key                               | Description of function                   |
+| Key                              :| Description of function                   |
 |-----------------------------------|-------------------------------------------|
 | Shift+arrows                      | Move and select text                      |
 | AltShiftRightArrow                | Select word right                         |
@@ -103,18 +105,10 @@ can change it!
 | Alt+l                             | Delete line                               |
 | Ctrl+A                            | Select all                                |
 
-### Power user
-
-| Key    | Description of function                                                   |
-|--------|---------------------------------------------------------------------------|
-| Ctrl+E | Open a command prompt for running commands                                |
-| Tab    | In command prompt, it will auto complete if available                     |
-| Ctrl+B | Run a shell command (this will hide micro-ide while your command executes)|
-
 ### Multiple cursors
 
-| Key            | Description of function                                               |
-|----------------|---------------------------------------------------------------------- |
+| Key           :| Description of function                                               |
+|----------------|-----------------------------------------------------------------------|
 | Alt+n          | Create new multiple cursor from selection                             |
 | Alt+,          | Remove latest multiple cursor                                         |
 | Alt+.          | Remove all multiple cursors (cancel)                                  |
@@ -122,18 +116,20 @@ can change it!
 | Alt+m          | Spawn a new cursor at the beginning of every line in current selection|
 | Ctrl-MouseLeft | Place a multiple cursor at any location                               |
 
+### Power user
+
+| Key   :| Description of function                                                   |
+|--------|---------------------------------------------------------------------------|
+| Ctrl+E | Open a command prompt for running commands                                |
+| Tab    | In command prompt, it will auto complete if available                     |
+| Ctrl+B | Run a shell command (this will hide micro-ide while your command executes)|
+
 ### Other
 
-| Key    | Description of function                    |
+| Key   :| Description of function                    |
 |--------|--------------------------------------------|
 | Alt+?  | Open help file                             |
 | Ctrl+H | Backspace                                  |
 | Alt-#  | Toggle the line number ruler               |
 | Alt+!  | Toggle soft wrap                           |
 
-### Macros
-
-| Key    | Description of function                                              |
-|--------|----------------------------------------------------------------------|
-| Ctrl+U | Toggle macro recording  (on / off)                                   |
-| Ctrl+J | Run latest recorded macro                                            |

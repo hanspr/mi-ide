@@ -67,6 +67,7 @@ func (m *microMenu) Menu() {
 		m.AddSubMenuItem("microide", Language.Translate("KeyBindings"), m.KeyBindingsDialog)
 		m.AddSubMenuItem("microide", Language.Translate("Plugin Manager"), m.PluginManagerDialog)
 		m.AddSubMenuItem("microide", Language.Translate("Cloud Services"), m.MiCloudServices)
+		m.AddSubMenuItem("microide", Language.Translate("Sync Settings"), m.MiCloudSync)
 		row++
 		for _, name := range keys {
 			if name != "microide" {
@@ -1698,7 +1699,6 @@ func (m *microMenu) MiCloudServices() {
 		height := 12
 		row := 2
 		f = m.myapp.AddFrame("f", -1, -1, width, height, "relative")
-		m.myapp.AddStyle("f", "black,yellow")
 		f.AddWindowBox("enc", Language.Translate("Micro Ide Cloud Services"), 0, 0, width, height, true, nil, "", "")
 		f.AddWindowTextBox("ukey", fmt.Sprintf("%25s ", Language.Translate("Key")), globalSettings["mi-key"].(string), "string", 2, row, 40, 40, nil, "", "")
 		row += 2
@@ -1788,5 +1788,73 @@ func (m *microMenu) SaveCloudSettings(name, value, event, when string, x, y int)
 		}
 	}
 	m.Finish("MiServices")
+	return true
+}
+
+func (m *microMenu) MiCloudSync() {
+	var f *Frame
+	if m.myapp == nil || m.myapp.name != "mi-cloudsync" {
+		if m.myapp == nil {
+			m.myapp = new(MicroApp)
+			m.myapp.New("mi-cloudsync")
+		} else {
+			m.myapp.name = "mi-cloudsync"
+		}
+		m.myapp.Reset()
+		m.myapp.defStyle = StringToStyle("#ffffff,#262626")
+		width := 40
+		height := 7
+		f = m.myapp.AddFrame("f", -1, -1, width, height, "relative")
+		f.AddWindowBox("enc", Language.Translate("Sync Settings"), 0, 0, width, height, true, nil, "", "")
+		f.AddWindowRadio("action", "↓ "+Language.Translate("Download my settings"), "download", 2, 2, true, nil, "", "")
+		f.AddWindowRadio("action", "↑ "+Language.Translate("Upload my settings"), "upload", 2, 4, false, nil, "", "")
+		lbl := Language.Translate("Cancel")
+		f.AddWindowButton("cancel", " "+lbl+" ", "cancel", width-Count(lbl)-20, height-1, m.ButtonFinish, "", "")
+		lbl = Language.Translate("Do it") + " !"
+		f.AddWindowButton("save", " "+lbl+" ", "ok", width-Count(lbl)-5, height-1, m.TransferCloudSettings, "", "")
+	} else {
+		f = m.myapp.frames["f"]
+	}
+	m.myapp.Start()
+	apprunning = m.myapp
+	f.SetFocus("ukey", "begin")
+}
+
+func (m *microMenu) TransferCloudSettings(name, value, event, when string, x, y int) bool {
+	if when == "PRE" {
+		return true
+	}
+	if event != "mouse-click1" {
+		return true
+	}
+	values := m.myapp.GetValues()
+	if values["action"] == "upload" {
+		file, err := PackSettingsForUpload()
+		if err != nil {
+			messenger.Error(err.Error())
+		} else if file == "" {
+			messenger.Error("Settings file is empty")
+		} else {
+			msg := Clip.WriteTo(&file, "cloud", "settings")
+			if msg == "" {
+				messenger.Success("Settings uploaded ok")
+			} else {
+				messenger.Error(msg)
+			}
+		}
+	} else if values["action"] == "download" {
+		settings := Clip.ReadFrom("cloud", "settings")
+		if settings == "" {
+			messenger.Error("Could not download settings")
+		} else {
+			err := UnPackSettingFromDownload(&settings)
+			if err != nil {
+				messenger.Error(err.Error())
+			} else {
+				messenger.Success(Language.Translate("Settings installed, restart") + " micro-ide")
+			}
+		}
+	}
+	m.Finish("SyncSettings")
 	return true
 }

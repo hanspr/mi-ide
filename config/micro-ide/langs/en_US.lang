@@ -87,6 +87,7 @@ Global Settings|
 KeyBindings|
 Plugin Manager|
 Cloud Services|
+Sync Settings|
 Error writing settings.json file|
 Key check|
 Taken|
@@ -128,3 +129,8 @@ File uploaded to cloud|
 No files to donwload|
 Clipboard uploaded to cloud|
 Bad credentials|
+Do it|
+Upload my settings|
+Download my settings|
+Settings uploaded ok|
+Could not download settings|

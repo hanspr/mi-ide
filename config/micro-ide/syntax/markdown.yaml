@@ -5,9 +5,15 @@ detect:
 
 rules:
     # Tables (Github extension)
-    - type: ".*[ :]\\|[ :].*"
+    - normal: ".*\\|.*"
 
-      # quotes
+    # Tables (Github extension)
+    - type: "\\|.*:\\| .*\\|"
+
+    # Tables (Github extension)
+    - type: "\\|-+\\|-+\\|"
+
+    # quotes
     - statement:  "^>.*"
 
       # Emphasis

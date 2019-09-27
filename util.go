@@ -502,7 +502,15 @@ func DownLoadExtractZip(url, targetDir string) error {
 	if err != nil {
 		return err
 	}
-	zipbuf := bytes.NewReader(data)
+	err = ExtractZip(&data, targetDir)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func ExtractZip(data *[]byte, targetDir string) error {
+	zipbuf := bytes.NewReader(*data)
 	z, err := zip.NewReader(zipbuf, zipbuf.Size())
 	if err != nil {
 		return err
@@ -529,7 +537,6 @@ func DownLoadExtractZip(url, targetDir string) error {
 			allPrefixed = true
 		}
 	}
-
 	// Install files and directory's
 	for _, f := range z.File {
 		parts := strings.Split(f.Name, "/")
@@ -556,6 +563,10 @@ func DownLoadExtractZip(url, targetDir string) error {
 			defer content.Close()
 			target, err := os.Create(targetName)
 			if err != nil {
+				if strings.Contains(err.Error(), "permission denied") {
+					// Skip files with permission denied
+					continue
+				}
 				return err
 			}
 			defer target.Close()
@@ -657,4 +668,101 @@ func ReadFileJSON(filename string) (map[string]interface{}, error) {
 		return parsed, errors.New("File does not exists")
 	}
 	return parsed, nil
+}
+
+// Micro-Ide Services
+
+func UnPackSettingFromDownload(zipfile *string) error {
+	data := []byte(*zipfile)
+	err := ExtractZip(&data, configDir)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func PackSettingsForUpload() (string, error) {
+	path := strings.ReplaceAll(configDir, "/micro-ide", "") + "/settings.zip"
+	err := zipit(configDir, path)
+	if err != nil {
+		messenger.Error(err.Error())
+		return "", err
+	}
+	zipstring := Slurp(path)
+	os.Remove(path)
+	return zipstring, nil
+}
+
+func zipit(source, target string) error {
+	zipfile, err := os.Create(target)
+	if err != nil {
+		return err
+	}
+	defer zipfile.Close()
+
+	archive := zip.NewWriter(zipfile)
+	defer archive.Close()
+
+	info, err := os.Stat(source)
+	if err != nil {
+		return nil
+	}
+
+	var baseDir string
+	if info.IsDir() {
+		baseDir = filepath.Base(source)
+	}
+
+	filepath.Walk(source, func(path string, info os.FileInfo, err error) error {
+		if err != nil {
+			return err
+		}
+
+		header, err := zip.FileInfoHeader(info)
+		if err != nil {
+			return err
+		}
+
+		if baseDir != "" {
+			header.Name = filepath.Join(baseDir, strings.TrimPrefix(path, source))
+		}
+
+		if info.IsDir() {
+			header.Name += "/"
+		} else {
+			header.Method = zip.Deflate
+		}
+
+		writer, err := archive.CreateHeader(header)
+		if err != nil {
+			return err
+		}
+
+		if info.IsDir() {
+			return nil
+		}
+
+		file, err := os.Open(path)
+		if err != nil {
+			return err
+		}
+		defer file.Close()
+		_, err = io.Copy(writer, file)
+		return err
+	})
+
+	return err
+}
+
+func Slurp(path string) string {
+	file, err := os.Open(path)
+	if err != nil {
+		return ""
+	}
+	defer file.Close()
+	b, err := ioutil.ReadAll(file)
+	if err != nil {
+		return ""
+	}
+	return string(b)
 }

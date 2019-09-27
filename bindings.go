@@ -117,6 +117,7 @@ var bindingActions = map[string]func(*View, bool) bool{
 	// Micro-Ide Services
 	"UploadToCloud":     (*View).UploadToCloud,
 	"DownloadFromCloud": (*View).DownloadFromCloud,
+	"CloudSettings":     (*View).CloudSettings,
 }
 
 var bindingMouse = map[string]tcell.ButtonMask{
@@ -602,5 +603,6 @@ func DefaultBindings() map[string]string {
 		"Alt-v": "PasteCloud",
 		"Alt-T": "UploadToCloud",
 		"Alt-D": "DownloadFromCloud",
+		"Alt-+": "CloudSettings",
 	}
 }
