@@ -15,12 +15,12 @@ Many of those features were already provided by micro editor :+1:. But some othe
 * :star: Auto detect file encoding. Open (decode) / Save (encode) in the original encoding of the file: UTF8, ISO8859, WINDOWS, etc. (Limited to the encoders available in go libraries)
 * :star: Replace the need to learn too many key combinations and commands by the use (and abuse) of good mouse support with: icons, buttons, dialog boxes. Similar to windowed editors.
 * :star: Use and abuse color to easily find the cursor, selected text, etc.
-* :+1::star: Good and powerful plugin system to hack the editor to "my" personal needs (to make it My ide)
+* :+1::star: Good and powerful plugin system to hack the editor to "my" personal needs (and your personal needs, so can say at the end ,like me: "finally! I have **My** ide")
     - Without the need to compile or setup a complicated environment
     - Resilient to editor new versions
     - Plugins that will enhance the user coding for each particular language
 * :star: Save editor settings for
-    - a particular language (c,php,python,perl,..)
+    - a particular language (c, php, python, perl,..)
     - a single file
     - or just for the current opened session
 * :star: A powerful auto indent
@@ -52,16 +52,40 @@ Many of those features were already provided by micro editor :+1:. But some othe
         - `unzip release.zip`
     - Place the binary in any location on your home directory, for example
         - `cp mi-ide .local`
-    - Crate an alias in your `.bashrc` to the location of your executable
-        - `alias='mi-ide ~/.local/mi-ide'`
+    - Create an alias in your `.bashrc` to the location of your executable
+        - `nano ~/.bashrc` or `nano ~./.bash_aliases`
+        - add : `alias='mi-ide ~/.local/mi-ide'`
     - Execute mi-ide.
         - Note, the first time you run the editor will download the configurations from github
         - And place them in `~/.config/mi-ide/`
-* You can build it from source, by cloning this repo and install all dependencies.
+* You can also build mi-ide from source, by cloning this repo and install all dependencies.
+
+```bash
+go get "github.com/blang/semver"
+go get "github.com/dustin/go-humanize"
+go get "github.com/flynn/json5"
+go get "github.com/go-errors/errors"
+go get "github.com/hanspr/clipboard"
+go get "github.com/hanspr/glob"
+go get "github.com/hanspr/highlight"
+go get "github.com/hanspr/ioencoder"
+go get "github.com/hanspr/lang"
+go get "github.com/hanspr/shellwords"
+go get "github.com/hanspr/tcell"
+go get "github.com/hanspr/terminal"
+go get "github.com/hanspr/terminfo"
+go get "github.com/mattn/go-isatty"
+go get "github.com/mattn/go-runewidth"
+go get "github.com/mitchellh/go-homedir"
+go get "github.com/phayes/permbits"
+go get "github.com/sergi/go-diff/diffmatchpatch"
+go get "github.com/yuin/gopher-lua"
+
+```
 
 ### Colors and syntax highlighting
 
-If your terminal does not support 256 color. Try changing the colorscheme to `default16`, by going to Menu > System Settings : Select "cholorscheme".
+If your terminal does not support 256 color. Try changing the colorscheme to `default16`, by going to Menu > System Settings : Select "colorscheme".
 
 If your terminal supports 256 colors but you do not see the full colors available you may try these commands:
 
@@ -123,6 +147,6 @@ If you find this project useful and want to support it, please use the following
 
 This page will allow you to receive a key that you can use as a perpetual access to additional features of the editor that require cloud support to work, like:
 
-* Internal copy paste between editors running in different servers
+* Internal copy paste between your editors running in different servers
 * File transfer between editors in different servers
-* Save and retrieve your settings from any server. To sync all your mi-ide editors runngin in different machines
+* Save and retrieve your settings from any server. To sync all your mi-ide editors running in different machines
