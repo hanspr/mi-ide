@@ -6,7 +6,7 @@ This version is a highly customized and modified versión with many of the featu
 
 This version is also targeted to work on Linux servers. It does compile and may run under other platforms, but not all features will work. I'm mainly focused on **improving the experience of coding remotely over ssh on headless Linux servers**.
 
-Many of those features were already provided by [micro editor](https://github.com/zyedidia/micro) :+1:. But some others were still missing :star:, and there inclusion are personal and not necessarily useful to everyone. This is the list of the most important features to me:
+Many of those features were already provided by micro editor :+1:. But some others were still missing :star:, and there inclusion are personal and not necessarily useful to everyone. This is the list of the most important features to me:
 
 * :+1: Short learning curve
 * :+1: Great syntax highlighting and easily customizable
@@ -48,6 +48,8 @@ Many of those features were already provided by [micro editor](https://github.co
 # Installation
 
 * Download a [prebuilt binary](https://github.com/hanspr/mi-ide/releases).
+    - Unzip the release
+        - `unzip release.zip`
     - Place the binary in any location on your home directory, for example
         - `cp mi-ide .local`
     - Crate an alias in your `.bashrc` to the location of your executable
@@ -105,7 +107,8 @@ To create pull requests, please follow these recommendations:
 You may find the translation file in your config directory under : langs
 
 - Open the file : en_US.lang
-- Change the name to your ISO code location and translate each sentence after the | (pipe)
+- Change the name to your ISO code location
+- Translate each sentence after the | (pipe)
 - Save the final file with the new name.
 - Switch language by going to the menu > Global Settings
 - Change to your new language
@@ -113,8 +116,6 @@ You may find the translation file in your config directory under : langs
     - Clone : https://github.com/hanspr/mi-sources
     - Copy your file or update the current translation in the langs directory
     - Create a pull request
-
-For more detailed instructions on how to translate mi-ide visit the [Wiki pages](https://github.com/hanspr/mi-ide/wiki)
 
 # Support the project
 
@@ -125,4 +126,3 @@ This page will allow you to receive a key that you can use as a perpetual access
 * Internal copy paste between editors running in different servers
 * File transfer between editors in different servers
 * Save and retrieve your settings from any server. To sync all your mi-ide editors runngin in different machines
-* Create your own full packed mi-ide with all your personal settings, plugins, hacks. So you may download and deploy on other servers without having to reconfigure and reinstall everything

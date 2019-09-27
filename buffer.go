@@ -524,6 +524,9 @@ func (b *Buffer) SmartIndent(Start, Stop Loc, once bool) {
 			}
 		}
 	}
+	if Ys < 0 {
+		Ys = 0
+	}
 	// Add as meany spaces to use as default indentetion from here on
 	for i := 0; i < n; i++ {
 		iStr = iStr + iChar
