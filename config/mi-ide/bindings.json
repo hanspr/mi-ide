@@ -1,4 +1,5 @@
 {
+    "CtrlO": "CutLine",
     "CtrlS": "Save",
     "F14": "SaveAll"
 }

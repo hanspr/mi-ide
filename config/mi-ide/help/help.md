@@ -31,15 +31,11 @@ Press CtrlW to move between splits, and type `> vsplit filename` or
 
 ## Accessing more help
 
-mi-ide has a built-in help system much like Vim's (although less extensive).
-
-To use it, press CtrlE to access command mode and type in `help` followed by a
+To use it, press Alt-? or CtrlE to access command mode and type in `help` followed by a
 topic. Typing `help` followed by nothing will open this page.
 
 Here are the possible help topics that you can read:
 
-* tutorial: A brief tutorial which gives an overview of all the other help
-  topics
 * defaultkeys: Gives a more straight-forward list of the hotkey commands and what
   they do.
 * commands: Gives a list of all the commands and what they do
@@ -52,7 +48,3 @@ Here are the possible help topics that you can read:
 For example, to open the help page on plugins you would press CtrlE and type
 `help plugins`.
 
-I recommend looking at the `tutorial` help file because it is short for each
-section and gives concrete examples of how to use the various configuration
-options in mi-ide. However, it does not give the in-depth documentation that the
-other topics provide.

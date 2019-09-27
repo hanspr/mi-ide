@@ -5,6 +5,8 @@ This help page aims to cover two aspects of mi-ide's syntax highlighting engine:
 - How to create colorschemes and use them
 - How to create syntax files to add to the list of languages mi-ide can highlight
 
+My best recommendation is to open the files : **default.micro** and **perl.yalm**
+those files have plenty of examples on how to create a very extensive syntax highlighting
 
 ## Colorschemes
 
@@ -61,17 +63,9 @@ These require terminals that support true color and require `MICRO_TRUECOLOR=1` 
 You can also use `monochrome` if you'd prefer to have just the terminal's default
 foreground and background colors. Note: This provides no syntax highlighting!
 
-### Other
-
-See `help gimmickcolors` for a list of some true colour themes that are more
-just for fun than for serious use. (Though feel free if you want!)
-
-
 ## Creating a Colorscheme
 
-mi-ide's colorschemes are also extremely simple to create. The default ones can
-be found
-[here](https://github.com/zyedidia/mi-ide/tree/master/runtime/colorschemes).
+mi-ide's colorschemes are also extremely simple to create.
 
 They are only about 18-30 lines in total.
 
