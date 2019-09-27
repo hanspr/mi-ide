@@ -62,7 +62,7 @@ func (m *microMenu) Menu() {
 		row := 0
 		f := m.myapp.AddFrame("menu", 1, 0, 1, 1, "fixed")
 		m.AddSubmenu(name, "Micro-ide")
-		f.AddWindowMenuLabel(name, fmt.Sprintf("%-"+strconv.Itoa(m.maxwidth+1)+"s", "Micro-ide"), "", 0, row, m.ShowSubmenuItems, "", "")
+		f.AddWindowMenuLabel(name, fmt.Sprintf("%-"+strconv.Itoa(m.maxwidth+1)+"s", "Mi-ide"), "", 0, row, m.ShowSubmenuItems, "", "")
 		m.AddSubMenuItem("microide", Language.Translate("Global Settings"), m.GlobalConfigDialog)
 		m.AddSubMenuItem("microide", Language.Translate("KeyBindings"), m.KeyBindingsDialog)
 		m.AddSubMenuItem("microide", Language.Translate("Plugin Manager"), m.PluginManagerDialog)
@@ -512,7 +512,7 @@ func (m *microMenu) SetBinding(name, value, event, when string, x, y int) bool {
 	}
 	switch event {
 	case "Left", "Right", "Down", "Up", "Esc", "Enter", "Tab", "Backspace2", "Backspace", "Delete", "PgDn", "PgUp", "Shift+Left", "Shift+Right", "Shift+Up", "Shift+Down":
-		f.SetLabel("?msg", event+" {red}micro-ide{/red}")
+		f.SetLabel("?msg", event+" {red}mi-ide{/red}")
 		if event == "Delete" || event == "Backspace" || event == "Backspace2" {
 			f.SetValue(name, "")
 		}
@@ -1681,7 +1681,7 @@ func (m *microMenu) ButtonFinish(name, value, event, when string, x, y int) bool
 }
 
 // ---------------------------------------
-// Micro Ide Cloud Services
+// Mi Ide Cloud Services
 // ---------------------------------------
 
 func (m *microMenu) MiCloudServices() {
@@ -1699,7 +1699,7 @@ func (m *microMenu) MiCloudServices() {
 		height := 12
 		row := 2
 		f = m.myapp.AddFrame("f", -1, -1, width, height, "relative")
-		f.AddWindowBox("enc", Language.Translate("Micro Ide Cloud Services"), 0, 0, width, height, true, nil, "", "")
+		f.AddWindowBox("enc", Language.Translate("Mi-ide Cloud Services"), 0, 0, width, height, true, nil, "", "")
 		f.AddWindowTextBox("ukey", fmt.Sprintf("%25s ", Language.Translate("Key")), globalSettings["mi-key"].(string), "string", 2, row, 40, 40, nil, "", "")
 		row += 2
 		f.AddWindowTextBox("pass", fmt.Sprintf("%25s ", Language.Translate("Password")), globalSettings["mi-pass"].(string), "string", 2, row, 20, 20, nil, "", "")
@@ -1851,7 +1851,7 @@ func (m *microMenu) TransferCloudSettings(name, value, event, when string, x, y 
 			if err != nil {
 				messenger.Error(err.Error())
 			} else {
-				messenger.Success(Language.Translate("Settings installed, restart") + " micro-ide")
+				messenger.Success(Language.Translate("Settings installed, restart") + " mi-ide")
 			}
 		}
 	}

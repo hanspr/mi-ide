@@ -155,7 +155,7 @@ func luaPluginName(name string) string {
 	return strings.Replace(name, "-", "_", -1)
 }
 
-// LoadPlugins loads the plugins located in ~/.config/micro-ide/plugins
+// LoadPlugins loads the plugins located in ~/.config/mi-ide/plugins
 func LoadPlugins() {
 	loadedPlugins = make(map[string]string)
 	pluginOption = make(map[string]interface{})

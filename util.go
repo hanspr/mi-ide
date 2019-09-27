@@ -682,7 +682,7 @@ func UnPackSettingFromDownload(zipfile *string) error {
 }
 
 func PackSettingsForUpload() (string, error) {
-	path := strings.ReplaceAll(configDir, "/micro-ide", "") + "/settings.zip"
+	path := strings.ReplaceAll(configDir, "/mi-ide", "") + "/settings.zip"
 	err := zipit(configDir, path)
 	if err != nil {
 		messenger.Error(err.Error())

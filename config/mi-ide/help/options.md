@@ -2,8 +2,8 @@
 
 Micro-ide stores all of the user configuration in its configuration directory.
 
-Micro-ide uses the `$XDG_CONFIG_HOME/micro-ide` as the configuration directory. As per
-the XDG spec, if `$XDG_CONFIG_HOME` is not set, `~/.config/micro-ide` is used as
+Micro-ide uses the `$XDG_CONFIG_HOME/mi-ide` as the configuration directory. As per
+the XDG spec, if `$XDG_CONFIG_HOME` is not set, `~/.config/mi-ide` is used as
 the config directory.
 
 Here are the options that you can set:
@@ -13,7 +13,7 @@ Here are the options that you can set:
 
 	default value: `true`
 
-* `autosave`: micro-ide will save the buffer every 8 seconds automatically. micro-ide
+* `autosave`: mi-ide will save the buffer every 8 seconds automatically. mi-ide
    also will automatically save and quit when you exit without asking. Be
    careful when using this feature, because you might accidentally save a file,
    overwriting what was there before.
@@ -32,18 +32,18 @@ Here are the options that you can set:
 	default value: `0`
 
 * `colorscheme`: loads the colorscheme stored in
-   $(configDir)/colorschemes/`option`.micro-ide, This setting is `global only`.
+   $(configDir)/colorschemes/`option`.mi-ide, This setting is `global only`.
 
 	default value: `default`
 
 	Note that the default colorschemes (default, solarized, and solarized-tc)
-	are not located in configDir, because they are embedded in the micro-ide binary.
+	are not located in configDir, because they are embedded in the mi-ide binary.
 
 	The colorscheme can be selected from all the files in the
-	~/.config/micro-ide/colorschemes/ directory. micro-ide comes by default with three
+	~/.config/mi-ide/colorschemes/ directory. mi-ide comes by default with three
 	colorschemes:
 
-	You can read more about micro-ide's colorschemes in the `colors` help topic
+	You can read more about mi-ide's colorschemes in the `colors` help topic
 	(`help colors`).
 
 * `cursorline`: highlight the line that the cursor is on in a different color
@@ -51,14 +51,14 @@ Here are the options that you can set:
 
 	default value: `true`
 
-* `eofnewline`: micro-ide will automatically add a newline to the file.
+* `eofnewline`: mi-ide will automatically add a newline to the file.
 
 	default value: `false`
 
-* `fastdirty`: this determines what kind of algorithm micro-ide uses to determine if
-   a buffer is modified or not. When `fastdirty` is on, micro-ide just uses a
+* `fastdirty`: this determines what kind of algorithm mi-ide uses to determine if
+   a buffer is modified or not. When `fastdirty` is on, mi-ide just uses a
    boolean `modified` that is set to `true` as soon as the user makes an edit.
-   This is fast, but can be inaccurate. If `fastdirty` is off, then micro-ide will
+   This is fast, but can be inaccurate. If `fastdirty` is off, then mi-ide will
    hash the current buffer against a hash of the original file (created when the
    buffer was loaded). This is more accurate but obviously more resource
    intensive. This option is only for people who really care about having
@@ -66,7 +66,7 @@ Here are the options that you can set:
 
 	default value: `true`
 
-* `fileformat`: this determines what kind of line endings micro-ide will use for the
+* `fileformat`: this determines what kind of line endings mi-ide will use for the
    file. UNIX line endings are just `\n` (lf) whereas dos line endings are
    `\r\n` (crlf). The two possible values for this option are `unix` and `dos`.
    The fileformat will be automatically detected and displayed on the statusline
@@ -94,26 +94,26 @@ Here are the options that you can set:
 
 * `mouse`: whether to enable mouse support. When mouse support is disabled,
    usually the terminal will be able to access mouse events which can be useful
-   if you want to copy from the terminal instead of from micro-ide (if over ssh for
-   example, because the terminal has access to the local clipboard and micro-ide
+   if you want to copy from the terminal instead of from mi-ide (if over ssh for
+   example, because the terminal has access to the local clipboard and mi-ide
    does not).
 
 	default value: `true`
 
-* `pluginchannels`: contains all the channels micro-ide's plugin manager will search
+* `pluginchannels`: contains all the channels mi-ide's plugin manager will search
    for plugins in. A channel is simply a list of 'repository' json files which
    contain metadata about the given plugin. See the `Plugin Manager` section of
    the `plugins` help topic for more information.
 
    default value: `https://raw.githubusercontent.com/hanspr/mi-channel/master/plugins.json`
 
-* `pluginrepos`: contains all the 'repositories' micro-ide's plugin manager will
+* `pluginrepos`: contains all the 'repositories' mi-ide's plugin manager will
    search for plugins in. A repository consists of a `repo.json` file which
    contains metadata for a single plugin.
 
 	default value: ` `
 
-* `rmtrailingws`: micro-ide will automatically trim trailing whitespaces at eol.
+* `rmtrailingws`: mi-ide will automatically trim trailing whitespaces at eol.
 
 	default value: `false`
 
@@ -127,7 +127,7 @@ Here are the options that you can set:
 	default value: `false`
 
 * `savehistory`: remember command history between closing and re-opening
-   micro-ide.
+   mi-ide.
 
     default value: `true`
 
@@ -142,18 +142,18 @@ Here are the options that you can set:
 	default value: `3`
 
 * `smartindent`: It works only on languages that use braces to define blocks "C" like languages
-   When you type the Tab key micro-ide will attempt to indent the line to the correct depth of
+   When you type the Tab key mi-ide will attempt to indent the line to the correct depth of
    indentation.
 
    default value: `false`
 
-* `smartpaste`: should micro-ide add leading whitespace when pasting multiple lines?
+* `smartpaste`: should mi-ide add leading whitespace when pasting multiple lines?
    This will attempt to preserve the current indentation level when pasting an
    unindented block.
 
 	default value: `true`
 
-* `softwrap`: should micro-ide wrap lines that are too long to fit on the screen.
+* `softwrap`: should mi-ide wrap lines that are too long to fit on the screen.
 
 	default value: `false`
 
@@ -198,7 +198,7 @@ Here are the options that you can set:
 
 	default value: `false`
 
-* `termtitle`: defines whether or not your terminal's title will be set by micro-ide
+* `termtitle`: defines whether or not your terminal's title will be set by mi-ide
    when opened.
 
 	default value: `false`

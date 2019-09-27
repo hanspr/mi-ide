@@ -63,8 +63,8 @@ var (
 	defStyle tcell.Style
 
 	// Where the user's configuration is
-	// This should be $XDG_CONFIG_HOME/micro-ide
-	// If $XDG_CONFIG_HOME is not set, it is ~/.config/micro-ide
+	// This should be $XDG_CONFIG_HOME/mi-ide
+	// If $XDG_CONFIG_HOME is not set, it is ~/.config/mi-ide
 	configDir string
 
 	// Version is the version number or commit hash
@@ -194,7 +194,7 @@ func InitConfigDir() {
 		}
 		xdgHome = home + "/.config"
 	}
-	configDir = xdgHome + "/micro-ide"
+	configDir = xdgHome + "/mi-ide"
 
 	if len(*flagConfigDir) > 0 {
 		if _, err := os.Stat(*flagConfigDir); os.IsNotExist(err) {
@@ -214,9 +214,9 @@ func InitConfigDir() {
 	}
 
 	if _, err := os.Stat(configDir); os.IsNotExist(err) {
-		// Copy files from /etc/micro-ide if they exists (installed by root)?
+		// Copy files from /etc/mi-ide if they exists (installed by root)?
 		// If the micro specific config directory doesn't exist we should download a basic one
-		TermMessage("Missing configuration files.\nmicro-ide will download the necessary config files to run.\nFiles will be downloaded from\n\nhttps://raw.githubusercontent.com/hanspr/mi-channel/master/config.zip\n\nIf you do not agree, type Ctrl-C to abort, and install manually")
+		TermMessage("Missing configuration files.\nmi-ide will download the necessary config files to run.\nFiles will be downloaded from\n\nhttps://raw.githubusercontent.com/hanspr/mi-channel/master/config.zip\n\nIf you do not agree, type Ctrl-C to abort, and install manually")
 		err := DownLoadExtractZip("https://raw.githubusercontent.com/hanspr/mi-channel/master/config.zip", configDir)
 		if err != nil {
 			TermMessage("Could not download config files, please install manually.\n\nHave to abort.")
@@ -421,7 +421,7 @@ func main() {
 	encoding.Register()
 	tcell.SetEncodingFallback(tcell.EncodingFallbackASCII)
 
-	// Find the user's configuration directory (probably $XDG_CONFIG_HOME/micro-ide)
+	// Find the user's configuration directory (probably $XDG_CONFIG_HOME/mi-ide)
 	InitConfigDir()
 
 	// Build a list of available Extensions (Syntax, Colorscheme etc.)
@@ -486,7 +486,7 @@ func main() {
 		}
 	}
 
-	// Create micro-ide objects now to have them available to plugins
+	// Create mi-ide objects now to have them available to plugins
 	// Menu
 	micromenu = new(microMenu)
 	x := strings.LastIndex(CurView().Buf.AbsPath, "/") + 1

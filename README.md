@@ -1,6 +1,6 @@
 # ![Micro](./assets/logo.png)
 
-Micro ide is a spin-off version of the great micro editor project at https://github.com/zyedidia/micro.
+mi-ide (_mi ide_ in spanish, _My ide_) is a spin-off version of the great micro editor project at https://github.com/zyedidia/micro.
 
 This version is a highly customized and modified versión with many of the features that I always wanted in a ssh terminal editor; and that are, some how, missing in all the editors I tried. Or some editors have all of them, but the learning curve to be proficient, has always been to steep for me (which is the first feature that I always wanted : _short learning curve_).
 
@@ -15,7 +15,7 @@ Many of those features were already provided by [micro editor](https://github.co
 * :star: Auto detect file encoding. Open (decode) / Save (encode) in the original encoding of the file: UTF8, ISO8859, WINDOWS, etc. (Limited to the encoders available in go libraries)
 * :star: Replace the need to learn too many key combinations and commands by the use (and abuse) of good mouse support with: icons, buttons, dialog boxes. Similar to windowed editors.
 * :star: Use and abuse color to easily find the cursor, selected text, etc.
-* :+1::star: Good and powerful plugin system to hack the editor to my personal needs
+* :+1::star: Good and powerful plugin system to hack the editor to "my" personal needs (to make it My ide)
     - Without the need to compile or setup a complicated environment
     - Resilient to editor new versions
     - Plugins that will enhance the user coding for each particular language
@@ -24,12 +24,10 @@ Many of those features were already provided by [micro editor](https://github.co
     - a single file
     - or just for the current opened session
 * :star: A powerful auto indent
-* :star: Auto complete
 * :star: Internal copy paste between terminals in the same server without the need of _**shift-key and mouse dragging**_
 * :star: Features that require a server to work
     - Internal copy paste between terminals in different servers without the need of _**shift-key and mouse dragging**_
-    - Package **my** current editor, settings, plugins and hacks. To install on new servers
-    - Package and retrieve **my** personal settings to quickly sync my editor's choices and hacks across different servers I work on, when the editor is already installed
+    - Package and retrieve **my** personal settings to quickly sync **my** editor's choices and hacks across different servers I work on, when the editor is already installed
     - Transfer a single script, text file quickly from one server to another
     - See [Support the project & Services](#support-the-project) for these features
 
@@ -49,11 +47,14 @@ Many of those features were already provided by [micro editor](https://github.co
 
 # Installation
 
-* Download a [prebuilt binary](https://github.com/hanspr/micro-ide/releases).
-    - Place the binary in any location on your home directory
-    - Crate an alias to the location of your executable
-    - Execute micro-ide.
+* Download a [prebuilt binary](https://github.com/hanspr/mi-ide/releases).
+    - Place the binary in any location on your home directory, for example
+        - `cp mi-ide .local`
+    - Crate an alias in your `.bashrc` to the location of your executable
+        - `alias='mi-ide ~/.local/mi-ide'`
+    - Execute mi-ide.
         - Note, the first time you run the editor will download the configurations from github
+        - And place them in `~/.config/mi-ide/`
 * You can build it from source, by cloning this repo and install all dependencies.
 
 ### Colors and syntax highlighting
@@ -71,7 +72,7 @@ export TERM=xterm-256color
 
 # Usage
 
-Once you have built/installed the editor, start it by running `micro-ide path/to/file.txt` or simply `micro-ide` to open an empty buffer.
+Once you have built/installed the editor, start it by running `mi-ide path/to/file.txt` or simply `mi-ide` to open an empty buffer.
 
 You can move the cursor around with the arrow keys and mouse.
 
@@ -81,17 +82,17 @@ You can also use the mouse to manipulate the text. Simply clicking and dragging 
 
 # Documentation and Help
 
-Micro-ide has a built-in help system which you can access by pressing `Alt-?` or `Ctrl-E` and typing `help`.
+Mi-ide has a built-in help system which you can access by pressing `Alt-?` or `Ctrl-E` and typing `help`.
 
 # Plugin
 
 The plugin system has been modified in this version, you should be able to run any plugin you develop for micro editor, by doing some minor adjustments.
 
-Please visit the [developers page](https://github.com/hanspr/micro-ide/wiki) with full instructions and videos about the plugin framework
+Please visit the [developers page](https://github.com/hanspr/mi-ide/wiki) with full instructions and videos about the plugin framework
 
 # Contributing
 
-You can use the [GitHub issue tracker](https://github.com/hanspr/micro-ide/issues) to report bugs, ask questions, or suggest new features.
+You can use the [GitHub issue tracker](https://github.com/hanspr/mi-ide/issues) to report bugs, ask questions, or suggest new features.
 
 To create pull requests, please follow these recommendations:
 
@@ -113,7 +114,7 @@ You may find the translation file in your config directory under : langs
     - Copy your file or update the current translation in the langs directory
     - Create a pull request
 
-For more detailed instructions on how to translate micro-ide visit the [Wiki pages](https://github.com/hanspr/micro-ide/wiki)
+For more detailed instructions on how to translate mi-ide visit the [Wiki pages](https://github.com/hanspr/mi-ide/wiki)
 
 # Support the project
 
@@ -123,5 +124,5 @@ This page will allow you to receive a key that you can use as a perpetual access
 
 * Internal copy paste between editors running in different servers
 * File transfer between editors in different servers
-* Save and retrieve your settings from any server. To sync all your micro-ide editors runngin in different machines
-* Create your own full packed micro-ide with all your personal settings, plugins, hacks. So you may download and deploy on other servers without having to reconfigure and reinstall everything
+* Save and retrieve your settings from any server. To sync all your mi-ide editors runngin in different machines
+* Create your own full packed mi-ide with all your personal settings, plugins, hacks. So you may download and deploy on other servers without having to reconfigure and reinstall everything

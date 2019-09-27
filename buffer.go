@@ -131,7 +131,7 @@ func (b *Buffer) GetFileSettings(filename string) {
 		}
 	}
 	// Here it beggins the guessing game
-	// Use uchardet shipped with micro-ide if exists and it runs
+	// Use uchardet shipped with mi-ide if exists and it runs
 	b.encoder = "UTF8"
 	uchardet := configDir + "/libs/uchardet"
 	if _, err := os.Stat(uchardet); err == nil {
@@ -277,7 +277,7 @@ func NewBuffer(reader io.Reader, size int64, path string, cursorPosition []strin
 
 	if cursorLocationError != nil && len(*flagStartPos) == 0 && (b.Settings["savecursor"].(bool) || b.Settings["saveundo"].(bool)) {
 		// If either savecursor or saveundo is turned on, we need to load the serialized information
-		// from ~/.config/micro-ide/buffers
+		// from ~/.config/mi-ide/buffers
 		file, err := os.Open(configDir + "/buffers/" + EscapePath(b.AbsPath))
 		defer file.Close()
 		if err == nil {
@@ -286,7 +286,7 @@ func NewBuffer(reader io.Reader, size int64, path string, cursorPosition []strin
 			gob.Register(TextEvent{})
 			err = decoder.Decode(&buffer)
 			if err != nil {
-				TermMessage(err.Error(), "\n", Language.Translate("You may want to remove the files in")+" ~/.config/micro-ide/buffers "+Language.Translate("(these files store the information for the 'saveundo' and 'savecursor' options) if this problem persists."))
+				TermMessage(err.Error(), "\n", Language.Translate("You may want to remove the files in")+" ~/.config/mi-ide/buffers "+Language.Translate("(these files store the information for the 'saveundo' and 'savecursor' options) if this problem persists."))
 			}
 			if b.Settings["savecursor"].(bool) {
 				b.Cursor = buffer.Cursor

@@ -10,7 +10,7 @@ import (
 const (
 	tabOpen       string = "|"
 	tabClose      string = "|"
-	tabMenuSymbol string = "µ𝑒 "
+	tabMenuSymbol string = "ɱ 𝔦"
 )
 
 var tabBarOffset int
