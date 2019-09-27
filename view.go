@@ -204,9 +204,8 @@ func (v *View) paste(clip string) {
 	}
 	v.Cursor.Loc = Start
 
-	v.Buf.Insert(v.Cursor.Loc, clip)
-
-	if v.Buf.Settings["smartindent"].(bool) || v.Buf.Settings["smartpaste"].(bool) {
+	if v.Buf.Settings["smartindent"].(bool) {
+		v.Buf.Insert(v.Cursor.Loc, clip)
 		x := v.Cursor.Loc.X
 		spc := CountLeadingWhitespace(v.Buf.Line(v.Cursor.Y))
 		v.Buf.SmartIndent(Start, v.Cursor.Loc, false)
@@ -221,6 +220,12 @@ func (v *View) paste(clip string) {
 				v.Cursor.GotoLoc(Loc{x + spc2, v.Cursor.Loc.Y})
 			}
 		}
+	} else if v.Buf.Settings["smartpaste"].(bool) {
+		if v.Cursor.X > 0 && GetLeadingWhitespace(strings.TrimLeft(clip, "\r\n")) == "" {
+			leadingWS := GetLeadingWhitespace(v.Buf.Line(v.Cursor.Y))
+			clip = strings.Replace(clip, "\n", "\n"+leadingWS, -1)
+		}
+		v.Buf.Insert(v.Cursor.Loc, clip)
 	}
 
 	v.freshClip = false
