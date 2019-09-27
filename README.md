@@ -15,7 +15,7 @@ Many of those features were already provided by micro editor :+1:. But some othe
 * :star: Auto detect file encoding. Open (decode) / Save (encode) in the original encoding of the file: UTF8, ISO8859, WINDOWS, etc. (Limited to the encoders available in go libraries)
 * :star: Replace the need to learn too many key combinations and commands by the use (and abuse) of good mouse support with: icons, buttons, dialog boxes. Similar to windowed editors.
 * :star: Use and abuse color to easily find the cursor, selected text, etc.
-* :+1::star: Good and powerful plugin system to hack the editor to "my" personal needs (and your personal needs, so can say at the end ,like me: "finally! I have **My** ide")
+* :+1::star: Good and powerful plugin system to hack the editor to "my" personal needs (and your personal needs, so you can say at the end of all your hacking: "finally! I have **My** ide")
     - Without the need to compile or setup a complicated environment
     - Resilient to editor new versions
     - Plugins that will enhance the user coding for each particular language
