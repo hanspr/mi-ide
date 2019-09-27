@@ -77,7 +77,10 @@ func InitGlobalSettings() {
 		}
 	}
 	// Check for mi-ide services, setup service
-	Clip.SetCloudPath(cloudPath, globalSettings["mi-key"].(string), globalSettings["mi-pass"].(string), globalSettings["mi-phrase"].(string))
+	err := Clip.SetCloudPath(cloudPath, globalSettings["mi-key"].(string), globalSettings["mi-pass"].(string), globalSettings["mi-phrase"].(string))
+	if err != nil {
+		TermMessage("Cloud service ", err.Error())
+	}
 }
 
 // InitLocalSettings
