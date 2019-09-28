@@ -1,12 +1,19 @@
 # ![Micro](./assets/logo.png)
 
-mi-ide (_mi ide_ in spanish, _My ide_) is a spin-off version of the great micro editor project at https://github.com/zyedidia/micro.
+mi-ide (_mi ide_ in spanish, "my ide" as in: this is **my** editor) is a spin-off version of the great micro editor project at https://github.com/zyedidia/micro.
 
-This version is a highly customized and modified versión with many of the features that I always wanted in a ssh terminal editor; and that are, some how, missing in all the editors I tried. Or some editors have all of them, but the learning curve to be proficient, has always been to steep for me (which is the first feature that I always wanted : _short learning curve_).
+This version is a highly customized and modified versión with many of the features that I always wanted in a (ssh session) terminal editor;
+and that are, some how, missing in all the editors I tried.
+Or some editors have all of them, but the learning curve to be proficient, has always been to steep for me
+(which is the first feature that I always wanted : _short learning curve_).
 
-This version is also targeted to work on Linux servers. It does compile and may run under other platforms, but not all features will work. I'm mainly focused on **improving the experience of coding remotely over ssh on headless Linux servers**.
+This version is also targeted to work on Linux servers. It does compile and may run under other platforms, but not all features will work.
+I'm mainly focused on **improving the experience of coding remotely over ssh on headless Linux servers**.
 
-Many of those features were already provided by micro editor :+1:. But some others were still missing :star:, and there inclusion are personal and not necessarily useful to everyone. This is the list of the most important features to me:
+Many of those features were already provided by micro editor :+1:. But some others were still missing :star:,
+and there inclusion are personal and not necessarily useful to everyone.
+
+This is the list of the most important features to me:
 
 * :+1: Short learning curve
 * :+1: Great syntax highlighting and easily customizable
@@ -15,7 +22,7 @@ Many of those features were already provided by micro editor :+1:. But some othe
 * :star: Auto detect file encoding. Open (decode) / Save (encode) in the original encoding of the file: UTF8, ISO8859, WINDOWS, etc. (Limited to the encoders available in go libraries)
 * :star: Replace the need to learn too many key combinations and commands by the use (and abuse) of good mouse support with: icons, buttons, dialog boxes. Similar to windowed editors.
 * :star: Use and abuse color to easily find the cursor, selected text, etc.
-* :+1::star: Good and powerful plugin system to hack the editor to "my" personal needs (and your personal needs, so you can say at the end of all your hacking: "finally! I have **My** ide")
+* :+1::star: Good and powerful plugin system to hack the editor to "my" personal needs (and your personal needs, so you can say at the end of all your hacking: "finally! I have **my** ide")
     - Without the need to compile or setup a complicated environment
     - Resilient to editor new versions
     - Plugins that will enhance the user coding for each particular language
@@ -56,9 +63,30 @@ Many of those features were already provided by micro editor :+1:. But some othe
         - `nano ~/.bashrc` or `nano ~./.bash_aliases`
         - add : `alias='mi-ide ~/.local/mi-ide'`
     - Execute mi-ide.
-        - Note, the first time you run the editor will download the configurations from github
+        - Note, the first time you run the editor will download the configurations from github. **(β)** please read the folowing note
         - And place them in `~/.config/mi-ide/`
+
+>(β) **Important note**
+>
+>For convenience to most people, I have included in the download a compiled version of this piece of software: uchardet ( https://www.freedesktop.org/wiki/Software/uchardet/ ). It is compiled for 64 bits (no 32 bit version distributed).
+>
+>uchardet is not installed in all distributions by default, and I found that many distributions have a very old one. And there is no port in "go" yet.
+>
+>I use this compiled binary, as an external application, to detect the encoding of the file I'm about to open, and set the correct decoder in mi-ide and read the file into UTF8. I do not want to link to it with CGO and complicate compiling and portability.
+>
+>I understand that some people will not like this convenience (downloading a binary file). If you feel unconfortable with this, this are the alternatives:
+>
+>1. Start mi-ide (do not open any file so the uchardet code will not be executed) and let mi-ide download the configurations, exit the editor. Go to your settings folder (~./config/mi-ide/libs) and delete the files: uchardet, libuchardet.so.0
+2. If you don't want to run mi-ide, then download config.zip manually from: https://github.com/hanspr/mi-channel
+    1. Extract the directory
+    2. Remove uchardet, libuchardet.so.0
+    3. Copy the config directory to your .config directory
+2. If you still want uchardet support into mi-ide, your options are
+    1. install your uchardet for your distribution on your server (make sure that is version : 0.0.6)
+    2. Or, download and compile your own version from https://www.freedesktop.org/wiki/Software/uchardet/ and install the compiled files on ~./config/mi-ide/libs or globally in your server
+
 * You can also build mi-ide from source, by cloning this repo and install all dependencies.
+
 
 ```bash
 go get "github.com/blang/semver"
