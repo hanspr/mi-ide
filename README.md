@@ -77,13 +77,13 @@ This is the list of the most important features to me:
 >I understand that some people will not like this convenience (downloading a binary file). If you feel unconfortable with this, this are the alternatives:
 >
 >1. Start mi-ide (do not open any file so the uchardet code will not be executed) and let mi-ide download the configurations, exit the editor. Go to your settings folder (~./config/mi-ide/libs) and delete the files: uchardet, libuchardet.so.0
-2. If you don't want to run mi-ide, then download config.zip manually from: https://github.com/hanspr/mi-channel
-    1. Extract the directory
-    2. Remove uchardet, libuchardet.so.0
-    3. Copy the config directory to your .config directory
-2. If you still want uchardet support into mi-ide, your options are
-    1. install your uchardet for your distribution on your server (make sure that is version : 0.0.6)
-    2. Or, download and compile your own version from https://www.freedesktop.org/wiki/Software/uchardet/ and install the compiled files on ~./config/mi-ide/libs or globally in your server
+>2. If you don't want to run mi-ide, then download config.zip manually from: https://github.com/hanspr/mi-channel
+>    1. Extract the directory
+>    2. Remove uchardet, libuchardet.so.0
+>    3. Copy the config directory to your .config directory
+>2. If you still want uchardet support into mi-ide, your options are
+>    1. install your uchardet for your distribution on your server (make sure that is version : 0.0.6)
+>    2. Or, download and compile your own version from https://www.freedesktop.org/wiki/Software/uchardet/ and install the compiled files on ~./config/mi-ide/libs or globally in your server
 
 * You can also build mi-ide from source, by cloning this repo and install all dependencies.
 
