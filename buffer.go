@@ -96,6 +96,7 @@ type SerializedBuffer struct {
 
 func (b *Buffer) GetFileSettings(filename string) {
 	filename, _ = filepath.Abs(filename)
+	// Check read only flags in none windows environments
 	if CurrEnv.OS != "windows" {
 		// Test if file is write enabled for this user and file permissions
 		if fi, err := os.Stat(filename); err == nil {
@@ -134,17 +135,23 @@ func (b *Buffer) GetFileSettings(filename string) {
 	// Use uchardet shipped with mi-ide if exists and it runs
 	b.encoder = "UTF8"
 	uchardet := configDir + "/libs/uchardet"
-	if _, err := os.Stat(uchardet); err == nil {
-		cmd := exec.Command(uchardet, filename)
-		cmd.Dir = configDir + "/libs"
-		msg, err := cmd.Output()
-		if err != nil {
-			b.encoder = "UTF8"
-			b.sencoder = b.encoder
-			return
-		}
-		b.encoder = strings.TrimSuffix(strings.ToUpper(string(msg)), "\n")
+	if _, err := os.Stat(uchardet); err != nil {
+		// No uchardet from mi-ide found
+		// Maybe uchardet is available in this distribution, lets give it a try
+		uchardet = "uchardet"
 	}
+	cmd := exec.Command(uchardet, filename)
+	if uchardet != "uchardet" {
+		// Using the shipped one
+		cmd.Dir = configDir + "/libs"
+	}
+	msg, err := cmd.Output()
+	if err != nil {
+		b.encoder = "UTF8"
+		b.sencoder = b.encoder
+		return
+	}
+	b.encoder = strings.TrimSuffix(strings.ToUpper(string(msg)), "\n")
 	b.encoder = strings.ReplaceAll(b.encoder, "-", "")
 	b.encoder = strings.ReplaceAll(b.encoder, "_", "")
 	// Open ASCII files as UTF8
