@@ -1,45 +1,41 @@
-# ![Micro](./assets/logo.png)
+# ![mi-ide](./assets/logo.png)
 
 mi-ide (_mi ide_ in spanish, "my ide" as in: this is **my** editor) is a spin-off version of the great micro editor project at https://github.com/zyedidia/micro.
 
-This version is a highly customized and modified versión with many of the features that I always wanted in a (ssh session) terminal editor;
-and that are, some how, missing in all the editors I tried.
-Or some editors have all of them, but the learning curve to be proficient, has always been to steep for me
-(which is the first feature that I always wanted : _short learning curve_).
-
 This version is also targeted to work on Linux servers. It does compile and may run under other platforms, but not all features will work.
-I'm mainly focused on **improving the experience of coding remotely over ssh on headless Linux servers**.
 
-Many of those features were already provided by micro editor :+1:. But some others were still missing :star:,
-and there inclusion are personal and not necessarily useful to everyone.
+This project mainly focused on **improving the experience of coding remotely over ssh on headless Linux servers**.
 
-This is the list of the most important features to me:
+Many of features were already provided by micro editor :+1:. But some others were still missing :star:,
+and there inclusion are not necessarily useful to everyone.
+
+This is the list of the most important features :
 
 * :+1: Short learning curve
 * :+1: Great syntax highlighting and easily customizable
-* :star: Good cursor positioning after paste, cuts, duplicate a line, searching, moving on the edges of the window. So I have a clear view of the surrounding code.
-* :star: Multiple language support
+* :star: Good cursor positioning after paste, cuts, duplicate a line, searching, moving on the edges of the window. So I have a clear view of the surrounding code
+* :star: Translate easily
 * :star: Auto detect file encoding. Open (decode) / Save (encode) in the original encoding of the file: UTF8, ISO8859, WINDOWS, etc. (Limited to the encoders available in go libraries)
-* :star: Replace the need to learn too many key combinations and commands by the use (and abuse) of good mouse support with: icons, buttons, dialog boxes. Similar to windowed editors.
+* :star: Replace the need to learn too many key combinations and commands by the use (and abuse) of good mouse support with: icons, buttons, dialog boxes. Similar to windowed editors
 * :star: Use and abuse color to easily find the cursor, selected text, etc.
-* :+1::star: Good and powerful plugin system to hack the editor to "my" personal needs (and your personal needs, so you can say at the end of all your hacking: "finally! I have **my** ide")
+* :+1::star: Good and powerful plugin system to hack the editor to your personal needs.
     - Without the need to compile or setup a complicated environment
     - Resilient to editor new versions
-    - Plugins that will enhance the user coding for each particular language
+    - Plugins that will enhance the user coding for each particular coding language
+    - So you can say at the end of all your hacking: "finally!, I got **my** ide"
 * :star: Save editor settings for
-    - a particular language (c, php, python, perl,..)
+    - a particular coding language (c, php, python, perl,..)
     - a single file
     - or just for the current opened session
 * :star: A powerful auto indent
 * :star: Internal copy paste between terminals in the same server without the need of _**shift-key and mouse dragging**_
 * :star: Features that require a server to work
     - Internal copy paste between terminals in different servers without the need of _**shift-key and mouse dragging**_
-    - Package and retrieve **my** personal settings to quickly sync **my** editor's choices and hacks across different servers I work on, when the editor is already installed
+    - Package and retrieve your personal settings to quickly sync your editor's choices and hacks across different servers I work on, when the editor is already installed
     - Transfer a single script, text file quickly from one server to another
     - See [Support the project & Services](#support-the-project) for these features
 
 ![Screenshot](./assets/features.gif)
-
 
 # Table of Contents
 - [Installation](#installation)
@@ -63,30 +59,32 @@ This is the list of the most important features to me:
         - `nano ~/.bashrc` or `nano ~./.bash_aliases`
         - add : `alias='mi-ide ~/.local/mi-ide'`
     - Execute mi-ide.
-        - Note, the first time you run the editor will download the configurations from github. **(β)** please read the folowing note
+        - The first time you run the editor will download the configurations from github. **(β)** please read note
         - And place them in `~/.config/mi-ide/`
 
 >(β) **Important note**
 >
 >For convenience to most people, I have included in the download a compiled version of this piece of software: uchardet ( https://www.freedesktop.org/wiki/Software/uchardet/ ). It is compiled for 64 bits (no 32 bit version distributed).
 >
->uchardet is not installed in all distributions by default, and I found that many distributions have a very old one. And there is no port in "go" yet.
+>uchardet is not installed in all distributions by default, and I found that many distributions have a very old one. And there is no port in "golang" yet.
 >
->I use this compiled binary, as an external application, to detect the encoding of the file I'm about to open, and set the correct decoder in mi-ide and read the file into UTF8. I do not want to link to it with CGO and complicate compiling and portability.
+>This compiled binary is used as an external application, to detect the encoding of the file about to be opened, and then set the correct decoder and read the file into the editor. It was not liked with CGO, to avoid portability or compiling problems.
 >
->I understand that some people will not like this convenience (downloading a binary file). If you feel unconfortable with this, this are the alternatives:
+>Some people will not like this convenience (downloading a binary file). If you feel unconfortable with this, this are the alternatives:
 >
->1. Start mi-ide (do not open any file so the uchardet code will not be executed) and let mi-ide download the configurations, exit the editor. Go to your settings folder (~./config/mi-ide/libs) and delete the files: uchardet, libuchardet.so.0
+>1. Start mi-ide (do not open any file so the uchardet code will not be executed) and let mi-ide download the configurations
+>    1. exit the editor
+>    2. go to your settings folder (~./config/mi-ide/libs)
+>    3. delete the files: uchardet, libuchardet.so.0
 >2. If you don't want to run mi-ide, then download config.zip manually from: https://github.com/hanspr/mi-channel
 >    1. Extract the directory
 >    2. Remove uchardet, libuchardet.so.0
 >    3. Copy the config directory to your .config directory
 >2. If you still want uchardet support into mi-ide, your options are
->    1. install your uchardet for your distribution on your server (make sure that is version : 0.0.6)
+>    1. install your uchardet for your distribution on your server (make sure that is version : 0.0.6 or above)
 >    2. Or, download and compile your own version from https://www.freedesktop.org/wiki/Software/uchardet/ and install the compiled files on ~./config/mi-ide/libs or globally in your server
 
 * You can also build mi-ide from source, by cloning this repo and install all dependencies.
-
 
 ```bash
 go get "github.com/blang/semver"
@@ -132,7 +130,7 @@ You can move the cursor around with the arrow keys and mouse.
 
 You can also use the mouse to manipulate the text. Simply clicking and dragging will select text. You can also double click to enable word selection, and triple click to enable line selection.
 
-[For a full introduction you may watch this video]()
+[For a full introduction you may watch this video](https://youtu.be/6bgv3bQbxgM) (27 minutes)
 
 # Documentation and Help
 
@@ -168,6 +166,10 @@ You may find the translation file in your config directory under : langs
     - Clone : https://github.com/hanspr/mi-sources
     - Copy your file or update the current translation in the langs directory
     - Create a pull request
+
+**Note for English speaking people**
+
+>English is not my first tongue, so If there are misspelled words or grammar errors, you may have to translate the mistake to the correct sentence and create push request with your en_US.md translation from bad English to correct English
 
 # Support the project
 

@@ -1837,7 +1837,7 @@ func (m *microMenu) TransferCloudSettings(name, value, event, when string, x, y 
 		} else {
 			msg := Clip.WriteTo(&file, "cloud", "settings")
 			if msg == "" {
-				messenger.Success("Settings uploaded ok")
+				messenger.Success("Settings uploaded OK")
 			} else {
 				messenger.Error(msg)
 			}

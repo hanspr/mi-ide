@@ -2482,7 +2482,7 @@ func (v *View) UploadToCloud(plugin bool) bool {
 func (v *View) DownloadFromCloud(plugin bool) bool {
 	text := Clip.ReadFrom("cloud", "file")
 	if text == "" {
-		messenger.Message(Language.Translate("No files to donwload"))
+		messenger.Message(Language.Translate("No files to download"))
 		return true
 	}
 	tab := NewTabFromView(NewView(NewBufferFromString(text, "")))
