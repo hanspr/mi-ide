@@ -30,7 +30,7 @@ This is the list of the most important features :
     - Internal copy paste between terminals in different servers without the need of _**shift-key and mouse dragging**_
     - Package and retrieve your personal settings to quickly sync your editor's choices and hacks across different servers you work on, when the editor is already installed
     - Transfer a single script, text file quickly from one server to another
-    - See [Support the project & Services](#support-the-project-&-services) for these features
+    - See [Support the project & Services](#support-the-project--services) for these features
 
 ![Screenshot](./assets/features.gif)
 
