@@ -1,20 +1,17 @@
 # ![mi-ide](./assets/logo.png)
 
-mi-ide (_mi ide_ in spanish, "my ide" as in: this is **my** editor) is a spin-off version of the great micro editor project at https://github.com/zyedidia/micro.
+mi-ide (_mi ide_ in spanish, "my ide" as in: this is **my** editor) is a spin-off version of micro editor project at https://github.com/zyedidia/micro.
 
-This version is also targeted to work on Linux servers. It does compile and may run under other platforms, but not all features will work.
+This project is mainly focused on **improving the experience of coding remotely over ssh on headless Linux servers** (no X Server support, no Graphical interface).
 
-This project is mainly focused on **improving the experience of coding remotely over ssh on headless Linux servers**.
-
-Many of features were already provided by micro editor :+1:. But some others were still missing :star:,
-and there inclusion are not necessarily useful to everyone.
+Many of features were already provided by micro editor :+1:. But some others were still missing :star:, and there inclusion are not necessarily useful to everyone.
 
 This is the list of the most important features :
 
 * :+1: Short learning curve
 * :+1: Great syntax highlighting and easily customizable
 * :star: Good cursor positioning after paste, cuts, duplicate a line, searching, moving on the edges of the window. So I have a clear view of the surrounding code
-* :star: Translate easily
+* :star: Translate to other languages easily
 * :star: Auto detect file encoding. Open (decode) / Save (encode) in the original encoding of the file: UTF8, ISO8859, WINDOWS, etc. (Limited to the encoders available in go libraries)
 * :star: Replace the need to learn too many key combinations and commands by the use (and abuse) of good mouse support with: icons, buttons, dialog boxes. Similar to windowed editors
 * :star: Use and abuse color to easily find the cursor, selected text, etc.
