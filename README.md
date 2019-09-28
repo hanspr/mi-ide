@@ -30,7 +30,7 @@ This is the list of the most important features :
     - Internal copy paste between terminals in different servers without the need of _**shift-key and mouse dragging**_
     - Package and retrieve your personal settings to quickly sync your editor's choices and hacks across different servers you work on, when the editor is already installed
     - Transfer a single script, text file quickly from one server to another
-    - See [Support the project & Services](#support-the-project) for these features
+    - See [Support the project & Services](#support-the-project-&-services) for these features
 
 ![Screenshot](./assets/features.gif)
 
@@ -170,7 +170,7 @@ You may find the translation file in your config directory under : langs
 
 >English is not my first tongue, so If there are misspelled words or grammar errors, you may have to translate the mistake to the correct sentence (as explained above) and create push request with your en_US.md translation from bad English to correct English
 
-# Support the project
+# Support the project & Services
 
 If you find this project useful and want to support it, please use the following page to process your contribution.
 
