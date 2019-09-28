@@ -49,12 +49,14 @@ This is the list of the most important features :
 
 * Download a [prebuilt binary](https://github.com/hanspr/mi-ide/releases).
     - Unzip the release
-        - `unzip release.zip`
+        - `unzip release##.zip`
     - Place the binary in any location on your home directory, for example
-        - `cp mi-ide .local`
-    - Create an alias in your `.bashrc` to the location of your executable
-        - `nano ~/.bashrc` or `nano ~./.bash_aliases`
+        - `mv mi-ide ~/.local`
+    - Create an alias in your `.bashrc` or `.bash_aliases` to the location of your executable
+        - Change to your home directory : `cd`
+        - Edit : `nano .bashrc` or `nano .bash_aliases`
         - add : `alias='mi-ide ~/.local/mi-ide'`
+        - reload changes: `. .bashrc` or `. .bash_aliases`
     - Execute mi-ide.
         - The first time you run the editor will download the configurations from github. **(β)** please read note
         - And place them in `~/.config/mi-ide/`
