@@ -4,7 +4,7 @@ mi-ide (_mi ide_ in spanish, "my ide" as in: this is **my** editor) is a spin-of
 
 This version is also targeted to work on Linux servers. It does compile and may run under other platforms, but not all features will work.
 
-This project mainly focused on **improving the experience of coding remotely over ssh on headless Linux servers**.
+This project is mainly focused on **improving the experience of coding remotely over ssh on headless Linux servers**.
 
 Many of features were already provided by micro editor :+1:. But some others were still missing :star:,
 and there inclusion are not necessarily useful to everyone.
@@ -31,7 +31,7 @@ This is the list of the most important features :
 * :star: Internal copy paste between terminals in the same server without the need of _**shift-key and mouse dragging**_
 * :star: Features that require a server to work
     - Internal copy paste between terminals in different servers without the need of _**shift-key and mouse dragging**_
-    - Package and retrieve your personal settings to quickly sync your editor's choices and hacks across different servers I work on, when the editor is already installed
+    - Package and retrieve your personal settings to quickly sync your editor's choices and hacks across different servers you work on, when the editor is already installed
     - Transfer a single script, text file quickly from one server to another
     - See [Support the project & Services](#support-the-project) for these features
 
@@ -64,13 +64,13 @@ This is the list of the most important features :
 
 >(β) **Important note**
 >
->For convenience to most people, I have included in the download a compiled version of this piece of software: uchardet ( https://www.freedesktop.org/wiki/Software/uchardet/ ). It is compiled for 64 bits (no 32 bit version distributed).
+>For convenience to most people, included in the download is a compiled version of this piece of software: uchardet ( https://www.freedesktop.org/wiki/Software/uchardet/ ). It is compiled for 64 bits (no 32 bit version distributed).
 >
->uchardet is not installed in all distributions by default, and I found that many distributions have a very old one. And there is no port in "golang" yet.
+>uchardet is not installed in all distributions by default, and some distributions have a very old one. And there is no port for it in pure "go" yet.
 >
 >This compiled binary is used as an external application, to detect the encoding of the file about to be opened, and then set the correct decoder and read the file into the editor. It was not liked with CGO, to avoid portability or compiling problems.
 >
->Some people will not like this convenience (downloading a binary file). If you feel unconfortable with this, this are the alternatives:
+>Some people will not like this convenience (downloading a binary file). If you feel unconfortable, this are the alternatives:
 >
 >1. Start mi-ide (do not open any file so the uchardet code will not be executed) and let mi-ide download the configurations
 >    1. exit the editor
@@ -80,8 +80,8 @@ This is the list of the most important features :
 >    1. Extract the directory
 >    2. Remove uchardet, libuchardet.so.0
 >    3. Copy the config directory to your .config directory
->2. If you still want uchardet support into mi-ide, your options are
->    1. install your uchardet for your distribution on your server (make sure that is version : 0.0.6 or above)
+>2. If ,after removing the binaries, you still want uchardet support into mi-ide, your options are:
+>    1. install uchardet for your distribution on your server (make sure that is version : 0.0.6 or above)
 >    2. Or, download and compile your own version from https://www.freedesktop.org/wiki/Software/uchardet/ and install the compiled files on ~./config/mi-ide/libs or globally in your server
 
 * You can also build mi-ide from source, by cloning this repo and install all dependencies.
@@ -128,13 +128,15 @@ Once you have built/installed the editor, start it by running `mi-ide path/to/fi
 
 You can move the cursor around with the arrow keys and mouse.
 
-You can also use the mouse to manipulate the text. Simply clicking and dragging will select text. You can also double click to enable word selection, and triple click to enable line selection.
+You can also use the mouse to select text, double click to enable a word, and triple click to enable line selection.
 
 [For a full introduction you may watch this video](https://youtu.be/6bgv3bQbxgM) (27 minutes)
 
 # Documentation and Help
 
 Mi-ide has a built-in help system which you can access by pressing `Alt-?` or `Ctrl-E` and typing `help`.
+
+You will also find more detiled information on the [Wiki pages](https://github.com/hanspr/mi-ide/wiki)
 
 # Plugin
 
@@ -169,7 +171,7 @@ You may find the translation file in your config directory under : langs
 
 **Note for English speaking people**
 
->English is not my first tongue, so If there are misspelled words or grammar errors, you may have to translate the mistake to the correct sentence and create push request with your en_US.md translation from bad English to correct English
+>English is not my first tongue, so If there are misspelled words or grammar errors, you may have to translate the mistake to the correct sentence (as explained above) and create push request with your en_US.md translation from bad English to correct English
 
 # Support the project
 
