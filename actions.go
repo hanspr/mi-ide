@@ -2159,6 +2159,7 @@ func (v *View) HSplitBinding(usePlugin bool) bool {
 		} else {
 			// Split current Buffer
 			v.HSplit(v.Buf)
+			CurView().Relocate()
 		}
 		if usePlugin {
 			return PostActionCall("HSplit", v)
@@ -2196,13 +2197,11 @@ func (v *View) NextSplit(usePlugin bool) bool {
 		if usePlugin && !PreActionCall("NextSplit", v) {
 			return false
 		}
-
 		tab := tabs[curTab]
 		// Save cursor location and line reference
 		v.savedLoc = v.Cursor.Loc
 		v.savedLine = SubtringSafe(v.Buf.Line(v.Cursor.Loc.Y), 0, 20)
 		// Find next View parsing tree_split downward
-		//			tab.CurView++
 		tab.CurView = v.splitNode.GetNextPrevView(1)
 		if usePlugin {
 			return PostActionCall("NextSplit", v)

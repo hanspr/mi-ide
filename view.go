@@ -456,13 +456,17 @@ func (v *View) Bottomline() int {
 	return numLines + v.Topline
 }
 
-// Relocate moves the view window so that the cursor is in view
+// Relocate moves the view window so that the cursor is in view, only if out of view
 // This is useful if the user has scrolled far away, and then starts typing
 func (v *View) Relocate() bool {
+	scrollmargin := int(v.Buf.Settings["scrollmargin"].(float64))
+	cy := v.Cursor.Y
+	// Relocate only if is needed
+	if v.Type.Kind == 0 && cy < v.Bottomline()-scrollmargin && cy >= v.Topline+scrollmargin {
+		return false
+	}
 	height := v.Bottomline() - v.Topline
 	ret := false
-	cy := v.Cursor.Y
-	scrollmargin := int(v.Buf.Settings["scrollmargin"].(float64))
 	if cy < v.Topline+scrollmargin && cy > scrollmargin-1 {
 		v.Topline = cy - scrollmargin
 		ret = true
@@ -479,9 +483,10 @@ func (v *View) Relocate() bool {
 	}
 
 	if !v.Buf.Settings["softwrap"].(bool) {
-		cx := v.Cursor.GetVisualX()
+		// HPR
 		// Force go all the way to the left when visual X in range to fit at the begging
 		// This avoids having shifted lines close to the begining of the window
+		cx := v.Cursor.GetVisualX()
 		if cx < v.Width*10/11 {
 			cx = 0
 		}
@@ -897,6 +902,7 @@ func (v *View) openHelp(helpPage string) {
 		} else {
 			v.HSplit(helpBuffer)
 			CurView().Type = vtHelp
+			v.Relocate()
 		}
 	}
 }
@@ -1030,7 +1036,7 @@ func (v *View) DisplayView() {
 		}
 		CurView().Relocate()
 		if CurView().Cursor.Loc.Y > CurView().Height-3 {
-			CurView().Center(false)
+			//CurView().Center(false)
 		}
 	}
 
