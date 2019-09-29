@@ -55,7 +55,7 @@ This is the list of the most important features :
     - Create an alias in your `.bashrc` or `.bash_aliases` to the location of your executable
         - Change to your home directory : `cd`
         - Edit : `nano .bashrc` or `nano .bash_aliases`
-        - add : `alias='mi-ide ~/.local/mi-ide'`
+        - add : `alias mi-ide='~/.local/mi-ide'`
         - reload changes: `. .bashrc` or `. .bash_aliases`
     - Execute mi-ide.
         - The first time you run the editor will download the configurations from github. **(β)** please read note
