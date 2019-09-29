@@ -183,7 +183,7 @@ If you find this project useful and want to support it, you will receive a Cloud
 |Cloud Key & More Support | 50 USD | [![mi-ide-20](https://img.shields.io/badge/Cloud%20Key%20%26%20More-PayPal-green)](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=SAPEG25ZKA67N)|
 
 
-**A Cloud Key, gives you access to**
+**A Cloud Key, gives you lifetime access to**
 
 * Copy Paste between your editors running in different servers
 * Transfer any code that is opened in the current Window to different server runngin mi-ide
