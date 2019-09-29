@@ -67,9 +67,9 @@ This is the list of the most important features :
 >
 >uchardet is not installed in all distributions by default, and some distributions have a very old one. And there is no port for it in pure "go" yet.
 >
->This compiled binary is used as an external application, to detect the encoding of the file about to be opened, and then set the correct decoder and read the file into the editor. It was not liked with CGO, to avoid portability or compiling problems.
+>This compiled binary is used as an external application, to detect the encoding of the file about to be opened, and then set the correct decoder and read the file into the editor. It was not linked with CGO, to avoid portability or compiling problems.
 >
->Some people will not like this convenience (downloading a binary file). If you feel unconfortable, this are the alternatives:
+>Some people will not like this convenience (downloading a binary file). If you feel uncomfortable, this are the alternatives:
 >
 >1. Start mi-ide (do not open any file so the uchardet code will not be executed) and let mi-ide download the configurations
 >    1. exit the editor
@@ -79,7 +79,7 @@ This is the list of the most important features :
 >    1. Extract the directory
 >    2. Remove uchardet, libuchardet.so.0
 >    3. Copy the config directory to your .config directory
->2. If ,after removing the binaries, you still want uchardet support into mi-ide, your options are:
+>2. If after removing the binaries you still want uchardet support into mi-ide, your options are:
 >    1. install uchardet for your distribution on your server (make sure that is version : 0.0.6 or above)
 >    2. Or, download and compile your own version from https://www.freedesktop.org/wiki/Software/uchardet/ and install the compiled files on ~./config/mi-ide/libs or globally in your server
 
