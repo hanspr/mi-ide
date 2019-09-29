@@ -185,18 +185,18 @@ If you find this project useful and want to support it, you will receive a lifet
 
 **A Cloud Key, gives you lifetime access to**
 
-* **Internal Copy Paste between your editors running in different servers**, no more : shift click dragging
+- **Internal Copy Paste between your editors running in different servers**, no more : shift click dragging
     - Avoid the problem of copying extra characters, numbers from the ruler
     - Copying partial text on very long lines. Or having to split them with new lines to be able to copy the hole line in one select.
     - Multiple selects if the area to copy is across many rows
     - Rebuild and reformat everything on the destination
-* **Transfer any code file** that is opened in the current Window to different server running mi-ide
+- **Transfer any code file** that is opened in the current Window to different server running mi-ide
     - If you need a quick way to transfer code from one point to another just click to upload, click on the other server to download.
-* **Save and retrieve your settings** from any server. To sync all your : settings, plugins, hacks, colors, bindings, etc.
-* All your information is **completely confidential and secure**.
+- **Save and retrieve your settings** from any server. To sync all your : settings, plugins, hacks, colors, bindings, etc.
+- All your information is **completely confidential and secure**.
     - Check the code at : ["github.com/hanspr/clipboard"](github.com/hanspr/clipboard)
     - It is very easy to read and follow
-* **How does it work?**
+- **How does it work?**
     - All connections are over https
     - You set up 3 values in the editor
         - The key assigned to you
@@ -218,5 +218,5 @@ If you find this project useful and want to support it, you will receive a lifet
             - Inserts the clipboard in your current buffer, or
             - Opens the file in a new tab, or
             - Installs your settings
-
-There is no way to access your data in the server.
+- **Any new features that could come in the future**
+-  **Request** to implement new ideas based on this Cloud model that could be beneficial for every one.
