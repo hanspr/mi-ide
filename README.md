@@ -10,15 +10,15 @@ This is the list of the most important features :
 
 * :+1: Short learning curve
 * :+1: Great syntax highlighting and easily customizable
-* :star: Good cursor positioning after paste, cuts, duplicate a line, searching, moving on the edges of the window. So I have a clear view of the surrounding code
+* :star: Good cursor positioning after paste, cuts, duplicate a line, searching, moving on the edges of the window. So you always have a clear view of the surrounding code
 * :star: Translate to other languages easily
 * :star: Auto detect file encoding. Open (decode) / Save (encode) in the original encoding of the file: UTF8, ISO8859, WINDOWS, etc. (Limited to the encoders available in go libraries)
 * :star: Replace the need to learn too many key combinations and commands by the use (and abuse) of good mouse support with: icons, buttons, dialog boxes. Similar to windowed editors
 * :star: Use and abuse color to easily find the cursor, selected text, etc.
 * :+1::star: Good and powerful plugin system to hack the editor to your personal needs.
     - Without the need to compile or setup a complicated environment
-    - Resilient to editor new versions
-    - Plugins that will enhance the user coding for each particular coding language
+    - Resilient to editor new versions, so a plugin can last a long time without being recoded, and recoded.
+    - Plugins that will enhance the user coding experience for each particular language
     - So you can say at the end of all your hacking: "finally!, I got **my** ide"
 * :star: Save editor settings for
     - a particular coding language (c, php, python, perl,..)
