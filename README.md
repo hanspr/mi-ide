@@ -174,10 +174,44 @@ You may find the translation file in your config directory under : langs
 
 # Support the project & Services
 
-If you find this project useful and want to support it, please use the following page to process your contribution.
+If you find this project useful and want to support it, you will receive a Cloud Key to activate the Cloud Services.
 
-This page will allow you to receive a key that you can use as a perpetual access to additional features of the editor that require cloud support to work, like:
+Kid  | Amount |
+--|--|--
+Just Support, not interested in a Cloud Key | 5 USD | [![mi-ide-20](https://img.shields.io/badge/Just%20Support-PayPal-green)](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=YDQ2HBASRXTCE)
+Support & Cloud Key | 20 USD | [![mi-ide-20](https://img.shields.io/badge/Support%20%26%20Cloud%20Key-PayPal-green)](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=K43LR98FUSSNG)  
+Cloud Key & More Support | 50 USD | [![mi-ide-20](https://img.shields.io/badge/Cloud%20Key%20%26%20More-PayPal-green)](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=SAPEG25ZKA67N)
 
-* Internal copy paste between your editors running in different servers
-* File transfer between editors in different servers
-* Save and retrieve your settings from any server. To sync all your mi-ide editors running in different machines
+
+**A Cloud Key, gives you access to**
+
+* Copy Paste between your editors running in different servers
+* Transfer any code that is opened in the current Window to different server runngin mi-ide
+* Save and retrieve your settings from any server. To sync all your : settings, plugins, hacks, colors, bindings, etc.
+* All your information is completely confidential and secure.
+    - Check the code at : ["github.com/hanspr/clipboard"](github.com/hanspr/clipboard)
+    - It is very easy to read and follow
+* How does it work?
+    - All connection are over https
+    - You set up 3 values in the editor
+        - The key assigned to you
+        - A password that you select
+        - A passphrase that you select
+    - The key and password gives you access to your clipboard, settings, and files.
+        - The key and password are transmitted to the server on every transaction to validate the access to your account
+    - The passphrase:
+        - Is never sent to the server
+    - On Copy, Upload File or Settings
+        - mi-ide encrypts your clip, file or settings
+        - The application, sends your key and password only
+        - Transfers the data to the server
+        - The server stores your encrypted : clipboard, file or settings
+    - On Paste, File Download or Settings
+        - The application, sends your key and password only
+        - It receives the data : clipboard, file or settings
+        - Decrypts the data
+            - Inserts the clipboard in your current buffer, or
+            - Opens the file in a new tab, or
+            - Installs your settings
+
+There is no way to access your data in the server.
