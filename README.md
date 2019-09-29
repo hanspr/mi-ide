@@ -174,7 +174,7 @@ You may find the translation file in your config directory under : langs
 
 # Support the project & Services
 
-If you find this project useful and want to support it, you will receive a Cloud Key to activate the Cloud Services.
+If you find this project useful and want to support it, you will receive a lifetime Cloud Key to activate Cloud Services.
 
 |Kind       | Amount | Button|
 |----------|--------|-------|
