@@ -1761,6 +1761,7 @@ func (m *microMenu) SaveCloudSettings(name, value, event, when string, x, y int)
 				if msg != "" {
 					Errors = msg
 				}
+				reset = false
 			}
 			if passchg {
 				msg := Clip.ChangeCloudPassword(values["newpass"])
