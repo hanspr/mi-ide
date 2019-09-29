@@ -461,10 +461,6 @@ func (v *View) Bottomline() int {
 func (v *View) Relocate() bool {
 	scrollmargin := int(v.Buf.Settings["scrollmargin"].(float64))
 	cy := v.Cursor.Y
-	// Relocate only if is needed
-	if v.Type.Kind == 0 && cy < v.Bottomline()-scrollmargin && cy >= v.Topline+scrollmargin {
-		return false
-	}
 	height := v.Bottomline() - v.Topline
 	ret := false
 	if cy < v.Topline+scrollmargin && cy > scrollmargin-1 {

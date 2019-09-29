@@ -30,7 +30,7 @@
     "savecursor": false,
     "savehistory": true,
     "saveundo": false,
-    "scrollmargin": 0,
+    "scrollmargin": 4,
     "smartindent": false,
     "smartpaste": true,
     "softwrap": false,

@@ -23,10 +23,10 @@ import (
 )
 
 const (
-	doubleClickThreshold = 400                          // How many milliseconds to wait before a second click is not a double click
-	undoThreshold        = 500                          // If two events are less than n milliseconds apart, undo both of them
-	autosaveTime         = 8                            // Number of seconds to wait before autosaving
-	cloudPath            = "https://api.mi-ide.com:443" // Cloud service url
+	doubleClickThreshold = 400                      // How many milliseconds to wait before a second click is not a double click
+	undoThreshold        = 500                      // If two events are less than n milliseconds apart, undo both of them
+	autosaveTime         = 8                        // Number of seconds to wait before autosaving
+	cloudPath            = "https://api.mi-ide.com" // Cloud service url
 )
 
 type MouseClick struct {
