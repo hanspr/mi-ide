@@ -192,7 +192,7 @@ If you find this project useful and want to support it, you will receive a lifet
     - Check the code at : ["github.com/hanspr/clipboard"](github.com/hanspr/clipboard)
     - It is very easy to read and follow
 * How does it work?
-    - All connection are over https
+    - All connections are over https
     - You set up 3 values in the editor
         - The key assigned to you
         - A password that you select
@@ -202,14 +202,14 @@ If you find this project useful and want to support it, you will receive a lifet
     - The passphrase:
         - Is never sent to the server
     - On Copy, Upload File or Settings
-        - mi-ide encrypts your clip, file or settings
+        - mi-ide encrypts your clip, file or settings using your passphrase
         - The application, sends your key and password only
         - Transfers the data to the server
         - The server stores your encrypted : clipboard, file or settings
     - On Paste, File Download or Settings
         - The application, sends your key and password only
         - It receives the data : clipboard, file or settings
-        - Decrypts the data
+        - Decrypts the data using your passphrase
             - Inserts the clipboard in your current buffer, or
             - Opens the file in a new tab, or
             - Installs your settings
