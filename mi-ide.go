@@ -137,8 +137,17 @@ func LoadInput() []*Buffer {
 	var filename string
 	var input []byte
 	var err error
+	var buf *Buffer
+
 	args := flag.Args()
 	buffers := make([]*Buffer, 0, len(args))
+	if _, err := os.Stat(configDir + "/welcome.md"); err == nil {
+		os.Rename(configDir+"/welcome.md", configDir+"/help/welcome.md")
+		buf, err = NewBufferFromFile(configDir + "/help/welcome.md")
+		if err == nil {
+			buffers = append(buffers, buf)
+		}
+	}
 
 	if len(args) > 0 {
 		// Option 1
@@ -154,7 +163,7 @@ func LoadInput() []*Buffer {
 				continue
 			}
 
-			buf, err := NewBufferFromFile(args[i])
+			buf, err = NewBufferFromFile(args[i])
 			if err != nil {
 				TermMessage(err)
 				continue
@@ -433,7 +442,7 @@ func main() {
 		utf8ToShare, _ := CompileLua(configDir + "/libs/shared.lua")
 		DoCompiledFile(L, utf8ToShare)
 	}
-	// Create translation object, to begin translating messeges
+	// Create translation object, to begin translating messages
 	Language = lang.NewLang(globalSettings["lang"].(string), configDir+"/langs/"+globalSettings["lang"].(string)+".lang")
 
 	InitCommands()
@@ -465,7 +474,6 @@ func main() {
 	if len(buffers) == 0 {
 		Finish(1)
 	}
-
 	for _, buf := range buffers {
 		// For each buffer we create a new tab and place the view in that tab
 		tab := NewTabFromView(NewView(buf))
