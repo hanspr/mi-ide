@@ -168,9 +168,6 @@ You may find the translation file in your config directory under : langs
     - Copy your file or update the current translation in the langs directory
     - Create a pull request
 
-**Note for English speaking people**
-
->English is not my first tongue, so If there are misspelled words or grammar errors, you may have to translate the mistake to the correct sentence (as explained above) and create push request with your en_US.md translation from bad English to correct English
 
 # Support the project & Services
 
