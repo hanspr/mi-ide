@@ -2,11 +2,11 @@
 
 mi-ide (_mi ide_ in spanish, "my ide" as in: this is **my** editor) is a spin-off version of micro editor project at https://github.com/zyedidia/micro.
 
-This project is mainly focused on **improving the experience of coding remotely over ssh on headless Linux servers** (no X Server support, no Graphical interface).
+This project is mainly focused on **improving the experience of coding remotely over ssh on headless Linux servers** (no X Server support, no Graphical interface, no menu luncher, desktop icons), simple plain bash.
 
-Many of features were already provided by micro editor :+1:. But some others were still missing :star:, and there inclusion are not necessarily useful to everyone.
+Many of features were already provided by micro editor :+1:. But some others were still missing :star:, and there inclusion are not necessarily important to everyone.
 
-This is the list of the most important features :
+This is the list of the most important existing features :
 
 * :+1: Short learning curve
 * :+1: Great syntax highlighting and easily customizable
@@ -101,7 +101,6 @@ go get "github.com/mitchellh/go-homedir"
 go get "github.com/phayes/permbits"
 go get "github.com/sergi/go-diff/diffmatchpatch"
 go get "github.com/yuin/gopher-lua"
-
 ```
 
 ### Colors and syntax highlighting
@@ -155,7 +154,7 @@ To create pull requests, please follow these recommendations:
 
 ## Translate
 
-You may find the translation file in your config directory under : langs
+You will find the translation file in your config directory under : langs
 
 - Open the file : en_US.lang
 - Change the name to your ISO code location
@@ -222,7 +221,7 @@ If you find this project useful and decide to support it, you will receive in ex
 - **Limitations**
   - The service requires the Internet to provide this service
     - If a firewall in your network blocks: access to the Internet, port 443 or the subdomain api.mi-ide.com, the functionality will be lost.
-  - Keys are not sharable, no hard checks implemented now, hope never have to.
+  - Keys are not shareable, no hard checks implemented now, hope never have to.
   - Lifetime access is a huge compromise, it is on my will to do so, please use the service responsibly: No robots, do not use for other purposes than the helping your self coding.
   - If any abuse is detected the service for that **key** will be suspended
-  - If you have a business and you want to have the server in your internal network [contact me](https://github.com/hanspr).
+  - If you have a business and you want to have the server in your internal network, or personal server [contact me](https://github.com/hanspr).
