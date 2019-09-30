@@ -135,13 +135,13 @@ You can also use the mouse to select text, double click to enable a word, and tr
 
 Mi-ide has a built-in help system which you can access by pressing `Alt-?` or `Ctrl-E` and typing `help`.
 
-You will also find more detiled information on the [Wiki pages](https://github.com/hanspr/mi-ide/wiki)
+You will also find more detiled information on the [mi-ide Resources Wiki pages](https://github.com/hanspr/mi-sources/wiki)
 
 # Plugin
 
 The plugin system has been modified in this version, you should be able to run any plugin you develop for micro editor, by doing some minor adjustments.
 
-Please visit the [developers page](https://github.com/hanspr/mi-ide/wiki) with full instructions and videos about the plugin framework
+Please visit the [developers page](https://github.com/hanspr/mi-sources/wiki/plugins) with full instructions and videos about the plugin framework
 
 # Contributing
 
@@ -168,10 +168,11 @@ You may find the translation file in your config directory under : langs
     - Copy your file or update the current translation in the langs directory
     - Create a pull request
 
+[For more detailed information](https://github.com/hanspr/mi-sources/wiki/translate)
 
 # Support the project & Services
 
-If you find this project useful and want to support it, you will receive a lifetime Cloud Key to activate Cloud Services.
+If you find this project useful and decide to support it, you will receive in exchange a lifetime Cloud Key to activate Cloud Services.
 
 |Kind       | Amount | Button|
 |----------|--------|-------|
@@ -217,3 +218,9 @@ If you find this project useful and want to support it, you will receive a lifet
             - Installs your settings
 - **Any new features that could come in the future**
 -  **Request** to implement new ideas based on this Cloud model that could be beneficial for every one.
+- **Limitations**
+  - The service uses the standard 443 port.
+  - If a firewall in your network blocks that port , or the subdomain: api.mi-ide.com the functionality will be lost.
+  - Keys are not sharable, no hard checks implemented now, hope never have to.
+  - Lifetime access is a huge compromise, it is on my will to do so, please use the service responsibly: No robots, do not use for other purposes than the helping your self coding.
+  - If any abuse is detected the service for that **key** will be suspended
