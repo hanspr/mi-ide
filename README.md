@@ -71,13 +71,9 @@ This is the list of the most important features :
 >
 >Some people will not like this convenience (downloading a binary file). If you feel uncomfortable, this are the alternatives:
 >
->1. Start mi-ide (do not open any file so the uchardet code will not be executed) and let mi-ide download the configurations
->    1. exit the editor
->    2. go to your settings folder (~./config/mi-ide/libs)
->    3. delete the files: uchardet, libuchardet.so.0
->2. If you don't want to run mi-ide, then download config.zip manually from: https://github.com/hanspr/mi-channel
+>1. `wget https://raw.githubusercontent.com/hanspr/mi-channel/master/config.zip`
 >    1. Extract the directory
->    2. Remove uchardet, libuchardet.so.0
+>    2. Remove `mi-ide/libs/uchardet`, `mi-ide/libs/libuchardet.so.0`
 >    3. Copy the config directory to your .config directory
 >2. If after removing the binaries you still want uchardet support into mi-ide, your options are:
 >    1. install uchardet for your distribution on your server (make sure that is version : 0.0.6 or above)
@@ -125,6 +121,8 @@ export TERM=xterm-256color
 
 Once you have built/installed the editor, start it by running `mi-ide path/to/file.txt` or simply `mi-ide` to open an empty buffer.
 
+The very first time will open a welcome.md file to give you the basic information about key bindings and how to access the help documentation.
+
 You can move the cursor around with the arrow keys and mouse.
 
 You can also use the mouse to select text, double click to enable a word, and triple click to enable line selection.
@@ -139,7 +137,7 @@ You will also find more detiled information on the [mi-ide Resources Wiki pages]
 
 # Plugin
 
-The plugin system has been modified in this version, you should be able to run any plugin you develop for micro editor, by doing some minor adjustments.
+The plugin system has been modified in this project, you should be able to run any plugin you develop for micro editor, by doing some minor adjustments.
 
 Please visit the [developers page](https://github.com/hanspr/mi-sources/wiki/plugins) with full instructions and videos about the plugin framework
 
@@ -225,3 +223,4 @@ If you find this project useful and decide to support it, you will receive in ex
   - Keys are not sharable, no hard checks implemented now, hope never have to.
   - Lifetime access is a huge compromise, it is on my will to do so, please use the service responsibly: No robots, do not use for other purposes than the helping your self coding.
   - If any abuse is detected the service for that **key** will be suspended
+  - If you have a business and you want to have the server in your internal network contact me.

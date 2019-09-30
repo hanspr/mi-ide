@@ -285,7 +285,8 @@ func (m *microMenu) GlobalConfigDialog() {
 				if kind == reflect.Bool {
 					f.AddWindowCheckBox(k, k, "true", col, row, globalSettings[k].(bool), nil, "", "")
 				} else if kind == reflect.String {
-					f.AddWindowTextBox(k, k+" ", globalSettings[k].(string), "string", col, row, 10, 20, nil, "", "")
+					w := 26 - Count(k+" ")
+					f.AddWindowTextBox(k, k+" ", globalSettings[k].(string), "string", col, row, w, 50, nil, "", "")
 				} else if kind == reflect.Float64 {
 					f.AddWindowTextBox(k, k+" ", fmt.Sprintf("%g", globalSettings[k].(float64)), "integer", col, row, 5, 10, nil, "", "")
 				} else {
@@ -295,7 +296,7 @@ func (m *microMenu) GlobalConfigDialog() {
 			row += 2
 			if row > height-2 {
 				row = 2
-				col += 26
+				col += 27
 			}
 		}
 		lbl := Language.Translate("Cancel")

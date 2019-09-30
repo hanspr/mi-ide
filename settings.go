@@ -77,6 +77,9 @@ func InitGlobalSettings() {
 		}
 	}
 	// Check for mi-ide services, setup service
+	if globalSettings["miserver"].(string) != "" {
+		cloudPath = globalSettings["miserver"].(string)
+	}
 	Clip.SetCloudPath(cloudPath, globalSettings["mi-key"].(string), globalSettings["mi-pass"].(string), globalSettings["mi-phrase"].(string))
 }
 
@@ -251,6 +254,7 @@ func DefaultGlobalSettings() map[string]interface{} {
 		"lang":           "en_US",
 		"matchbrace":     false,
 		"matchbraceleft": false,
+		"miserver":       "https://api.mi-ide.com",
 		"mi-key":         "",
 		"mi-pass":        "",
 		"mi-phrase":      "",
