@@ -127,7 +127,7 @@ You can move the cursor around with the arrow keys and mouse.
 
 You can also use the mouse to select text, double click to enable a word, and triple click to enable line selection.
 
-[For a full introduction you may watch this video](https://youtu.be/6bgv3bQbxgM) (27 minutes)
+[For a full introduction you may watch this video](https://youtu.be/grHzfIvC6_I) (27 minutes)
 
 # Documentation and Help
 
