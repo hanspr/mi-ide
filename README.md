@@ -220,8 +220,8 @@ If you find this project useful and decide to support it, you will receive in ex
 - **Any new features that could come in the future**
 -  **Request** to implement new ideas based on this Cloud model that could be beneficial for every one.
 - **Limitations**
-  - The service uses the standard 443 port.
-  - If a firewall in your network blocks that port , or the subdomain: api.mi-ide.com the functionality will be lost.
+  - The service requires the Internet to provide this service
+    - If a firewall in your network blocks: access to the Internet, port 443 or the subdomain api.mi-ide.com, the functionality will be lost.
   - Keys are not sharable, no hard checks implemented now, hope never have to.
   - Lifetime access is a huge compromise, it is on my will to do so, please use the service responsibly: No robots, do not use for other purposes than the helping your self coding.
   - If any abuse is detected the service for that **key** will be suspended
