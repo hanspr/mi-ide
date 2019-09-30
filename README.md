@@ -58,24 +58,24 @@ This is the list of the most important features :
         - add : `alias mi-ide='~/.local/mi-ide'`
         - reload changes: `. .bashrc` or `. .bash_aliases`
     - Execute mi-ide.
-        - The first time you run the editor will download the configurations from github. **(β)** please read note
+        - The first time you run the editor will download the configurations from github.
         - And place them in `~/.config/mi-ide/`
 
->(β) **Important note**
+>**Important note**
 >
->For convenience to most people, included in the download is a compiled version of this piece of software: uchardet ( https://www.freedesktop.org/wiki/Software/uchardet/ ). It is compiled for 64 bits (no 32 bit version distributed).
+>For convenience to everyone, included in the download is a compiled version of this piece of software: uchardet ( https://www.freedesktop.org/wiki/Software/uchardet/ ). It is compiled for 64 bits (no 32 bit version distributed).
 >
 >uchardet is not installed in all distributions by default, and some distributions have a very old one. And there is no port for it in pure "go" yet.
 >
->This compiled binary is used as an external application, to detect the encoding of the file about to be opened, and then set the correct decoder and read the file into the editor. It was not linked with CGO, to avoid portability or compiling problems.
+>This compiled binary is used as an external application, to detect the encoding of the file about to be opened, and then set the correct decoder and read the file into the editor.
 >
->Some people will not like this convenience (downloading a binary file). If you feel uncomfortable, this are the alternatives:
+>If you don't like this convenience (downloading a binary file) this is the alternative:
 >
 >1. `wget https://raw.githubusercontent.com/hanspr/mi-channel/master/config.zip`
 >    1. Extract the directory
 >    2. Remove `mi-ide/libs/uchardet`, `mi-ide/libs/libuchardet.so.0`
 >    3. Copy the config directory to your .config directory
->2. If after removing the binaries you still want uchardet support into mi-ide, your options are:
+>2. After removing the binaries, if you still want uchardet support into mi-ide:
 >    1. install uchardet for your distribution on your server (make sure that is version : 0.0.6 or above)
 >    2. Or, download and compile your own version from https://www.freedesktop.org/wiki/Software/uchardet/ and install the compiled files on ~./config/mi-ide/libs or globally in your server
 
@@ -127,13 +127,13 @@ You can move the cursor around with the arrow keys and mouse.
 
 You can also use the mouse to select text, double click to enable a word, and triple click to enable line selection.
 
-[For a full introduction you may watch this video](https://youtu.be/grHzfIvC6_I) (27 minutes)
+[For a full introduction you may watch this video](https://youtu.be/grHzfIvC6_I) (22 minutes)
 
 # Documentation and Help
 
 Mi-ide has a built-in help system which you can access by pressing `Alt-?` or `Ctrl-E` and typing `help`.
 
-You will also find more detiled information on the [mi-ide Resources Wiki pages](https://github.com/hanspr/mi-sources/wiki)
+You will also find more detailed information on the [Wiki pages](https://github.com/hanspr/mi-ide/wiki)
 
 # Plugin
 
@@ -223,4 +223,4 @@ If you find this project useful and decide to support it, you will receive in ex
   - Keys are not sharable, no hard checks implemented now, hope never have to.
   - Lifetime access is a huge compromise, it is on my will to do so, please use the service responsibly: No robots, do not use for other purposes than the helping your self coding.
   - If any abuse is detected the service for that **key** will be suspended
-  - If you have a business and you want to have the server in your internal network contact me.
+  - If you have a business and you want to have the server in your internal network [contact me](https://github.com/hanspr).
