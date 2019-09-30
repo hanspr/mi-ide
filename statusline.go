@@ -61,6 +61,8 @@ func (sline *Statusline) MouseEvent(e *tcell.EventMouse, rx, ry int) {
 	return
 }
 
+const fwith = 40
+
 // Display draws the statusline to the screen
 func (sline *Statusline) Display() {
 	var size int
@@ -93,13 +95,13 @@ func (sline *Statusline) Display() {
 	}
 
 	// Fix length of file name to help eyes find information in the same place
-	if 30 > w/4 {
+	if fwith > w/4 {
 		size = w / 4
-		if len(file) > size {
-			file = ".. " + file[len(file)-size+1:]
-		}
 	} else {
-		size = 30
+		size = fwith
+	}
+	if len(file) > size {
+		file = ".. " + file[len(file)-size+1:]
 	}
 
 	file = fmt.Sprintf("%-"+strconv.Itoa(size)+"s", file)

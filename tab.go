@@ -1,9 +1,6 @@
 package main
 
 import (
-	"path/filepath"
-	//"sort"
-
 	"github.com/hanspr/tcell"
 )
 
@@ -298,15 +295,10 @@ func TabbarString(toffset int) (string, map[int]int) {
 	tabIndex := 0 // Reference to the first tab being displayed
 	curTabDisplayed := false
 	indicies := make(map[int]int)
-	unique := make(map[string]int)
-
-	for _, t := range tabs {
-		unique[filepath.Base(t.Views[t.CurView].Buf.GetName())]++
-	}
 
 	for i, t := range tabs {
 		buf := t.Views[t.CurView].Buf
-		name := filepath.Base(buf.GetName())
+		name := buf.fname
 		if Count(str)+Count(name)+toffset+10 > w {
 			// Tabbar is longer than screen width
 			if middle == 0 {
@@ -345,11 +337,7 @@ func TabbarString(toffset int) (string, map[int]int) {
 		} else {
 			str += "  "
 		}
-		if unique[name] == 1 {
-			str += name
-		} else {
-			str += buf.GetName()
-		}
+		str += buf.fname
 		if t.Views[cv].Type.Kind == 0 && buf.Modified() {
 			str += "*"
 		}
