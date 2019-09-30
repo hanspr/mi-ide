@@ -174,8 +174,8 @@ You may find the translation file in your config directory under : langs
 
 If you find this project useful and decide to support it, you will receive in exchange a lifetime Cloud Key to activate Cloud Services.
 
-|Kind       | Amount | Button|
-|----------|--------|-------|
+|Kind       | Amount | Button |
+|----------|--------:|--------|
 |Just Support, not interested in a Cloud Key | 5 USD | [![mi-ide-20](https://img.shields.io/badge/Just%20Support-PayPal-green)](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=YDQ2HBASRXTCE)|
 |Support & Cloud Key | 20 USD | [![mi-ide-20](https://img.shields.io/badge/Support%20%26%20Cloud%20Key-PayPal-green)](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=K43LR98FUSSNG)|
 |Cloud Key & More Support | 50 USD | [![mi-ide-20](https://img.shields.io/badge/Cloud%20Key%20%26%20More-PayPal-green)](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=SAPEG25ZKA67N)|
