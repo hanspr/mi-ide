@@ -61,7 +61,7 @@ func (sline *Statusline) MouseEvent(e *tcell.EventMouse, rx, ry int) {
 	return
 }
 
-const fwith = 40
+const fwith = 50
 
 // Display draws the statusline to the screen
 func (sline *Statusline) Display() {
