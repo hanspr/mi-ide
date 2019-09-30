@@ -143,6 +143,8 @@ Please visit the [developers page](https://github.com/hanspr/mi-sources/wiki/plu
 
 # Contributing
 
+>**The only thing missing is a go library to implement Client for the LSP protocol. If you  have the skills to help me implement one, please contact me opening an issue request.** [LSP Specifications](https://microsoft.github.io/language-server-protocol/specifications/specification-3-14/)
+
 You can use the [GitHub issue tracker](https://github.com/hanspr/mi-ide/issues) to report bugs, ask questions, or suggest new features.
 
 To create pull requests, please follow these recommendations:
