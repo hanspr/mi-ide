@@ -1,6 +1,6 @@
 # ![mi-ide](./assets/logo.png)
 
-mi-ide (_mi ide_ in spanish, "my ide" as in: this is **my** editor) is a spin-off version of micro editor project at https://github.com/zyedidia/micro.
+mi-ide (_**mee ide**_ in spanish, _**my ide**_ in English. As in: this is _**my** editor_) is a spin-off version of micro editor project at https://github.com/zyedidia/micro.
 
 This project is mainly focused on **improving the experience of coding remotely over ssh on headless Linux servers** (no X Server support, no Graphical interface, no menu luncher, desktop icons), simple plain bash.
 
@@ -219,7 +219,7 @@ If you find this project useful and decide to support it, you will receive in ex
 - **Any new features that could come in the future**
 -  **Request** to implement new ideas based on this Cloud model that could be beneficial for every one.
 - **Limitations**
-  - The service requires the Internet to provide this service
+  - The service requires the Internet to provide this functionality
     - If a firewall in your network blocks: access to the Internet, port 443 or the subdomain api.mi-ide.com, the functionality will be lost.
   - Keys are not shareable, no hard checks implemented now, hope never have to.
   - Lifetime access is a huge compromise, it is on my will to do so, please use the service responsibly: No robots, do not use for other purposes than the helping your self coding.
