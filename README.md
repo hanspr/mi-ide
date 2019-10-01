@@ -192,7 +192,7 @@ If you find this project useful and decide to support it, you will receive in ex
     - If you need a quick way to transfer code from one point to another just click to upload, click on the other server to download.
 - **Save and retrieve your settings** from any server. To sync all your : settings, plugins, hacks, colors, bindings, etc.
 - All your information is **completely confidential and secure**.
-    - Check the code at : ["github.com/hanspr/clipboard"](github.com/hanspr/clipboard)
+    - Check the code at : ["github.com/hanspr/clipboard"](https://github.com/hanspr/clipboard)
     - It is very easy to read and follow
 - **How does it work?**
     - All connections are over https
