@@ -4,7 +4,7 @@ mi-ide (_**mee ide**_ in spanish, _**my ide**_ in English. As in: this is _**my*
 
 This project is mainly focused on **improving the experience of coding remotely over ssh on headless Linux servers** (no X Server support, no Graphical interface, no menu luncher, desktop icons), simple plain bash.
 
-Many of features were already provided by micro editor :+1:. But some others were still missing :star:, and there inclusion are not necessarily important to everyone.
+Many features were already provided by micro editor :+1:. But some others were still missing :star:, and there inclusion are not necessarily important to everyone.
 
 This is the list of the most important existing features :
 
