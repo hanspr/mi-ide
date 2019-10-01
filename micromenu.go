@@ -1737,20 +1737,34 @@ func (m *microMenu) SaveCloudSettings(name, value, event, when string, x, y int)
 	if values["ukey"] != "" && values["ukey"] != globalSettings["mi-key"].(string) {
 		SetOption("mi-key", values["ukey"])
 		savesettings = true
+	} else if values["ukey"] == "" && globalSettings["mi-key"].(string) != "" {
+		// Remove information
+		SetOption("mi-key", "")
+		savesettings = true
 	}
 	if values["pass"] != "" && globalSettings["mi-pass"].(string) == "" {
+		// Set up service
 		SetOption("mi-pass", values["pass"])
 		setup = true
 		savesettings = true
 	} else if values["pass"] != "" && values["newpass"] != "" && values["newpass"] != globalSettings["mi-pass"].(string) {
+		// Change password
 		SetOption("mi-pass", values["newpass"])
 		savesettings = true
 		passchg = true
+	} else if values["pass"] == "" && globalSettings["mi-pass"].(string) != "" {
+		// Remove information
+		SetOption("mi-pass", "")
+		savesettings = true
 	}
 	if values["phrs"] != "" && values["phrs"] != globalSettings["mi-phrase"].(string) {
 		// Delete cloud stored data (will be useless)
 		reset = true
 		SetOption("mi-phrase", values["phrs"])
+		savesettings = true
+	} else if values["phrs"] == "" && globalSettings["mi-phrase"].(string) != "" {
+		// Remove information
+		SetOption("mi-phrase", "")
 		savesettings = true
 	}
 	if savesettings {
