@@ -4,26 +4,26 @@ mi-ide (_**mee ide**_ in spanish, _**my ide**_ in English. As in: this is _**my*
 
 This project is mainly focused on **improving the experience of coding remotely over ssh on headless Linux servers** (no X Server support, no Graphical interface, no menu luncher, desktop icons), simple plain bash.
 
-Many features were already provided by micro editor :+1:. But some others were still missing :star:, and there inclusion are not necessarily important to everyone.
+Many features were already provided by micro editor :+1:. But some others were still missing :star:.
 
 This is the list of the most important existing features :
 
 * :+1: Short learning curve
 * :+1: Great syntax highlighting and easily customizable
-* :star: Good cursor positioning after paste, cuts, duplicate a line, searching, moving on the edges of the window. So you always have a clear view of the surrounding code
-* :star: Translate to other languages easily
-* :star: Auto detect file encoding. Open (decode) / Save (encode) in the original encoding of the file: UTF8, ISO8859, WINDOWS, etc. (Limited to the encoders available in go libraries)
-* :star: Replace the need to learn too many key combinations and commands by the use (and abuse) of good mouse support with: icons, buttons, dialog boxes. Similar to windowed editors
+* :star: Good cursor positioning after paste, cuts, duplication of lines, searching, moving on the windows edges. So you always have a clear view of the surrounding code
+* :star: Easy translation to other languages
+* :star: Auto detect file encoding. Open (decode) / Save (encode) in the original encoding of a file: UTF8, ISO8859, WINDOWS, etc.
+* :star: Ease the need to learn too many key combinations and commands by the use (and abuse) of good mouse support with: icons, buttons, dialog boxes.
 * :star: Use and abuse color to easily find the cursor, selected text, etc.
 * :+1::star: Good and powerful plugin system to hack the editor to your personal needs.
     - Without the need to compile or setup a complicated environment
-    - Resilient to editor new versions, so a plugin can last a long time without being recoded, and recoded.
+    - Resilient to editor's new versions.
     - Plugins that will enhance the user coding experience for each particular language
-    - So you can say at the end of all your hacking: "finally!, I got **my** ide"
-* :star: Save editor settings for
-    - a particular coding language (c, php, python, perl,..)
-    - a single file
-    - or just for the current opened session
+    - So you can say at the end of all your hacking: "finally!, I got **my** IDE"
+* :star: Save editor settings for:
+    - A particular coding language (c, php, python, perl,..)
+    - A single file
+    - Or just for the current opened session
 * :star: A powerful auto indent
 * :star: Internal copy paste between terminals in the same server without the need of _**shift-key and mouse dragging**_
 * :star: Features that require a server to work
@@ -55,8 +55,8 @@ This is the list of the most important existing features :
     - Create an alias in your `.bashrc` or `.bash_aliases` to the location of your executable
         - Change to your home directory : `cd`
         - Edit : `nano .bashrc` or `nano .bash_aliases`
-        - add : `alias mi-ide='~/.local/mi-ide'`
-        - reload changes: `. .bashrc` or `. .bash_aliases`
+        - Add : `alias mi-ide='~/.local/mi-ide'`
+        - Reload changes: `. .bashrc` or `. .bash_aliases`
     - Execute mi-ide.
         - The first time you run the editor will download the configurations from github.
         - And place them in `~/.config/mi-ide/`
@@ -76,7 +76,7 @@ This is the list of the most important existing features :
 >    2. Remove `mi-ide/libs/uchardet`, `mi-ide/libs/libuchardet.so.0`
 >    3. Copy the config directory to your .config directory
 >2. After removing the binaries, if you still want uchardet support into mi-ide:
->    1. install uchardet for your distribution on your server (make sure that is version : 0.0.6 or above)
+>    1. Install uchardet for your distribution on your server (make sure that is version : 0.0.6 or above)
 >    2. Or, download and compile your own version from https://www.freedesktop.org/wiki/Software/uchardet/ and install the compiled files on ~./config/mi-ide/libs or globally in your server
 
 * You can also build mi-ide from source, by cloning this repo and install all dependencies.
@@ -175,9 +175,9 @@ If you find this project useful and decide to support it, you will receive in ex
 
 |Kind       | Amount | Button |
 |----------|--------:|--------|
-|Just Support, not interested in a Cloud Key | 5 USD | [![mi-ide-20](https://img.shields.io/badge/Just%20Support-PayPal-green)](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=YDQ2HBASRXTCE)|
-|Support & Cloud Key | 20 USD | [![mi-ide-20](https://img.shields.io/badge/Support%20%26%20Cloud%20Key-PayPal-green)](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=K43LR98FUSSNG)|
-|Cloud Key & More Support | 50 USD | [![mi-ide-20](https://img.shields.io/badge/Cloud%20Key%20%26%20More-PayPal-green)](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=SAPEG25ZKA67N)|
+|Just Support, not interested in a Cloud Key | $5 USD | [![mi-ide-20](https://img.shields.io/badge/Just%20Support-PayPal-green)](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=YDQ2HBASRXTCE)|
+|Support & Cloud Key | $20 USD | [![mi-ide-20](https://img.shields.io/badge/Support%20%26%20Cloud%20Key-PayPal-green)](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=K43LR98FUSSNG)|
+|Cloud Key & More Support | $50 USD | [![mi-ide-20](https://img.shields.io/badge/Cloud%20Key%20%26%20More-PayPal-green)](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=SAPEG25ZKA67N)|
 |**Please wait after de payment to be redirected and receive your key** ||||
 
 
