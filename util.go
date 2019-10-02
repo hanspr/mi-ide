@@ -125,12 +125,8 @@ func FSize(f *os.File) int64 {
 // If it is a unicode character, then it does not match
 // Word characters are defined as [A-Za-z0-9_]
 func IsWordChar(str string) bool {
-	if len(str) > 1 {
-		// Unicode
-		return true
-	}
-	c := str[0]
-	return (c >= '0' && c <= '9') || (c >= 'A' && c <= 'Z') || (c >= 'a' && c <= 'z') || (c == '_')
+	re := regexp.MustCompile(`\p{L}|\p{N}`)
+	return re.MatchString(str)
 }
 
 // IsWhitespace returns true if the given rune is a space, tab, or newline
