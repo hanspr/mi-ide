@@ -275,13 +275,9 @@ func (c *Cursor) UpN(amount int) {
 		proposedY = c.buf.NumLines - 1
 	}
 
-	runes := []rune(c.buf.Line(proposedY))
-	c.X = c.GetCharPosInLine(proposedY, c.LastVisualX)
-	if c.X > len(runes) || (amount < 0 && proposedY == c.Y) {
-		c.X = len(runes)
-	}
-
 	c.Y = proposedY
+	c.X = c.GetCharPosInLine(proposedY, c.LastVisualX)
+	c.StoreVisualX()
 }
 
 // DownN moves the cursor down N lines (if possible)
@@ -383,11 +379,7 @@ func (c *Cursor) GetCharPosInLine(lineNum, visualPos int) int {
 	if visualPos > visualLineLen {
 		visualPos = visualLineLen
 	}
-	width := WidthOfLargeRunes(c.buf.Line(lineNum), tabSize)
-	if visualPos >= width {
-		return visualPos - width
-	}
-	return visualPos / tabSize
+	return GetCursorXFromVisual(c.buf.Line(lineNum), tabSize, visualPos)
 }
 
 // GetVisualX returns the x value of the cursor in visual spaces

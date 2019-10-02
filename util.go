@@ -312,6 +312,9 @@ func GetModTime(path string) (time.Time, bool) {
 
 // StringWidth returns the width of a string where tabs count as `tabsize` width
 func StringWidth(str string, tabsize int) int {
+	ns := strings.Count(str, "\t")
+	c := Count(str) - ns + ns*tabsize
+	return c
 	sw := runewidth.StringWidth(str)
 	lineIdx := 0
 	for _, ch := range str {
@@ -329,28 +332,19 @@ func StringWidth(str string, tabsize int) int {
 	return sw
 }
 
-// WidthOfLargeRunes searches all the runes in a string and counts up all the widths of runes
-// that have a width larger than 1 (this also counts tabs as `tabsize` width)
-func WidthOfLargeRunes(str string, tabsize int) int {
-	count := 0
-	lineIdx := 0
-	for _, ch := range str {
-		var w int
-		if ch == '\t' {
-			w = tabsize - (lineIdx % tabsize)
+func GetCursorXFromVisual(str string, tabsize, lastx int) int {
+	x := 0
+	for i, r := range []rune(str) {
+		if r == 9 {
+			x = x + tabsize
 		} else {
-			w = runewidth.RuneWidth(ch)
+			x++
 		}
-		if w > 1 {
-			count += (w - 1)
-		}
-		if ch == '\n' {
-			lineIdx = 0
-		} else {
-			lineIdx += w
+		if lastx < x {
+			return i
 		}
 	}
-	return count
+	return Count(str)
 }
 
 // RunePos returns the rune index of a given byte index
