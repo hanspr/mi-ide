@@ -312,21 +312,6 @@ func StringWidth(str string, tabsize int) int {
 	return c
 }
 
-func GetCursorXFromVisual(str string, tabsize, lastx int) int {
-	x := 0
-	for i, r := range []rune(str) {
-		if r == 9 {
-			x = x + tabsize
-		} else {
-			x++
-		}
-		if lastx < x {
-			return i
-		}
-	}
-	return Count(str)
-}
-
 // RunePos returns the rune index of a given byte index
 // This could cause problems if the byte index is between code points
 func runePos(p int, str string) int {

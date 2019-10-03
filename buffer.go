@@ -960,7 +960,7 @@ func (b *Buffer) RuneAt(loc Loc) rune {
 	return '\n'
 }
 
-// LineBytes returns a single line as an array of runes
+// LineBytes returns a single line as an array of bytes
 func (b *Buffer) LineBytes(n int) []byte {
 	if n >= len(b.lines) {
 		return []byte{}

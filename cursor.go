@@ -379,7 +379,24 @@ func (c *Cursor) GetCharPosInLine(lineNum, visualPos int) int {
 	if visualPos > visualLineLen {
 		visualPos = visualLineLen
 	}
-	return GetCursorXFromVisual(c.buf.Line(lineNum), tabSize, visualPos)
+	return c.GetCursorXFromVisual(lineNum, tabSize, visualPos)
+}
+
+func (c *Cursor) GetCursorXFromVisual(lineNum, tabsize, lastx int) int {
+	x := 0
+	lineb := c.buf.lines[lineNum].data
+	for i, r := range lineb {
+		messenger.AddLog(r)
+		if r == 9 {
+			x = x + tabsize
+		} else {
+			x++
+		}
+		if lastx < x {
+			return i
+		}
+	}
+	return len(lineb)
 }
 
 // GetVisualX returns the x value of the cursor in visual spaces
