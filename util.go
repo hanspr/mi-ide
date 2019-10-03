@@ -22,7 +22,6 @@ import (
 
 	"github.com/flynn/json5"
 	"github.com/go-errors/errors"
-	"github.com/mattn/go-runewidth"
 )
 
 // Util.go is a collection of utility functions that are used throughout
