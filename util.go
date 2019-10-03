@@ -311,21 +311,6 @@ func StringWidth(str string, tabsize int) int {
 	ns := strings.Count(str, "\t")
 	c := Count(str) - ns + ns*tabsize
 	return c
-	sw := runewidth.StringWidth(str)
-	lineIdx := 0
-	for _, ch := range str {
-		switch ch {
-		case '\t':
-			ts := tabsize - (lineIdx % tabsize)
-			sw += ts
-			lineIdx += ts
-		case '\n':
-			lineIdx = 0
-		default:
-			lineIdx++
-		}
-	}
-	return sw
 }
 
 func GetCursorXFromVisual(str string, tabsize, lastx int) int {
