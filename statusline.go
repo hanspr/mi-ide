@@ -61,7 +61,7 @@ func (sline *Statusline) MouseEvent(e *tcell.EventMouse, rx, ry int) {
 	return
 }
 
-const fwith = 50
+const fwith = 60
 
 // Display draws the statusline to the screen
 func (sline *Statusline) Display() {
@@ -71,6 +71,7 @@ func (sline *Statusline) Display() {
 	active := true
 	offset := 0
 	w := sline.view.Width
+	showbuttons := true
 
 	if sline.view.Num != CurView().Num {
 		active = false
@@ -83,7 +84,7 @@ func (sline *Statusline) Display() {
 	// We'll draw the line at the lowest line in the view
 	y := sline.view.Height + sline.view.y
 
-	file := sline.view.Buf.GetName()
+	file := sline.view.Buf.AbsPath
 	if sline.view.Buf.Settings["basename"].(bool) {
 		file = path.Base(file)
 	}
@@ -124,12 +125,12 @@ func (sline *Statusline) Display() {
 	// Fix size of cursor position so it stays in the same place all the time
 	file += fmt.Sprintf(" %6s/%s,%-4s ", lineNum, totColumn, columnNum)
 
-	sline.hotspot["BUFERSET"] = Loc{Count(file) + offset, Count(file) + offset + 2}
-	file += " ⎈ "
-
-	// bellow 66 columns begin hidding information
-	if w > 55 {
+	// bellow 69 columns begin hidding information
+	if w > 69 {
 		var ff string
+
+		sline.hotspot["BUFERSET"] = Loc{Count(file) + offset, Count(file) + offset + 2}
+		file += " ⎈ "
 
 		// Create hotspots for status line events
 		if sline.view.Buf.Settings["indentchar"] == "\t" {
@@ -144,28 +145,27 @@ func (sline *Statusline) Display() {
 		sline.hotspot["FILETYPE"] = Loc{Count(file) + offset - 1, Count(file) + offset + 1 + Count(sline.view.Buf.FileType())}
 		file += sline.view.Buf.FileType() + " ▲"
 
-		if size > 12 {
-			ff = fmt.Sprintf("%-4s", sline.view.Buf.Settings["fileformat"].(string))
-			sline.hotspot["FILEFORMAT"] = Loc{Count(file) + offset, Count(file) + offset + 5}
-			file += " " + ff + " "
+		ff = fmt.Sprintf("%-4s", sline.view.Buf.Settings["fileformat"].(string))
+		sline.hotspot["FILEFORMAT"] = Loc{Count(file) + offset, Count(file) + offset + 5}
+		file += " " + ff + " "
 
-			sline.hotspot["ENCODER"] = Loc{Count(file) + offset - 1, Count(file) + offset + Count(sline.view.Buf.encoder) + 1}
-			file += " " + sline.view.Buf.encoder + " "
-		}
+		sline.hotspot["ENCODER"] = Loc{Count(file) + offset - 1, Count(file) + offset + Count(sline.view.Buf.encoder) + 1}
+		file += " " + sline.view.Buf.encoder + " "
+	} else {
+		showbuttons = false
+	}
 
-		if size > 12 {
-			if sline.view.isOverwriteMode {
-				file += " Over"
-			} else {
-				file += " Ins "
-			}
+	if size > 10 {
+		if sline.view.isOverwriteMode {
+			file += " Over"
+		} else {
+			file += " Ins "
 		}
-		if size > 12 {
-			if sline.view.Type.Readonly == true || sline.view.Buf.RO {
-				file += " (ro) "
-			}
+		if sline.view.Type.Readonly == true || sline.view.Buf.RO {
+			file += " (ro) "
 		}
 	}
+
 	rightText := ""
 
 	statusLineStyle := defStyle.Reverse(true)
@@ -198,16 +198,18 @@ func (sline *Statusline) Display() {
 	}
 	for x := 0; x < w; x++ {
 		tStyle := statusLineStyle
-		if w > 65 && sline.hotspot["BUFERSET"].X-offset <= x && x <= sline.hotspot["BUFERSET"].Y-offset && active {
-			tStyle = StringToStyle("#ffffff,#585858")
-		} else if w > 65 && sline.hotspot["TABSPACE"].X-offset <= x && x <= sline.hotspot["TABSPACE"].Y-offset && active {
-			tStyle = StringToStyle("#ffffff,#444444")
-		} else if w > 65 && sline.hotspot["FILETYPE"].X-offset <= x && x <= sline.hotspot["FILETYPE"].Y-offset && active {
-			tStyle = StringToStyle("#ffffff,#585858")
-		} else if w > 65 && sline.hotspot["FILEFORMAT"].X-offset <= x && x <= sline.hotspot["FILEFORMAT"].Y-offset && active {
-			tStyle = StringToStyle("#ffffff,#444444")
-		} else if w > 65 && sline.hotspot["ENCODER"].X-offset <= x && x <= sline.hotspot["ENCODER"].Y-offset && active {
-			tStyle = StringToStyle("#ffffff,#585858")
+		if showbuttons {
+			if sline.hotspot["BUFERSET"].X-offset <= x && x <= sline.hotspot["BUFERSET"].Y-offset && active {
+				tStyle = StringToStyle("#ffffff,#585858")
+			} else if sline.hotspot["TABSPACE"].X-offset <= x && x <= sline.hotspot["TABSPACE"].Y-offset && active {
+				tStyle = StringToStyle("#ffffff,#444444")
+			} else if sline.hotspot["FILETYPE"].X-offset <= x && x <= sline.hotspot["FILETYPE"].Y-offset && active {
+				tStyle = StringToStyle("#ffffff,#585858")
+			} else if sline.hotspot["FILEFORMAT"].X-offset <= x && x <= sline.hotspot["FILEFORMAT"].Y-offset && active {
+				tStyle = StringToStyle("#ffffff,#444444")
+			} else if sline.hotspot["ENCODER"].X-offset <= x && x <= sline.hotspot["ENCODER"].Y-offset && active {
+				tStyle = StringToStyle("#ffffff,#585858")
+			}
 		}
 		if x < len(fileRunes) {
 			screen.SetContent(viewX+x, y, fileRunes[x], nil, tStyle)

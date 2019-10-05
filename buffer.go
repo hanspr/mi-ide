@@ -47,7 +47,7 @@ type Buffer struct {
 	cursors   []*Cursor // for multiple cursors
 	curCursor int       // the current cursor
 
-	// Path to the file on disk
+	// Path to the file on disk (relative to my initial current path)
 	Path string
 	// Absolute path to the file on disk
 	AbsPath string
@@ -372,20 +372,6 @@ func GetBufferCursorLocation(cursorPosition []string, b *Buffer) (Loc, error) {
 		}
 	}
 	return cursorLocation, cursorLocationError
-}
-
-func (b *Buffer) LoadPluginOption() {
-	// Set plugin settings for the especific language if available
-	for pl, _ := range loadedPlugins {
-		if GetPluginOption(pl, "ftype").(string) == b.Settings["filetype"].(string) {
-			for opt, _ := range b.Settings {
-				if GetPluginOption(pl, opt) != nil {
-					b.Settings[opt] = GetPluginOption(pl, opt)
-				}
-			}
-			break
-		}
-	}
 }
 
 // GetName returns the name that should be displayed in the statusline

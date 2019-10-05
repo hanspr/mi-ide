@@ -311,7 +311,6 @@ func (v *View) OpenBuffer(buf *Buffer) {
 
 	GlobalPluginCall("onBufferOpen", v.Buf)
 	GlobalPluginCall("onViewOpen", v)
-	buf.LoadPluginOption()
 }
 
 // Open opens the given file in the view

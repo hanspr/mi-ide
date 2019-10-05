@@ -578,7 +578,6 @@ func main() {
 		for _, v := range t.Views {
 			GlobalPluginCall("onViewOpen", v)
 			GlobalPluginCall("onBufferOpen", v.Buf)
-			v.Buf.LoadPluginOption()
 		}
 	}
 
