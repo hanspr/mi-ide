@@ -762,7 +762,7 @@ func (v *View) HandleEvent(event tcell.Event) {
 		}
 	case *tcell.EventMouse:
 		// range validation
-		// Mouse clicks outside range are handled at micro.go main event loop
+		// Mouse clicks outside range are handled at mi-ide.go main event loop
 		// That allows to change views, and restrict mouse events here based on the view size
 
 		button := e.Buttons()
@@ -830,6 +830,7 @@ func (v *View) HandleEvent(event tcell.Event) {
 				y += v.Topline - v.y
 				v.MoveToMouseClick(x, y)
 				v.savedLoc = Loc{x, y}
+
 				v.mouseReleased = true
 			}
 		}

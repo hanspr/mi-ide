@@ -34,7 +34,7 @@ type microMenu struct {
 }
 
 // ---------------------------------------
-// Micro-ide Menu
+// Mi-ide Menu
 // ---------------------------------------
 
 func (m *microMenu) Menu() {
