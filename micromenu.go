@@ -510,6 +510,10 @@ func (m *microMenu) SetBinding(name, value, event, when string, x, y int) bool {
 		if strings.Contains(event, "ShiftCtrl") {
 			event = strings.Replace(event, "ShiftCtrl", "CtrlShift", 1)
 		}
+	} else if strings.Contains(event, "Shift") {
+		event = strings.ReplaceAll(event, "+", "")
+		event = strings.Replace(event, "PgUp", "PageUp", 1)
+		event = strings.Replace(event, "PgDn", "PageDown", 1)
 	}
 	switch event {
 	case "Left", "Right", "Down", "Up", "Esc", "Enter", "Tab", "Backspace2", "Backspace", "Delete", "PgDn", "PgUp", "Shift+Left", "Shift+Right", "Shift+Up", "Shift+Down":
