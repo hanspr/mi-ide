@@ -277,7 +277,7 @@ func (c *Cursor) UpN(amount int) {
 
 	c.Y = proposedY
 	c.X = c.GetCharPosInLine(proposedY, c.LastVisualX)
-	c.StoreVisualX()
+	//c.StoreVisualX()
 }
 
 // DownN moves the cursor down N lines (if possible)
@@ -386,7 +386,6 @@ func (c *Cursor) GetCursorXFromVisual(lineNum, tabsize, lastx int) int {
 	x := 0
 	lineb := c.buf.lines[lineNum].data
 	for i, r := range lineb {
-		messenger.AddLog(r)
 		if r == 9 {
 			x = x + tabsize
 		} else {

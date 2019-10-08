@@ -1017,7 +1017,7 @@ func (v *View) DisplayView() {
 			}
 		}
 		currLine := SubtringSafe(CurView().Buf.Line(CurView().savedLoc.Y), 0, 20)
-		if currLine != CurView().savedLine {
+		if LastView > 0 && currLine != CurView().savedLine {
 			var newLoc Loc
 			// Line has moved, find new position using as a reference the last known line beggining
 			newLoc = CurView().FindCurLine(-1, CurView().savedLine)
@@ -1032,9 +1032,6 @@ func (v *View) DisplayView() {
 			CurView().Cursor.GotoLoc(CurView().savedLoc)
 		}
 		CurView().Relocate()
-		if CurView().Cursor.Loc.Y > CurView().Height-3 {
-			//CurView().Center(false)
-		}
 	}
 
 	// We need to know the string length of the largest line number

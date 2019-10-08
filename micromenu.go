@@ -588,7 +588,7 @@ func (m *microMenu) SaveKeyBindings(name, value, event, when string, x, y int) b
 		if k != "" && actionToKey[ak[0]] != k {
 			save[k] = ak[0]
 			write = true
-			BindKey(k, a)
+			BindKey(k, ak[0])
 		}
 		e := f.elements[a]
 		if e.gname != "" && e.gname != k {
