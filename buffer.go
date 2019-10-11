@@ -106,7 +106,9 @@ func (b *Buffer) GetFileSettings(filename string) {
 			perm, _ := permbits.Stat(filename)
 			uid := fi.Sys().(*syscall.Stat_t).Uid
 			gid := fi.Sys().(*syscall.Stat_t).Gid
-			if uint32(CurrEnv.Uid) == uid && perm.UserWrite() {
+			if CurrEnv.Uid == 0 {
+				b.RO = false
+			} else if uint32(CurrEnv.Uid) == uid && perm.UserWrite() {
 				b.RO = false
 			} else if uint32(CurrEnv.Uid) != uid && uint32(CurrEnv.Gid) == gid && perm.GroupWrite() {
 				b.RO = false
