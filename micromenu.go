@@ -1082,8 +1082,12 @@ func (m *microMenu) SubmitSearchOnEnter(name, value, event, when string, x, y in
 		}
 	}
 	found := DialogSearch(value)
+	found = strings.TrimLeft(found, " ")
+	found = strings.TrimLeft(found, "\t")
 	if len(found) > 68 {
 		found = found[:67]
+	} else {
+		found = fmt.Sprintf("%-68s", found)
 	}
 	if len(found) > 0 {
 		m.searchMatch = true

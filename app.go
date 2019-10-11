@@ -1093,21 +1093,40 @@ func (f *Frame) PrintStyle(msg string, x, y int, estyle *tcell.Style) {
 	} else {
 		defstyle = estyle
 	}
-	re := regexp.MustCompile(`{(\w+)}`)
+	var re = new(regexp.Regexp)
+	reclose := regexp.MustCompile(`{(/\w+)}`)
+	ends := reclose.FindAllString(msg, -1)
 	parts := regexp.MustCompile(`{/\w+}`).Split(msg, -1)
+	cont := 0
 	for _, part := range parts {
 		if part == "" {
 			continue
 		}
+		if len(ends) > 0 && len(ends)-1 >= cont {
+			beg := ends[cont]
+			beg = strings.ReplaceAll(beg, "/", "(")
+			beg = strings.ReplaceAll(beg, "}", ")}")
+			re = regexp.MustCompile(beg)
+			cont++
+		} else {
+			re = regexp.MustCompile(`!trash¡`)
+		}
+		found := false
+		var txt []string
 		name := re.FindStringSubmatch(part)
 		if len(name) == 0 {
 			style = estyle
 		} else if val, ok := a.styles[name[1]]; ok {
+			found = true
 			style = &val.style
 		} else {
 			style = estyle
 		}
-		txt := re.Split(part, -1)
+		if found {
+			txt = re.Split(part, -1)
+		} else {
+			txt = append(txt, part)
+		}
 		if txt[0] != "" {
 			f.Print(txt[0], x, y, defstyle)
 			x = x + Count(txt[0])
