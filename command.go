@@ -8,7 +8,6 @@ import (
 	"runtime"
 	"strconv"
 	"strings"
-	"unicode/utf8"
 
 	humanize "github.com/dustin/go-humanize"
 	"github.com/hanspr/shellwords"
@@ -598,83 +597,61 @@ func Replace(args []string) {
 	view := CurView()
 
 	found := 0
-	replaceAll := func() {
-		var deltas []Delta
-		for i := 0; i < view.Buf.LinesNum(); i++ {
-			sel := view.Buf.Line(i)
-			rep := regex.ReplaceAllString(sel, replace)
-			if rep == sel {
-				continue
-			}
-
-			from := Loc{0, i}
-			to := Loc{utf8.RuneCount(view.Buf.lines[i].data), i}
-
-			deltas = append(deltas, Delta{rep, from, to})
+	for {
+		var choice rune
+		var canceled bool
+		// The 'check' flag was used
+		Search(search, view, true)
+		if !view.Cursor.HasSelection() {
+			break
 		}
-		view.Buf.MultipleReplace(deltas)
-	}
-
-	if all {
-		replaceAll()
-	} else {
-		for {
-			// The 'check' flag was used
-			Search(search, view, true)
-			if !view.Cursor.HasSelection() {
-				break
-			}
-			view.Relocate()
-			RedrawAll(true)
-			y := []rune(Language.Translate("y"))[0]
-			n := []rune(Language.Translate("n"))[0]
-			q := []rune(Language.Translate("q"))[0]
-			I := []rune(Language.Translate("!"))[0]
-			choice, canceled := messenger.LetterPrompt(Language.Translate("Perform replacement? (y,n,q,!)"), y, n, q, I)
-			if canceled {
-				if view.Cursor.HasSelection() {
-					view.Cursor.Loc = view.Cursor.CurSelection[0]
-					view.Cursor.ResetSelection()
-				}
-				messenger.Reset()
-				break
-			} else if choice == I {
-				if view.Cursor.HasSelection() {
-					view.Cursor.Loc = view.Cursor.CurSelection[0]
-					view.Cursor.ResetSelection()
-				}
-				messenger.Reset()
-				replaceAll()
-				break
-			} else if choice == y {
-				sel := view.Cursor.GetSelection()
-				rep := regex.ReplaceAllString(sel, replace)
-				if Count(rep) > Count(sel) {
-					searchStart = Loc{view.Cursor.CurSelection[1].X + 1, view.Cursor.Loc.Y}
-				} else {
-					searchStart = Loc{view.Cursor.CurSelection[1].X - 1, view.Cursor.Loc.Y}
-				}
-				if searchStart.X > len(view.Buf.LineBytes(searchStart.Y))-1 {
-					searchStart = Loc{0, searchStart.Y + 1}
-					if searchStart.Y > view.Buf.Len()-1 {
-						searchStart.Y = view.Buf.Len() - 1
-					}
-				}
-				view.Cursor.DeleteSelection()
-				view.Buf.Insert(view.Cursor.Loc, rep)
+		view.Relocate()
+		RedrawAll(true)
+		y := []rune(Language.Translate("y"))[0]
+		n := []rune(Language.Translate("n"))[0]
+		q := []rune(Language.Translate("q"))[0]
+		I := []rune(Language.Translate("!"))[0]
+		if !all {
+			choice, canceled = messenger.LetterPrompt(Language.Translate("Perform replacement? (y,n,q,!)"), y, n, q, I)
+		}
+		if canceled {
+			if view.Cursor.HasSelection() {
+				view.Cursor.Loc = view.Cursor.CurSelection[0]
 				view.Cursor.ResetSelection()
-				messenger.Reset()
-				found++
-			} else if choice == q {
-				if view.Cursor.HasSelection() {
-					view.Cursor.Loc = view.Cursor.CurSelection[0]
-					view.Cursor.ResetSelection()
-				}
-				messenger.Reset()
-				break
-			} else {
-				searchStart = view.Cursor.CurSelection[1]
 			}
+			messenger.Reset()
+			break
+		} else if choice == y || choice == I || all {
+			if choice == I && !all {
+				all = true
+			}
+			sel := view.Cursor.GetSelection()
+			rep := regex.ReplaceAllString(sel, replace)
+			if Count(rep) > Count(sel) {
+				searchStart = Loc{view.Cursor.CurSelection[1].X + 1, view.Cursor.Loc.Y}
+			} else {
+				searchStart = Loc{view.Cursor.CurSelection[1].X - 1, view.Cursor.Loc.Y}
+			}
+			if searchStart.X > len(view.Buf.LineBytes(searchStart.Y))-1 {
+				searchStart = Loc{0, searchStart.Y + 1}
+				if searchStart.Y > view.Buf.Len()-1 {
+					searchStart.Y = view.Buf.Len() - 1
+				}
+			}
+			view.Cursor.DeleteSelection()
+			view.Buf.Insert(view.Cursor.Loc, rep)
+			view.Cursor.ResetSelection()
+			messenger.Reset()
+			found++
+		} else if choice == q {
+			if view.Cursor.HasSelection() {
+				view.Cursor.Loc = view.Cursor.CurSelection[0]
+				view.Cursor.ResetSelection()
+			}
+			messenger.Reset()
+			break
+		} else {
+			searchStart = view.Cursor.CurSelection[1]
 		}
 	}
 	view.Cursor.Relocate()

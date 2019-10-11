@@ -1085,7 +1085,7 @@ func (m *microMenu) SubmitSearchOnEnter(name, value, event, when string, x, y in
 	found = strings.TrimLeft(found, " ")
 	found = strings.TrimLeft(found, "\t")
 	if len(found) > 68 {
-		found = found[:67]
+		found = found[:67] + "{/f}"
 	} else {
 		found = fmt.Sprintf("%-68s", found)
 	}
