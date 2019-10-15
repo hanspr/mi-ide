@@ -796,10 +796,10 @@ func (e *AppElement) DrawRadio() {
 }
 
 func (e *AppElement) DrawCheckBox() {
-	check := "☐ "
+	check := "✗ "
 
 	if e.checked == true {
-		check = "☒ "
+		check = "✔ "
 	}
 	e.frame.PrintStyle(check+e.label, e.pos.X, e.pos.Y, &e.style)
 }
