@@ -611,7 +611,9 @@ func Replace(args []string) {
 		n := []rune(Language.Translate("n"))[0]
 		q := []rune(Language.Translate("q"))[0]
 		I := []rune(Language.Translate("!"))[0]
-		if !all {
+		if all {
+			freeze = true
+		} else {
 			choice, canceled = messenger.LetterPrompt(Language.Translate("Perform replacement? (y,n,q,!)"), y, n, q, I)
 		}
 		if canceled {
@@ -654,6 +656,7 @@ func Replace(args []string) {
 			searchStart = view.Cursor.CurSelection[1]
 		}
 	}
+	freeze = false
 	view.Cursor.Relocate()
 
 	if found > 1 {

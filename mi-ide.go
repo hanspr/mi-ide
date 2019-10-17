@@ -104,6 +104,7 @@ var (
 
 	scrollsince time.Time
 	scrollcount int
+	freeze      bool = false
 
 	// Follow MouseClick
 	Mouse MouseClick
@@ -294,6 +295,9 @@ func InitScreen() {
 
 // RedrawAll redraws everything -- all the views and the messenger
 func RedrawAll(show bool) {
+	if freeze {
+		return
+	}
 
 	messenger.Clear()
 
