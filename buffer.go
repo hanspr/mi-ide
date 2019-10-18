@@ -1159,7 +1159,7 @@ func (buf *Buffer) SmartDetections() {
 	spclen := 999
 	found := false
 	retab := regexp.MustCompile(`^\t+`)
-	respc := regexp.MustCompile(`^   +`)
+	respc := regexp.MustCompile(`^  +`)
 	for i := 0; i < end; i++ {
 		l := buf.Line(i)
 		if Count(l) < 2 {
