@@ -500,6 +500,7 @@ func BindKey(k, v string) {
 	}
 }
 
+// WriteBindings write all key bindings to file
 func WriteBindings(values map[string]string) {
 	if _, e := os.Stat(configDir); e == nil {
 		filename := configDir + "/bindings.json"

@@ -23,6 +23,7 @@ import (
 	lua "github.com/yuin/gopher-lua"
 )
 
+// L global Lua variable state
 var L *lua.LState
 
 func init() {

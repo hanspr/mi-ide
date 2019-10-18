@@ -234,7 +234,7 @@ func PluginCmdComplete(input string) (chosen string, suggestions []string) {
 	return chosen, suggestions
 }
 
-// PluginnameComplete completes with the names of loaded plugins
+// PluginNameComplete completes with the names of loaded plugins
 func PluginNameComplete(input string) (chosen string, suggestions []string) {
 	for _, pp := range GetAllPluginPackages() {
 		if strings.HasPrefix(pp.Name, input) {

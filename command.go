@@ -367,7 +367,7 @@ func ToggleLog(args []string) {
 
 // Reload reloads all files (syntax files, colorschemes...)
 func Reload(args []string) {
-	LoadAll()
+	loadAll()
 }
 
 // Help tries to open the given help page in a horizontal split
@@ -704,6 +704,7 @@ func HandleCommand(input string) {
 	}
 }
 
+// ExpandString transform string secuence to its correct string value
 func ExpandString(s string) string {
 	s = strings.Replace(s, `\t`, "\t", -1)
 	s = strings.Replace(s, `\n`, "\n", -1)

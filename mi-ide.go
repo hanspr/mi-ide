@@ -18,8 +18,8 @@ import (
 	"github.com/hanspr/terminfo"
 	"github.com/mattn/go-isatty"
 	"github.com/mitchellh/go-homedir"
-	"github.com/yuin/gopher-lua"
-	"layeh.com/gopher-luar"
+	lua "github.com/yuin/gopher-lua"
+	luar "layeh.com/gopher-luar"
 )
 
 const (
@@ -28,6 +28,7 @@ const (
 	autosaveTime         = 8   // Number of seconds to wait before autosaving
 )
 
+// MouseClick mouse clic structur to follow mouse clics
 type MouseClick struct {
 	Click     bool
 	Since     time.Time
@@ -36,14 +37,16 @@ type MouseClick struct {
 	Button    int
 }
 
+// CursorType current cursor selected by user
 type CursorType struct {
 	color string
 	shape string
 }
 
-type AppEnv struct {
+// appEnv what environment we are
+type appEnv struct {
 	OS        string
-	Uid       int
+	UID       int
 	Gid       int
 	Groups    []int
 	ClipWhere string
@@ -94,30 +97,33 @@ var (
 	numRedraw uint
 
 	// Pointer Flag to check if App is running
-	apprunning *MicroApp = nil
+	apprunning *MicroApp
 
 	micromenu *microMenu
 
+	// Language Translation object
 	Language *lang.Lang
 
+	// MicroToolBar toolbar object
 	MicroToolBar *ToolBar
 
 	scrollsince time.Time
 	scrollcount int
-	freeze      bool = false
+	freeze      = false
 
-	// Follow MouseClick
+	// Mouse follow the mouseclick
 	Mouse MouseClick
 
-	CursorInsert        CursorType
-	CursorOverwrite     CursorType
-	CursorHadShape      bool = false
-	CursorHadColor      bool = false
-	LastOverwriteStatus bool = false
+	cursorInsert        CursorType
+	cursorOverwrite     CursorType
+	cursorHadShape      = false
+	cursorHadColor      = false
+	lastOverwriteStatus = false
 
+	// Clip Clipboard object
 	Clip *clipboard.Clipboard
 
-	CurrEnv AppEnv
+	currEnv appEnv
 
 	cloudPath = "https://api.mi-ide.com" // Cloud service url
 )
@@ -324,7 +330,7 @@ func RedrawAll(show bool) {
 	numRedraw++
 }
 
-func LoadAll() {
+func loadAll() {
 	// Find the user's configuration directory (probably $XDG_CONFIG_HOME/micro)-ide
 	InitConfigDir()
 
@@ -347,13 +353,13 @@ func LoadAll() {
 	}
 }
 
-// One Place Global Exit
+// Finish One Place Global Exit
 // to control anything that could be necesary (to have a clean exit) in a sinlge point
 func Finish(status int) {
-	if CursorHadColor {
+	if cursorHadColor {
 		screen.SetCursorColorShape("white", "")
 	}
-	if CursorHadShape {
+	if cursorHadShape {
 		screen.SetCursorColorShape("white", "block")
 	}
 	screen.Fini()
@@ -366,6 +372,7 @@ var flagStartPos = flag.String("startpos", "", "LINE,COL to start the cursor at 
 var flagConfigDir = flag.String("config-dir", "", "Specify a custom location for the configuration directory")
 var flagOptions = flag.Bool("options", false, "Show all option help")
 
+// MicroAppStop stop micro app redraw icon bar
 func MicroAppStop() {
 	apprunning = nil
 	MicroToolBar.FixTabsIconArea()
@@ -375,11 +382,11 @@ func main() {
 	// Create Toolbar object
 	MicroToolBar = NewToolBar()
 	apprunning = nil
-	CurrEnv.OS = runtime.GOOS
-	CurrEnv.Uid = os.Getuid()
-	CurrEnv.Gid = os.Getgid()
-	CurrEnv.Groups, _ = os.Getgroups()
-	CurrEnv.ClipWhere = "local"
+	currEnv.OS = runtime.GOOS
+	currEnv.UID = os.Getuid()
+	currEnv.Gid = os.Getgid()
+	currEnv.Groups, _ = os.Getgroups()
+	currEnv.ClipWhere = "local"
 
 	flag.Usage = func() {
 		fmt.Println("Usage: micro [OPTIONS] [FILE]...")
@@ -505,7 +512,7 @@ func main() {
 	micromenu.LastPath = string([]rune(CurView().Buf.AbsPath)[:x])
 	// Load all the plugin stuff
 	// We give plugins access to a bunch of variables here which could be useful to them
-	L.SetGlobal("OS", luar.New(L, CurrEnv.OS))
+	L.SetGlobal("OS", luar.New(L, currEnv.OS))
 	L.SetGlobal("tabs", luar.New(L, tabs))
 	L.SetGlobal("GetTabs", luar.New(L, func() []*Tab {
 		return tabs
@@ -549,7 +556,7 @@ func main() {
 	L.SetGlobal("JoinPaths", luar.New(L, filepath.Join))
 	L.SetGlobal("DirectoryName", luar.New(L, filepath.Dir))
 	L.SetGlobal("configDir", luar.New(L, configDir))
-	L.SetGlobal("Reload", luar.New(L, LoadAll))
+	L.SetGlobal("Reload", luar.New(L, loadAll))
 	L.SetGlobal("ByteOffset", luar.New(L, ByteOffset))
 	L.SetGlobal("ToCharPos", luar.New(L, ToCharPos))
 

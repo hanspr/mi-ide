@@ -26,8 +26,11 @@ var (
 	vtTerm    = ViewType{5, true, true}
 )
 
-var LastView int = -1
-var LastTab int = -1
+// LastView to decide if we should trigger a focus event
+var LastView = -1
+
+// LastTab to decide if we should trigger a focus event
+var LastTab = -1
 
 // The View struct stores information about a view into a buffer.
 // It stores information about the cursor, and the viewport
@@ -498,6 +501,7 @@ func (v *View) Relocate() bool {
 	return ret
 }
 
+// GetMouseRelativePositon mouse relative position inside view
 func (v *View) GetMouseRelativePositon(x, y int) (int, int) {
 	x -= v.x - v.leftCol
 	y = y - v.y + 1
@@ -552,7 +556,7 @@ func (v *View) MoveToMouseClick(x, y int) {
 	v.Cursor.LastVisualX = v.Cursor.GetVisualX()
 }
 
-// Execute actions executes the supplied actions
+// ExecuteActions executes the supplied actions
 func (v *View) ExecuteActions(actions []func(*View, bool) bool) bool {
 	relocate := false
 	readonlyBindingsList := []string{"Delete", "Insert", "Backspace", "Cut", "Play", "Paste", "Move", "Add", "DuplicateLine"}
@@ -905,6 +909,7 @@ func (v *View) openHelp(helpPage string) {
 	}
 }
 
+// FindCurLine find line after a focus event
 func (v *View) FindCurLine(n int, s string) Loc {
 	var newLoc Loc
 	var s2 string
@@ -940,50 +945,52 @@ func (v *View) FindCurLine(n int, s string) Loc {
 	return newLoc
 }
 
+// SetCursorEscapeString set the cursor shape and color
 func (v *View) SetCursorEscapeString() {
 	cursorshape := v.Buf.Settings["cursorshape"].(string)
 	cursorcolor := v.Buf.Settings["cursorcolor"].(string)
-	ci := CursorInsert
-	co := CursorOverwrite
+	ci := cursorInsert
+	co := cursorOverwrite
 
 	if cursorcolor == "disabled" {
-		CursorInsert.color = ""
-		CursorOverwrite.color = ""
-		if CursorHadColor {
+		cursorInsert.color = ""
+		cursorOverwrite.color = ""
+		if cursorHadColor {
 			screen.SetCursorColorShape("white", "")
-			CursorHadColor = false
+			cursorHadColor = false
 		}
 	} else {
-		CursorInsert.color = cursorcolor
-		CursorOverwrite.color = "red"
-		CursorHadColor = true
+		cursorInsert.color = cursorcolor
+		cursorOverwrite.color = "red"
+		cursorHadColor = true
 	}
 	if cursorshape == "disabled" {
-		CursorInsert.shape = ""
-		CursorOverwrite.shape = ""
-		if CursorHadShape {
+		cursorInsert.shape = ""
+		cursorOverwrite.shape = ""
+		if cursorHadShape {
 			screen.SetCursorColorShape("", "block")
-			CursorHadShape = false
+			cursorHadShape = false
 		}
 	} else {
-		CursorHadShape = true
-		CursorInsert.shape = cursorshape
+		cursorHadShape = true
+		cursorInsert.shape = cursorshape
 		if cursorshape == "underline" {
-			CursorOverwrite.shape = "block"
+			cursorOverwrite.shape = "block"
 		} else {
-			CursorOverwrite.shape = "underline"
+			cursorOverwrite.shape = "underline"
 		}
 	}
-	if ((ci.color != CursorInsert.color || ci.shape != CursorInsert.shape) && v.isOverwriteMode == false) || ((co.color != CursorOverwrite.color || co.shape != CursorOverwrite.shape) && v.isOverwriteMode) {
+	if ((ci.color != cursorInsert.color || ci.shape != cursorInsert.shape) && v.isOverwriteMode == false) || ((co.color != cursorOverwrite.color || co.shape != cursorOverwrite.shape) && v.isOverwriteMode) {
 		v.SetCursorColorShape()
 	}
 }
 
+// SetCursorColorShape set the cursor shape
 func (v *View) SetCursorColorShape() {
 	if v.isOverwriteMode {
-		screen.SetCursorColorShape(CursorOverwrite.color, CursorOverwrite.shape)
+		screen.SetCursorColorShape(cursorOverwrite.color, cursorOverwrite.shape)
 	} else {
-		screen.SetCursorColorShape(CursorInsert.color, CursorInsert.shape)
+		screen.SetCursorColorShape(cursorInsert.color, cursorInsert.shape)
 	}
 }
 

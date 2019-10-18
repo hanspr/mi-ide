@@ -25,6 +25,7 @@ import (
 	"github.com/phayes/permbits"
 )
 
+// LargeFileThreshold Define a large file limit reference
 const LargeFileThreshold = 50000
 
 var (
@@ -96,26 +97,27 @@ type SerializedBuffer struct {
 	ModTime      time.Time
 }
 
+// GetFileSettings define basic preconfigured settings from a file, guessed or previously saved
 func (b *Buffer) GetFileSettings(filename string) {
 	filename, _ = filepath.Abs(filename)
 	// Check read only flags in none windows environments
-	if CurrEnv.OS != "windows" {
+	if currEnv.OS != "windows" {
 		// Test if file is write enabled for this user and file permissions
 		if fi, err := os.Stat(filename); err == nil {
 			b.RO = true
 			perm, _ := permbits.Stat(filename)
-			uid := fi.Sys().(*syscall.Stat_t).Uid
+			UID := fi.Sys().(*syscall.Stat_t).Uid
 			gid := fi.Sys().(*syscall.Stat_t).Gid
-			if CurrEnv.Uid == 0 {
+			if currEnv.UID == 0 {
 				b.RO = false
-			} else if uint32(CurrEnv.Uid) == uid && perm.UserWrite() {
+			} else if uint32(currEnv.UID) == UID && perm.UserWrite() {
 				b.RO = false
-			} else if uint32(CurrEnv.Uid) != uid && uint32(CurrEnv.Gid) == gid && perm.GroupWrite() {
+			} else if uint32(currEnv.UID) != UID && uint32(currEnv.Gid) == gid && perm.GroupWrite() {
 				b.RO = false
-			} else if uint32(CurrEnv.Uid) != uid && uint32(CurrEnv.Gid) != gid && perm.OtherWrite() {
+			} else if uint32(currEnv.UID) != UID && uint32(currEnv.Gid) != gid && perm.OtherWrite() {
 				b.RO = false
-			} else if uint32(CurrEnv.Uid) != uid && uint32(CurrEnv.Gid) != gid && perm.GroupWrite() {
-				for _, g := range CurrEnv.Groups {
+			} else if uint32(currEnv.UID) != UID && uint32(currEnv.Gid) != gid && perm.GroupWrite() {
+				for _, g := range currEnv.Groups {
 					if uint32(g) == gid {
 						b.RO = false
 						break
@@ -330,6 +332,7 @@ func NewBuffer(reader io.Reader, size int64, path string, cursorPosition []strin
 	return b
 }
 
+// GetBufferCursorLocation get cursor
 func GetBufferCursorLocation(cursorPosition []string, b *Buffer) (Loc, error) {
 	// parse the cursor position. The cursor location is ALWAYS initialised to 0, 0 even when
 	// an error occurs due to lack of arguments or because the arguments are not numbers
@@ -490,6 +493,7 @@ func (b *Buffer) IndentString() string {
 	return "\t"
 }
 
+// SmartIndent indent the line
 func (b *Buffer) SmartIndent(Start, Stop Loc, once bool) {
 	stack := b.UndoStack.Len()
 	sCursor := b.Cursor.Loc
@@ -844,6 +848,7 @@ func (b *Buffer) SaveAs(filename string) error {
 	return b.Serialize()
 }
 
+// RetryOnceSaveAs retray saving file as UTF8 in case of error
 func (b *Buffer) RetryOnceSaveAs(filename string) error {
 	enc := b.encoder
 	b.encoder = "UTF8"
@@ -1045,6 +1050,7 @@ func (b *Buffer) MoveLinesDown(start int, end int) {
 	)
 }
 
+// RemoveTrailingSpace function to remove any leftover white spaces at the end of the buffer
 func (b *Buffer) RemoveTrailingSpace(pos Loc) {
 	line := b.Line(pos.Y)[pos.X:]
 	end := len(b.LineRunes(pos.Y))
@@ -1127,6 +1133,7 @@ func (b *Buffer) FindMatchingBrace(braceType [2]rune, start Loc) Loc {
 	return start
 }
 
+// ChangeIndentation re indent buffer if user changed indentation rules
 func (b *Buffer) ChangeIndentation(cfrom, cto string, nfrom, nto int) {
 	var ss, sr string
 	if cfrom == "\t" {
@@ -1149,11 +1156,10 @@ func (b *Buffer) ChangeIndentation(cfrom, cto string, nfrom, nto int) {
 	b.IsModified = true
 }
 
-// Some smart!? detections or am I creating more problems?
-// Detect indentation type (space, tab, ammount of spaces for space)
-func (buf *Buffer) SmartDetections() {
+// SmartDetections detections or am I creating more problems?
+func (b *Buffer) SmartDetections() {
 	check := 0
-	end := buf.LinesNum()
+	end := b.LinesNum()
 	tablines := 0
 	spacelines := 0
 	spclen := 999
@@ -1161,7 +1167,7 @@ func (buf *Buffer) SmartDetections() {
 	retab := regexp.MustCompile(`^\t+`)
 	respc := regexp.MustCompile(`^  +`)
 	for i := 0; i < end; i++ {
-		l := buf.Line(i)
+		l := b.Line(i)
 		if Count(l) < 2 {
 			continue
 		}
@@ -1188,15 +1194,15 @@ func (buf *Buffer) SmartDetections() {
 	}
 	if found {
 		if tablines > spacelines {
-			buf.Settings["indentchar"] = "\t"
-			buf.Settings["tabstospaces"] = false
-			buf.Settings["tabmovement"] = false
+			b.Settings["indentchar"] = "\t"
+			b.Settings["tabstospaces"] = false
+			b.Settings["tabmovement"] = false
 		} else {
-			buf.Settings["indentchar"] = " "
-			buf.Settings["tabstospaces"] = true
-			buf.Settings["tabmovement"] = true
+			b.Settings["indentchar"] = " "
+			b.Settings["tabstospaces"] = true
+			b.Settings["tabmovement"] = true
 			if spclen > 1 {
-				buf.Settings["tabsize"] = float64(spclen)
+				b.Settings["tabsize"] = float64(spclen)
 			}
 		}
 	}

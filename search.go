@@ -21,7 +21,7 @@ var (
 	searchHistory []string
 )
 
-// EndSearch stops the current search
+// StartSearchMode starts the current search
 func StartSearchMode() {
 	messenger.hasPrompt = false
 	searching = true

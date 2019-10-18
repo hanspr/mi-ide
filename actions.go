@@ -9,7 +9,7 @@ import (
 	"unicode/utf8"
 
 	"github.com/hanspr/tcell"
-	"github.com/yuin/gopher-lua"
+	lua "github.com/yuin/gopher-lua"
 )
 
 // PreActionCall executes the lua pre callback if possible
@@ -1073,6 +1073,7 @@ func (v *View) saveToFile(filename string) {
 	}
 }
 
+// SaveAsAnswer Dialog Save finished
 func (v *View) SaveAsAnswer(values map[string]string) {
 	if values["filename"] != "" {
 		if values["encoding"] != v.Buf.encoder {
@@ -1202,8 +1203,10 @@ func (v *View) Redo(usePlugin bool) bool {
 	return true
 }
 
+// MaxClipboardSize limit the size of selected text to avoid editor from freezing
 const MaxClipboardSize int = 50000
 
+// SelectionTooBig calculate size of clip and return true if too big
 func (v *View) SelectionTooBig() bool {
 	total := 0
 	for _, l := range v.Cursor.CurSelection {
@@ -1227,7 +1230,7 @@ func (v *View) Copy(usePlugin bool) bool {
 				messenger.Error(Language.Translate("Selection is to big, can not copy. You may move (up/down) or delete only."))
 			} else {
 				loc := v.Cursor.CurSelection
-				v.Cursor.CopySelection(CurrEnv.ClipWhere)
+				v.Cursor.CopySelection(currEnv.ClipWhere)
 				v.freshClip = true
 				v.Cursor.ResetSelection()
 				v.Cursor.GotoLoc(loc[0])
@@ -1241,10 +1244,11 @@ func (v *View) Copy(usePlugin bool) bool {
 	return true
 }
 
+// CopyToCloud send clip to cloud service
 func (v *View) CopyToCloud(usePlugin bool) bool {
-	CurrEnv.ClipWhere = "cloud"
+	currEnv.ClipWhere = "cloud"
 	v.Copy(usePlugin)
-	CurrEnv.ClipWhere = "local"
+	currEnv.ClipWhere = "local"
 	return true
 }
 
@@ -1290,31 +1294,30 @@ func (v *View) Cut(usePlugin bool) bool {
 		if v.SelectionTooBig() {
 			messenger.Error(Language.Translate("Selection is to big, can not copy. You may move (up/down) or delete only."))
 			return false
-		} else {
-			v.Cursor.CopySelection(CurrEnv.ClipWhere)
-			v.Cursor.DeleteSelection()
-			v.Cursor.ResetSelection()
-			v.freshClip = true
 		}
+		v.Cursor.CopySelection(currEnv.ClipWhere)
+		v.Cursor.DeleteSelection()
+		v.Cursor.ResetSelection()
+		v.freshClip = true
 
 		if usePlugin {
 			return PostActionCall("Cut", v)
 		}
 		return true
+	}
+	if len(v.Buf.LineBytes(v.Cursor.Loc.Y)) > MaxClipboardSize {
+		messenger.Error(Language.Translate("Line is to big to cut"))
 	} else {
-		if len(v.Buf.LineBytes(v.Cursor.Loc.Y)) > MaxClipboardSize {
-			messenger.Error(Language.Translate("Line is to big to cut"))
-		} else {
-			return v.CutLine(usePlugin)
-		}
+		return v.CutLine(usePlugin)
 	}
 	return true
 }
 
+// CutToCloud send clipboard to cloud service
 func (v *View) CutToCloud(usePlugin bool) bool {
-	CurrEnv.ClipWhere = "cloud"
+	currEnv.ClipWhere = "cloud"
 	v.Cut(usePlugin)
-	CurrEnv.ClipWhere = "local"
+	currEnv.ClipWhere = "local"
 	return true
 }
 
@@ -1389,7 +1392,7 @@ func (v *View) MoveLinesUp(usePlugin bool) bool {
 			start,
 			end,
 		)
-		v.Cursor.CurSelection[1].Y -= 1
+		v.Cursor.CurSelection[1].Y--
 	} else {
 		if v.Cursor.Loc.Y == 0 {
 			return true
@@ -1451,7 +1454,7 @@ func (v *View) Paste(usePlugin bool) bool {
 		return false
 	}
 
-	clip := Clip.ReadFrom(CurrEnv.ClipWhere, "clip")
+	clip := Clip.ReadFrom(currEnv.ClipWhere, "clip")
 	v.paste(clip)
 
 	if usePlugin {
@@ -1460,10 +1463,11 @@ func (v *View) Paste(usePlugin bool) bool {
 	return true
 }
 
+// PasteCloud get last clip from cloud
 func (v *View) PasteCloud(usePlugin bool) bool {
-	CurrEnv.ClipWhere = "cloud"
+	currEnv.ClipWhere = "cloud"
 	v.Paste(usePlugin)
-	CurrEnv.ClipWhere = "local"
+	currEnv.ClipWhere = "local"
 	return true
 }
 
@@ -1506,7 +1510,7 @@ func (v *View) SelectAll(usePlugin bool) bool {
 	return true
 }
 
-// OpenDirView. Keybinding to open the DirView
+// OpenDirView Keybinding to open the DirView
 func (v *View) OpenDirView(usePlugin bool) bool {
 	micromenu.DirTreeView()
 	return true
@@ -1770,6 +1774,7 @@ func (v *View) ToggleRuler(usePlugin bool) bool {
 	return false
 }
 
+// ToggleSoftWrap change softwrap status
 func (v *View) ToggleSoftWrap(usePlugin bool) bool {
 	if v.Buf.Settings["softwrap"] == false {
 		v.Buf.Settings["softwrap"] = true
@@ -1939,6 +1944,7 @@ func (v *View) Escape(usePlugin bool) bool {
 	return false
 }
 
+// SafeQuit allways close none editor views first to avoid user mistakes
 func (v *View) SafeQuit(usePlugin bool) bool {
 	for _, vo := range tabs[curTab].Views {
 		if vo.Type == vtLog || vo.Type == vtTerm || vo.Type == vtHelp {
@@ -1950,6 +1956,7 @@ func (v *View) SafeQuit(usePlugin bool) bool {
 	return true
 }
 
+// QuitOthers Binding to close oposit window
 func (v *View) QuitOthers(usePlugin bool) bool {
 	if v.Type == vtLog || v.Type == vtTerm || v.Type == vtHelp {
 		return false
@@ -2416,13 +2423,14 @@ func (v *View) RemoveAllMultiCursors(usePlugin bool) bool {
 
 // SEARCH REPLACE
 
+// SearchDialog create search dialog box
 func (v *View) SearchDialog(usePlugin bool) bool {
 	v.searchSave = v.Cursor.Loc
 	micromenu.SearchReplace(v.SearchDialogFinished)
 	return true
 }
 
-// Call command:Replace
+// SearchDialogFinished Call command:Replace
 func (v *View) SearchDialogFinished(values map[string]string) {
 	searchStart = v.searchSave
 	v.Cursor.ResetSelection()
@@ -2434,14 +2442,14 @@ func (v *View) SearchDialogFinished(values map[string]string) {
 	Replace([]string{values["search"], values["replace"], values["a"], values["i"], values["l"]})
 }
 
-// FIND
+// FindDialog create Find dialog
 func (v *View) FindDialog(usePlugin bool) bool {
 	v.searchSave = v.Cursor.Loc
 	micromenu.Search(v.FindDialogFinished)
 	return true
 }
 
-// Call search:Search
+// FindDialogFinished get expression to find and search
 func (v *View) FindDialogFinished(values map[string]string) {
 	searchStart = v.searchSave
 	v.Cursor.ResetSelection()
@@ -2463,6 +2471,7 @@ func (v *View) FindDialogFinished(values map[string]string) {
 
 // Micro-Ide Services
 
+// UploadToCloud uload file to the cloud
 func (v *View) UploadToCloud(plugin bool) bool {
 	b := v.Buf
 	if b.Len() == 0 {
@@ -2478,6 +2487,7 @@ func (v *View) UploadToCloud(plugin bool) bool {
 	return true
 }
 
+// DownloadFromCloud download last saved file from cloud service
 func (v *View) DownloadFromCloud(plugin bool) bool {
 	text := Clip.ReadFrom("cloud", "file")
 	if text == "" {
@@ -2498,6 +2508,7 @@ func (v *View) DownloadFromCloud(plugin bool) bool {
 	return true
 }
 
+// CloudSettings open cloud settings dialog
 func (v *View) CloudSettings(plugin bool) bool {
 	micromenu.MiCloudSync()
 	return true

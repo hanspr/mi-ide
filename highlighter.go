@@ -4,6 +4,7 @@ import "github.com/hanspr/highlight"
 
 var syntaxFiles []*highlight.File
 
+//LoadSyntaxFiles load syntax files
 func LoadSyntaxFiles() {
 	InitColorscheme()
 	for _, f := range ListRuntimeFiles(RTSyntax) {
@@ -16,6 +17,7 @@ func LoadSyntaxFiles() {
 	}
 }
 
+// LoadSyntaxFile load a single file
 func LoadSyntaxFile(text []byte, filename string) {
 	f, err := highlight.ParseFile(text)
 

@@ -382,6 +382,7 @@ func (c *Cursor) GetCharPosInLine(lineNum, visualPos int) int {
 	return c.GetCursorXFromVisual(lineNum, tabSize, visualPos)
 }
 
+// GetCursorXFromVisual find the buffer X cursor location based on the visual location
 func (c *Cursor) GetCursorXFromVisual(lineNum, tabsize, lastx int) int {
 	x := 0
 	lineb := c.buf.lines[lineNum].data

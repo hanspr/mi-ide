@@ -178,9 +178,9 @@ func (sline *Statusline) Display() {
 		}
 	}
 
-	if active && LastOverwriteStatus != sline.view.isOverwriteMode {
+	if active && lastOverwriteStatus != sline.view.isOverwriteMode {
 		sline.view.SetCursorColorShape()
-		LastOverwriteStatus = sline.view.isOverwriteMode
+		lastOverwriteStatus = sline.view.isOverwriteMode
 	}
 
 	// Maybe there is a unicode filename?

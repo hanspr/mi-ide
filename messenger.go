@@ -184,6 +184,7 @@ func (m *Messenger) Information(msg ...interface{}) {
 	}()
 }
 
+// PromptText show a message to the user
 func (m *Messenger) PromptText(msg ...interface{}) {
 	displayMessage := fmt.Sprint(msg...)
 	// if there is no active prompt then style and display the message as normal
@@ -272,6 +273,7 @@ func (m *Messenger) LetterPrompt(prompt string, responses ...rune) (rune, bool) 
 // Completion represents a type of completion
 type Completion int
 
+// NoCompletion completion types
 const (
 	NoCompletion Completion = iota
 	FileCompletion
@@ -606,6 +608,7 @@ func (m *Messenger) Clear() {
 	}
 }
 
+// DisplaySuggestions show possible completion values
 func (m *Messenger) DisplaySuggestions(suggestions []string) {
 	w, screenH := screen.Size()
 

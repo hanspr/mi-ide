@@ -11,18 +11,20 @@ import (
 	"github.com/hanspr/tcell"
 )
 
+// Opt option element of a select
 type Opt struct {
 	value string
 	lable string
 	style *AppStyle
 }
 
+// AppElement an element from the frame
 type AppElement struct {
 	name        string // element name
 	label       string // element label if it applyes
 	form        string // types: box, textbox, textarea, label, checkbox, radio, button
 	value       string
-	value_type  string                                              // string, number
+	valueType   string                                              // string, number
 	pos         Loc                                                 // Top left corner where to position element
 	aposb       Loc                                                 // hotspot top,left
 	apose       Loc                                                 // hotspot bottom,right
@@ -43,11 +45,13 @@ type AppElement struct {
 	luacallback string
 }
 
+// AppStyle defines a style
 type AppStyle struct {
 	name  string
 	style tcell.Style
 }
 
+// Frame defines a frame
 type Frame struct {
 	name      string
 	visible   bool
@@ -66,6 +70,7 @@ type Frame struct {
 	maxheigth int
 }
 
+// MicroApp application object structure
 type MicroApp struct {
 	name             string
 	screen           tcell.Screen
@@ -92,6 +97,7 @@ type MicroApp struct {
 // App Build Methods
 // ------------------------------------------------
 
+// AddFrame creates a new frame object
 func (a *MicroApp) AddFrame(name string, top, left, width, height int, position string) *Frame {
 	var f Frame
 
@@ -133,6 +139,7 @@ func (a *MicroApp) AddFrame(name string, top, left, width, height int, position 
 	return &f
 }
 
+// ChangeFrame modify frame data
 func (f *Frame) ChangeFrame(top, left, width, height int, position string) {
 	a := f.microapp
 	w, h := a.screen.Size()
@@ -161,10 +168,12 @@ func (f *Frame) ChangeFrame(top, left, width, height int, position string) {
 	f.position = position
 }
 
+// Show a frame
 func (f *Frame) Show(v bool) {
 	f.visible = v
 }
 
+// AddStyle add a new style definition to this frame
 func (a *MicroApp) AddStyle(name, style string) {
 	var s AppStyle
 
@@ -173,7 +182,8 @@ func (a *MicroApp) AddStyle(name, style string) {
 	a.styles[name] = s
 }
 
-func (a *MicroApp) AddWindowElement(frame, name, label, form, value, value_type string, x, y, w, h int, chk bool, callback func(string, string, string, string, int, int) bool, style, luacallback string) {
+// AddWindowElement add an element to a frame
+func (a *MicroApp) AddWindowElement(frame, name, label, form, value, valueType string, x, y, w, h int, chk bool, callback func(string, string, string, string, int, int) bool, style, luacallback string) {
 	var e AppElement
 
 	f := a.frames[frame]
@@ -181,7 +191,7 @@ func (a *MicroApp) AddWindowElement(frame, name, label, form, value, value_type 
 	e.label = label
 	e.form = form
 	e.value = value
-	e.value_type = value_type
+	e.valueType = valueType
 	e.pos = Loc{x, y}
 	e.cursor = Loc{0, 0}
 	e.width = w
@@ -238,7 +248,7 @@ func (a *MicroApp) AddWindowElement(frame, name, label, form, value, value_type 
 		e.cursor.Y = 0
 		e.aposb = Loc{x + lblwidth, y}
 		e.apose = Loc{x + lblwidth + w, y + h}
-		opts := strings.Split(e.value_type, "|")
+		opts := strings.Split(e.valueType, "|")
 		e.cursor.X = len(opts)
 		for i := 0; i < len(opts); i++ {
 			opt := strings.Split(opts[i], "]")
@@ -264,7 +274,7 @@ func (a *MicroApp) AddWindowElement(frame, name, label, form, value, value_type 
 				e.offset = i
 			}
 		}
-		e.value_type = ""
+		e.valueType = ""
 	} else if form == "textarea" {
 		e.aposb = Loc{x + 1, y + 1}
 		e.apose = Loc{x + w - 1, y + h - 1}
@@ -272,6 +282,7 @@ func (a *MicroApp) AddWindowElement(frame, name, label, form, value, value_type 
 	a.frames[frame].elements[e.name] = &e
 }
 
+// AddWindowBox add a Box object to frame
 func (f *Frame) AddWindowBox(name, title string, x, y, width, height int, border bool, callback func(string, string, string, string, int, int) bool, style, luacallback string) {
 	a := f.microapp
 	if width < 1 || height < 1 {
@@ -280,11 +291,13 @@ func (f *Frame) AddWindowBox(name, title string, x, y, width, height int, border
 	a.AddWindowElement(f.name, name, title, "box", "", "", x, y, width, height, border, callback, style, luacallback)
 }
 
+// AddWindowLabel add a label to a frame
 func (f *Frame) AddWindowLabel(name, label string, x, y int, callback func(string, string, string, string, int, int) bool, style, luacallback string) {
 	a := f.microapp
 	a.AddWindowElement(f.name, name, label, "label", "", "", x, y, 0, 0, false, callback, style, luacallback)
 }
 
+// AddWindowMenuLabel add a label for menu drawing
 func (f *Frame) AddWindowMenuLabel(name, label, kind string, x, y int, callback func(string, string, string, string, int, int) bool, style, luacallback string) {
 	a := f.microapp
 	if kind == "r" {
@@ -298,38 +311,44 @@ func (f *Frame) AddWindowMenuLabel(name, label, kind string, x, y int, callback 
 	}
 }
 
+// AddWindowMenuTop add top of menu label with border
 func (f *Frame) AddWindowMenuTop(name, label string, x, y int, callback func(string, string, string, string, int, int) bool, style, luacallback string) {
 	a := f.microapp
 	label = strings.ReplaceAll(label, " ", string(tcell.RuneHLine))
 	a.AddWindowElement(f.name, name, string(tcell.RuneLLCorner)+label+string(tcell.RuneURCorner), "label", "", "", x, y, 0, 0, false, callback, style, luacallback)
 }
 
+// AddWindowMenuBottom add bottom menu label with border
 func (f *Frame) AddWindowMenuBottom(name, label string, x, y int, callback func(string, string, string, string, int, int) bool, style, luacallback string) {
 	a := f.microapp
 	label = strings.ReplaceAll(label, " ", string(tcell.RuneHLine))
 	a.AddWindowElement(f.name, name, string(tcell.RuneLLCorner)+label+string(tcell.RuneLRCorner), "label", "", "", x, y, 0, 0, false, callback, style, luacallback)
 }
 
-func (f *Frame) AddWindowTextBox(name, label, value, value_type string, x, y, width, maxlength int, callback func(string, string, string, string, int, int) bool, style, luacallback string) {
+// AddWindowTextBox add a textbox object to frame
+func (f *Frame) AddWindowTextBox(name, label, value, valueType string, x, y, width, maxlength int, callback func(string, string, string, string, int, int) bool, style, luacallback string) {
 	a := f.microapp
 	if width < 1 {
 		return
 	} else if width <= 3 && maxlength > 3 {
 		maxlength = width
 	}
-	a.AddWindowElement(f.name, name, label, "textbox", value, value_type, x, y, width, maxlength, false, callback, style, luacallback)
+	a.AddWindowElement(f.name, name, label, "textbox", value, valueType, x, y, width, maxlength, false, callback, style, luacallback)
 }
 
+// AddWindowCheckBox add a checkbox to the frame
 func (f *Frame) AddWindowCheckBox(name, label, value string, x, y int, checked bool, callback func(string, string, string, string, int, int) bool, style, luacallback string) {
 	a := f.microapp
 	a.AddWindowElement(f.name, name, label, "checkbox", value, "", x, y, 0, 0, checked, callback, style, luacallback)
 }
 
+// AddWindowRadio add a radio element to the frame
 func (f *Frame) AddWindowRadio(name, label, value string, x, y int, checked bool, callback func(string, string, string, string, int, int) bool, style, luacallback string) {
 	a := f.microapp
 	a.AddWindowElement(f.name, name, label, "radio", value, "", x, y, 0, 0, checked, callback, style, luacallback)
 }
 
+// AddWindowTextArea add a textarea element to the frame
 func (f *Frame) AddWindowTextArea(name, label, value string, x, y, columns, rows int, readonly bool, callback func(string, string, string, string, int, int) bool, style, luacallback string) {
 	a := f.microapp
 	if columns < 5 || rows < 2 {
@@ -338,6 +357,7 @@ func (f *Frame) AddWindowTextArea(name, label, value string, x, y, columns, rows
 	a.AddWindowElement(f.name, name, label, "textarea", value, "", x, y, columns+2, rows+2, readonly, callback, style, luacallback)
 }
 
+// AddWindowSelect add a select element to the frame
 func (f *Frame) AddWindowSelect(name, label, value string, options string, x, y, width, height int, callback func(string, string, string, string, int, int) bool, style, luacallback string) bool {
 	a := f.microapp
 	if options == "" {
@@ -365,15 +385,17 @@ func (f *Frame) AddWindowSelect(name, label, value string, options string, x, y,
 	return true
 }
 
-func (f *Frame) AddWindowButton(name, label, button_type string, x, y int, callback func(string, string, string, string, int, int) bool, style, luacallback string) {
+// AddWindowButton add a button to the frame
+func (f *Frame) AddWindowButton(name, label, buttonType string, x, y int, callback func(string, string, string, string, int, int) bool, style, luacallback string) {
 	a := f.microapp
-	a.AddWindowElement(f.name, name, label, "button", "", button_type, x, y, 0, 0, false, callback, style, luacallback)
+	a.AddWindowElement(f.name, name, label, "button", "", buttonType, x, y, 0, 0, false, callback, style, luacallback)
 }
 
 // ------------------------------------------------
 // Element Methods
 // ------------------------------------------------
 
+//SetIndex set the index property of an element
 func (f *Frame) SetIndex(k string, v int) {
 	e, ok := f.elements[k]
 	if ok == false {
@@ -390,6 +412,7 @@ func (f *Frame) SetIndex(k string, v int) {
 	e.index = v
 }
 
+// GetVisible get visible property of an element
 func (f *Frame) GetVisible(k string) bool {
 	e, ok := f.elements[k]
 	if ok == false {
@@ -398,6 +421,7 @@ func (f *Frame) GetVisible(k string) bool {
 	return e.visible
 }
 
+// SetVisible set visible property of an element
 func (f *Frame) SetVisible(k string, v bool) {
 	a := f.microapp
 	e, ok := f.elements[k]
@@ -422,6 +446,7 @@ func (f *Frame) SetVisible(k string, v bool) {
 	a.screen.Show()
 }
 
+// GetgName get goup name of this element
 func (f *Frame) GetgName(k string) string {
 	e, ok := f.elements[k]
 	if ok == false {
@@ -430,6 +455,7 @@ func (f *Frame) GetgName(k string) string {
 	return e.gname
 }
 
+// SetgName Set a group name for this element
 func (f *Frame) SetgName(k, v string) {
 	e, ok := f.elements[k]
 	if ok == false {
@@ -438,6 +464,7 @@ func (f *Frame) SetgName(k, v string) {
 	e.gname = v
 }
 
+// GetiKey get the integer user value to this element
 func (f *Frame) GetiKey(k string) int {
 	e, ok := f.elements[k]
 	if ok == false {
@@ -446,6 +473,7 @@ func (f *Frame) GetiKey(k string) int {
 	return e.iKey
 }
 
+// SetiKey set the user integer value of this element
 func (f *Frame) SetiKey(k string, v int) {
 	e, ok := f.elements[k]
 	if ok == false {
@@ -454,6 +482,7 @@ func (f *Frame) SetiKey(k string, v int) {
 	e.iKey = v
 }
 
+// GetValue get elements value property
 func (f *Frame) GetValue(k string) string {
 	e, ok := f.elements[k]
 	if ok == false {
@@ -462,6 +491,7 @@ func (f *Frame) GetValue(k string) string {
 	return e.value
 }
 
+// SetValue set element value property
 func (f *Frame) SetValue(k, v string) {
 	e, ok := f.elements[k]
 	if ok == false {
@@ -483,6 +513,7 @@ func (f *Frame) SetValue(k, v string) {
 	a.screen.Show()
 }
 
+// GetChecked get checked property
 func (f *Frame) GetChecked(k string) bool {
 	e, ok := f.elements[k]
 	if ok == false {
@@ -491,6 +522,7 @@ func (f *Frame) GetChecked(k string) bool {
 	return e.checked
 }
 
+// SetCheked set checked property
 func (f *Frame) SetCheked(k string, v bool) {
 	e, ok := f.elements[k]
 	if ok == false {
@@ -502,6 +534,7 @@ func (f *Frame) SetCheked(k string, v bool) {
 	a.screen.Show()
 }
 
+// GetPos get the element coordinates of this element
 func (f *Frame) GetPos(k string) Loc {
 	e, ok := f.elements[k]
 	if ok == false {
@@ -510,6 +543,7 @@ func (f *Frame) GetPos(k string) Loc {
 	return e.pos
 }
 
+// SetPos set a new position for this element
 func (f *Frame) SetPos(k string, v Loc) {
 	e, ok := f.elements[k]
 	if ok == false {
@@ -521,6 +555,7 @@ func (f *Frame) SetPos(k string, v Loc) {
 	a.screen.Show()
 }
 
+// GetLabel set the label property of an element
 func (f *Frame) GetLabel(k string) string {
 	e, ok := f.elements[k]
 	if ok == false {
@@ -529,6 +564,7 @@ func (f *Frame) GetLabel(k string) string {
 	return e.label
 }
 
+// SetLabel set the lable property of an element
 func (f *Frame) SetLabel(k, v string) {
 	e, ok := f.elements[k]
 	if ok == false {
@@ -551,6 +587,7 @@ func (f *Frame) SetLabel(k, v string) {
 	a.screen.Show()
 }
 
+// SetFocus set the cursor over this element
 func (f *Frame) SetFocus(k, where string) {
 	e, ok := f.elements[k]
 	if ok == false {
@@ -574,6 +611,7 @@ func (f *Frame) SetFocus(k, where string) {
 	}
 }
 
+// SetFocusPreviousInputElement move cursor to previous text element
 func (f *Frame) SetFocusPreviousInputElement(k string) {
 	var next AppElement
 	var last AppElement
@@ -613,6 +651,7 @@ func (f *Frame) SetFocusPreviousInputElement(k string) {
 	}
 }
 
+// SetFocusNextInputElement move cursor to next text element
 func (f *Frame) SetFocusNextInputElement(k string) {
 	var next AppElement
 	var first AppElement
@@ -652,6 +691,7 @@ func (f *Frame) SetFocusNextInputElement(k string) {
 	}
 }
 
+// DeleteElement remove element from frame
 func (f *Frame) DeleteElement(k string) {
 	delete(f.elements, k)
 	f.microapp.DrawAll()
@@ -663,6 +703,7 @@ func (f *Frame) DeleteElement(k string) {
 
 // Element Drawing
 
+// Draw an element into the screen
 func (e *AppElement) Draw() {
 	if e.visible == false {
 		return
@@ -686,9 +727,11 @@ func (e *AppElement) Draw() {
 	}
 }
 
+// Hide not implemented, hide an element
 func (e *AppElement) Hide() {
 }
 
+// DrawBox draw a box element
 func (e *AppElement) DrawBox() {
 	a := e.microapp
 	f := e.frame
@@ -742,10 +785,12 @@ func (e *AppElement) DrawBox() {
 	}
 }
 
+// DrawLabel draw a label element
 func (e *AppElement) DrawLabel() {
 	e.frame.PrintStyle(e.label, e.pos.X, e.pos.Y, &e.style)
 }
 
+// DrawTextBox draw a textbox element
 func (e *AppElement) DrawTextBox() {
 	var r rune
 
@@ -785,6 +830,7 @@ func (e *AppElement) DrawTextBox() {
 	}
 }
 
+// DrawRadio draw a radio element
 func (e *AppElement) DrawRadio() {
 	var radio string
 
@@ -795,6 +841,7 @@ func (e *AppElement) DrawRadio() {
 	e.frame.PrintStyle(radio+e.label, e.pos.X, e.pos.Y, &e.style)
 }
 
+// DrawCheckBox draw a checkbox element
 func (e *AppElement) DrawCheckBox() {
 	check := "✗ "
 
@@ -804,6 +851,7 @@ func (e *AppElement) DrawCheckBox() {
 	e.frame.PrintStyle(check+e.label, e.pos.X, e.pos.Y, &e.style)
 }
 
+// DrawSelect draw a select element
 func (e *AppElement) DrawSelect() {
 	var style tcell.Style
 
@@ -871,13 +919,14 @@ func (e *AppElement) DrawSelect() {
 	}
 }
 
+// DrawButton draw a button element
 func (e *AppElement) DrawButton() {
 	f := e.frame
 	style := e.style
 	label := []rune(" " + e.label + " ")
-	if e.value_type == "cancel" {
+	if e.valueType == "cancel" {
 		style = e.style.Background(tcell.ColorDarkRed).Foreground(tcell.ColorWhite).Bold(true)
-	} else if e.value_type == "ok" {
+	} else if e.valueType == "ok" {
 		style = e.style.Background(tcell.ColorDarkGreen).Foreground(tcell.ColorWhite).Bold(true)
 	}
 	for x := 0; x < len(label); x++ {
@@ -885,6 +934,7 @@ func (e *AppElement) DrawButton() {
 	}
 }
 
+// DrawTextArea draw a text area element
 func (e *AppElement) DrawTextArea() {
 	y := e.aposb.Y
 	e.DrawBox()
@@ -900,6 +950,7 @@ func (e *AppElement) DrawTextArea() {
 	}
 }
 
+// WordWrap utility to add new lines to string, to implement wrapping
 func WordWrap(str string, w int) string {
 	nstr := str
 	if Count(str) <= w {
@@ -993,6 +1044,7 @@ func runeLastIndex(str, s string) int {
 // MicroApp Drawing Methods
 // ------------------------------------------------
 
+// DrawAll draw all frames and its elements
 func (a *MicroApp) DrawAll() {
 	// Draw all elements in index order from 0 to current max index (normally 2)
 	for _, f := range a.frames {
@@ -1012,6 +1064,7 @@ func (a *MicroApp) DrawAll() {
 	a.screen.Show()
 }
 
+// Resize handle rezise events
 func (a *MicroApp) Resize() {
 	for _, t := range tabs {
 		t.Resize()
@@ -1053,14 +1106,14 @@ func (a *MicroApp) Resize() {
 
 // Clear Routines
 
-// Clear the entire screen from any app drawings
+// ClearScreen Clear the entire screen from any app drawings
 func (a *MicroApp) ClearScreen() {
 	RedrawAll(false)
 	a.screen.HideCursor()
 	a.screen.Show()
 }
 
-// Redraw Frame
+// ResetFrames Redraw Frame
 func (a *MicroApp) ResetFrames() {
 	RedrawAll(false)
 	a.screen.HideCursor()
@@ -1154,6 +1207,7 @@ func (a *MicroApp) PrintAbsolute(msg string, x, y int, style *tcell.Style) {
 // Mouse Events
 // ------------------------------------------------
 
+// TextAreaClickEvent Handle clic event
 func (e *AppElement) TextAreaClickEvent(event string, x, y int) {
 	a := e.microapp
 	a.activeElement = e.name
@@ -1163,6 +1217,7 @@ func (e *AppElement) TextAreaClickEvent(event string, x, y int) {
 	a.screen.Show()
 }
 
+// TextBoxClickEvent handle clic event
 func (e *AppElement) TextBoxClickEvent(event string, x, y int) {
 	a := e.microapp
 	f := e.frame
@@ -1177,6 +1232,7 @@ func (e *AppElement) TextBoxClickEvent(event string, x, y int) {
 	a.screen.Show()
 }
 
+// SelectClickEvent handle select click event
 func (e *AppElement) SelectClickEvent(event string, x, y int) {
 	a := e.microapp
 
@@ -1234,6 +1290,7 @@ func (e *AppElement) SelectClickEvent(event string, x, y int) {
 	a.screen.Show()
 }
 
+// RadioCheckboxClickEvent handle radio and checkboxes clic events
 func (e *AppElement) RadioCheckboxClickEvent(event string, x, y int) {
 	a := e.microapp
 	f := a.frames[e.frame.name]
@@ -1259,6 +1316,7 @@ func (e *AppElement) RadioCheckboxClickEvent(event string, x, y int) {
 	a.screen.Show()
 }
 
+// ProcessElementClick find which element received a click event
 func (e *AppElement) ProcessElementClick(event string, x, y int) {
 	a := e.microapp
 	name := e.name
@@ -1311,6 +1369,7 @@ func (e *AppElement) ProcessElementClick(event string, x, y int) {
 	}
 }
 
+// ProcessElementMouseMove find element to send a mouse move event
 func (e *AppElement) ProcessElementMouseMove(event string, x, y int) {
 	if e.callback != nil {
 		if e.callback(e.name, e.value, event, "", x, y) == false {
@@ -1324,9 +1383,11 @@ func (e *AppElement) ProcessElementMouseMove(event string, x, y int) {
 	}
 }
 
+// ProcessElementMouseDown not implemented
 func (e *AppElement) ProcessElementMouseDown(event string, x, y int) {
 }
 
+// SelectWheelEvent dispatch event to element
 func (e *AppElement) SelectWheelEvent(event string, x, y int) {
 	a := e.microapp
 	if event == "mouse-wheelUp" {
@@ -1345,6 +1406,7 @@ func (e *AppElement) SelectWheelEvent(event string, x, y int) {
 	a.screen.Show()
 }
 
+// ProcessElementMouseWheel dispatch mousewheel event to element
 func (e *AppElement) ProcessElementMouseWheel(event string, x, y int) {
 	if e.form == "select" {
 		e.SelectWheelEvent(event, x, y)
@@ -1355,6 +1417,7 @@ func (e *AppElement) ProcessElementMouseWheel(event string, x, y int) {
 // Key Events
 // ------------------------------------------------
 
+// SelectKeyEvent handle key event
 func (e *AppElement) SelectKeyEvent(key string, x, y int) {
 	a := e.microapp
 	f := e.frame
@@ -1406,6 +1469,7 @@ func (e *AppElement) SelectKeyEvent(key string, x, y int) {
 	a.screen.Show()
 }
 
+// TextAreaKeyEvent handle key event
 func (e *AppElement) TextAreaKeyEvent(key string, x, y int) {
 	a := e.microapp
 	if e.apose.Y == y && e.apose.X == x {
@@ -1485,6 +1549,7 @@ func (e *AppElement) TextAreaKeyEvent(key string, x, y int) {
 	return
 }
 
+// TextBoxKeyEvent handle key event
 func (e *AppElement) TextBoxKeyEvent(key string, x, y int) {
 	a := e.microapp
 	f := e.frame
@@ -1576,6 +1641,7 @@ func (e *AppElement) TextBoxKeyEvent(key string, x, y int) {
 	a.screen.Show()
 }
 
+// ProcessElementKey dispatch an event to the corresponding element
 func (e *AppElement) ProcessElementKey(key string, x, y int) {
 	a := e.microapp
 	if a.activeElement == "" || a.activeElement != e.name {
@@ -1610,6 +1676,7 @@ func (e *AppElement) ProcessElementKey(key string, x, y int) {
 // Check if event occures on top of an element hotspot
 // If it does, dispacth the appropiate method
 
+// CheckElementsActions find kind of event and pass action to the proper routine
 func (a *MicroApp) CheckElementsActions(event string, x, y int) bool {
 	if x < 0 || y < 0 {
 		return false
@@ -1689,6 +1756,7 @@ func (a *MicroApp) CheckElementsActions(event string, x, y int) bool {
 	return false
 }
 
+// GetActiveElement return the object that is active at the time
 func (a *MicroApp) GetActiveElement(name string) *AppElement {
 	if name == "" {
 		return nil
@@ -1731,6 +1799,7 @@ func (a *MicroApp) insertCharAt(b, r []rune, i int) []rune {
 // Eventhandler
 // ------------------------------------------------
 
+// HandleEvents handle terminal events
 func (a *MicroApp) HandleEvents(event tcell.Event) {
 	char := ""
 	switch ev := event.(type) {
@@ -1862,6 +1931,7 @@ func (a *MicroApp) HandleEvents(event tcell.Event) {
 // General App Methods
 // ------------------------------------------------
 
+// New Create new microapp element
 func (a *MicroApp) New(name string) {
 	a.defStyle = tcell.StyleDefault.
 		Background(tcell.ColorBlack).
@@ -1880,20 +1950,22 @@ func (a *MicroApp) New(name string) {
 	a.debug = false
 }
 
+// Start start the application
 func (a *MicroApp) Start() {
 	a.DrawAll()
 	a.screen.HideCursor()
 	a.screen.Show()
 }
 
+// Reset delete all elements
 func (a *MicroApp) Reset() {
 	for fname, f := range a.frames {
-		for k, _ := range f.elements {
+		for k := range f.elements {
 			delete(f.elements, k)
 		}
 		delete(a.frames, fname)
 	}
-	for k, _ := range a.styles {
+	for k := range a.styles {
 		delete(a.styles, k)
 	}
 	a.WindowMouseEvent = nil
@@ -1909,6 +1981,7 @@ func (a *MicroApp) Reset() {
 	a.mousedown = false
 }
 
+// GetValues collect values of all elements in the forms
 func (a *MicroApp) GetValues() map[string]string {
 	var values = make(map[string]string)
 
@@ -1936,6 +2009,7 @@ func (a *MicroApp) GetValues() map[string]string {
 	return values
 }
 
+// GetValuesAsString needed for Lua, send the values as a single string
 func (a *MicroApp) GetValuesAsString() string {
 	var str string
 

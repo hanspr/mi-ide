@@ -327,7 +327,7 @@ func (m *microMenu) SaveSettings(name, value, event, when string, x, y int) bool
 	if values["cursorcolor"] == "" {
 		values["cursorcolor"] = "disabled"
 	}
-	for k, _ := range globalSettings {
+	for k := range globalSettings {
 		if strings.Contains(k, "mi-") {
 			continue
 		}
@@ -678,7 +678,7 @@ func (m *microMenu) ChangeSource(name, value, event, when string, x, y int) bool
 		f.elements["langs"].style = StringToStyle("bold #ffffff,#878700")
 		f.SetLabel("msg", Language.Translate("Downloading list of")+" "+Language.Translate("Languages")+", "+Language.Translate("please wait")+"...")
 		langs := GetAvailableLanguages()
-		for k, _ := range langs {
+		for k := range langs {
 			keys = append(keys, k)
 		}
 		sort.Strings(keys)
@@ -1536,7 +1536,7 @@ func (m *microMenu) SetEncoding(name, value, event, when string, x, y int) bool 
 // Directory view
 // ---------------------------------------
 
-const MINWIDTH = 26
+const minwidth = 26
 
 func (m *microMenu) DirTreeView() {
 	m.myapp = nil
@@ -1545,8 +1545,8 @@ func (m *microMenu) DirTreeView() {
 	dir, width := m.getDir()
 	_, height := screen.Size()
 	height -= 3
-	if width < MINWIDTH {
-		width = MINWIDTH
+	if width < minwidth {
+		width = minwidth
 	}
 	m.myapp.Reset()
 	m.myapp.defStyle = StringToStyle("#ffffff,#1c1c1c")
@@ -1582,8 +1582,8 @@ func (m *microMenu) TreeViewEvent(name, value, event, when string, x, y int) boo
 				m.LastPath = m.LastPath + value
 			}
 			dir, width := m.getDir()
-			if width < MINWIDTH {
-				width = MINWIDTH
+			if width < minwidth {
+				width = minwidth
 			}
 			height := m.myapp.frames["f"].oheight - 1
 			if f.elements["dbox"].width > width {
@@ -1607,24 +1607,23 @@ func (m *microMenu) TreeViewEvent(name, value, event, when string, x, y int) boo
 				m.myapp.DrawAll()
 			}
 			return false
-		} else {
-			for i, t := range tabs {
-				for _, v := range t.Views {
-					if strings.Contains(v.Buf.Path, value) {
-						curTab = i
-						messenger.Information(value, " : Focused")
-						m.Finish("focuse same file")
-						return false
-					}
+		}
+		for i, t := range tabs {
+			for _, v := range t.Views {
+				if strings.Contains(v.Buf.Path, value) {
+					curTab = i
+					messenger.Information(value, " : Focused")
+					m.Finish("focuse same file")
+					return false
 				}
 			}
-			NewTab([]string{m.LastPath + value})
-			CurView().Buf.name = value
-			m.myapp.activeElement = name
-			messenger.Information(value, " "+Language.Translate("opened in new Tab"))
-			m.myapp.ResetFrames()
-			return false
 		}
+		NewTab([]string{m.LastPath + value})
+		CurView().Buf.name = value
+		m.myapp.activeElement = name
+		messenger.Information(value, " "+Language.Translate("opened in new Tab"))
+		m.myapp.ResetFrames()
+		return false
 	} else if event == "mouse-click3" || event == "mouse-click2" || event == "Right" {
 		if event == "Right" && strings.Contains(value, "/") {
 			m.myapp.activeElement = name

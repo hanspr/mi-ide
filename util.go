@@ -551,7 +551,7 @@ func GeTFileListFromPath(path, extension string) []string {
 	return Files
 }
 
-// Open an existint JSON file and update existing values and add new ones
+// UpdateFileJSON Open an existint JSON file and update existing values and add new ones
 // Does not remove existing values not updated
 func UpdateFileJSON(filename string, values map[string]string) error {
 	// Read JSON FILE, ignore open errors

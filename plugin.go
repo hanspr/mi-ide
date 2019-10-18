@@ -10,8 +10,8 @@ import (
 
 	"github.com/flynn/json5"
 	"github.com/hanspr/tcell"
-	"github.com/yuin/gopher-lua"
-	"layeh.com/gopher-luar"
+	lua "github.com/yuin/gopher-lua"
+	luar "layeh.com/gopher-luar"
 )
 
 var loadedPlugins map[string]string
@@ -50,6 +50,7 @@ func Call(function string, args ...interface{}) (lua.LValue, error) {
 	return ret, err
 }
 
+// CallP function call to plugins
 func CallP(luaFunc lua.LValue, args ...interface{}) (lua.LValue, error) {
 	var luaArgs []lua.LValue
 	for _, v := range args {
@@ -194,7 +195,7 @@ func LoadPlugins() {
 	}
 }
 
-// GlobalCall makes a call to a function in every plugin that is currently
+// GlobalPluginCall makes a call to a function in every plugin that is currently
 // loaded
 func GlobalPluginCall(function string, args ...interface{}) {
 	for pl := range loadedPlugins {
@@ -209,12 +210,13 @@ func GlobalPluginCall(function string, args ...interface{}) {
 	}
 }
 
-// Plugin Options HP
+// Plugin Options
 
 // Each plugin has its own plugin settings file, these are the functions to add, get or set options
 
 var pluginOption map[string]interface{}
 
+// LoadPluginOptions load options for the plugin
 func LoadPluginOptions(pname string) {
 	var parsed map[string]interface{}
 
@@ -236,6 +238,7 @@ func LoadPluginOptions(pname string) {
 	}
 }
 
+// WritePluginSettings write the plugin settings to file
 func WritePluginSettings(pname string) error {
 	if pname == "" {
 		return errors.New("Missing plugin name, can not write settings")
@@ -256,6 +259,7 @@ func WritePluginSettings(pname string) error {
 	return nil
 }
 
+// AddPluginOption add an option to the file
 func AddPluginOption(pname, option string, value interface{}) error {
 	opt := pname + "-" + option
 	_, ok := pluginOption[opt]
@@ -266,11 +270,13 @@ func AddPluginOption(pname, option string, value interface{}) error {
 	return WritePluginSettings(pname)
 }
 
+// SetPluginOption set a plugin option
 func SetPluginOption(pname, option string, value interface{}) {
 	opt := pname + "-" + option
 	pluginOption[opt] = value
 }
 
+// GetPluginOption get value of an option
 func GetPluginOption(pname, option string) interface{} {
 	value, ok := pluginOption[pname+"-"+option]
 	if ok == false {
@@ -279,6 +285,7 @@ func GetPluginOption(pname, option string) interface{} {
 	return value
 }
 
+// PluginGetApp get access to mircoapp application to plugins
 func PluginGetApp() *MicroApp {
 	if apprunning != nil {
 		return nil
@@ -287,6 +294,7 @@ func PluginGetApp() *MicroApp {
 	return app
 }
 
+// PluginRunApp run plugin app
 func PluginRunApp(app *MicroApp) bool {
 	if apprunning == nil {
 		apprunning = app
@@ -296,6 +304,7 @@ func PluginRunApp(app *MicroApp) bool {
 	return false
 }
 
+// PluginStopApp stop plugin app
 func PluginStopApp(app *MicroApp) {
 	if apprunning == nil {
 		return
@@ -305,6 +314,7 @@ func PluginStopApp(app *MicroApp) {
 	}
 }
 
+// PluginAddIcon add icon to toolbar
 func PluginAddIcon(icon, callback string) {
 	MicroToolBar.AddIcon([]rune(icon)[0], nil, callback)
 }
