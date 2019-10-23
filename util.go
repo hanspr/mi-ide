@@ -183,6 +183,7 @@ func MakeRelative(path, base string) (string, error) {
 	return path, nil
 }
 
+// BracePairsAreBalanced check if the expression has ballanced brackets
 // 0 = Line has balanced brace or dirty close brace " text} , text)" treated as balanced line
 // > 0 unbalanced indent
 // == -1 balanced } .. {, but requires indent on next line
@@ -220,7 +221,7 @@ func BracePairsAreBalanced(str string) int {
 	return b
 }
 
-// Find y line has a balanced braces
+// BalanceBracePairs Find y line has a balanced braces
 func BalanceBracePairs(str string) string {
 	n := BracePairsAreBalanced(str)
 	if n > 0 || n == -1 {
@@ -415,13 +416,14 @@ func GetPathAndCursorPosition(path string) (string, []string) {
 	return match[1], []string{match[2], "0"}
 }
 
+// ParseCursorLocation get location from cursor position
 func ParseCursorLocation(cursorPositions []string) (Loc, error) {
 	startpos := Loc{0, 0}
 	var err error
 
 	// if no positions are available exit early
 	if cursorPositions == nil {
-		return startpos, errors.New("No cursor positions were provided.")
+		return startpos, errors.New("No cursor positions were provided")
 	}
 
 	startpos.Y, err = strconv.Atoi(cursorPositions[0])
@@ -439,6 +441,7 @@ func ParseCursorLocation(cursorPositions []string) (Loc, error) {
 	return startpos, err
 }
 
+// SubtringSafe check no out of bound indices
 func SubtringSafe(utf8s string, from int, to int) string {
 	lastIndex := Count(utf8s)
 	if from > lastIndex {
@@ -450,6 +453,7 @@ func SubtringSafe(utf8s string, from int, to int) string {
 	return utf8s[from:to]
 }
 
+// DownLoadExtractZip download zip from url and unzip in target dir
 func DownLoadExtractZip(url, targetDir string) error {
 	//TermMessage(fmt.Sprintf("Downloading %q to %q", url, targetDir))
 	resp, err := http.Get(url)
@@ -468,6 +472,7 @@ func DownLoadExtractZip(url, targetDir string) error {
 	return nil
 }
 
+// ExtractZip a zip file into a target dir
 func ExtractZip(data *[]byte, targetDir string) error {
 	zipbuf := bytes.NewReader(*data)
 	z, err := zip.NewReader(zipbuf, zipbuf.Size())
@@ -537,6 +542,7 @@ func ExtractZip(data *[]byte, targetDir string) error {
 	return nil
 }
 
+// GeTFileListFromPath gets a full file list from a path
 func GeTFileListFromPath(path, extension string) []string {
 	Files := []string{}
 	files, err := ioutil.ReadDir(path)
@@ -580,6 +586,7 @@ func UpdateFileJSON(filename string, values map[string]string) error {
 	return nil
 }
 
+// WriteFileJSON helper file to write simple JSON files from a map of strings
 func WriteFileJSON(filename string, values map[string]string, parsedValues bool) error {
 	var txt []byte
 
@@ -611,6 +618,7 @@ func WriteFileJSON(filename string, values map[string]string, parsedValues bool)
 	return nil
 }
 
+// ReadFileJSON read a JSON file into a map
 func ReadFileJSON(filename string) (map[string]interface{}, error) {
 	var parsed map[string]interface{}
 
@@ -631,6 +639,7 @@ func ReadFileJSON(filename string) (map[string]interface{}, error) {
 
 // Micro-Ide Services
 
+// UnPackSettingFromDownload unzip Settings from download into settings location
 func UnPackSettingFromDownload(zipfile *string) error {
 	data := []byte(*zipfile)
 	err := ExtractZip(&data, configDir)
@@ -640,6 +649,7 @@ func UnPackSettingFromDownload(zipfile *string) error {
 	return nil
 }
 
+// PackSettingsForUpload pack all settings into a zip file for uploading
 func PackSettingsForUpload() (string, error) {
 	path := strings.ReplaceAll(configDir, "/mi-ide", "") + "/settings.zip"
 	err := zipit(configDir, path)
@@ -713,6 +723,7 @@ func zipit(source, target string) error {
 	return err
 }
 
+// Slurp a file completely into a string
 func Slurp(path string) string {
 	file, err := os.Open(path)
 	if err != nil {

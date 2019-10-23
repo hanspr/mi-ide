@@ -1613,7 +1613,7 @@ func (m *microMenu) TreeViewEvent(name, value, event, when string, x, y int) boo
 				if strings.Contains(v.Buf.Path, value) {
 					curTab = i
 					messenger.Information(value, " : Focused")
-					m.Finish("focuse same file")
+					m.Finish("focus same file")
 					return false
 				}
 			}

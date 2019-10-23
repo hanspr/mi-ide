@@ -17,6 +17,7 @@ var toolBarOffset int
 // Toolbar
 // -------------------------------------------
 
+// ToolBar structure for a toolbar
 type ToolBar struct {
 	active      bool
 	icons       []rune
@@ -24,6 +25,7 @@ type ToolBar struct {
 	luacallback string
 }
 
+// NewToolBar create a new toolbar with predefined icons
 func NewToolBar() *ToolBar {
 	t := new(ToolBar)
 	t.AddIcon('⌹', t.DirView, "")
@@ -39,6 +41,7 @@ func NewToolBar() *ToolBar {
 	return t
 }
 
+// AddIcon adds an icon to the toolbar
 func (t *ToolBar) AddIcon(icon rune, cb func(), luacallback string) {
 	if cb == nil {
 		if luacallback == "" {
@@ -59,6 +62,7 @@ func (t *ToolBar) AddIcon(icon rune, cb func(), luacallback string) {
 	}
 }
 
+// Runes convert toolbar into runes
 func (t *ToolBar) Runes() []rune {
 	var str []rune
 
@@ -70,50 +74,61 @@ func (t *ToolBar) Runes() []rune {
 	return str
 }
 
+// PluginCallBack call back function for plugins
 func (t *ToolBar) PluginCallBack() {
 	Call(t.luacallback)
 }
 
+// Save Save icon callback
 func (t *ToolBar) Save() {
 	CurView().Buf.Save()
 }
 
+// VSplit icon callback
 func (t *ToolBar) VSplit() {
 	CurView().VSplitBinding(true)
 }
 
+// HSplit icon callback
 func (t *ToolBar) HSplit() {
 	CurView().HSplitBinding(true)
 }
 
+// Find icon callback
 func (t *ToolBar) Find() {
 	CurView().FindDialog(true)
 }
 
+// Replace icon callback
 func (t *ToolBar) Replace() {
 	CurView().SearchDialog(true)
 }
 
+// DirView icon callback
 func (t *ToolBar) DirView() {
 	micromenu.DirTreeView()
 }
 
+// Void unimplemented
 func (t *ToolBar) Void() {
 }
 
+// Quit icon callback
 func (t *ToolBar) Quit() {
 	CurView().Quit(true)
 }
 
+// CloudUpload icon callback
 func (t *ToolBar) CloudUpload() {
 	CurView().UploadToCloud(false)
 }
 
+// CloudDownload icon callback
 func (t *ToolBar) CloudDownload() {
 	CurView().DownloadFromCloud(false)
 }
 
-// Handle ToolBarClick
+// ToolbarHandleMouseEvent Handle ToolBarClick
 func (t *ToolBar) ToolbarHandleMouseEvent(x int) {
 	var pos int
 
@@ -124,6 +139,7 @@ func (t *ToolBar) ToolbarHandleMouseEvent(x int) {
 	t.callback[pos-1]()
 }
 
+// FixTabsIconArea fix the icon area filling with black background to avoid wide chars leaving transparent cells
 func (t *ToolBar) FixTabsIconArea() {
 	// prefill the length with with black background spaces
 	var tStyle tcell.Style
@@ -247,7 +263,7 @@ func TabbarHandleMouseEvent(event tcell.Event) {
 			return
 		}
 		// Find which tab was clicked
-		for i, _ := range tabs {
+		for i := range tabs {
 			if x+tabBarOffset < indicies[i]+toffset {
 				tabnum = i
 				break
@@ -311,7 +327,7 @@ func TabbarString(toffset int) (string, map[int]int) {
 				olen := Count(str)
 				str = "←" + str[offset+1:]
 				diff := olen - Count(str)
-				for a, _ := range tabs {
+				for a := range tabs {
 					if a < tabIndex {
 						indicies[a] = 0
 						continue
@@ -351,10 +367,10 @@ func TabbarString(toffset int) (string, map[int]int) {
 	return str, indicies
 }
 
-// Display a Menu, Icons ToolBar, and Tabs
+// DisplayTabs Display a Menu, Icons ToolBar, and Tabs
 func DisplayTabs() {
 	var tStyle tcell.Style
-	var tabActive bool = false
+	var tabActive = false
 
 	// Display ToolBar
 	w, _ := screen.Size()

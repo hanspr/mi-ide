@@ -35,12 +35,12 @@ func init() {
 func LoadFile(module string, file string, data string) error {
 	pluginDef := "local P = {};" + module + " = P;setmetatable(" + module + ", {__index = _G});setfenv(1, P);"
 
-	if fn, err := L.Load(strings.NewReader(pluginDef+data), file); err != nil {
+	fn, err := L.Load(strings.NewReader(pluginDef+data), file)
+	if err != nil {
 		return err
-	} else {
-		L.Push(fn)
-		return L.PCall(0, lua.MultRet, nil)
 	}
+	L.Push(fn)
+	return L.PCall(0, lua.MultRet, nil)
 }
 
 // Import allows a lua plugin to import a package

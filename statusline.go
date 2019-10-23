@@ -17,6 +17,7 @@ type Statusline struct {
 	hotspot map[string]Loc
 }
 
+// EncodingSelected Change encoding settings for current buffer
 func (sline *Statusline) EncodingSelected(values map[string]string) {
 	b := sline.view.Buf
 	b.encoding = true
@@ -30,6 +31,7 @@ func (sline *Statusline) EncodingSelected(values map[string]string) {
 	b.IsModified = true
 }
 
+// MouseEvent handle mouse events on the status line
 func (sline *Statusline) MouseEvent(e *tcell.EventMouse, rx, ry int) {
 	if e.Buttons() != tcell.Button1 || e.HasMotion() == true {
 		return

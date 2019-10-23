@@ -15,7 +15,7 @@ import (
 
 	"github.com/blang/semver"
 	"github.com/flynn/json5"
-	"github.com/yuin/gopher-lua"
+	lua "github.com/yuin/gopher-lua"
 )
 
 var (
@@ -51,7 +51,7 @@ type PluginPackages []*PluginPackage
 type PluginVersion struct {
 	pack    *PluginPackage
 	Version semver.Version
-	Url     string
+	URL     string
 	Require PluginDependencies
 }
 
@@ -164,7 +164,7 @@ func (pr PluginRepository) Fetch() PluginPackages {
 func (pv *PluginVersion) UnmarshalJSON(data []byte) error {
 	var values struct {
 		Version semver.Version
-		Url     string
+		URL     string
 		Require map[string]string
 	}
 
@@ -172,7 +172,7 @@ func (pv *PluginVersion) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	pv.Version = values.Version
-	pv.Url = values.Url
+	pv.URL = values.URL
 	pv.Require = make(PluginDependencies, 0)
 
 	for k, v := range values.Require {
@@ -381,8 +381,8 @@ func GetInstalledPluginVersion(name string) string {
 
 // DownloadAndInstall downloads and installs the given plugin and version
 func (pv *PluginVersion) DownloadAndInstall() error {
-	messenger.AddLog(fmt.Sprintf("Downloading %q (%s) from %q", pv.pack.Name, pv.Version, pv.Url))
-	resp, err := http.Get(pv.Url)
+	messenger.AddLog(fmt.Sprintf("Downloading %q (%s) from %q", pv.pack.Name, pv.Version, pv.URL))
+	resp, err := http.Get(pv.URL)
 	if err != nil {
 		return err
 	}
@@ -462,6 +462,7 @@ func (pv *PluginVersion) DownloadAndInstall() error {
 	return nil
 }
 
+// Get Get plugin packages
 func (pl PluginPackages) Get(name string) *PluginPackage {
 	for _, p := range pl {
 		if p.Name == name {
@@ -471,6 +472,7 @@ func (pl PluginPackages) Get(name string) *PluginPackage {
 	return nil
 }
 
+// GetAllVersions get all plugin versions
 func (pl PluginPackages) GetAllVersions(name string) PluginVersions {
 	result := make(PluginVersions, 0)
 	p := pl.Get(name)
@@ -482,6 +484,7 @@ func (pl PluginPackages) GetAllVersions(name string) PluginVersions {
 	return result
 }
 
+// Join all dependencies
 func (req PluginDependencies) Join(other PluginDependencies) PluginDependencies {
 	m := make(map[string]*PluginDependency)
 	for _, r := range req {
@@ -506,7 +509,7 @@ func (req PluginDependencies) Join(other PluginDependencies) PluginDependencies 
 }
 
 // Resolve resolves dependencies between different plugins
-func (all PluginPackages) Resolve(selectedVersions PluginVersions, open PluginDependencies) (PluginVersions, error) {
+func (pl PluginPackages) Resolve(selectedVersions PluginVersions, open PluginDependencies) (PluginVersions, error) {
 	if len(open) == 0 {
 		return selectedVersions, nil
 	}
@@ -514,16 +517,16 @@ func (all PluginPackages) Resolve(selectedVersions PluginVersions, open PluginDe
 	if currentRequirement != nil {
 		if selVersion := selectedVersions.find(currentRequirement.Name); selVersion != nil {
 			if currentRequirement.Range(selVersion.Version) {
-				return all.Resolve(selectedVersions, stillOpen)
+				return pl.Resolve(selectedVersions, stillOpen)
 			}
 			return nil, fmt.Errorf("unable to find a matching version for \"%s\"", currentRequirement.Name)
 		}
-		availableVersions := all.GetAllVersions(currentRequirement.Name)
+		availableVersions := pl.GetAllVersions(currentRequirement.Name)
 		sort.Sort(availableVersions)
 
 		for _, version := range availableVersions {
 			if currentRequirement.Range(version.Version) {
-				resolved, err := all.Resolve(append(selectedVersions, version), stillOpen.Join(version.Require))
+				resolved, err := pl.Resolve(append(selectedVersions, version), stillOpen.Join(version.Require))
 
 				if err == nil {
 					return resolved, nil
@@ -577,10 +580,10 @@ func UninstallPlugin(name string) {
 }
 
 // Install installs the plugin
-func (pl PluginPackage) Install() {
+func (pp PluginPackage) Install() {
 	selected, err := GetAllPluginPackages().Resolve(GetInstalledVersions(true), PluginDependencies{
 		&PluginDependency{
-			Name:  pl.Name,
+			Name:  pp.Name,
 			Range: semver.Range(func(v semver.Version) bool { return true }),
 		}})
 	if err != nil {
@@ -624,6 +627,7 @@ func UpdatePlugins(plugins []string) {
 	selected.install()
 }
 
+// GetAvailableLanguages get list of published languages
 func GetAvailableLanguages() map[string]string {
 	langs := make(map[string]string)
 	resp, err := http.Get("https://raw.githubusercontent.com/hanspr/mi-channel/master/langs.json")
@@ -643,6 +647,7 @@ func GetAvailableLanguages() map[string]string {
 	return nil
 }
 
+// InstallLanguage install a new language
 func InstallLanguage(url string) string {
 	tokens := strings.Split(url, "/")
 	fileName := tokens[len(tokens)-1]
@@ -663,6 +668,7 @@ func InstallLanguage(url string) string {
 	return Language.Translate("Language") + " " + Language.Translate("Installed")
 }
 
+// PathExists verify path exists
 func PathExists(path string) bool {
 	if _, err := os.Stat(path); os.IsNotExist(err) {
 		return false

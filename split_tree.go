@@ -362,7 +362,7 @@ func getTopSplitTree(s *SplitTree) *SplitTree {
 	return getTopSplitTree(s.parent)
 }
 
-func viewNum_Map(s *SplitTree) {
+func viewNumMap(s *SplitTree) {
 	for _, node := range s.children {
 		if n, ok := node.(*LeafNode); ok {
 			// Set the position of this view in the tree
@@ -376,7 +376,7 @@ func viewNum_Map(s *SplitTree) {
 			// Increase the index
 			viewIndex[curTab]++
 		} else if n, ok := node.(*SplitTree); ok {
-			viewNum_Map(n)
+			viewNumMap(n)
 		}
 	}
 }
@@ -390,9 +390,10 @@ func loadNumMap(l *LeafNode) {
 	}
 	pp := getTopSplitTree(l.parent)
 	viewIndex[curTab] = 0
-	viewNum_Map(pp)
+	viewNumMap(pp)
 }
 
+// GetNextPrevView find next or previous view
 func (l *LeafNode) GetNextPrevView(direction int) int {
 	// Reload only if the ammount fo views has changed
 	if viewIndex[curTab] != len(tabs[curTab].Views) {
@@ -413,11 +414,13 @@ func (l *LeafNode) GetNextPrevView(direction int) int {
 	return posView[strconv.Itoa(curTab)+"-"+strconv.Itoa(vp+direction)]
 }
 
+// GetViewNumPosition get the view number
 func (l *LeafNode) GetViewNumPosition(x int) int {
 	loadNumMap(l)
 	return viewPos[strconv.Itoa(curTab)+"-"+strconv.Itoa(x)]
 }
 
+// GetPositionViewNum get the logical position from a view number
 func (l *LeafNode) GetPositionViewNum(vp int) int {
 	loadNumMap(l)
 	if vp >= viewIndex[curTab] {

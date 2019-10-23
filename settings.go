@@ -83,7 +83,7 @@ func InitGlobalSettings() {
 	Clip.SetCloudPath(cloudPath, globalSettings["mi-key"].(string), globalSettings["mi-pass"].(string), globalSettings["mi-phrase"].(string))
 }
 
-// InitLocalSettings
+// InitLocalSettings get known local settings for this opened file
 // 1.- scans the congig/settings.json and sets the options
 // 2.- scans language settings for that particular filetype
 // 3.- scans users saved settings for this particular file
@@ -134,19 +134,19 @@ func InitLocalSettings(buf *Buffer) {
 
 	// 2.- Load Settings based on settings/filetype.json
 	filename = configDir + "/settings/" + buf.Settings["filetype"].(string) + ".json"
-	ftyp_settings, err := ReadFileJSON(filename)
+	ftypeSettings, err := ReadFileJSON(filename)
 	if err == nil {
-		for k, v := range ftyp_settings {
+		for k, v := range ftypeSettings {
 			buf.Settings[k] = v
 		}
 	}
 
 	// 3.- Load Settings based on buffer/thisfile.settings
 	filename = configDir + "/buffers/" + strings.ReplaceAll(ReplaceHome(buf.AbsPath)+".settings", "/", "")
-	f_settings, err := ReadFileJSON(filename)
+	fSettings, err := ReadFileJSON(filename)
 	if err == nil {
 		// Load previous saved settings for this file
-		for k, v := range f_settings {
+		for k, v := range fSettings {
 			buf.Settings[k] = v
 		}
 	} else {

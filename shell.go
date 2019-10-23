@@ -39,6 +39,7 @@ func RunShellCommand(input string) (string, error) {
 	return ExecCommand(inputCmd, args[1:]...)
 }
 
+// RunBackgroundShell running shell in background
 func RunBackgroundShell(input string) {
 	args, err := shellwords.Split(input)
 	if err != nil {
@@ -65,6 +66,7 @@ func RunBackgroundShell(input string) {
 	}()
 }
 
+// RunInteractiveShell open an interactive shell
 func RunInteractiveShell(input string, wait bool, getOutput bool) (string, error) {
 	args, err := shellwords.Split(input)
 	if err != nil {
@@ -122,8 +124,7 @@ func HandleShellCommand(input string, openTerm bool, waitToFinish bool) string {
 	if !openTerm {
 		RunBackgroundShell(input)
 		return ""
-	} else {
-		output, _ := RunInteractiveShell(input, waitToFinish, false)
-		return output
 	}
+	output, _ := RunInteractiveShell(input, waitToFinish, false)
+	return output
 }

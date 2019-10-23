@@ -12,6 +12,7 @@ import (
 	"github.com/hanspr/terminal"
 )
 
+// VTIdle constants
 const (
 	VTIdle    = iota // Waiting for a new command
 	VTRunning        // Currently running a command

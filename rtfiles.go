@@ -7,6 +7,7 @@ import (
 	"path/filepath"
 )
 
+// RTColorscheme Color Scheme definitions
 const (
 	RTColorscheme = "colorscheme"
 	RTSyntax      = "syntax"
