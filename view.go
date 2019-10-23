@@ -208,7 +208,7 @@ func (v *View) paste(clip string) {
 	v.Cursor.Loc = Start
 
 	if v.Buf.Settings["smartindent"].(bool) {
-		clip = strings.Trim(clip, " \t")
+		//clip = strings.Trim(clip, " \t")
 		v.Buf.Insert(v.Cursor.Loc, clip)
 		x := v.Cursor.Loc.X
 		spc := CountLeadingWhitespace(v.Buf.Line(v.Cursor.Y))
