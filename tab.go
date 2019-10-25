@@ -226,6 +226,9 @@ func (t *Tab) Resize() {
 
 // CurView returns the current view
 func CurView() *View {
+	if len(tabs) == 0 {
+		return nil
+	}
 	curTab := tabs[curTab]
 	return curTab.Views[curTab.CurView]
 }

@@ -462,6 +462,10 @@ func (v *View) Bottomline() int {
 // Relocate moves the view window so that the cursor is in view, only if out of view
 // This is useful if the user has scrolled far away, and then starts typing
 func (v *View) Relocate() bool {
+	if CurView() != nil && CurView().Num != v.Num {
+		// Freeze if it is not the active view
+		return false
+	}
 	scrollmargin := int(v.Buf.Settings["scrollmargin"].(float64))
 	cy := v.Cursor.Y
 	height := v.Bottomline() - v.Topline

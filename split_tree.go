@@ -72,6 +72,8 @@ func (l *LeafNode) VSplit(buf *Buffer, splitIndex int) {
 		}
 
 		newView := NewView(buf)
+		newView.savedLoc = l.view.savedLoc
+		newView.savedLine = buf.Line(newView.savedLoc.Y)
 		newView.TabNum = l.parent.tabNum
 
 		l.parent.children = append(l.parent.children, nil)
@@ -83,8 +85,6 @@ func (l *LeafNode) VSplit(buf *Buffer, splitIndex int) {
 		tab.Views[splitIndex] = newView
 
 		tab.CurView = splitIndex
-		newView.savedLoc = Loc{0, 0}
-		newView.savedLine = buf.Line(0)
 	} else {
 		if splitIndex > 1 {
 			splitIndex = 1
@@ -95,6 +95,8 @@ func (l *LeafNode) VSplit(buf *Buffer, splitIndex int) {
 		s.parent = l.parent
 		s.tabNum = l.parent.tabNum
 		newView := NewView(buf)
+		newView.savedLoc = l.view.savedLoc
+		newView.savedLine = buf.Line(newView.savedLoc.Y)
 		newView.TabNum = l.parent.tabNum
 
 		if splitIndex == 1 {
@@ -110,8 +112,6 @@ func (l *LeafNode) VSplit(buf *Buffer, splitIndex int) {
 		tab.Views[splitIndex] = newView
 
 		tab.CurView = splitIndex
-		newView.savedLoc = Loc{0, 0}
-		newView.savedLine = buf.Line(0)
 	}
 
 	tab.Resize()
@@ -130,6 +130,8 @@ func (l *LeafNode) HSplit(buf *Buffer, splitIndex int) {
 		}
 
 		newView := NewView(buf)
+		newView.savedLoc = l.view.savedLoc
+		newView.savedLine = buf.Line(newView.savedLoc.Y)
 		newView.TabNum = l.parent.tabNum
 
 		l.parent.children = append(l.parent.children, nil)
@@ -141,8 +143,6 @@ func (l *LeafNode) HSplit(buf *Buffer, splitIndex int) {
 		tab.Views[splitIndex] = newView
 
 		tab.CurView = splitIndex
-		newView.savedLoc = Loc{0, 0}
-		newView.savedLine = buf.Line(0)
 	} else {
 		if splitIndex > 1 {
 			splitIndex = 1
@@ -153,6 +153,8 @@ func (l *LeafNode) HSplit(buf *Buffer, splitIndex int) {
 		s.tabNum = l.parent.tabNum
 		s.parent = l.parent
 		newView := NewView(buf)
+		newView.savedLoc = l.view.savedLoc
+		newView.savedLine = buf.Line(newView.savedLoc.Y)
 		newView.TabNum = l.parent.tabNum
 		newView.Num = len(tab.Views)
 		if splitIndex == 1 {
@@ -168,8 +170,6 @@ func (l *LeafNode) HSplit(buf *Buffer, splitIndex int) {
 		tab.Views[splitIndex] = newView
 
 		tab.CurView = splitIndex
-		newView.savedLoc = Loc{0, 0}
-		newView.savedLine = buf.Line(0)
 	}
 
 	tab.Resize()
