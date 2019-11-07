@@ -1956,7 +1956,7 @@ func (v *View) SafeQuit(usePlugin bool) bool {
 	return true
 }
 
-// QuitOthers Binding to close oposit window
+// QuitOthers Binding to close oposite window
 func (v *View) QuitOthers(usePlugin bool) bool {
 	if v.Type == vtLog || v.Type == vtTerm || v.Type == vtHelp {
 		return false
@@ -1969,6 +1969,8 @@ func (v *View) QuitOthers(usePlugin bool) bool {
 				v.Cursor.GotoLoc(curloc)
 				return false
 			} else if v.Num != vo.Num {
+				// Avoid on focus to change location when closing
+				v.savedLoc = curloc
 				vo.Quit(true)
 				tabs[curTab].CurView = v.Num
 				v.Cursor.GotoLoc(curloc)
@@ -2166,6 +2168,9 @@ func (v *View) HSplitBinding(usePlugin bool) bool {
 		} else {
 			// Split current Buffer
 			v.HSplit(v.Buf)
+			v.frozen = false
+			v.Relocate()
+			v.frozen = true
 			CurView().Relocate()
 		}
 		if usePlugin {

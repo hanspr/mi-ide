@@ -112,6 +112,8 @@ type View struct {
 
 	// Virtual terminal
 	term *Terminal
+
+	frozen bool
 }
 
 // NewView returns a new fullscreen view
@@ -462,7 +464,7 @@ func (v *View) Bottomline() int {
 // Relocate moves the view window so that the cursor is in view, only if out of view
 // This is useful if the user has scrolled far away, and then starts typing
 func (v *View) Relocate() bool {
-	if CurView() != nil && CurView().Num != v.Num {
+	if CurView() != nil && CurView().Num != v.Num && v.frozen {
 		// Freeze if it is not the active view
 		return false
 	}
@@ -1022,6 +1024,7 @@ func (v *View) DisplayView() {
 		// HP : Set de cursor in last known position for this view
 		// It happens when 2+ views point to same buffer
 		// Set into current view boudaries
+		messenger.AddLog("Focus event")
 		if CurView().savedLoc.Y > CurView().Buf.End().Y {
 			CurView().savedLoc.Y = CurView().Buf.End().Y
 			if CurView().savedLoc.X > CurView().Buf.End().X {
