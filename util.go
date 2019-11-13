@@ -189,8 +189,11 @@ func MakeRelative(path, base string) (string, error) {
 // == -1 balanced } .. {, but requires indent on next line
 // == -2 unbalanced but is a closing brace and is the first one
 func BracePairsAreBalanced(str string) int {
-	r := regexp.MustCompile(`^[ \t]+`)
+	r := regexp.MustCompile(`["'].*?["']`)
 	str = r.ReplaceAllString(str, "")
+	r = regexp.MustCompile(`^[ \t]+`)
+	str = r.ReplaceAllString(str, "")
+	pc := ""
 	k := 0
 	b := 0
 	w := false
@@ -205,7 +208,7 @@ func BracePairsAreBalanced(str string) int {
 					w = false
 				}
 			}
-		} else if c == "}" || c == "]" || c == ")" {
+		} else if (c == "}" || c == "]" || c == ")") && (pc != "}" && pc != "]" && pc != ")") {
 			b--
 			if k == 0 {
 				f = true
@@ -216,6 +219,7 @@ func BracePairsAreBalanced(str string) int {
 		} else if k == 0 {
 			w = true
 		}
+		pc = c
 		k++
 	}
 	return b
