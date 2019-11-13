@@ -2470,8 +2470,12 @@ func (v *View) FindDialogFinished(values map[string]string) {
 	}
 	search = mods + search
 	lastSearch = search
-	Search(search, v, true)
-	StartSearchMode()
+	if Search(search, v, true) {
+		StartSearchMode()
+	} else {
+		v.Cursor.GotoLoc(v.searchSave)
+		v.Relocate()
+	}
 }
 
 // Micro-Ide Services

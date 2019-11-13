@@ -146,13 +146,13 @@ func searchUp(r *regexp.Regexp, v *View, start, end Loc) bool {
 // Search searches in the view for the given regex. The down bool
 // specifies whether it should search down from the searchStart position
 // or up from there
-func Search(searchStr string, v *View, down bool) {
+func Search(searchStr string, v *View, down bool) bool {
 	if searchStr == "" {
-		return
+		return false
 	}
 	r, err := regexp.Compile(searchStr)
 	if err != nil {
-		return
+		return false
 	}
 
 	var found bool
@@ -171,6 +171,7 @@ func Search(searchStr string, v *View, down bool) {
 	} else {
 		v.Relocate()
 	}
+	return found
 }
 
 // Search dialogs preview of found text
