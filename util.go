@@ -194,6 +194,7 @@ func BracePairsAreBalanced(str string) int {
 	r = regexp.MustCompile(`^[ \t]+`)
 	str = r.ReplaceAllString(str, "")
 	pc := ""
+	bs := false
 	k := 0
 	b := 0
 	w := false
@@ -208,9 +209,16 @@ func BracePairsAreBalanced(str string) int {
 					w = false
 				}
 			}
-		} else if (c == "}" || c == "]" || c == ")") && (pc != "}" && pc != "]" && pc != ")") {
+		} else if c == "}" || c == "]" || c == ")" {
+			if pc == "}" || pc == "]" || pc == ")" {
+				if bs == true && b == -1 {
+					b--
+				}
+				continue
+			}
 			b--
 			if k == 0 {
+				bs = true
 				f = true
 				b--
 			} else if w {
