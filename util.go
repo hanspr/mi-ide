@@ -210,8 +210,8 @@ func BracePairsAreBalanced(str string) int {
 				}
 			}
 		} else if c == "}" || c == "]" || c == ")" {
-			if pc == "}" || pc == "]" || pc == ")" {
-				if bs == true && b == -1 {
+			if bs == true && (pc == "}" || pc == "]" || pc == ")") {
+				if b == -1 {
 					b--
 				}
 				continue
