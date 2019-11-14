@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"path/filepath"
 	"regexp"
 	"strconv"
 	"strings"
@@ -1069,6 +1070,8 @@ func (v *View) saveToFile(filename string) {
 	} else {
 		v.Buf.Path = filename
 		v.Buf.name = filename
+		v.Buf.AbsPath, _ = filepath.Abs(filename)
+		v.Buf.fname = filepath.Base(filename)
 		messenger.Message(Language.Translate("Saved") + " " + filename)
 	}
 }
