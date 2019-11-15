@@ -513,6 +513,23 @@ func (f *Frame) SetValue(k, v string) {
 	a.screen.Show()
 }
 
+//InsertStringAt Inserts string in current value at position X
+func (e *AppElement) InsertStringAt(x int, clip string) {
+	a := e.microapp
+	var nr []rune
+	r := []rune(e.value)
+	cr := []rune(clip)
+	nr = append(nr, r[:e.cursor.X]...)
+	nr = append(nr, cr...)
+	nr = append(nr, r[e.cursor.X:]...)
+	e.value = string(nr)
+	e.cursor.X += len(cr)
+	a.cursor.X += len(cr)
+	e.DrawTextBox()
+	a.screen.ShowCursor(a.cursor.X+e.frame.left, a.cursor.Y+e.frame.top)
+	a.screen.Show()
+}
+
 // GetChecked get checked property
 func (f *Frame) GetChecked(k string) bool {
 	e, ok := f.elements[k]
@@ -1611,9 +1628,7 @@ func (e *AppElement) TextBoxKeyEvent(key string, x, y int) {
 			return
 		} else if key == "Ctrl+V" {
 			clip := Clip.ReadFrom("local", "cip")
-			e.value = e.value + clip
-			e.TextBoxKeyEvent("End", x, y)
-			return
+			e.InsertStringAt(e.cursor.X, clip)
 		} else if key == "Ctrl+R" || key == "Ctrl+K" {
 			e.value = ""
 			a.cursor.X = e.aposb.X
@@ -1806,9 +1821,7 @@ func (a *MicroApp) HandleEvents(event tcell.Event) {
 	case *tcell.EventPaste:
 		e := a.GetActiveElement(a.activeElement)
 		if e != nil && e.form == "textbox" {
-			e.frame.SetValue(a.activeElement, ev.Text())
-			e.frame.SetFocus(a.activeElement, "E")
-			e := a.GetActiveElement(a.activeElement)
+			e.InsertStringAt(e.cursor.X, ev.Text())
 			if e.callback != nil {
 				e.callback(e.name, e.value, "Paste", "POST", e.cursor.X, e.cursor.Y)
 			} else if e.luacallback != "" {
