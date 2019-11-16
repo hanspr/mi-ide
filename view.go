@@ -208,7 +208,7 @@ func (v *View) paste(clip string) {
 		v.Buf.RemoveTrailingSpace(v.Cursor.Loc)
 	}
 	v.Cursor.Loc = Start
-	messenger.AddLog("???")
+
 	if v.Buf.Settings["smartindent"].(bool) {
 		//clip = strings.Trim(clip, " \t")
 		v.Buf.Insert(v.Cursor.Loc, clip)
