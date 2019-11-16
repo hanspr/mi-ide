@@ -208,7 +208,7 @@ func (v *View) paste(clip string) {
 		v.Buf.RemoveTrailingSpace(v.Cursor.Loc)
 	}
 	v.Cursor.Loc = Start
-
+	messenger.AddLog("???")
 	if v.Buf.Settings["smartindent"].(bool) {
 		//clip = strings.Trim(clip, " \t")
 		v.Buf.Insert(v.Cursor.Loc, clip)
@@ -223,7 +223,7 @@ func (v *View) paste(clip string) {
 			spc2 := CountLeadingWhitespace(v.Buf.Line(v.Cursor.Y))
 			if spc != spc2 {
 				// Was indented move cursor location to pasted end string
-				v.Cursor.GotoLoc(Loc{x + spc2, v.Cursor.Loc.Y})
+				v.Cursor.GotoLoc(Loc{x + (spc2 - spc), v.Cursor.Loc.Y})
 			}
 		}
 	} else {
