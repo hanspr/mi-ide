@@ -1348,7 +1348,7 @@ func (m *microMenu) SetTabSpace(name, value, event, when string, x, y int) bool 
 }
 
 // ---------------------------------------
-// Local Configuracion : language or file
+// Local Configuration : language or file
 // ---------------------------------------
 
 const mmBufferSettings = "autoclose,autoindent,eofnewline,fileformat,indentchar,keepautoindent,matchbrace,rmtrailingws,smartindent,smartpaste,softwrap,tabindents,tabmovement,tabstospaces,tabsize"
@@ -1652,13 +1652,13 @@ func (m *microMenu) getDir() (string, int) {
 		m.LastPath = "/"
 	}
 	width := 0
-	dir = "../]{d}⊞  ../"
+	dir = "../]{d}📂  ../"
 	files, _ := ioutil.ReadDir(m.LastPath)
 	for _, f := range files {
 		if f.IsDir() {
-			s = "/]{d}⊞  " + f.Name() + "/"
+			s = "/]{d}📂  " + f.Name() + "/"
 		} else {
-			s = "]   " + f.Name()
+			s = "]  📄  " + f.Name()
 		}
 		if Count(s) > width {
 			width = Count(s)
