@@ -850,22 +850,28 @@ func (e *AppElement) DrawTextBox() {
 // DrawRadio draw a radio element
 func (e *AppElement) DrawRadio() {
 	var radio string
+	s := tcell.Style.Foreground(e.microapp.defStyle, tcell.ColorRed)
 
 	radio = "◎ "
 	if e.checked == true {
+		s = tcell.Style.Foreground(e.microapp.defStyle, tcell.ColorGreen)
 		radio = "◉ "
 	}
-	e.frame.PrintStyle(radio+e.label, e.pos.X, e.pos.Y, &e.style)
+	e.frame.PrintStyle(radio, e.pos.X, e.pos.Y, &s)
+	e.frame.PrintStyle(e.label, e.pos.X+2, e.pos.Y, &e.style)
 }
 
 // DrawCheckBox draw a checkbox element
 func (e *AppElement) DrawCheckBox() {
+	s := tcell.Style.Foreground(e.microapp.defStyle, tcell.ColorRed)
 	check := "✗ "
 
 	if e.checked == true {
+		s = tcell.Style.Foreground(e.microapp.defStyle, tcell.ColorGreen)
 		check = "✔ "
 	}
-	e.frame.PrintStyle(check+e.label, e.pos.X, e.pos.Y, &e.style)
+	e.frame.PrintStyle(check, e.pos.X, e.pos.Y, &s)
+	e.frame.PrintStyle(e.label, e.pos.X+2, e.pos.Y, &e.style)
 }
 
 // DrawSelect draw a select element
