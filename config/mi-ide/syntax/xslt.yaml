@@ -11,7 +11,7 @@ rules:
     - preproc: "disable-output-escaping=\"yes\""
     - symbol.tag: "</?[A-Za-z0-9:]+/?[ >]"
     - default: "http://[A-Za-z0-9\\-_/\\.]+"
-    - special: "\\[[A-Z]+:|\\]"
+    - special: "\\[[A-Z0-9]+:|\\]"
     - special: "(;[A-Za-z0-9_;]+)[;\\]]"
     - type.keyword: "(current|match|select|test) ?="
     - type.keyword: "</?xsl:[A-Za-z\\-]+[ >]"
