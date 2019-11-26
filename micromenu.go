@@ -1652,11 +1652,11 @@ func (m *microMenu) getDir() (string, int) {
 		m.LastPath = "/"
 	}
 	width := 0
-	dir = "../]{d}📂  ../"
+	dir = "../]{d}📂 ../"
 	files, _ := ioutil.ReadDir(m.LastPath)
 	for _, f := range files {
 		if f.IsDir() {
-			s = "/]{d}📂  " + f.Name() + "/"
+			s = "/]{d}📂 " + f.Name() + "/"
 		} else {
 			s = "]  📄  " + f.Name()
 		}
