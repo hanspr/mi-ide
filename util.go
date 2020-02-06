@@ -124,7 +124,7 @@ func FSize(f *os.File) int64 {
 // If it is a unicode character, then it does not match
 // Word characters are defined as [A-Za-z0-9_]
 func IsWordChar(str string) bool {
-	re := regexp.MustCompile(`\p{L}|\p{N}`)
+	re := regexp.MustCompile(`[\p{L}\p{N}_]`)
 	return re.MatchString(str)
 }
 
