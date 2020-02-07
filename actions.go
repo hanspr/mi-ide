@@ -107,7 +107,7 @@ func (v *View) MousePress(usePlugin bool, e *tcell.EventMouse) bool {
 		if v.tripleClick == true {
 			v.Cursor.SelectLine()
 		} else if v.doubleClick == true {
-			v.Cursor.SelectWord()
+			v.Cursor.SelectWord(true)
 		} else {
 			v.Cursor.OrigSelection[0] = v.Cursor.Loc
 			v.Cursor.CurSelection[0] = v.Cursor.Loc
@@ -2253,7 +2253,7 @@ func (v *View) SpawnMultiCursor(usePlugin bool) bool {
 		}
 
 		if !spawner.HasSelection() {
-			spawner.SelectWord()
+			spawner.SelectWord(false)
 		} else {
 			c := &Cursor{
 				buf: v.Buf,

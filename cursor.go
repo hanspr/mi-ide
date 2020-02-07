@@ -133,19 +133,34 @@ func (c *Cursor) AddLineToSelection() {
 }
 
 // SelectWord selects the word the cursor is currently on
-func (c *Cursor) SelectWord() {
+func (c *Cursor) SelectWord(IncludeRepeatedNoneWords bool) {
 	if len(c.buf.Line(c.Y)) == 0 {
 		return
 	}
 
+	forward, backward := c.X, c.X
+
 	if !IsWordChar(string(c.RuneUnder(c.X))) {
-		c.SetSelectionStart(c.Loc)
-		c.SetSelectionEnd(c.Loc.Move(1, c.buf))
-		c.OrigSelection = c.CurSelection
+		// Search for repeated same char
+		if IncludeRepeatedNoneWords {
+			for backward > 0 && string(c.RuneUnder(backward-1)) == string(c.RuneUnder(backward)) {
+				backward--
+			}
+			c.SetSelectionStart(Loc{backward, c.Y})
+			c.OrigSelection[0] = c.CurSelection[0]
+			for forward < Count(c.buf.Line(c.Y))-1 && string(c.RuneUnder(forward+1)) == string(c.RuneUnder(forward)) {
+				forward++
+			}
+			c.SetSelectionEnd(Loc{forward, c.Y}.Move(1, c.buf))
+			c.OrigSelection[1] = c.CurSelection[1]
+			c.Loc = c.CurSelection[1]
+		} else {
+			c.SetSelectionStart(c.Loc)
+			c.SetSelectionEnd(c.Loc.Move(1, c.buf))
+			c.OrigSelection = c.CurSelection
+		}
 		return
 	}
-
-	forward, backward := c.X, c.X
 
 	for backward > 0 && IsWordChar(string(c.RuneUnder(backward-1))) {
 		backward--
