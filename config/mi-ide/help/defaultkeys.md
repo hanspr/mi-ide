@@ -105,7 +105,8 @@ Ctrl-A
 | AltUpArrow                        | Move current line or selected lines up    |
 | AltDownArrow                      | Move current line of selected lines down  |
 | AltBackspace or AltCtrl+H         | Delete word left                          |
-| Alt-l                             | Delete line                               |
+| Alt-k                             | Delete line                               |
+| Alt-l                             | Toggle selection case                     |
 | Ctrl+A                            | Select all                                |
 
 ### Multiple cursors
