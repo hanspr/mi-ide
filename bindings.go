@@ -79,6 +79,7 @@ var bindingActions = map[string]func(*View, bool) bool{
 	"SelectPageDown":         (*View).SelectPageDown,
 	"StartOfLine":            (*View).StartOfLine,
 	"EndOfLine":              (*View).EndOfLine,
+	"ToggleCase":             (*View).ToggleCase,
 	"ToggleRuler":            (*View).ToggleRuler,
 	"ToggleSoftWrap":         (*View).ToggleSoftWrap,
 	"JumpLine":               (*View).JumpLine,
@@ -114,7 +115,7 @@ var bindingActions = map[string]func(*View, bool) bool{
 	// This was changed to InsertNewline but I don't want to break backwards compatibility
 	"InsertEnter": (*View).InsertNewline,
 
-	// Micro-Ide Services
+	// mi-ide Services
 	"UploadToCloud":     (*View).UploadToCloud,
 	"DownloadFromCloud": (*View).DownloadFromCloud,
 	"CloudSettings":     (*View).CloudSettings,
@@ -567,7 +568,7 @@ func DefaultBindings() map[string]string {
 		"CtrlR":         "SearchDialog",
 		"Insert":        "ToggleOverwriteMode",
 
-		// Micro-Ide Defaults
+		// mi-ide Defaults
 		"F1":        "OpenFile",
 		"F13":       "OpenDirView",
 		"F2":        "Save",
@@ -585,6 +586,7 @@ func DefaultBindings() map[string]string {
 		"Alt-k":     "DeleteLine",
 		"Alt-V":     "VSplit",
 		"Alt-H":     "HSplit",
+		"Alt-l":     "ToggleCase",
 		"Alt-Enter": "EndOfLine,InsertNewline",
 		"CtrlJ":     "EndOfLine,InsertNewline",
 

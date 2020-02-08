@@ -2426,6 +2426,26 @@ func (v *View) RemoveAllMultiCursors(usePlugin bool) bool {
 	return false
 }
 
+func (v *View) ToggleCase(usePlugin bool) bool {
+	if v.Cursor.HasSelection() {
+		text := v.Cursor.GetSelection()
+		re, _ := regexp.Compile(`\p{Lu}`)
+		if re.MatchString(text) {
+			text = strings.ToLower(text)
+		} else {
+			text = strings.ToUpper(text)
+		}
+		sStart := v.Cursor.CurSelection[0]
+		sEnd := v.Cursor.CurSelection[1]
+		v.Cursor.DeleteSelection()
+		v.Cursor.ResetSelection()
+		v.Buf.Insert(v.Cursor.Loc, text)
+		v.Cursor.SetSelectionStart(sStart)
+		v.Cursor.SetSelectionEnd(sEnd)
+	}
+	return true
+}
+
 // SEARCH REPLACE
 
 // SearchDialog create search dialog box
@@ -2478,7 +2498,7 @@ func (v *View) FindDialogFinished(values map[string]string) {
 	}
 }
 
-// Micro-Ide Services
+// mi-ide Services
 
 // UploadToCloud uload file to the cloud
 func (v *View) UploadToCloud(plugin bool) bool {
