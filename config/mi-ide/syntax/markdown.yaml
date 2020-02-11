@@ -6,30 +6,27 @@ detect:
 rules:
     # Tables (Github extension)
     - normal: ".*\\|.*"
-
-    # Tables (Github extension)
-    - type: "\\|.*:\\| .*\\|"
-
-    # Tables (Github extension)
-    - type: "\\|-+\\|-+\\|"
+    - markup-table: "\\|.*:\\| .*\\|"
+    - markup-table: "\\|-+\\|-+\\|"
+    - markup-table: "^\\| | \\| ?"
 
     # quotes
     - statement:  "^>.*"
 
       # Emphasis
-    - type: "(^|[[:space:]])(_[^ ][^_]*_|\\*[^ ][^*]*\\*)"
+    - method: "(^|[[:space:]])(_[^ ][^_]*_|\\*[^ ][^*]*\\*)"
 
       # Strong emphasis
-    - type: "(^|[[:space:]])(__[^ ][^_]*__|\\*\\*[^ ][^*]*\\*\\*)"
+    - markup-bold: "(^|[[:space:]])(__[^ ][^_]*__|\\*\\*[^ ][^*]*\\*\\*)"
 
       # strike-through
     - type: "(^|[[:space:]])~~[^ ][^~]*~~"
 
       # horizontal rules
-    - special: "^(---+|===+|___+|\\*\\*\\*+)\\s*$"
+    - markup-table: "(---+|===+|___+|\\*\\*\\*+)\\s*$"
 
       # headlines
-    - special:  "^#{1,6}.*"
+    - markup-head:  "^#{1,6}.*"
 
       # lists
     - identifier:   "^[[:space:]]*[\\*+-] |^[[:space:]]*[0-9]+\\. "
@@ -45,11 +42,9 @@ rules:
     - underlined: "!\\[[^][]*\\](\\([^)]+\\)|\\[[^]]+\\])"
 
       # urls
-    - underlined: "https?://[^ )>]+"
+    - markup-url: "https?://[^ )>]+"
 
     - special: "^```$"
 
-    - special:
-        start: "`"
-        end: "`"
-        rules: []
+    - special: "`.+?`"
+
