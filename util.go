@@ -198,12 +198,18 @@ func BracePairsAreBalanced(str string) int {
 	// Reduce string size
 	r = regexp.MustCompile(`^[ \t]+|[ \t]+$`)
 	str = r.ReplaceAllString(str, "")
+	// Remove {..} [..] from string so it does not fool the algorithm
+	r = regexp.MustCompile(`\{.*\}`)
+	str = r.ReplaceAllString(str, "")
+	r = regexp.MustCompile(`\[.*\]`)
+	str = r.ReplaceAllString(str, "")
+	// OBSOLETE
 	// Separate double closing braces so algorithm does not get confused
-	r = regexp.MustCompile(`([\)\}\]]){3,}`)
-	if r.MatchString(str) {
-		r = regexp.MustCompile(`([\)\}\]])([\)\}\]])`)
-		str = r.ReplaceAllString(str, "$1 $2")
-	}
+	//r = regexp.MustCompile(`([\)\}\]]){3,}`)
+	//if r.MatchString(str) {
+	//r = regexp.MustCompile(`([\)\}\]])([\)\}\]])`)
+	//str = r.ReplaceAllString(str, "$1 $2")
+	//}
 	//messenger.AddLog(str)
 	k := 0
 	b := 0
