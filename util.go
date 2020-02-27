@@ -199,17 +199,7 @@ func BracePairsAreBalanced(str string) int {
 	r = regexp.MustCompile(`^[ \t]+|[ \t]+$`)
 	str = r.ReplaceAllString(str, "")
 	// Remove {..} [..] from string so it does not fool the algorithm
-	r = regexp.MustCompile(`\{.*\}`)
-	str = r.ReplaceAllString(str, "")
-	r = regexp.MustCompile(`\[.*\]`)
-	str = r.ReplaceAllString(str, "")
-	// OBSOLETE
-	// Separate double closing braces so algorithm does not get confused
-	//r = regexp.MustCompile(`([\)\}\]]){3,}`)
-	//if r.MatchString(str) {
-	//r = regexp.MustCompile(`([\)\}\]])([\)\}\]])`)
-	//str = r.ReplaceAllString(str, "$1 $2")
-	//}
+	str = RemoveNestedBrace(str)
 	//messenger.AddLog(str)
 	k := 0
 	b := 0
@@ -249,6 +239,44 @@ func BracePairsAreBalanced(str string) int {
 		k++
 	}
 	return b
+}
+
+// RemoveNestedBrace Remove nested {..} [..]
+func RemoveNestedBrace(str string) string {
+	var stack []rune
+	var char rune
+	var rClose rune
+	var rBreak rune
+
+	count := 0
+	b := []rune(str)
+	for _, c := range b {
+		if c == '{' || c == '[' {
+			count++
+			stack = append(stack, c)
+			rBreak = c
+			if c == '{' {
+				rClose = '}'
+			} else {
+				rClose = ']'
+			}
+		} else if c == rClose {
+			if count == 0 {
+				stack = append(stack, c)
+			} else {
+				for {
+					char, stack = stack[len(stack)-1], stack[:len(stack)-1]
+					if char == rBreak {
+						break
+					}
+				}
+				count--
+			}
+		} else {
+			stack = append(stack, c)
+		}
+	}
+	return string(stack)
 }
 
 // BalanceBracePairs Find y line has a balanced braces
