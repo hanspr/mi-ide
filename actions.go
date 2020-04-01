@@ -2148,6 +2148,7 @@ func (v *View) VSplitBinding(usePlugin bool) bool {
 			v.VSplit(v.Buf)
 		}
 
+		v.mouseReleased = false
 		if usePlugin {
 			return PostActionCall("VSplit", v)
 		}
