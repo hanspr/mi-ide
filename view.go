@@ -846,16 +846,6 @@ func (v *View) HandleEvent(event tcell.Event) {
 
 	if relocate {
 		v.Relocate()
-
-		// HP, does not seems to be needed any more
-
-		// We run relocate again because there's a bug with relocating with softwrap
-		// when for example you jump to the bottom of the buffer and it tries to
-		// calculate where to put the topline so that the bottom line is at the bottom
-		// of the terminal and it runs into problems with visual lines vs real lines.
-		// This is (hopefully) a temporary solution
-
-		// v.Relocate()
 	}
 }
 
