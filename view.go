@@ -783,15 +783,12 @@ func (v *View) HandleEvent(event tcell.Event) {
 			rx, ry := v.GetMouseRelativePositon(e.Position())
 			if v.Type.Kind == 0 {
 				//messenger.Message(ry, "?", v.Height, ": rx", rx, "?", v.lineNumOffset)
-				if ry <= 0 {
+				if ry == 0 {
 					// ignore actions on tabbar or upper views
 					return
 				} else if ry == v.Height+1 {
 					// On status line.
 					v.sline.MouseEvent(e, rx, ry)
-					return
-				} else if ry > v.Height+1 {
-					// ignore actions in messenger area or lower views
 					return
 				} else if (button == tcell.Button3 || button == tcell.Button2) && rx < v.lineNumOffset && v.Buf.Settings["ruler"] == true {
 					v.Buf.Settings["ruler"] = false
