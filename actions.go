@@ -2173,6 +2173,7 @@ func (v *View) HSplitBinding(usePlugin bool) bool {
 			v.frozen = true
 			CurView().Relocate()
 		}
+		v.mouseReleased = false
 		if usePlugin {
 			return PostActionCall("HSplit", v)
 		}
