@@ -101,6 +101,7 @@ go get "github.com/mitchellh/go-homedir"
 go get "github.com/phayes/permbits"
 go get "github.com/sergi/go-diff/diffmatchpatch"
 go get "github.com/yuin/gopher-lua"
+go get "layeh.com/gopher-luar"
 ```
 
 ### Colors and syntax highlighting
