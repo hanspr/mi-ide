@@ -125,7 +125,7 @@ var (
 
 	currEnv appEnv
 
-	cloudPath = "https://api.mi-ide.com" // Cloud service url
+	cloudPath = "https://api.mi-ide.com:60443" // Cloud service url
 )
 
 // LoadInput determines which files should be loaded into buffers
