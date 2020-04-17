@@ -61,24 +61,6 @@ This is the list of the most important existing features :
         - The first time you run the editor will download the configurations from github.
         - And place them in `~/.config/mi-ide/`
 
->**Important note**
->
->For convenience to everyone, included in the download is a compiled version of this piece of software: uchardet ( https://www.freedesktop.org/wiki/Software/uchardet/ ). It is compiled for 64 bits (no 32 bit version distributed).
->
->uchardet is not installed in all distributions by default, and some distributions have a very old one. And there is no port for it in pure "go" yet.
->
->This compiled binary is used as an external application, to detect the encoding of the file about to be opened, and then set the correct decoder and read the file into the editor.
->
->If you don't like this convenience (downloading a binary file) this is the alternative:
->
->1. `wget https://raw.githubusercontent.com/hanspr/mi-channel/master/config.zip`
->    1. Extract the directory
->    2. Remove `mi-ide/libs/uchardet`, `mi-ide/libs/libuchardet.so.0`
->    3. Copy the config directory to your .config directory
->2. After removing the binaries, if you still want uchardet support into mi-ide:
->    1. Install uchardet for your distribution on your server (make sure that is version : 0.0.6 or above)
->    2. Or, download and compile your own version from https://www.freedesktop.org/wiki/Software/uchardet/ and install the compiled files on ~./config/mi-ide/libs or globally in your server
-
 * You can also build mi-ide from source, by cloning this repo and install all dependencies.
 
 ```bash
