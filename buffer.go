@@ -9,7 +9,6 @@ import (
 	"io"
 	"io/ioutil"
 	"os"
-	"os/exec"
 	"path/filepath"
 	"reflect"
 	"regexp"
@@ -59,7 +58,6 @@ type Buffer struct {
 
 	//Encoding
 	encoder  string // encoder currently being used
-	sencoder string // encoder saved in buffers
 	encoding bool   // file requires encoding (any encoder different than UTF8)
 
 	// Whether or not the buffer has been modified since it was opened
@@ -126,6 +124,7 @@ func (b *Buffer) GetFileSettings(filename string) {
 			}
 		}
 	}
+	b.encoder = "UTF8"
 	// Find last encoding used for this file
 	cachename := filename + ".settings"
 	cachename = configDir + "/buffers/" + strings.ReplaceAll(cachename, "/", "")
@@ -133,46 +132,8 @@ func (b *Buffer) GetFileSettings(filename string) {
 	if jerr == nil {
 		if settings["encoder"] != nil {
 			b.encoder = settings["encoder"].(string)
-			b.sencoder = b.encoder
-			return
 		}
 	}
-	// Here it beggins the guessing game
-	// Use uchardet shipped with mi-ide if exists and it runs
-	b.encoder = "UTF8"
-	uchardet := configDir + "/libs/uchardet"
-	if _, err := os.Stat(uchardet); err != nil {
-		// No uchardet from mi-ide found
-		// Maybe uchardet is available in this distribution, lets give it a try
-		uchardet = "uchardet"
-	}
-	cmd := exec.Command(uchardet, filename)
-	if uchardet != "uchardet" {
-		// Using the shipped one
-		cmd.Dir = configDir + "/libs"
-	}
-	msg, err := cmd.Output()
-	if err != nil {
-		b.encoder = "UTF8"
-		b.sencoder = b.encoder
-		return
-	}
-	b.encoder = strings.TrimSuffix(strings.ToUpper(string(msg)), "\n")
-	b.encoder = strings.ReplaceAll(b.encoder, "-", "")
-	b.encoder = strings.ReplaceAll(b.encoder, "_", "")
-	// Open ASCII files as UTF8
-	if b.encoder == "ASCII" {
-		b.encoder = "UTF8"
-	}
-	if b.encoder != "UTF8" {
-		// Double check, file -b has better guessing for UTF8 files
-		cmd := exec.Command("file", "-b", filename)
-		msg, err := cmd.Output()
-		if err == nil && strings.Contains(string(msg), "UTF8") {
-			b.encoder = "UTF8"
-		}
-	}
-	b.sencoder = b.encoder
 	return
 }
 
@@ -831,9 +792,7 @@ func (b *Buffer) SaveAs(filename string) error {
 
 	b.Path = filename
 	b.IsModified = false
-	//messenger.AddLog("Changed encoding: ", b.sencoder, " ? ", b.encoder)
-	if b.sencoder != "" && b.sencoder != b.encoder && b.encoder != "UTF8" {
-		//messenger.AddLog("Yes")
+	if b.encoder != "UTF8" {
 		settings := make(map[string]string)
 		cachename, _ := filepath.Abs(filename)
 		cachename = configDir + "/buffers/" + strings.ReplaceAll(cachename+".settings", "/", "")
