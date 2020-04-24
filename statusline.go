@@ -39,7 +39,9 @@ func (sline *Statusline) MouseEvent(e *tcell.EventMouse, rx, ry int) {
 	for action, hs := range sline.hotspot {
 		if rx >= hs.X && rx <= hs.Y {
 			if action == "ENCODER" {
-				micromenu.SelEncoding(sline.view.Buf.encoder, sline.EncodingSelected)
+				x, _ := e.Position()
+				diff := (hs.X + (hs.Y-hs.X+1)/2) - rx
+				micromenu.SelEncoding(x+diff, sline.EncodingSelected)
 			} else if action == "BUFERSET" {
 				micromenu.SelLocalSettings(sline.view.Buf)
 			} else if action == "FILETYPE" {
@@ -151,8 +153,8 @@ func (sline *Statusline) Display() {
 		sline.hotspot["FILEFORMAT"] = Loc{Count(file) + offset, Count(file) + offset + 5}
 		file += " " + ff + " "
 
-		sline.hotspot["ENCODER"] = Loc{Count(file) + offset - 1, Count(file) + offset + Count(sline.view.Buf.encoder) + 1}
-		file += " " + sline.view.Buf.encoder + " "
+		sline.hotspot["ENCODER"] = Loc{Count(file) + offset - 1, Count(file) + offset + 1 + Count(sline.view.Buf.encoder)}
+		file += sline.view.Buf.encoder + " ▲"
 	} else {
 		showbuttons = false
 	}

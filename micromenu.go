@@ -1477,39 +1477,42 @@ func (m *microMenu) SetLocalSettings(name, value, event, when string, x, y int) 
 // Set Buffer Encoding
 // ---------------------------------------
 
-func (m *microMenu) SelEncoding(encoder string, callback func(map[string]string)) {
-	var f *Frame
-	if m.myapp == nil || m.myapp.name != "mi-selencoding" {
-		if m.myapp == nil {
-			m.myapp = new(MicroApp)
-			m.myapp.New("mi-selencoding")
-		} else {
-			m.myapp.name = "mi-selencoding"
-		}
-		enc := ioencoder.New()
-		ENCODINGS := enc.GetAvailableEncodingsAsString("|")
-		ENCODINGS = "UTF8|" + ENCODINGS
-		m.myapp.Reset()
-		m.myapp.defStyle = StringToStyle("#ffffff,#262626")
-		width := 60
-		height := 15
-		f = m.myapp.AddFrame("f", -1, -1, width, height, "relative")
-		f.AddWindowBox("enc", Language.Translate("Select Encoding"), 0, 0, width, height, true, nil, "", "")
-		lbl := Language.Translate("Encoding:")
-		f.AddWindowSelect("encoding", lbl+" ", "", ENCODINGS, 2, 2, 0, 12, nil, "", "")
-		lbl = Language.Translate("Cancel")
-		f.AddWindowButton("cancel", " "+lbl+" ", "cancel", 43, height-4, m.ButtonFinish, "", "")
-		lbl = Language.Translate("Set encoding")
-		f.AddWindowButton("set", " "+lbl+" ", "ok", 43, height-2, m.SetEncoding, "", "")
-	} else {
-		f = m.myapp.frames["f"]
+func (m *microMenu) SelEncoding(x int, callback func(map[string]string)) {
+	// For this case we need to always rebuild, because the hotspots move depending on the window and view where is located
+	m.myapp = nil
+	m.myapp = new(MicroApp)
+	m.myapp.New("mi-selencoding")
+	m.myapp.Reset()
+	m.myapp.defStyle = StringToStyle("#ffffff,#3a3a3a")
+	m.myapp.AddStyle("normal", "#ffffff,#3a3a3a")
+	_, h := screen.Size()
+	enc := ioencoder.New()
+	encodings := enc.GetAvailableEncodings()
+	encodings = append(encodings, "UTF8")
+	height := h - 4
+	if len(encodings) < height {
+		height = len(encodings)
 	}
-	m.myapp.WindowFinish = callback
-	encoder = strings.ReplaceAll(encoder, "-", "")
-	encoder = strings.ReplaceAll(encoder, "_", "")
-	f.SetValue("encoding", encoder)
-	f.SetValue("encode", "")
+	col := 0
+	row := 0
+	f := m.myapp.AddFrame("f", h-height-2, x-6, 1, height, "close")
+	value := ""
+	sort.Strings(encodings)
+	for _, ft := range encodings {
+		if len(ft) < 12 {
+			value = fmt.Sprintf(" %-12s", ft)
+		} else {
+			value = ft
+		}
+		f.AddWindowLabel(ft, value, col, row, m.SetEncoding, "normal", "")
+		row++
+		if row > height-1 {
+			row = 0
+			col += 12
+		}
+	}
 	m.myapp.Start()
+	m.myapp.WindowFinish = callback
 	apprunning = m.myapp
 }
 
@@ -1517,16 +1520,22 @@ func (m *microMenu) SetEncoding(name, value, event, when string, x, y int) bool 
 	if when == "POST" {
 		return true
 	}
+	e := m.myapp.frames[m.myapp.activeFrame].elements[name]
+	if event == "mouseout" {
+		e.style = m.myapp.defStyle
+		e.Draw()
+		return true
+	}
+	if event == "mousein" {
+		e.style = e.style.Foreground(tcell.ColorBlack).Background(tcell.Color220)
+		e.Draw()
+		return true
+	}
 	if event != "mouse-click1" {
 		return true
 	}
 	var resp = make(map[string]string)
-	values := m.myapp.GetValues()
-	if values["encode"] != "" {
-		resp["encoding"] = strings.ToUpper(values["encode"])
-	} else {
-		resp["encoding"] = values["encoding"]
-	}
+	resp["encoding"] = name
 	m.myapp.WindowFinish(resp)
 	m.Finish("Encoding")
 	return true
