@@ -14,7 +14,6 @@ import (
 	"github.com/hanspr/clipboard"
 	"github.com/hanspr/lang"
 	"github.com/hanspr/tcell"
-	"github.com/hanspr/tcell/encoding"
 	"github.com/hanspr/terminfo"
 	"github.com/mattn/go-isatty"
 	"github.com/mitchellh/go-homedir"
@@ -436,10 +435,6 @@ func main() {
 	// Start the Lua VM for running plugins
 	L = lua.NewState()
 	defer L.Close()
-
-	// Some encoding stuff in case the user isn't using UTF-8
-	encoding.Register()
-	tcell.SetEncodingFallback(tcell.EncodingFallbackASCII)
 
 	// Find the user's configuration directory (probably $XDG_CONFIG_HOME/mi-ide)
 	InitConfigDir()
