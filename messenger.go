@@ -7,7 +7,6 @@ import (
 	"fmt"
 	"os"
 	"strconv"
-	"strings"
 	"time"
 
 	"github.com/hanspr/shellwords"
@@ -63,6 +62,9 @@ type Messenger struct {
 
 	// We have to keep track of the cursor for prompting
 	cursorx int
+
+	// We have to keep track of the place holder to avoid deleting it
+	offsetx int
 
 	// This map stores the history for all the different kinds of uses Prompt has
 	// It's a map of history type -> history array
@@ -300,11 +302,8 @@ func (m *Messenger) Prompt(prompt, placeholder, historyType string, completionTy
 	response, canceled := placeholder, true
 	m.response = response
 	m.cursorx = Count(placeholder)
-	if strings.Contains(placeholder, "replace ''") {
-		m.cursorx = Count(placeholder) - 4
-	} else {
-		m.cursorx = Count(placeholder)
-	}
+	m.cursorx = Count(placeholder)
+	m.offsetx = m.cursorx
 	RedrawAll(true)
 	for m.hasPrompt {
 		var suggestions []string
@@ -424,7 +423,7 @@ func (m *Messenger) DownHistory(history []string) {
 
 // CursorLeft moves the cursor one character left
 func (m *Messenger) CursorLeft() {
-	if m.cursorx > 0 {
+	if m.cursorx > m.offsetx {
 		m.cursorx--
 	}
 }
@@ -438,7 +437,7 @@ func (m *Messenger) CursorRight() {
 
 // Start moves the cursor to the start of the line
 func (m *Messenger) Start() {
-	m.cursorx = 0
+	m.cursorx = 0 + m.offsetx
 }
 
 // End moves the cursor to the end of the line
@@ -448,7 +447,7 @@ func (m *Messenger) End() {
 
 // Backspace deletes one character
 func (m *Messenger) Backspace() {
-	if m.cursorx > 0 {
+	if m.cursorx > m.offsetx {
 		m.response = string([]rune(m.response)[:m.cursorx-1]) + string([]rune(m.response)[m.cursorx:])
 		m.cursorx--
 	}
@@ -459,60 +458,6 @@ func (m *Messenger) Paste() {
 	clip := Clip.ReadFrom("local", "clip")
 	m.response = Insert(m.response, m.cursorx, clip)
 	m.cursorx += Count(clip)
-}
-
-// WordLeft moves the cursor one word to the left
-func (m *Messenger) WordLeft() {
-	response := []rune(m.response)
-	m.CursorLeft()
-	if m.cursorx <= 0 {
-		return
-	}
-	for IsWhitespace(response[m.cursorx]) {
-		if m.cursorx <= 0 {
-			return
-		}
-		m.CursorLeft()
-	}
-	m.CursorLeft()
-	for IsWordChar(string(response[m.cursorx])) {
-		if m.cursorx <= 0 {
-			return
-		}
-		m.CursorLeft()
-	}
-	m.CursorRight()
-}
-
-// WordRight moves the cursor one word to the right
-func (m *Messenger) WordRight() {
-	response := []rune(m.response)
-	if m.cursorx >= len(response) {
-		return
-	}
-	for IsWhitespace(response[m.cursorx]) {
-		m.CursorRight()
-		if m.cursorx >= len(response) {
-			m.CursorRight()
-			return
-		}
-	}
-	m.CursorRight()
-	if m.cursorx >= len(response) {
-		return
-	}
-	for IsWordChar(string(response[m.cursorx])) {
-		m.CursorRight()
-		if m.cursorx >= len(response) {
-			return
-		}
-	}
-}
-
-// DeleteWordLeft deletes one word to the left
-func (m *Messenger) DeleteWordLeft() {
-	m.WordLeft()
-	m.response = string([]rune(m.response)[:m.cursorx])
 }
 
 // HandleEvent handles an event for the prompter
@@ -528,41 +473,31 @@ func (m *Messenger) HandleEvent(event tcell.Event, history []string) {
 			m.UpHistory(history)
 		case tcell.KeyDown:
 			m.DownHistory(history)
+		case tcell.KeyHome:
+			m.Start()
+		case tcell.KeyEnd:
+			m.End()
 		case tcell.KeyLeft:
 			if e.Modifiers() == tcell.ModCtrl {
 				m.Start()
-			} else if e.Modifiers() == tcell.ModAlt || e.Modifiers() == tcell.ModMeta {
-				m.WordLeft()
 			} else {
 				m.CursorLeft()
 			}
 		case tcell.KeyRight:
 			if e.Modifiers() == tcell.ModCtrl {
 				m.End()
-			} else if e.Modifiers() == tcell.ModAlt || e.Modifiers() == tcell.ModMeta {
-				m.WordRight()
 			} else {
 				m.CursorRight()
 			}
 		case tcell.KeyBackspace2, tcell.KeyBackspace:
-			if e.Modifiers() == tcell.ModCtrl || e.Modifiers() == tcell.ModAlt || e.Modifiers() == tcell.ModMeta {
-				m.DeleteWordLeft()
-			} else {
-				m.Backspace()
-			}
+			m.Backspace()
 		case tcell.KeyDelete:
 			if m.cursorx < Count(m.response) {
 				m.cursorx++
 				m.Backspace()
 			}
-		case tcell.KeyCtrlW:
-			m.DeleteWordLeft()
 		case tcell.KeyCtrlV:
 			m.Paste()
-		case tcell.KeyCtrlF:
-			m.WordRight()
-		case tcell.KeyCtrlB:
-			m.WordLeft()
 		case tcell.KeyRune:
 			m.response = Insert(m.response, m.cursorx, string(e.Rune()))
 			m.cursorx++

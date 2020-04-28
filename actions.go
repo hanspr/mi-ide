@@ -1551,7 +1551,7 @@ func (v *View) OpenFile(usePlugin bool) bool {
 		}
 
 		if v.CanClose() {
-			input, canceled := messenger.Prompt("> ", Language.Translate("open")+" ", "Open", CommandCompletion)
+			input, canceled := messenger.Prompt("> ", "open ", "Open", CommandCompletion)
 			if !canceled {
 				HandleCommand(input)
 				if usePlugin {
@@ -2082,12 +2082,8 @@ func (v *View) QuitAll(usePlugin bool) bool {
 			// is promted when there is no information to loose.
 			// The user has already answered to yes/no save questions before.
 			// The application needs an action to exit completly without confirmations
-			// Option could be usefull, not necesary. F4 Can baind to Quit. Ctrl-Q to Quit All
+			// Option could be usefull, not necesary. F4 Can bind to Quit. Ctrl-Q to Quit All
 
-			// only quit if all of the buffers can be closed and the user confirms that they actually want to quit everything
-			//			shouldQuit, _ := messenger.YesNoPrompt("Do you want to quit micro (all open files will be closed)?")
-
-			//			if shouldQuit {
 			for _, tab := range tabs {
 				for _, v := range tab.Views {
 					v.CloseBuffer()
