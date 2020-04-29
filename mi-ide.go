@@ -684,7 +684,8 @@ func main() {
 					if searching {
 						// Happened during a search lock, release Search
 						ExitSearch(CurView())
-					} else if y == h-2 {
+					} else if y >= h-2 {
+						// Ignore clicks on satus and message area
 						didAction = true
 					}
 					if !didAction {
@@ -712,6 +713,11 @@ func main() {
 					}
 					if view != nil {
 						view.HandleEvent(e)
+					}
+				} else {
+					if y >= h-1 {
+						// Ignore moves at the message area
+						didAction = true
 					}
 				}
 			}

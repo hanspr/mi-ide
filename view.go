@@ -790,6 +790,9 @@ func (v *View) HandleEvent(event tcell.Event) {
 					// On status line.
 					v.sline.MouseEvent(e, rx, ry)
 					return
+				} else if ry >= v.Height+2 {
+					// ignore actions in messenger area or lower views
+					return
 				} else if (button == tcell.Button3 || button == tcell.Button2) && rx < v.lineNumOffset && v.Buf.Settings["ruler"] == true {
 					v.Buf.Settings["ruler"] = false
 				} else if (button == tcell.Button3 || button == tcell.Button2) && rx < 3 && v.Buf.Settings["ruler"] == false {
