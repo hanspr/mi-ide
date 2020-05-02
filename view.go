@@ -32,6 +32,9 @@ var LastView = -1
 // LastTab to decide if we should trigger a focus event
 var LastTab = -1
 
+// Focus force a focuse event
+//var Focus = false
+
 // The View struct stores information about a view into a buffer.
 // It stores information about the cursor, and the viewport
 // that the user sees the buffer from.
@@ -780,18 +783,23 @@ func (v *View) HandleEvent(event tcell.Event) {
 
 		// This events are relative to each view dimentions
 		if e.Buttons() == tcell.Button1 || button == tcell.Button3 || button == tcell.Button2 {
-			rx, ry := v.GetMouseRelativePositon(e.Position())
+			x, y := e.Position()
+			rx, ry := v.GetMouseRelativePositon(x, y)
+			//messenger.AddLog(x, ",", y, "?", rx, ",", ry)
 			if v.Type.Kind == 0 {
 				//messenger.Message(ry, "?", v.Height, ": rx", rx, "?", v.lineNumOffset)
-				if ry == 0 {
-					// ignore actions on tabbar or upper views
+				if ry == 0 || y == 0 {
+					// ignore actions on tabbar
+					return
+				} else if ry < 0 {
+					// Action in upper view, switch views
 					return
 				} else if ry == v.Height+1 {
 					// On status line.
 					v.sline.MouseEvent(e, rx, ry)
 					return
 				} else if ry >= v.Height+2 {
-					// ignore actions in messenger area or lower views
+					// Move mouse to position in lower views
 					return
 				} else if (button == tcell.Button3 || button == tcell.Button2) && rx < v.lineNumOffset && v.Buf.Settings["ruler"] == true {
 					v.Buf.Settings["ruler"] = false
@@ -834,14 +842,7 @@ func (v *View) HandleEvent(event tcell.Event) {
 		case tcell.ButtonNone:
 			// Mouse event with no click
 			if !v.mouseReleased {
-				// Mouse was just released
-
-				x, y := e.Position()
-				x -= v.lineNumOffset - v.leftCol + v.x
-				y += v.Topline - v.y
-				v.MoveToMouseClick(x, y)
-				v.savedLoc = Loc{x, y}
-
+				v.moveMousePosition(e.Position())
 				v.mouseReleased = true
 			}
 		}
@@ -850,6 +851,14 @@ func (v *View) HandleEvent(event tcell.Event) {
 	if relocate {
 		v.Relocate()
 	}
+}
+
+func (v *View) moveMousePosition(x, y int) {
+	// Mouse was just released
+	x -= v.lineNumOffset - v.leftCol + v.x
+	y += v.Topline - v.y
+	v.MoveToMouseClick(x, y)
+	v.savedLoc = Loc{x, y}
 }
 
 func (v *View) mainCursor() bool {
@@ -1010,6 +1019,7 @@ func (v *View) DisplayView() {
 		v.Relocate()
 	}
 
+	//messenger.AddLog(CurView().Type.Kind, "==0 && ", LastView, "!=", CurView().Num, " && ", CurView().Cursor.Loc, "!=", CurView().savedLoc, " && ", Mouse.Click, " == false")
 	if CurView().Type.Kind == 0 && LastView != CurView().Num && CurView().Cursor.Loc != CurView().savedLoc && Mouse.Click == false {
 		// HP : Set de cursor in last known position for this view
 		// It happens when 2+ views point to same buffer
