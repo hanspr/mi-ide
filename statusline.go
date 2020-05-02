@@ -142,19 +142,19 @@ func (sline *Statusline) Display() {
 		} else {
 			ff = "Spc"
 		}
-		ff = fmt.Sprintf("%-4s%-2d▲", ff, int(sline.view.Buf.Settings["tabsize"].(float64)))
+		ff = fmt.Sprintf("%-4s%-2d▴", ff, int(sline.view.Buf.Settings["tabsize"].(float64)))
 		sline.hotspot["TABSPACE"] = Loc{Count(file) + offset, Count(file) + offset + Count(ff) - 1}
 		file += ff + " "
 
 		sline.hotspot["FILETYPE"] = Loc{Count(file) + offset - 1, Count(file) + offset + 1 + Count(sline.view.Buf.FileType())}
-		file += sline.view.Buf.FileType() + " ▲"
+		file += sline.view.Buf.FileType() + " ▴"
 
 		ff = fmt.Sprintf("%-4s", sline.view.Buf.Settings["fileformat"].(string))
 		sline.hotspot["FILEFORMAT"] = Loc{Count(file) + offset, Count(file) + offset + 5}
 		file += " " + ff + " "
 
 		sline.hotspot["ENCODER"] = Loc{Count(file) + offset - 1, Count(file) + offset + 1 + Count(sline.view.Buf.encoder)}
-		file += sline.view.Buf.encoder + " ▲"
+		file += sline.view.Buf.encoder + " ▴"
 	} else {
 		showbuttons = false
 	}

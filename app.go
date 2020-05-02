@@ -918,7 +918,7 @@ func (e *AppElement) DrawSelect() {
 		if e.height == 1 {
 			Y = 0
 			style = style.Bold(false).Background(tcell.ColorDarkSlateGrey).Foreground(tcell.ColorWhite).Reverse(false)
-			chr = "▼"
+			chr = "▾"
 		} else {
 			Y++
 			if start > 0 && i == start {

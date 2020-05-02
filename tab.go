@@ -5,6 +5,7 @@ import (
 )
 
 const (
+	bufDirty      string = "✶"
 	tabOpen       string = "|"
 	tabClose      string = "|"
 	tabMenuSymbol string = "ɱ  "
@@ -358,12 +359,14 @@ func TabbarString(toffset int) (string, map[int]int) {
 		}
 		str += buf.fname
 		if t.Views[cv].Type.Kind == 0 && buf.Modified() {
-			str += "*"
+			str += bufDirty
+		} else {
+			str += " "
 		}
 		if i == curTab {
-			str += " " + tabClose
+			str += tabClose
 		} else {
-			str += "  "
+			str += " "
 		}
 		indicies[i] = Count(str)
 	}
@@ -417,12 +420,19 @@ func DisplayTabs() {
 				tStyle = StringToStyle("bold #ffd700,#000087")
 				tabActive = true
 			} else if tabActive {
+				tStyle = StringToStyle("bold #ffd700,#000087")
+				if string(tabsRunes[x]) == bufDirty {
+					tStyle = tStyle.Foreground(tcell.ColorRed)
+				}
 				if string(tabsRunes[x]) == tabClose {
 					// Hightlight off, end of current tab
 					tabActive = false
 				}
 			} else {
 				tStyle = tabBarStyle
+				if string(tabsRunes[x]) == bufDirty {
+					tStyle = tStyle.Foreground(tcell.ColorRed)
+				}
 			}
 			screen.SetContent(x+toffset, 0, tabsRunes[x], nil, tStyle)
 		} else {
