@@ -839,6 +839,7 @@ func (v *View) HandleEvent(event tcell.Event) {
 		case tcell.ButtonNone:
 			// Mouse event with no click
 			if !v.mouseReleased {
+				// Mouse was just released
 				v.moveMousePosition(e.Position())
 				v.mouseReleased = true
 			}
@@ -851,7 +852,6 @@ func (v *View) HandleEvent(event tcell.Event) {
 }
 
 func (v *View) moveMousePosition(x, y int) {
-	// Mouse was just released
 	x -= v.lineNumOffset - v.leftCol + v.x
 	y += v.Topline - v.y
 	v.MoveToMouseClick(x, y)
@@ -1021,7 +1021,7 @@ func (v *View) DisplayView() {
 		// HP : Set de cursor in last known position for this view
 		// It happens when 2+ views point to same buffer
 		// Set into current view boudaries
-		messenger.AddLog("Focus event")
+		//messenger.AddLog("Focus event")
 		if CurView().savedLoc.Y > CurView().Buf.End().Y {
 			CurView().savedLoc.Y = CurView().Buf.End().Y
 			if CurView().savedLoc.X > CurView().Buf.End().X {
