@@ -32,9 +32,6 @@ var LastView = -1
 // LastTab to decide if we should trigger a focus event
 var LastTab = -1
 
-// Focus force a focuse event
-//var Focus = false
-
 // The View struct stores information about a view into a buffer.
 // It stores information about the cursor, and the viewport
 // that the user sees the buffer from.
