@@ -813,11 +813,10 @@ func (v *View) Backspace(usePlugin bool) bool {
 		// tab (tabSize number of spaces)
 		lineStart := sliceEnd(v.Buf.LineBytes(v.Cursor.Y), v.Cursor.X)
 		tabSize := int(v.Buf.Settings["tabsize"].(float64))
+		loc := v.Cursor.Loc
 		if v.Buf.Settings["tabstospaces"].(bool) && IsSpaces(lineStart) && utf8.RuneCount(lineStart) != 0 && utf8.RuneCount(lineStart)%tabSize == 0 {
-			loc := v.Cursor.Loc
 			v.Buf.Remove(loc.Move(-tabSize, v.Buf), loc)
 		} else {
-			loc := v.Cursor.Loc
 			v.Buf.Remove(loc.Move(-1, v.Buf), loc)
 		}
 	}
