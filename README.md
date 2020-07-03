@@ -1,10 +1,8 @@
 # ![mi-ide](./assets/logo.png)
 
+__This project is personal project, I do not maintain it or plan to have any more releases.__
+
 mi-ide (_**mee ide**_ in spanish, _**my ide**_ in English. As in: this is _**my** editor_) is a spin-off version of micro editor project at https://github.com/zyedidia/micro.
-
-This project is mainly focused on **improving the experience of coding remotely over ssh on headless Linux servers** (no X Server support, no Graphical interface, no menu luncher, desktop icons), simple plain bash.
-
-Many features were already provided by micro editor :+1:. But some others were still missing :star:.
 
 This is the list of the most important existing features :
 
@@ -123,18 +121,6 @@ The plugin system has been modified in this project, you should be able to run a
 
 Please visit the [developers page](https://github.com/hanspr/mi-sources/wiki/plugins) with full instructions and videos about the plugin framework
 
-# Contributing
-
->**The only thing missing is a go library Client for the LSP protocol. If you  have the skills to help me implement one, please contact me opening an issue request.** [LSP Specifications](https://microsoft.github.io/language-server-protocol/specifications/specification-3-14/)
-
-You can use the [GitHub issue tracker](https://github.com/hanspr/mi-ide/issues) to report bugs, ask questions, or suggest new features.
-
-To create pull requests, please follow these recommendations:
-
-* Document very well your modifications in the code, so I can understand the changes
-* Test your changes for a few weeks (by using the editor on real work). To confirm that your modification does not create a side effects on the rest of the editor. I tell this out of personal experience.
-    - At the beginning I used to change one line of code and thought that I had fixed or improved something. A few days later I realized I broke something else.
-
 ## Translate
 
 You will find the translation file in your config directory under : langs
@@ -145,66 +131,3 @@ You will find the translation file in your config directory under : langs
 - Save the final file with the new name.
 - Switch language by going to the menu > Global Settings
 - Change to your new language
-- If you want to contribute your translation
-    - Clone : https://github.com/hanspr/mi-sources
-    - Copy your file or update the current translation in the langs directory
-    - Create a pull request
-
-[For more detailed information](https://github.com/hanspr/mi-sources/wiki/translate)
-
-# Support the project & Services
-
-If you find this project useful and decide to support it, you will receive in exchange a lifetime Cloud Key to activate Cloud Services.
-
-|Kind       | Amount | Button |
-|----------|--------:|--------|
-|Just Support, not interested in a Cloud Key | $5 USD | [![mi-ide-20](https://img.shields.io/badge/Just%20Support-PayPal-green)](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=YDQ2HBASRXTCE)|
-|Support & Cloud Key | $20 USD | [![mi-ide-20](https://img.shields.io/badge/Support%20%26%20Cloud%20Key-PayPal-green)](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=K43LR98FUSSNG)|
-|Cloud Key & More Support | $50 USD | [![mi-ide-20](https://img.shields.io/badge/Cloud%20Key%20%26%20More-PayPal-green)](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=SAPEG25ZKA67N)|
-|**Please wait after de payment to be redirected and receive your key** ||||
-
-
-**A Cloud Key, gives you lifetime access to**
-
-- **Internal Copy Paste between your editors running in different servers**, no more : shift click dragging
-    - Avoid the problem of copying extra characters, numbers from the ruler
-    - Copying partial text on very long lines. Or having to split them with new lines to be able to copy the hole line in one select.
-    - Multiple selects if the area to copy is across many rows
-    - Rebuild and reformat everything on the destination
-- **Transfer any code file** that is opened in the current Window to different server running mi-ide
-    - If you need a quick way to transfer code from one point to another just click to upload, click on the other server to download.
-- **Save and retrieve your settings** from any server. To sync all your : settings, plugins, hacks, colors, bindings, etc.
-- All your information is **completely confidential and secure**.
-    - Check the code at : ["github.com/hanspr/clipboard"](https://github.com/hanspr/clipboard)
-    - It is very easy to read and follow
-- **How does it work?**
-    - All connections are over https
-    - You set up 3 values in the editor
-        - The key assigned to you
-        - A password that you select
-        - A passphrase that you select
-    - The key and password gives you access to your clipboard, settings, and files.
-        - The key and password are transmitted to the server on every transaction to validate the access to your account
-    - The passphrase:
-        - Is never sent to the server
-    - On Copy, Upload File or Settings
-        - mi-ide encrypts your clip, file or settings using your passphrase
-        - The application, sends your key and password only
-        - Transfers the data to the server
-        - The server stores your encrypted : clipboard, file or settings
-    - On Paste, File Download or Settings
-        - The application, sends your key and password only
-        - It receives the data : clipboard, file or settings
-        - Decrypts the data using your passphrase
-            - Inserts the clipboard in your current buffer, or
-            - Opens the file in a new tab, or
-            - Installs your settings
-- **Any new features that could come in the future**
--  **Request** to implement new ideas based on this Cloud model that could be beneficial for every one.
-- **Limitations**
-  - The service requires the Internet to provide this functionality
-    - If a firewall in your network blocks: access to the Internet, port 443 or the subdomain api.mi-ide.com, the functionality will be lost.
-  - Keys are not shareable, no hard checks implemented now, hope never have to.
-  - Lifetime access is a huge compromise, it is on my will to do so, please use the service responsibly: No robots, do not use for other purposes than the helping your self coding.
-  - If any abuse is detected the service for that **key** will be suspended
-  - If you have a business and you want to have the server in your internal network, or personal server [contact me](https://github.com/hanspr).
