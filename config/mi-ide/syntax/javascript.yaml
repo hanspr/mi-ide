@@ -34,17 +34,14 @@ rules:
     - type.keyword1: "\\w+=['\"]"
     - constant.string: "\'.*?\'"
     - special: "/.+/[gim,]"
+    - comment: "^//.*"
+    - comment: "\\s//.*"
 
     - constant.string:
         start: "`"
         end: "`"
         rules:
             - constant.specialChar: "\\\\."
-
-    - comment:
-        start: "//"
-        end: "$"
-        rules: []
 
     - comment:
         start: "/\\*"
