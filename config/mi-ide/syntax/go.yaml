@@ -63,7 +63,7 @@ rules:
             - todo: "(TODO|XXX|FIXME):?"
 
     - comment:
-        start: "/\\*"
+        start: "^\\s*/\\*"
         end: "\\*/"
         rules:
             - todo: "(TODO|XXX|FIXME):?"
