@@ -211,13 +211,20 @@ func (v *View) paste(clip string) {
 
 	if v.Buf.Settings["smartindent"].(bool) {
 		//clip = strings.Trim(clip, " \t")
+		multiline := false
+		if strings.Contains(clip, "\n") {
+			multiline = true
+			if !strings.HasSuffix(clip, "\n") {
+				clip = clip + "\n"
+			}
+		}
 		v.Buf.Insert(v.Cursor.Loc, clip)
 		x := v.Cursor.Loc.X
 		spc := CountLeadingWhitespace(v.Buf.Line(v.Cursor.Y))
 		v.Buf.SmartIndent(Start, v.Cursor.Loc, false)
-		if strings.Contains(clip, "\n") {
-			// Multiline paste, move cursor to begging of last line, is the safest option
-			v.Cursor.GotoLoc(Loc{0, v.Cursor.Loc.Y})
+		if multiline {
+			xEnd := Count(v.Buf.Line(v.Cursor.Loc.Y))
+			v.Cursor.GotoLoc(Loc{xEnd, v.Cursor.Loc.Y})
 		} else {
 			// One line paste, check if it was indented
 			spc2 := CountLeadingWhitespace(v.Buf.Line(v.Cursor.Y))
