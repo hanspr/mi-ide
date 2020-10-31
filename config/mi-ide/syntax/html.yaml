@@ -1,6 +1,6 @@
 filetype: html
 
-detect: 
+detect:
     filename: "\\.(htm[l]?|tt|tmpl)$"
 
 rules:
@@ -19,7 +19,7 @@ rules:
     - constant.string.url: "(ftp(s)?|http(s)?|git|chrome)://[^ 	]+"
     - comment: "<!--.+?-->"
     - preproc: "<!DOCTYPE.+?>"
- 
+
     - default:
         start: "<script.*?>"
         end: "</script.*?>"
