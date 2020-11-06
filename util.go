@@ -266,7 +266,7 @@ func RemoveNestedBrace(str string) string {
 			} else {
 				for {
 					char, stack = stack[len(stack)-1], stack[:len(stack)-1]
-					if char == rBreak {
+					if char == rBreak || len(stack) <= 0 {
 						break
 					}
 				}
