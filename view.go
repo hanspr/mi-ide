@@ -210,7 +210,6 @@ func (v *View) paste(clip string) {
 	v.Cursor.Loc = Start
 
 	if v.Buf.Settings["smartindent"].(bool) {
-		//clip = strings.Trim(clip, " \t")
 		multiline := false
 		if strings.Contains(clip, "\n") {
 			multiline = true
@@ -223,8 +222,7 @@ func (v *View) paste(clip string) {
 		spc := CountLeadingWhitespace(v.Buf.Line(v.Cursor.Y))
 		v.Buf.SmartIndent(Start, v.Cursor.Loc, false)
 		if multiline {
-			xEnd := Count(v.Buf.Line(v.Cursor.Loc.Y))
-			v.Cursor.GotoLoc(Loc{xEnd, v.Cursor.Loc.Y})
+			v.Cursor.StartOfText()
 		} else {
 			// One line paste, check if it was indented
 			spc2 := CountLeadingWhitespace(v.Buf.Line(v.Cursor.Y))
