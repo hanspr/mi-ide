@@ -90,6 +90,7 @@ type View struct {
 	savedLoc   Loc
 	savedLine  string
 	searchSave Loc
+	seachLoops int
 
 	// lastCutTime stores when the last ctrl+k was issued.
 	// It is used for clearing the clipboard to replace it with fresh cut lines.

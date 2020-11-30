@@ -180,6 +180,7 @@ func (eh *EventHandler) Execute(t *TextEvent) {
 	if eh.RedoStack.Len() > 0 {
 		eh.RedoStack = new(Stack)
 	}
+
 	eh.UndoStack.Push(t)
 
 	for pl := range loadedPlugins {

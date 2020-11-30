@@ -195,6 +195,9 @@ func BracePairsAreBalanced(str string) int {
 	str = r.ReplaceAllString(str, "")
 	r = regexp.MustCompile(`'(?:[^'\\]|\\.)*'`)
 	str = r.ReplaceAllString(str, "")
+	// Remove scaped characterd so they do not fool the algorithm
+	r = regexp.MustCompile(`\\.`)
+	str = r.ReplaceAllString(str, "")
 	// Reduce string size
 	r = regexp.MustCompile(`^[ \t]+|[ \t]+$`)
 	str = r.ReplaceAllString(str, "")
@@ -286,6 +289,27 @@ func BalanceBracePairs(str string) string {
 		return "\t"
 	}
 	return ""
+}
+
+// GetIndentation returns how many leves of indentation in a line depending in the
+// indentation char and quantity of characters that make the indentation
+// 0 if the line is not indented or -1 if or does not match the indentation char or
+// the line has mixed white spaces
+func GetLineIndentetion(str, char string, q int) int {
+	ws := 0
+	crune := []rune(char)
+
+	for _, c := range str {
+		if c == ' ' || c == '\t' {
+			if crune[0] != c {
+				return -1
+			}
+			ws++
+		} else {
+			break
+		}
+	}
+	return ws / q
 }
 
 // CountLeadingWhitespace returns the ammount of leading whitespace of the given string

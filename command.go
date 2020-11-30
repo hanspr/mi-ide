@@ -25,9 +25,11 @@ type StrCommand struct {
 	completions []Completion
 }
 
-var commands map[string]Command
-
-var commandActions map[string]func([]string)
+var (
+	commands       map[string]Command
+	commandActions map[string]func([]string)
+	replacing      bool = false
+)
 
 func init() {
 	commandActions = map[string]func([]string){
@@ -548,7 +550,7 @@ func Save(args []string) {
 // Replace runs search and replace
 func Replace(args []string) {
 
-	if len(args) < 2 {
+	if len(args) < 2 || args[0] == args[1] {
 		// We need to find both a search and replace expression
 		messenger.Error(Language.Translate("Invalid replace statement:"), " "+strings.Join(args, " "))
 		return
@@ -557,7 +559,7 @@ func Replace(args []string) {
 	all := false
 	noRegex := false
 	mods := "(?m)"
-
+	replacing = true
 	if len(args) > 2 {
 		for _, arg := range args[2:] {
 			switch arg {
@@ -591,22 +593,36 @@ func Replace(args []string) {
 	if err != nil {
 		// There was an error with the user's regex
 		messenger.Error(err.Error())
+		replacing = false
 		return
 	}
 
 	view := CurView()
-
+	startLine := view.searchSave.Y
 	found := 0
+	view.seachLoops = 0
+
 	for {
 		var choice rune
 		var canceled bool
 		// The 'check' flag was used
 		Search(search, view, true)
 		if !view.Cursor.HasSelection() {
+			replacing = false
 			break
 		}
 		view.Relocate()
 		RedrawAll(true)
+		if view.seachLoops > 0 && view.Cursor.Y > startLine {
+			view.seachLoops = 0
+			if view.Cursor.HasSelection() {
+				view.Cursor.Loc = view.Cursor.CurSelection[0]
+				view.Cursor.ResetSelection()
+			}
+			messenger.Reset()
+			replacing = false
+			break
+		}
 		y := []rune(Language.Translate("y"))[0]
 		n := []rune(Language.Translate("n"))[0]
 		q := []rune(Language.Translate("q"))[0]
@@ -622,6 +638,7 @@ func Replace(args []string) {
 				view.Cursor.ResetSelection()
 			}
 			messenger.Reset()
+			replacing = false
 			break
 		} else if choice == y || choice == I || all {
 			if choice == I && !all {
@@ -651,6 +668,7 @@ func Replace(args []string) {
 				view.Cursor.ResetSelection()
 			}
 			messenger.Reset()
+			replacing = false
 			break
 		} else {
 			searchStart = view.Cursor.CurSelection[1]

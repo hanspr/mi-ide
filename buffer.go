@@ -475,11 +475,16 @@ func (b *Buffer) SmartIndent(Start, Stop Loc, once bool) {
 		Ys = 0
 	} else {
 		// Look back for the first line that is not empty, is not a comment, get that indentation as reference
-		comment := regexp.MustCompile(`^(#|//|--|/\*)`)
+		comment := regexp.MustCompile(`^(#|//|(<!)?--|/\*)`)
 		for y := Ys; y >= 0; y-- {
 			l := b.Line(y)
 			if len(l) > 0 && comment.MatchString(l) == false {
-				n = CountLeadingWhitespace(b.Line(y)) / iMult
+				n = GetLineIndentetion(b.Line(y), iChar, iMult)
+				if n < 0 {
+					messenger.Error(Language.Translate("You have mixed space and tabs in line above"))
+					continue
+				}
+				//n = CountLeadingWhitespace(b.Line(y)) / iMult
 				B = BracePairsAreBalanced(b.Line(y))
 				break
 			} else if comment.MatchString(l) == true {
