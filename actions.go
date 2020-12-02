@@ -802,22 +802,19 @@ func (v *View) Backspace(usePlugin bool) bool {
 		v.Cursor.DeleteSelection()
 		v.Cursor.ResetSelection()
 	} else if v.Cursor.Loc.GreaterThan(v.Buf.Start()) {
-		// We have to do something a bit hacky here because we want to
-		// delete the line by first moving left and then deleting backwards
-		// but the undo redo would place the cursor in the wrong place
-		// So instead we move left, save the position, move back, delete
-		// and restore the position
-
-		// If the user is using spaces instead of tabs and they are deleting
-		// whitespace at the start of the line, we should delete as if it's a
-		// tab (tabSize number of spaces)
 		lineStart := sliceEnd(v.Buf.LineBytes(v.Cursor.Y), v.Cursor.X)
 		tabSize := int(v.Buf.Settings["tabsize"].(float64))
 		loc := v.Cursor.Loc
 		if v.Buf.Settings["tabstospaces"].(bool) && IsSpaces(lineStart) && utf8.RuneCount(lineStart) != 0 && utf8.RuneCount(lineStart)%tabSize == 0 {
-			v.Buf.Remove(loc.Move(-tabSize, v.Buf), loc)
+			nloc := new(Loc)
+			nloc.X = loc.X
+			nloc.Y = loc.Y
+			for i := 1; i <= tabSize; i++ {
+				*nloc = nloc.left(v.Buf)
+			}
+			v.Buf.Remove(*nloc, loc)
 		} else {
-			v.Buf.Remove(loc.Move(-1, v.Buf), loc)
+			v.Buf.Remove(loc.left(v.Buf), loc)
 		}
 	}
 	v.savedLoc = v.Cursor.Loc
