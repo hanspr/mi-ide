@@ -559,7 +559,6 @@ func Replace(args []string) {
 	all := false
 	noRegex := false
 	mods := "(?m)"
-	replacing = true
 	if len(args) > 2 {
 		for _, arg := range args[2:] {
 			switch arg {
@@ -689,6 +688,7 @@ func Replace(args []string) {
 // ReplaceAll replaces search term all at once
 func ReplaceAll(args []string) {
 	// aliased to Replace command
+	replacing = true
 	Replace(append(args, "-a"))
 }
 
