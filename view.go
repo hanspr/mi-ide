@@ -86,11 +86,11 @@ type View struct {
 	lastClickTime time.Time
 
 	// Saved cursor locations for view jumps and search
-	lastLoc    Loc
-	savedLoc   Loc
-	savedLine  string
-	searchSave Loc
-	seachLoops int
+	lastLoc     Loc
+	savedLoc    Loc
+	savedLine   string
+	searchSave  Loc
+	searchLoops int
 
 	// lastCutTime stores when the last ctrl+k was issued.
 	// It is used for clearing the clipboard to replace it with fresh cut lines.

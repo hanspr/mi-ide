@@ -600,7 +600,7 @@ func Replace(args []string) {
 	view := CurView()
 	startLine := view.searchSave.Y
 	found := 0
-	view.seachLoops = 0
+	view.searchLoops = 0
 
 	for {
 		var choice rune
@@ -613,8 +613,8 @@ func Replace(args []string) {
 		}
 		view.Relocate()
 		RedrawAll(true)
-		if view.seachLoops > 0 && view.Cursor.Y > startLine {
-			view.seachLoops = 0
+		if view.searchLoops > 0 && view.Cursor.Y > startLine {
+			view.searchLoops = 0
 			if view.Cursor.HasSelection() {
 				view.Cursor.Loc = view.Cursor.CurSelection[0]
 				view.Cursor.ResetSelection()

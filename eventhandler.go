@@ -158,7 +158,7 @@ func (eh *EventHandler) Remove(start, end Loc) {
 	}
 }
 
-// MultipleReplace creates an multiple insertions executes them
+// MultipleReplace creates a multiple insertions executes them
 func (eh *EventHandler) MultipleReplace(deltas []Delta) {
 	e := &TextEvent{
 		C:         *eh.buf.cursors[eh.buf.curCursor],

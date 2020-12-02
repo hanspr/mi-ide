@@ -159,13 +159,13 @@ func Search(searchStr string, v *View, down bool) bool {
 	if down {
 		found = searchDown(r, v, searchStart, v.Buf.End())
 		if !found {
-			v.seachLoops++
+			v.searchLoops++
 			found = searchDown(r, v, v.Buf.Start(), searchStart)
 		}
 	} else {
 		found = searchUp(r, v, searchStart, v.Buf.Start())
 		if !found {
-			v.seachLoops++
+			v.searchLoops++
 			found = searchUp(r, v, v.Buf.End(), searchStart)
 		}
 	}
