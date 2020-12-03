@@ -19,6 +19,10 @@ const (
 	TextEventReplace = 0
 )
 
+var (
+	replaceTime time.Time
+)
+
 // TextEvent holds data for a manipulation on some text that can be undone
 type TextEvent struct {
 	C Cursor
@@ -108,6 +112,9 @@ func (eh *EventHandler) Insert(start Loc, text string) {
 		Deltas:    []Delta{{text, start, Loc{0, 0}}},
 		Time:      time.Now(),
 	}
+	if replacing {
+		e.Time = replaceTime
+	}
 	eh.Execute(e)
 	e.Deltas[0].End = start.Move(Count(text), eh.buf)
 	end := e.Deltas[0].End
@@ -138,6 +145,9 @@ func (eh *EventHandler) Remove(start, end Loc) {
 		Deltas:    []Delta{{"", start, end}},
 		Time:      time.Now(),
 	}
+	if replacing {
+		e.Time = replaceTime
+	}
 	eh.Execute(e)
 
 	for _, c := range eh.buf.cursors {
@@ -165,6 +175,9 @@ func (eh *EventHandler) MultipleReplace(deltas []Delta) {
 		EventType: TextEventReplace,
 		Deltas:    deltas,
 		Time:      time.Now(),
+	}
+	if replacing {
+		e.Time = replaceTime
 	}
 	eh.Execute(e)
 }

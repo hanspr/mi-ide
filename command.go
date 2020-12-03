@@ -8,6 +8,7 @@ import (
 	"runtime"
 	"strconv"
 	"strings"
+	"time"
 
 	humanize "github.com/dustin/go-humanize"
 	"github.com/hanspr/shellwords"
@@ -689,6 +690,7 @@ func Replace(args []string) {
 func ReplaceAll(args []string) {
 	// aliased to Replace command
 	replacing = true
+	replaceTime = time.Now()
 	Replace(append(args, "-a"))
 }
 
