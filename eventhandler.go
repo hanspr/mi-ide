@@ -150,15 +150,15 @@ func (eh *EventHandler) Remove(start, end Loc) {
 	}
 	eh.Execute(e)
 
-	for _, c := range eh.buf.cursors {
-		move := func(loc Loc) Loc {
-			if start.Y != end.Y && loc.GreaterThan(end) {
-				loc.Y -= end.Y - start.Y
-			} else if loc.Y == end.Y && loc.GreaterEqual(end) {
-				loc = loc.Move(-Diff(start, end, eh.buf), eh.buf)
-			}
-			return loc
+	move := func(loc Loc) Loc {
+		if start.Y != end.Y && loc.GreaterThan(end) {
+			loc.Y -= end.Y - start.Y
+		} else if loc.Y == end.Y && loc.GreaterEqual(end) {
+			loc = loc.Move(-Diff(start, end, eh.buf), eh.buf)
 		}
+		return loc
+	}
+	for _, c := range eh.buf.cursors {
 		c.Loc = move(c.Loc)
 		c.CurSelection[0] = move(c.CurSelection[0])
 		c.CurSelection[1] = move(c.CurSelection[1])
