@@ -627,9 +627,9 @@ func Replace(args []string) {
 		n := []rune(Language.Translate("n"))[0]
 		q := []rune(Language.Translate("q"))[0]
 		I := []rune(Language.Translate("!"))[0]
-		if all {
+		if all && !freeze {
 			freeze = true
-		} else {
+		} else if !all {
 			choice, canceled = messenger.LetterPrompt(Language.Translate("Perform replacement? (y,n,q,!)"), y, n, q, I)
 		}
 		if canceled {
@@ -641,9 +641,6 @@ func Replace(args []string) {
 			replacing = false
 			break
 		} else if choice == y || choice == I || all {
-			if choice == I && !all {
-				all = true
-			}
 			sel := view.Cursor.GetSelection()
 			rep := regex.ReplaceAllString(sel, replace)
 			if Count(rep) > Count(sel) {
@@ -659,8 +656,12 @@ func Replace(args []string) {
 			}
 			view.Cursor.DeleteSelection()
 			view.Buf.Insert(view.Cursor.Loc, rep)
-			view.Cursor.ResetSelection()
-			messenger.Reset()
+			if !all {
+				messenger.Reset()
+			}
+			if choice == I && !all {
+				all = true
+			}
 			found++
 		} else if choice == q {
 			if view.Cursor.HasSelection() {
