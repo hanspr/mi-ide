@@ -1,7 +1,7 @@
 filetype: zsh
 
 detect:
-    filename: "(\\.zsh$|\\.?(zshenv|zprofile|zshrc|zlogin|zlogout)$)"
+    filename: "(\\.zsh(-\\w+)?$|\\.?(zshenv|zprofile|zshrc|zlogin|zlogout)$)"
     header: "^#!.*/(env +)?zsh( |$)"
 
 rules:
