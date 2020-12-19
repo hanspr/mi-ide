@@ -1,6 +1,6 @@
 # ![mi-ide](./assets/logo.png)
 
-__This project is personal project, I do not maintain it or plan to have any more releases.__
+__This project is personal project.__
 
 mi-ide (_**mee ide**_ in spanish, _**my ide**_ in English. As in: this is _**my** editor_) is a spin-off version of micro editor project at https://github.com/zyedidia/micro.
 
@@ -24,11 +24,6 @@ This is the list of the most important existing features :
     - Or just for the current opened session
 * :star: A powerful auto indent
 * :star: Internal copy paste between terminals in the same server without the need of _**shift-key and mouse dragging**_
-* :star: Features that require a server to work
-    - Internal copy paste between terminals in different servers without the need of _**shift-key and mouse dragging**_
-    - Package and retrieve your personal settings to quickly sync your editor's choices and hacks across different servers you work on, when the editor is already installed
-    - Transfer a single script, text file quickly from one server to another
-    - See [Support the project & Services](#support-the-project--services) for these features
 
 ![Screenshot](./assets/features.gif)
 
