@@ -22,7 +22,8 @@ rules:
     - symbol.brackets: "(\\{|\\})"
     - symbol.brackets: "(\\(|\\))"
     - symbol.brackets: "(\\[|\\])"
-    - preproc: "use +?;$"
+    - todo: "\\$?([\\p{L}\\p{N}_])+(::[\\p{L}\\p{N}_]+)+(->)?"
+    - preproc: "use .+?;$"
     - preproc: "no .+?;$"
     - constant.string: "\"[^\"\\\\]*(?:\\\\.[^\"\\\\]*)*\""
     - constant.string: "qq“.*“"
@@ -32,7 +33,6 @@ rules:
     - symbol.tag: "\\$#[\\p{L}\\p{N}_]+"
     - symbol.tag: "</?[A-Za-z0-9:]+/?[ >]"
     - constant.tag: "&[\\w]{2,5};"
-    - todo: "\\$?([\\p{L}\\p{N}_])+(::[\\p{L}\\p{N}_]+)+(->)?"
     - constant.string: "\'.*?\'"
     - comment: "[;,][ \\t]+#.*"
     - comment:
