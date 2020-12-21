@@ -23,7 +23,7 @@ rules:
     - symbol.brackets: "(\\(|\\))"
     - symbol.brackets: "(\\[|\\])"
     - todo: "\\$?([\\p{L}\\p{N}_])+(::[\\p{L}\\p{N}_]+)+(->)?"
-    - preproc: "use .+?;$"
+    - preproc: "use .+?(\\W|qw)$"
     - preproc: "no .+?;$"
     - constant.string: "\"[^\"\\\\]*(?:\\\\.[^\"\\\\]*)*\""
     - constant.string: "qq“.*“"
