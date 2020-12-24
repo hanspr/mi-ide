@@ -341,6 +341,35 @@ func (v *View) WordLeft(usePlugin bool) bool {
 	return true
 }
 
+// SkipCloseBrace skiping all continouse close braces, improve typing speed
+func (v *View) SkipCloseBrace(usePlugin bool) bool {
+	beginSkiping := false
+	x := 0
+	line := v.Buf.LineRunes(v.Cursor.Y)
+	n := len(line)
+	for i, c := range line {
+		x++
+		if i <= v.Cursor.X+1 {
+			continue
+		}
+		skip := (c == '\'' || c == '"' || c == '}' || c == ']' || c == ')')
+		if skip && beginSkiping {
+			continue
+		} else if skip && !beginSkiping {
+			beginSkiping = true
+		} else if !beginSkiping {
+			continue
+		} else {
+			break
+		}
+	}
+	x--
+	if x <= n {
+		v.Cursor.GotoLoc(Loc{x, v.Cursor.Y})
+	}
+	return true
+}
+
 // SelectUp selects up one line
 func (v *View) SelectUp(usePlugin bool) bool {
 	if usePlugin && !PreActionCall("SelectUp", v) {
