@@ -21,10 +21,10 @@ File can not be saved with selected encoding|
 File is readonly|
 Saved|
 Buffer has no changes to save|
-Selection is to big, can not copy. You may move (up/down) or delete only.|
-Line is to big, can not cut. You may move (up/down) or delete only.|
-Line is to big to cut|
-Line is to big, can not duplicate. You may move (up/down) or delete only.|
+Selection is too big, can not copy. You may move (up/down) or delete only.|
+Line is too big, can not cut. You may move (up/down) or delete only.|
+Line is too big to cut|
+Line is too big, can not duplicate. You may move (up/down) or delete only.|
 Jump to line: (1 - %v) :|
 Invalid line number|
 Recording|
