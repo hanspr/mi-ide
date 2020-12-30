@@ -1272,7 +1272,7 @@ func (v *View) Copy(usePlugin bool) bool {
 
 		if v.Cursor.HasSelection() {
 			if v.SelectionTooBig() {
-				messenger.Error(Language.Translate("Selection is to big, can not copy. You may move (up/down) or delete only."))
+				messenger.Error(Language.Translate("Selection is too big, can not copy. You may move (up/down) or delete only."))
 			} else {
 				loc := v.Cursor.CurSelection
 				v.Cursor.CopySelection(currEnv.ClipWhere)
@@ -1307,7 +1307,7 @@ func (v *View) CutLine(usePlugin bool) bool {
 		return false
 	}
 	if v.SelectionTooBig() {
-		messenger.Error(Language.Translate("Line is to big, can not cut. You may move (up/down) or delete only."))
+		messenger.Error(Language.Translate("Line is too big, can not cut. You may move (up/down) or delete only."))
 		return false
 	}
 	if v.freshClip == true {
@@ -1338,7 +1338,7 @@ func (v *View) Cut(usePlugin bool) bool {
 
 	if v.Cursor.HasSelection() {
 		if v.SelectionTooBig() {
-			messenger.Error(Language.Translate("Selection is to big, can not copy. You may move (up/down) or delete only."))
+			messenger.Error(Language.Translate("Selection is too big, can not copy. You may move (up/down) or delete only."))
 			return false
 		}
 		v.Cursor.CopySelection(currEnv.ClipWhere)
@@ -1352,7 +1352,7 @@ func (v *View) Cut(usePlugin bool) bool {
 		return true
 	}
 	if len(v.Buf.LineBytes(v.Cursor.Loc.Y)) > MaxClipboardSize {
-		messenger.Error(Language.Translate("Line is to big to cut"))
+		messenger.Error(Language.Translate("Line is too big to cut"))
 	} else {
 		return v.CutLine(usePlugin)
 	}
@@ -1375,13 +1375,13 @@ func (v *View) DuplicateLine(usePlugin bool) bool {
 
 	if v.Cursor.HasSelection() {
 		if v.SelectionTooBig() {
-			messenger.Error(Language.Translate("Line is to big, can not duplicate. You may move (up/down) or delete only."))
+			messenger.Error(Language.Translate("Line is too big, can not duplicate. You may move (up/down) or delete only."))
 			return false
 		}
 		v.Buf.Insert(v.Cursor.CurSelection[1], v.Cursor.GetSelection())
 	} else {
 		if len(v.Buf.LineBytes(v.Cursor.Loc.Y)) > MaxClipboardSize {
-			messenger.Error(Language.Translate("Line is to big, can not duplicate. You may move (up/down) or delete only."))
+			messenger.Error(Language.Translate("Line is too big, can not duplicate. You may move (up/down) or delete only."))
 			return false
 		}
 		loc := v.Cursor.Loc
@@ -2267,7 +2267,7 @@ func (v *View) NextSplit(usePlugin bool) bool {
 		tab := tabs[curTab]
 		// Save cursor location and line reference
 		v.savedLoc = v.Cursor.Loc
-		v.savedLine = SubtringSafe(v.Buf.Line(v.Cursor.Loc.Y), 0, 20)
+		v.savedLine = SubstringSafe(v.Buf.Line(v.Cursor.Loc.Y), 0, 20)
 		// Find next View parsing tree_split downward
 		tab.CurView = v.splitNode.GetNextPrevView(1)
 		if usePlugin {
@@ -2287,7 +2287,7 @@ func (v *View) PreviousSplit(usePlugin bool) bool {
 		tab := tabs[curTab]
 		// Save cursor location and line reference
 		v.savedLoc = v.Cursor.Loc
-		v.savedLine = SubtringSafe(v.Buf.Line(v.Cursor.Loc.Y), 0, 20)
+		v.savedLine = SubstringSafe(v.Buf.Line(v.Cursor.Loc.Y), 0, 20)
 		// Find next View parsing tree_split upward
 		tab.CurView = v.splitNode.GetNextPrevView(-1)
 

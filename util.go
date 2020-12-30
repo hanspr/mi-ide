@@ -523,8 +523,8 @@ func ParseCursorLocation(cursorPositions []string) (Loc, error) {
 	return startpos, err
 }
 
-// SubtringSafe check no out of bound indices
-func SubtringSafe(utf8s string, from int, to int) string {
+// SubstringSafe check no out of bound indices
+func SubstringSafe(utf8s string, from int, to int) string {
 	lastIndex := Count(utf8s)
 	if from > lastIndex {
 		return ""

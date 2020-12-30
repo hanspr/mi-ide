@@ -358,7 +358,7 @@ func (v *View) HSplit(buf *Buffer) {
 		i = 1
 	}
 	v.savedLoc = v.Cursor.Loc
-	v.savedLine = SubtringSafe(v.Buf.Line(v.Cursor.Loc.Y), 0, 20)
+	v.savedLine = SubstringSafe(v.Buf.Line(v.Cursor.Loc.Y), 0, 20)
 	v.splitNode.HSplit(buf, CurView().Num+i)
 }
 
@@ -369,7 +369,7 @@ func (v *View) VSplit(buf *Buffer) {
 		i = 1
 	}
 	v.savedLoc = v.Cursor.Loc
-	v.savedLine = SubtringSafe(v.Buf.Line(v.Cursor.Loc.Y), 0, 20)
+	v.savedLine = SubstringSafe(v.Buf.Line(v.Cursor.Loc.Y), 0, 20)
 	v.splitNode.VSplit(buf, CurView().Num+i)
 }
 
@@ -929,7 +929,7 @@ func (v *View) FindCurLine(n int, s string) Loc {
 	newLoc.X = v.savedLoc.X
 	if n < 0 {
 		for N := Y; N >= Min; N-- {
-			s2 = SubtringSafe(v.Buf.Line(N), 0, 10)
+			s2 = SubstringSafe(v.Buf.Line(N), 0, 10)
 			if s == s2 {
 				newLoc.Y = N
 				if newLoc.X > len(v.Buf.Line(N))-1 {
@@ -940,7 +940,7 @@ func (v *View) FindCurLine(n int, s string) Loc {
 		}
 	} else {
 		for N := Y; N <= Max; N++ {
-			s2 = SubtringSafe(v.Buf.Line(N), 0, 10)
+			s2 = SubstringSafe(v.Buf.Line(N), 0, 10)
 			if s == s2 {
 				newLoc.Y = N
 				if newLoc.X > len(v.Buf.Line(N))-1 {
@@ -1034,7 +1034,7 @@ func (v *View) DisplayView() {
 				CurView().savedLoc.X = CurView().Buf.End().X
 			}
 		}
-		currLine := SubtringSafe(CurView().Buf.Line(CurView().savedLoc.Y), 0, 20)
+		currLine := SubstringSafe(CurView().Buf.Line(CurView().savedLoc.Y), 0, 20)
 		if LastView > 0 && currLine != CurView().savedLine {
 			var newLoc Loc
 			// Line has moved, find new position using as a reference the last known line beggining
