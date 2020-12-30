@@ -90,7 +90,7 @@ func MakeCommand(name, function string, completions ...Completion) {
 	commands[name] = Command{action, completions}
 }
 
-// DefaultCommands returns a map containing micro's default commands
+// DefaultCommands returns a map containing mi-ide's default commands
 func DefaultCommands() map[string]StrCommand {
 	return map[string]StrCommand{
 		"set":        {"Set", []Completion{OptionCompletion, OptionValueCompletion}},
@@ -233,7 +233,7 @@ func Retab(args []string) {
 	CurView().Retab(true)
 }
 
-// Raw opens a new raw view which displays the escape sequences micro
+// Raw opens a new raw view which displays the escape sequences mi-ide
 // is receiving in real-time
 func Raw(args []string) {
 	buf := NewBufferFromString("", "Raw events")
@@ -309,7 +309,7 @@ func Cd(args []string) {
 	}
 }
 
-// MemUsage prints micro's memory usage
+// MemUsage prints mi-ide's memory usage
 // Alloc shows how many bytes are currently in use
 // Sys shows how many bytes have been requested from the operating system
 // NumGC shows how many times the GC has been run

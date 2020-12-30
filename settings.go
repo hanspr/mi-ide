@@ -232,7 +232,7 @@ func GetOption(name string) interface{} {
 	return GetGlobalOption(name)
 }
 
-// DefaultGlobalSettings returns the default global settings for micro
+// DefaultGlobalSettings returns the default global settings for mi-ide
 // Note that colorscheme is a global only option
 func DefaultGlobalSettings() map[string]interface{} {
 	return map[string]interface{}{

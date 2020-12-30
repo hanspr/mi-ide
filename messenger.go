@@ -15,7 +15,7 @@ import (
 )
 
 // TermMessage sends a message to the user in the terminal. This usually occurs before
-// micro has been fully initialized -- ie if there is an error in the syntax highlighting
+// mi-ide has been fully initialized -- ie if there is an error in the syntax highlighting
 // regular expressions
 // The function must be called when the screen is not initialized
 // This will write the message, and wait for the user

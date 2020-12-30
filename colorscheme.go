@@ -47,7 +47,7 @@ func ColorschemeExists(colorschemeName string) bool {
 	return FindRuntimeFile(RTColorscheme, colorschemeName) != nil
 }
 
-// InitColorscheme picks and initializes the colorscheme when micro starts
+// InitColorscheme picks and initializes the colorscheme when mi-ide starts
 func InitColorscheme() {
 	colorscheme = make(Colorscheme)
 	defStyle = tcell.StyleDefault.

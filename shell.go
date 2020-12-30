@@ -91,7 +91,7 @@ func RunInteractiveShell(input string, wait bool, getOutput bool) (string, error
 	}
 	cmd.Stderr = os.Stderr
 
-	// This is a trap for Ctrl-C so that it doesn't kill micro
+	// This is a trap for Ctrl-C so that it doesn't kill mi-ide
 	// Instead we trap Ctrl-C to kill the program we're running
 	c := make(chan os.Signal, 1)
 	signal.Notify(c, os.Interrupt)

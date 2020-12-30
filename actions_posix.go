@@ -4,7 +4,7 @@ package main
 
 import "syscall"
 
-// Suspend sends micro to the background. This is the same as pressing CtrlZ in most unix programs.
+// Suspend sends mi-ide to the background. This is the same as pressing CtrlZ in most unix programs.
 // This only works on linux and has no default binding.
 // This code was adapted from the suspend code in nsf/godit
 func (v *View) Suspend(usePlugin bool) bool {

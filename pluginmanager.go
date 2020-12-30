@@ -22,7 +22,7 @@ var (
 	allPluginPackages PluginPackages
 )
 
-// CorePluginName is a plugin dependency name for the micro core.
+// CorePluginName is a plugin dependency name for the mi-ide core.
 const CorePluginName = "micro"
 
 // PluginChannel contains an url to a json list of PluginRepository
@@ -58,7 +58,7 @@ type PluginVersion struct {
 // PluginVersions is a slice of PluginVersion
 type PluginVersions []*PluginVersion
 
-// PluginDependency descripes a dependency to another plugin or micro itself.
+// PluginDependency descripes a dependency to another plugin or mi-ide itself.
 type PluginDependency struct {
 	Name  string
 	Range semver.Range
@@ -349,7 +349,7 @@ func newStaticPluginVersion(name, version string) *PluginVersion {
 }
 
 // GetInstalledVersions returns a list of all currently installed plugins including an entry for
-// micro itself. This can be used to resolve dependencies.
+// mi-ide itself. This can be used to resolve dependencies.
 func GetInstalledVersions(withCore bool) PluginVersions {
 	result := PluginVersions{}
 	if withCore {
@@ -564,7 +564,7 @@ func (pv PluginVersions) install() {
 		}
 	}
 	if anyInstalled {
-		messenger.Message("One or more plugins installed. Please restart micro.")
+		messenger.Message("One or more plugins installed. Please restart mi-ide.")
 	} else {
 		messenger.AddLog("Nothing to install / update")
 	}

@@ -276,7 +276,7 @@ type Key struct {
 	escape    string
 }
 
-// InitBindings initializes the keybindings for micro
+// InitBindings initializes the keybindings for mi-ide
 func InitBindings() {
 	bindings = make(map[Key][]func(*View, bool) bool)
 	bindingsStr = make(map[string]string)
@@ -513,7 +513,7 @@ func WriteBindings(values map[string]string) {
 	}
 }
 
-// DefaultBindings returns a map containing micro's default keybindings
+// DefaultBindings returns a map containing mi-ide's default keybindings
 func DefaultBindings() map[string]string {
 	return map[string]string{
 		"Up":            "CursorUp",

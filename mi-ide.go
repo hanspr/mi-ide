@@ -130,7 +130,7 @@ var (
 // LoadInput determines which files should be loaded into buffers
 // based on the input stored in flag.Args()
 func LoadInput() []*Buffer {
-	// There are a number of ways micro should start given its input
+	// There are a number of ways mi-ide should start given its input
 
 	// 1. If it is given a files in flag.Args(), it should open those
 
@@ -196,7 +196,7 @@ func LoadInput() []*Buffer {
 	return buffers
 }
 
-// InitConfigDir finds the configuration directory for micro according to the XDG spec.
+// InitConfigDir finds the configuration directory for mi-ide according to the XDG spec.
 // If no directory is found, it creates one.
 func InitConfigDir() {
 	xdgHome := os.Getenv("XDG_CONFIG_HOME")
@@ -230,7 +230,7 @@ func InitConfigDir() {
 
 	if _, err := os.Stat(configDir); os.IsNotExist(err) {
 		// Copy files from /etc/mi-ide if they exists (installed by root)?
-		// If the micro specific config directory doesn't exist we should download a basic one
+		// If the mi-ide specific config directory doesn't exist we should download a basic one
 		TermMessage("Missing configuration files.\nmi-ide will download the necessary config files to run.\nFiles will be downloaded from\n\nhttps://raw.githubusercontent.com/hanspr/mi-channel/master/config.zip\n\nIf you do not agree, type Ctrl-C to abort, and install manually")
 		err := DownLoadExtractZip("https://raw.githubusercontent.com/hanspr/mi-channel/master/config.zip", configDir)
 		if err != nil {
@@ -371,7 +371,7 @@ var flagStartPos = flag.String("startpos", "", "LINE,COL to start the cursor at 
 var flagConfigDir = flag.String("config-dir", "", "Specify a custom location for the configuration directory")
 var flagOptions = flag.Bool("options", false, "Show all option help")
 
-// MicroAppStop stop micro app redraw icon bar
+// MicroAppStop stop mi-ide app redraw icon bar
 func MicroAppStop() {
 	apprunning = nil
 	MicroToolBar.FixTabsIconArea()
@@ -388,7 +388,7 @@ func main() {
 	currEnv.ClipWhere = "local"
 
 	flag.Usage = func() {
-		fmt.Println("Usage: micro [OPTIONS] [FILE]...")
+		fmt.Println("Usage: mi-ide [OPTIONS] [FILE]...")
 		fmt.Println("-config-dir dir")
 		fmt.Println("    \tSpecify a custom location for the configuration directory")
 		fmt.Println("-startpos LINE,COL")
@@ -403,8 +403,8 @@ func main() {
 		fmt.Print("\nMicro's options can also be set via command line arguments for quick\nadjustments. For real configuration, please use the settings.json\nfile (see 'help options').\n\n")
 		fmt.Println("-option value")
 		fmt.Println("    \tSet `option` to `value` for this session")
-		fmt.Println("    \tFor example: `micro -syntax off file.c`")
-		fmt.Println("\nUse `micro -options` to see the full list of configuration options")
+		fmt.Println("    \tFor example: `mi-ide -syntax off file.c`")
+		fmt.Println("\nUse `mi-ide -options` to see the full list of configuration options")
 	}
 
 	optionFlags := make(map[string]*string)

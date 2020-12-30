@@ -9,7 +9,7 @@ import (
 var pluginCompletions []func(string) []string
 
 // This file is meant (for now) for autocompletion in command mode, not
-// while coding. This helps micro autocomplete commands and then filenames
+// while coding. This helps mi-ide autocomplete commands and then filenames
 // for example with `vsplit filename`.
 
 // FileComplete autocompletes filenames
