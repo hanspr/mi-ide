@@ -462,13 +462,13 @@ func ReplaceHome(path string) string {
 	if homeString == "~" {
 		userData, err = user.Current()
 		if err != nil {
-			messenger.Error("Could not find user: ", err)
+			messenger.Alert("error", "Could not find user: ", err)
 		}
 	} else {
 		userData, err = user.Lookup(homeString[1:])
 		if err != nil {
 			if messenger != nil {
-				messenger.Error("Could not find user: ", err)
+				messenger.Alert("error", "Could not find user: ", err)
 			} else {
 				TermMessage("Could not find user: ", err)
 			}
@@ -510,12 +510,12 @@ func ParseCursorLocation(cursorPositions []string) (Loc, error) {
 
 	startpos.Y, err = strconv.Atoi(cursorPositions[0])
 	if err != nil {
-		messenger.Error("Error parsing cursor position: ", err)
+		messenger.Alert("error", "Error parsing cursor position: ", err)
 	} else {
 		if len(cursorPositions) > 1 {
 			startpos.X, err = strconv.Atoi(cursorPositions[1])
 			if err != nil {
-				messenger.Error("Error parsing cursor position: ", err)
+				messenger.Alert("error", "Error parsing cursor position: ", err)
 			}
 		}
 	}
@@ -736,7 +736,7 @@ func PackSettingsForUpload() (string, error) {
 	path := strings.ReplaceAll(configDir, "/mi-ide", "") + "/settings.zip"
 	err := zipit(configDir, path)
 	if err != nil {
-		messenger.Error(err.Error())
+		messenger.Alert("error", err.Error())
 		return "", err
 	}
 	zipstring := Slurp(path)

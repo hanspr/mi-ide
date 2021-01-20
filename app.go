@@ -32,7 +32,7 @@ type AppElement struct {
 	width       int                                                 // text element width, text area width
 	height      int                                                 // Textbox: maxlength, text area have no predefined maxlength
 	index       int                                                 // order in which to draw
-	callback    func(string, string, string, string, int, int) bool // (element.name, element.value, event, x, y)
+	callback    func(string, string, string, string, int, int) bool // (element.name, element.value, event, when, x, y)
 	style       tcell.Style                                         // color style for this element
 	checked     bool                                                // Checkbox, Radio checked. Select is open
 	gname       string                                              // Original name, required for radio buttons

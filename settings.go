@@ -494,13 +494,13 @@ func SetOptionAndSettings(option, value string) {
 	err := SetOption(option, value)
 
 	if err != nil {
-		messenger.Error(err.Error())
+		messenger.Alert("error", err.Error())
 		return
 	}
 
 	err = WriteSettings(filename)
 	if err != nil {
-		messenger.Error("Error writing to settings.json: " + err.Error())
+		messenger.Alert("error", "Error writing to settings.json: "+err.Error())
 		return
 	}
 }

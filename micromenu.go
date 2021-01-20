@@ -355,7 +355,7 @@ func (m *microMenu) SaveSettings(name, value, event, when string, x, y int) bool
 	if save {
 		err := WriteSettings(configDir + "/settings.json")
 		if err != nil {
-			messenger.Error(Language.Translate("Error writing settings.json file"), ": ", err.Error())
+			messenger.Alert("error", Language.Translate("Error writing settings.json file"), ": ", err.Error())
 		}
 	}
 	CurView().SetCursorEscapeString()
@@ -1621,7 +1621,7 @@ func (m *microMenu) TreeViewEvent(name, value, event, when string, x, y int) boo
 			for _, v := range t.Views {
 				if strings.Contains(v.Buf.Path, value) {
 					curTab = i
-					messenger.Information(value, " : Focused")
+					messenger.Alert("info", value, " : Focused")
 					m.Finish("focus same file")
 					return false
 				}
@@ -1630,7 +1630,7 @@ func (m *microMenu) TreeViewEvent(name, value, event, when string, x, y int) boo
 		NewTab([]string{m.LastPath + value})
 		CurView().Buf.name = value
 		m.myapp.activeElement = name
-		messenger.Information(value, " "+Language.Translate("opened in new Tab"))
+		messenger.Alert("info", value, " "+Language.Translate("opened in new Tab"))
 		m.myapp.ResetFrames()
 		return false
 	} else if event == "mouse-click3" || event == "mouse-click2" || event == "Right" {
@@ -1639,11 +1639,11 @@ func (m *microMenu) TreeViewEvent(name, value, event, when string, x, y int) boo
 			return true
 		}
 		if CurView().Buf.Modified() {
-			messenger.Error(Language.Translate("You need to save view first"))
+			messenger.Alert("error", Language.Translate("You need to save view first"))
 			m.Finish("file dirty")
 			return false
 		}
-		messenger.Information(value, " "+Language.Translate("opened in View"))
+		messenger.Alert("info", value, " "+Language.Translate("opened in View"))
 		CurView().Open(m.LastPath + value)
 		CurView().Buf.name = value
 		m.myapp.activeElement = name
@@ -1810,13 +1810,13 @@ func (m *microMenu) SaveCloudSettings(name, value, event, when string, x, y int)
 			Errors = Errors + "; " + err.Error()
 		}
 		if Errors != "" {
-			messenger.Error(Errors)
+			messenger.Alert("error", Errors)
 		} else {
 			err = WriteSettings(configDir + "/settings.json")
 			if err != nil {
-				messenger.Error(Language.Translate("Error writing settings.json file"), ": ", err.Error())
+				messenger.Alert("error", Language.Translate("Error writing settings.json file"), ": ", err.Error())
 			}
-			messenger.Success("Cloud service setup OK")
+			messenger.Alert("success", "Cloud service setup OK")
 		}
 	}
 	m.Finish("MiServices")
@@ -1863,27 +1863,27 @@ func (m *microMenu) TransferCloudSettings(name, value, event, when string, x, y 
 	if values["action"] == "upload" {
 		file, err := PackSettingsForUpload()
 		if err != nil {
-			messenger.Error(err.Error())
+			messenger.Alert("error", err.Error())
 		} else if file == "" {
-			messenger.Error("Settings file is empty")
+			messenger.Alert("error", "Settings file is empty")
 		} else {
 			msg := Clip.WriteTo(&file, "cloud", "settings")
 			if msg == "" {
-				messenger.Success("Settings uploaded OK")
+				messenger.Alert("success", "Settings uploaded OK")
 			} else {
-				messenger.Error(msg)
+				messenger.Alert("error", msg)
 			}
 		}
 	} else if values["action"] == "download" {
 		settings := Clip.ReadFrom("cloud", "settings")
 		if settings == "" {
-			messenger.Error("Could not download settings")
+			messenger.Alert("error", "Could not download settings")
 		} else {
 			err := UnPackSettingFromDownload(&settings)
 			if err != nil {
-				messenger.Error(err.Error())
+				messenger.Alert("error", err.Error())
 			} else {
-				messenger.Success(Language.Translate("Settings installed, restart") + " mi-ide")
+				messenger.Alert("success", Language.Translate("Settings installed, restart")+" mi-ide")
 			}
 		}
 	}

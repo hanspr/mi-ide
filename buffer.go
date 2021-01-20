@@ -481,7 +481,7 @@ func (b *Buffer) SmartIndent(Start, Stop Loc, once bool) {
 			if len(l) > 0 && comment.MatchString(l) == false {
 				n = GetLineIndentetion(b.Line(y), iChar, iMult)
 				if n < 0 {
-					messenger.Error(Language.Translate("You have mixed space and tabs in line above"))
+					messenger.Alert("error", Language.Translate("You have mixed space and tabs in line above"))
 					continue
 				}
 				//n = CountLeadingWhitespace(b.Line(y)) / iMult
@@ -563,7 +563,7 @@ func (b *Buffer) CheckModTime() {
 	if ok {
 		if modTime != b.ModTime {
 			if b.Settings["autoreload"].(bool) && b.IsModified == false {
-				messenger.Information(Language.Translate("Buffer reloaded"))
+				messenger.Alert("info", Language.Translate("Buffer reloaded"))
 				b.ReOpen()
 			} else {
 				choice, canceled := messenger.YesNoPrompt(Language.Translate("The file has changed since it was last read. Reload file? (y,n)"))
@@ -593,7 +593,7 @@ func (b *Buffer) ReOpen() {
 	}
 
 	if err != nil {
-		messenger.Error(err.Error())
+		messenger.Alert("error", err.Error())
 		return
 	}
 	b.EventHandler.ApplyDiff(txt)
@@ -735,7 +735,7 @@ func (b *Buffer) SaveAs(filename string) error {
 				messenger.AddLog("Error!:", err.Error())
 				messenger.AddLog("Original encoding:", b.encoder)
 				messenger.AddLog("Save as UTF8")
-				messenger.Information(Language.Translate("File saved as UTF8"))
+				messenger.Alert("info", Language.Translate("File saved as UTF8"))
 				fileutf8 = file
 				b.encoder = "UTF8"
 				b.encoding = false
@@ -804,7 +804,7 @@ func (b *Buffer) SaveAs(filename string) error {
 		settings["encoder"] = b.encoder
 		err := UpdateFileJSON(cachename, settings)
 		if err != nil {
-			messenger.Error(Language.Translate("Could not save settings") + " : " + err.Error())
+			messenger.Alert("error", Language.Translate("Could not save settings")+" : "+err.Error())
 		}
 	}
 	// Save current Undo Stack Len to later check Modified status in Actions

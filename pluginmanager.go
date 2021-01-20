@@ -556,7 +556,7 @@ func (pv PluginVersions) install() {
 
 			if shouldInstall {
 				if err := sel.DownloadAndInstall(); err != nil {
-					messenger.Error(err)
+					messenger.Alert("error", err)
 					return
 				}
 				anyInstalled = true
@@ -573,7 +573,7 @@ func (pv PluginVersions) install() {
 // UninstallPlugin deletes the plugin folder of the given plugin
 func UninstallPlugin(name string) {
 	if err := os.RemoveAll(filepath.Join(configDir, "plugins", name)); err != nil {
-		messenger.Error(err)
+		messenger.Alert("error", err)
 		return
 	}
 	delete(loadedPlugins, name)

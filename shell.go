@@ -43,7 +43,7 @@ func RunShellCommand(input string) (string, error) {
 func RunBackgroundShell(input string) {
 	args, err := shellwords.Split(input)
 	if err != nil {
-		messenger.Error(err)
+		messenger.Alert("error", err)
 		return
 	}
 	inputCmd := args[0]

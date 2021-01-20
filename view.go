@@ -329,7 +329,7 @@ func (v *View) OpenBuffer(buf *Buffer) {
 func (v *View) Open(path string) {
 	buf, err := NewBufferFromFile(path)
 	if err != nil {
-		messenger.Error(err)
+		messenger.Alert("error", err)
 		return
 	}
 	v.OpenBuffer(buf)
@@ -588,7 +588,7 @@ func (v *View) ExecuteActions(actions []func(*View, bool) bool) bool {
 			// call the key binding
 			relocate = action(v, true) || relocate
 		} else {
-			messenger.Error(Language.Translate("File is readonly"))
+			messenger.Alert("error", Language.Translate("File is readonly"))
 		}
 	}
 
@@ -695,7 +695,7 @@ func (v *View) HandleEvent(event tcell.Event) {
 		if !isBinding && e.Key() == tcell.KeyRune {
 			// Check viewtype if readonly don't insert a rune (readonly help and log view etc.)
 			if v.Type.Readonly == true {
-				messenger.Error(Language.Translate("File is readonly"))
+				messenger.Alert("error", Language.Translate("File is readonly"))
 			} else {
 				for _, c := range v.Buf.cursors {
 					v.SetCursor(c)
@@ -775,7 +775,7 @@ func (v *View) HandleEvent(event tcell.Event) {
 
 			PostActionCall("Paste", v)
 		} else {
-			messenger.Error(Language.Translate("File is readonly"))
+			messenger.Alert("error", Language.Translate("File is readonly"))
 		}
 	case *tcell.EventMouse:
 		// range validation

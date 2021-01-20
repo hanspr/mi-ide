@@ -1077,7 +1077,7 @@ func (v *View) SaveAll(usePlugin bool) bool {
 func (v *View) Save(usePlugin bool) bool {
 	if !v.Buf.IsModified {
 		// Do not save if buffer is clean
-		messenger.Information(Language.Translate("Buffer has no changes to save"))
+		messenger.Alert("info", Language.Translate("Buffer has no changes to save"))
 		return false
 	}
 	if v.mainCursor() {
@@ -1108,7 +1108,7 @@ func (v *View) Save(usePlugin bool) bool {
 func (v *View) saveToFile(filename string) {
 	err := v.Buf.SaveAs(filename)
 	if err != nil {
-		messenger.Error(err.Error())
+		messenger.Alert("error", err.Error())
 	} else {
 		v.Buf.Path = filename
 		v.Buf.name = filename
@@ -1272,7 +1272,7 @@ func (v *View) Copy(usePlugin bool) bool {
 
 		if v.Cursor.HasSelection() {
 			if v.SelectionTooBig() {
-				messenger.Error(Language.Translate("Selection is too big, can not copy. You may move (up/down) or delete only."))
+				messenger.Alert("error", Language.Translate("Selection is too big, can not copy. You may move (up/down) or delete only."))
 			} else {
 				loc := v.Cursor.CurSelection
 				v.Cursor.CopySelection(currEnv.ClipWhere)
@@ -1307,7 +1307,7 @@ func (v *View) CutLine(usePlugin bool) bool {
 		return false
 	}
 	if v.SelectionTooBig() {
-		messenger.Error(Language.Translate("Line is too big, can not cut. You may move (up/down) or delete only."))
+		messenger.Alert("error", Language.Translate("Line is too big, can not cut. You may move (up/down) or delete only."))
 		return false
 	}
 	if v.freshClip == true {
@@ -1338,7 +1338,7 @@ func (v *View) Cut(usePlugin bool) bool {
 
 	if v.Cursor.HasSelection() {
 		if v.SelectionTooBig() {
-			messenger.Error(Language.Translate("Selection is too big, can not copy. You may move (up/down) or delete only."))
+			messenger.Alert("error", Language.Translate("Selection is too big, can not copy. You may move (up/down) or delete only."))
 			return false
 		}
 		v.Cursor.CopySelection(currEnv.ClipWhere)
@@ -1352,7 +1352,7 @@ func (v *View) Cut(usePlugin bool) bool {
 		return true
 	}
 	if len(v.Buf.LineBytes(v.Cursor.Loc.Y)) > MaxClipboardSize {
-		messenger.Error(Language.Translate("Line is too big to cut"))
+		messenger.Alert("error", Language.Translate("Line is too big to cut"))
 	} else {
 		return v.CutLine(usePlugin)
 	}
@@ -1375,13 +1375,13 @@ func (v *View) DuplicateLine(usePlugin bool) bool {
 
 	if v.Cursor.HasSelection() {
 		if v.SelectionTooBig() {
-			messenger.Error(Language.Translate("Line is too big, can not duplicate. You may move (up/down) or delete only."))
+			messenger.Alert("error", Language.Translate("Line is too big, can not duplicate. You may move (up/down) or delete only."))
 			return false
 		}
 		v.Buf.Insert(v.Cursor.CurSelection[1], v.Cursor.GetSelection())
 	} else {
 		if len(v.Buf.LineBytes(v.Cursor.Loc.Y)) > MaxClipboardSize {
-			messenger.Error(Language.Translate("Line is too big, can not duplicate. You may move (up/down) or delete only."))
+			messenger.Alert("error", Language.Translate("Line is too big, can not duplicate. You may move (up/down) or delete only."))
 			return false
 		}
 		loc := v.Cursor.Loc
@@ -2566,9 +2566,9 @@ func (v *View) UploadToCloud(plugin bool) bool {
 	file := b.String()
 	msg := Clip.WriteTo(&file, "cloud", "file")
 	if msg == "" {
-		messenger.Success(Language.Translate("File uploaded to cloud"))
+		messenger.Alert("success", Language.Translate("File uploaded to cloud"))
 	} else {
-		messenger.Error(Language.Translate(msg))
+		messenger.Alert("error", Language.Translate(msg))
 	}
 	return true
 }

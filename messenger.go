@@ -114,7 +114,7 @@ func (m *Messenger) Message(msg ...interface{}) {
 }
 
 // Error sends an error message to the user
-func (m *Messenger) Error(msg ...interface{}) {
+func (m *Messenger) Alert(kind string, msg ...interface{}) {
 	buf := new(bytes.Buffer)
 	fmt.Fprint(buf, msg...)
 
@@ -123,12 +123,20 @@ func (m *Messenger) Error(msg ...interface{}) {
 	if m.hasPrompt == false {
 		// if there is no active prompt then style and display the message as normal
 		m.message = buf.String()
-		m.style = defStyle.
-			Foreground(tcell.ColorBlack).
-			Background(tcell.ColorMaroon)
-
-		if _, ok := colorscheme["error-message"]; ok {
-			m.style = colorscheme["error-message"]
+		if kind == "error" {
+			m.style = defStyle.Foreground(tcell.ColorBlack).Background(tcell.ColorMaroon)
+			if _, ok := colorscheme["error-message"]; ok {
+				m.style = colorscheme["error-message"]
+			}
+		} else if kind == "success" {
+			m.style = defStyle.Foreground(tcell.ColorGreen).Normal()
+		} else if kind == "info" {
+			m.style = defStyle.Foreground(tcell.ColorBlue).Bold(true)
+		} else {
+			m.style = defStyle
+			if _, ok := colorscheme["message"]; ok {
+				m.style = colorscheme["message"]
+			}
 		}
 		m.hasMessage = true
 	}
@@ -136,51 +144,6 @@ func (m *Messenger) Error(msg ...interface{}) {
 	m.AddLog(buf.String())
 	go func() {
 		time.Sleep(8 * time.Second)
-		m.Reset()
-		m.Clear()
-	}()
-}
-
-// Success sends a success message to the user
-func (m *Messenger) Success(msg ...interface{}) {
-	buf := new(bytes.Buffer)
-	fmt.Fprint(buf, msg...)
-
-	// only display a new message if there isn't an active prompt
-	// this is to prevent overwriting an existing prompt to the user
-	if m.hasPrompt == false {
-		// if there is no active prompt then style and display the message as normal
-		m.message = buf.String()
-		m.style = defStyle.
-			Foreground(tcell.ColorGreen).Normal()
-		m.hasMessage = true
-	}
-	// add the message to the log regardless of active prompts
-	m.AddLog(buf.String())
-	go func() {
-		time.Sleep(4 * time.Second)
-		m.Reset()
-		m.Clear()
-	}()
-}
-
-// Information sends an information message to the user
-func (m *Messenger) Information(msg ...interface{}) {
-	buf := new(bytes.Buffer)
-	fmt.Fprint(buf, msg...)
-
-	// only display a new message if there isn't an active prompt
-	// this is to prevent overwriting an existing prompt to the user
-	if m.hasPrompt == false {
-		// if there is no active prompt then style and display the message as normal
-		m.message = buf.String()
-		m.style = defStyle.Foreground(tcell.ColorBlue).Bold(true)
-		m.hasMessage = true
-	}
-	// add the message to the log regardless of active prompts
-	m.AddLog(buf.String())
-	go func() {
-		time.Sleep(6 * time.Second)
 		m.Reset()
 		m.Clear()
 	}()
@@ -600,7 +563,7 @@ func (m *Messenger) LoadHistory() {
 			err = decoder.Decode(&decodedMap)
 
 			if err != nil {
-				m.Error(Language.Translate("Error loading history:"), err)
+				m.Alert("error", Language.Translate("Error loading history:"), err)
 				return
 			}
 		}
@@ -633,7 +596,7 @@ func (m *Messenger) SaveHistory() {
 
 			err = encoder.Encode(m.history)
 			if err != nil {
-				m.Error(Language.Translate("Error saving history:"), err)
+				m.Alert("error", Language.Translate("Error saving history:"), err)
 				return
 			}
 		}
