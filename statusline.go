@@ -42,7 +42,7 @@ func (sline *Statusline) MouseEvent(e *tcell.EventMouse, rx, ry int) {
 				x, _ := e.Position()
 				diff := (hs.X + (hs.Y-hs.X+1)/2) - rx
 				micromenu.SelEncoding(x+diff, sline.EncodingSelected)
-			} else if action == "BUFERSET" {
+			} else if action == "BUFFERSET" {
 				micromenu.SelLocalSettings(sline.view.Buf)
 			} else if action == "FILETYPE" {
 				x, _ := e.Position()
@@ -65,7 +65,7 @@ func (sline *Statusline) MouseEvent(e *tcell.EventMouse, rx, ry int) {
 	return
 }
 
-const fwith = 60
+const fwidth = 60
 
 // Display draws the statusline to the screen
 func (sline *Statusline) Display() {
@@ -100,10 +100,10 @@ func (sline *Statusline) Display() {
 	}
 
 	// Fix length of file name to help eyes find information in the same place
-	if fwith > w/4 {
+	if fwidth > w/4 {
 		size = w / 4
 	} else {
-		size = fwith
+		size = fwidth
 	}
 	if len(file) > size {
 		file = ".. " + file[len(file)-size+1:]
@@ -133,7 +133,7 @@ func (sline *Statusline) Display() {
 	if w > 69 {
 		var ff string
 
-		sline.hotspot["BUFERSET"] = Loc{Count(file) + offset, Count(file) + offset + 2}
+		sline.hotspot["BUFFERSET"] = Loc{Count(file) + offset, Count(file) + offset + 2}
 		file += " ⎈ "
 
 		// Create hotspots for status line events
@@ -203,7 +203,7 @@ func (sline *Statusline) Display() {
 	for x := 0; x < w; x++ {
 		tStyle := statusLineStyle
 		if showbuttons {
-			if sline.hotspot["BUFERSET"].X-offset <= x && x <= sline.hotspot["BUFERSET"].Y-offset && active {
+			if sline.hotspot["BUFFERSET"].X-offset <= x && x <= sline.hotspot["BUFFERSET"].Y-offset && active {
 				tStyle = StringToStyle("#ffffff,#585858")
 			} else if sline.hotspot["TABSPACE"].X-offset <= x && x <= sline.hotspot["TABSPACE"].Y-offset && active {
 				tStyle = StringToStyle("#ffffff,#444444")
