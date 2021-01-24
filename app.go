@@ -21,7 +21,7 @@ type Opt struct {
 // AppElement an element from the frame
 type AppElement struct {
 	name        string // element name
-	label       string // element label if it applyes
+	label       string // element label if it apply
 	form        string // types: box, textbox, textarea, label, checkbox, radio, button
 	value       string
 	valueType   string                                              // string, number
@@ -67,7 +67,7 @@ type Frame struct {
 	elements  map[string]*AppElement
 	microapp  *MicroApp
 	maxindex  int
-	maxheigth int
+	maxheight int
 }
 
 // MicroApp application object structure
@@ -129,7 +129,7 @@ func (a *MicroApp) AddFrame(name string, top, left, width, height int, position 
 	f.visible = false
 	f.name = name
 	f.microapp = a
-	f.maxheigth = height
+	f.maxheight = height
 	f.maxindex = 2
 	if a.activeFrame == "" {
 		a.activeFrame = name
@@ -215,8 +215,8 @@ func (a *MicroApp) AddWindowElement(frame, name, label, form, value, valueType s
 	}
 	if form == "box" {
 		e.index = 0
-		if y+h > f.maxheigth {
-			f.maxheigth = y + h
+		if y+h > f.maxheight {
+			f.maxheight = y + h
 		}
 	} else if form == "radio" || form == "checkbox" {
 		n := 0
@@ -395,7 +395,7 @@ func (f *Frame) AddWindowButton(name, label, buttonType string, x, y int, callba
 // Element Methods
 // ------------------------------------------------
 
-//SetIndex set the index property of an element
+//SetIndex set the index layer property of an element (0 - 5 layers)
 func (f *Frame) SetIndex(k string, v int) {
 	e, ok := f.elements[k]
 	if ok == false {
@@ -446,7 +446,7 @@ func (f *Frame) SetVisible(k string, v bool) {
 	a.screen.Show()
 }
 
-// GetgName get goup name of this element
+// GetgName get group name of this element
 func (f *Frame) GetgName(k string) string {
 	e, ok := f.elements[k]
 	if ok == false {
@@ -993,6 +993,7 @@ func WordWrap(str string, w int) string {
 	return str1 + "\\N" + WordWrap(str2, w)
 }
 
+// Get the cursor positon from an absolut cursor position
 func (e *AppElement) getECursorFromACursor() int {
 	a := e.microapp
 	f := e.frame
@@ -1023,6 +1024,7 @@ func (e *AppElement) getECursorFromACursor() int {
 	return ac
 }
 
+// Set cursor absolute position from an elemen cursor position
 func (e *AppElement) setACursorFromECursor() {
 	a := e.microapp
 	f := e.frame
@@ -1286,7 +1288,7 @@ func (e *AppElement) SelectClickEvent(event string, x, y int) {
 		}
 
 		// Reset to height=1, hotspot, savew
-		if e.aposb.Y+e.height > f.maxheigth {
+		if e.aposb.Y+e.height > f.maxheight {
 			RedrawAll(false)
 		}
 		e.height = 1
@@ -1339,7 +1341,7 @@ func (e *AppElement) RadioCheckboxClickEvent(event string, x, y int) {
 	a.screen.Show()
 }
 
-// ProcessElementClick find which element received a click event
+// ProcessElementClick find what kind of element received a click event
 func (e *AppElement) ProcessElementClick(event string, x, y int) {
 	a := e.microapp
 	name := e.name
@@ -1476,7 +1478,7 @@ func (e *AppElement) SelectKeyEvent(key string, x, y int) {
 	} else if key == "Enter" {
 		a.activeElement = ""
 		if a.lockActive == true || e.checked == true {
-			if e.aposb.Y+e.height > f.maxheigth {
+			if e.aposb.Y+e.height > f.maxheight {
 				RedrawAll(false)
 			}
 			a.activeElement = ""
@@ -1758,7 +1760,7 @@ func (a *MicroApp) CheckElementsActions(event string, x, y int) bool {
 	if strings.Contains(event, "click") {
 		if a.lockActive {
 			e := a.frames[a.activeFrame].elements[a.activeElement]
-			if e.aposb.Y+e.height > a.frames[a.activeFrame].maxheigth {
+			if e.aposb.Y+e.height > a.frames[a.activeFrame].maxheight {
 				RedrawAll(false)
 			}
 			a.lockActive = false
@@ -1860,7 +1862,7 @@ func (a *MicroApp) HandleEvents(event tcell.Event) {
 		exit := false
 		xa, ya := ev.Position()
 		if len(a.frames) > 1 {
-			// Check if location insider a different frame
+			// Check if location inside a different frame
 			for fn, fx := range a.frames {
 				if fx.visible == true && fx.name != a.activeFrame && xa >= fx.left && xa <= fx.right && ya >= fx.top && ya <= fx.bottom {
 					// Change active frame interaction
