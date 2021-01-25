@@ -149,6 +149,21 @@ func (m *Messenger) Alert(kind string, msg ...interface{}) {
 	}()
 }
 
+// Success : compatibility for plugins
+func (m *Messenger) Success(msg ...interface{}) {
+	m.Alert("success", msg)
+}
+
+// Error : compatibility for plugins
+func (m *Messenger) Error(msg ...interface{}) {
+	m.Alert("error", msg)
+}
+
+// Information : compatibility for plugins
+func (m *Messenger) Information(msg ...interface{}) {
+	m.Alert("info", msg)
+}
+
 // PromptText show a message to the user
 func (m *Messenger) PromptText(msg ...interface{}) {
 	displayMessage := fmt.Sprint(msg...)
