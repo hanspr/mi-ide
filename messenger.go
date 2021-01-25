@@ -113,7 +113,7 @@ func (m *Messenger) Message(msg ...interface{}) {
 	m.AddLog(displayMessage)
 }
 
-// Error sends an error message to the user
+// Alert sends an error message to the user
 func (m *Messenger) Alert(kind string, msg ...interface{}) {
 	buf := new(bytes.Buffer)
 	fmt.Fprint(buf, msg...)
@@ -151,17 +151,17 @@ func (m *Messenger) Alert(kind string, msg ...interface{}) {
 
 // Success : compatibility for plugins
 func (m *Messenger) Success(msg ...interface{}) {
-	m.Alert("success", msg)
+	m.Alert("success", msg...)
 }
 
 // Error : compatibility for plugins
 func (m *Messenger) Error(msg ...interface{}) {
-	m.Alert("error", msg)
+	m.Alert("error", msg...)
 }
 
 // Information : compatibility for plugins
 func (m *Messenger) Information(msg ...interface{}) {
-	m.Alert("info", msg)
+	m.Alert("info", msg...)
 }
 
 // PromptText show a message to the user
