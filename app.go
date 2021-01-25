@@ -539,8 +539,8 @@ func (f *Frame) GetChecked(k string) bool {
 	return e.checked
 }
 
-// SetCheked set checked property
-func (f *Frame) SetCheked(k string, v bool) {
+// SetChecked set checked property
+func (f *Frame) SetChecked(k string, v bool) {
 	e, ok := f.elements[k]
 	if ok == false {
 		return
