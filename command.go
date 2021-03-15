@@ -727,8 +727,13 @@ func HandleCommand(input string) {
 
 // ExpandString transform string secuence to its correct string value
 func ExpandString(s string) string {
+	s = strings.Replace(s, `\\`, `{ESCBS}`, -1)
+
 	s = strings.Replace(s, `\t`, "\t", -1)
 	s = strings.Replace(s, `\n`, "\n", -1)
 	s = strings.Replace(s, `\r`, "\r", -1)
+
+	s = strings.Replace(s, `{ESCBS}`, `\`, -1)
+
 	return s
 }
