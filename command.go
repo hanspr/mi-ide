@@ -630,7 +630,7 @@ func Replace(args []string) {
 		if all && !freeze {
 			freeze = true
 		} else if !all {
-			choice, canceled = messenger.LetterPrompt(Language.Translate("Perform replacement? (y,n,q,!)"), y, n, q, I)
+			choice, canceled = messenger.LetterPrompt(true, Language.Translate("Perform replacement? (y,n,q,!)"), y, n, q, I)
 		}
 		if canceled {
 			if view.Cursor.HasSelection() {
