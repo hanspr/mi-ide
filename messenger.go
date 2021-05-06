@@ -8,6 +8,7 @@ import (
 	"os"
 	"strconv"
 	"time"
+	"unicode"
 
 	"github.com/hanspr/shellwords"
 	"github.com/hanspr/tcell"
@@ -216,7 +217,7 @@ func (m *Messenger) YesNoPrompt(prompt string) (bool, bool) {
 }
 
 // LetterPrompt gives the user a prompt and waits for a one letter response
-func (m *Messenger) LetterPrompt(prompt string, responses ...rune) (rune, bool) {
+func (m *Messenger) LetterPrompt(nocase bool, prompt string, responses ...rune) (rune, bool) {
 	m.hasPrompt = true
 	m.PromptText(prompt)
 
@@ -233,7 +234,7 @@ func (m *Messenger) LetterPrompt(prompt string, responses ...rune) (rune, bool) 
 			switch e.Key() {
 			case tcell.KeyRune:
 				for _, r := range responses {
-					if e.Rune() == r {
+					if e.Rune() == r || (nocase && (unicode.ToLower((e.Rune())) == r || unicode.ToUpper(e.Rune()) == r)) {
 						m.Clear()
 						m.Reset()
 						m.hasPrompt = false
