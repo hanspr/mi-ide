@@ -593,7 +593,6 @@ func Replace(args []string) {
 	if err != nil {
 		// There was an error with the user's regex
 		messenger.Alert("error", err.Error())
-		replacing = false
 		return
 	}
 
@@ -608,7 +607,6 @@ func Replace(args []string) {
 		// The 'check' flag was used
 		Search(search, view, true)
 		if !view.Cursor.HasSelection() {
-			replacing = false
 			break
 		}
 		view.Relocate()
@@ -620,7 +618,6 @@ func Replace(args []string) {
 				view.Cursor.ResetSelection()
 			}
 			messenger.Reset()
-			replacing = false
 			break
 		}
 		y := []rune(Language.Translate("y"))[0]
@@ -638,7 +635,6 @@ func Replace(args []string) {
 				view.Cursor.ResetSelection()
 			}
 			messenger.Reset()
-			replacing = false
 			break
 		} else if choice == y || choice == I || all {
 			sel := view.Cursor.GetSelection()
@@ -669,12 +665,12 @@ func Replace(args []string) {
 				view.Cursor.ResetSelection()
 			}
 			messenger.Reset()
-			replacing = false
 			break
 		} else {
 			searchStart = view.Cursor.CurSelection[1]
 		}
 	}
+	replacing = false
 	freeze = false
 	view.Cursor.Relocate()
 
@@ -693,6 +689,7 @@ func ReplaceAll(args []string) {
 	replacing = true
 	replaceTime = time.Now()
 	Replace(append(args, "-a"))
+	replacing = false
 }
 
 // Term opens a terminal in the current view
