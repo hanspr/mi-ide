@@ -2522,6 +2522,7 @@ func (v *View) SearchDialogFinished(values map[string]string) {
 	replacing = true
 	replaceTime = time.Now()
 	Replace([]string{values["search"], values["replace"], values["a"], values["i"], values["l"]})
+	replacing = false
 }
 
 // FindDialog create Find dialog
