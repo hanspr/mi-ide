@@ -22,6 +22,7 @@ import (
 
 	"github.com/flynn/json5"
 	"github.com/go-errors/errors"
+	"github.com/hanspr/tcell"
 )
 
 // Util.go is a collection of utility functions that are used throughout
@@ -817,4 +818,47 @@ func Slurp(path string) string {
 		return ""
 	}
 	return string(b)
+}
+
+const autocloseOpen = "\"'`({["
+const autocloseClose = "\"'`)}]"
+const autocloseNewLine = ")}]"
+
+// AutoClose
+func AutoClose(v *View, e *tcell.EventKey, isSelection bool, cursorSelection [2]Loc) {
+	n := strings.Index(autocloseOpen, string(e.Rune()))
+	if isSelection {
+		if n != -1 {
+			v.Cursor.GotoLoc(Loc{cursorSelection[1].X + 1, cursorSelection[1].Y})
+			v.Buf.Insert(v.Cursor.Loc, autocloseClose[n:n+1])
+		}
+		return
+	}
+	m := strings.Index(autocloseClose, string(e.Rune()))
+	if n != -1 || m != -1 {
+		if n < 3 || m > 2 {
+			// Test we do not duplicate closing char
+			x := v.Cursor.X
+			if v.Cursor.X < len(v.Buf.LineRunes(v.Cursor.Y)) && v.Cursor.X > 1 {
+				chb := string(v.Buf.LineRunes(v.Cursor.Y)[x : x+1])
+				if chb == string(e.Rune()) {
+					v.Delete(false)
+					n = -1
+				}
+			}
+			if n >= 0 && n < 3 && v.Cursor.X < len(v.Buf.LineRunes(v.Cursor.Y))-1 && v.Cursor.X > 1 {
+				// Test surrounding chars
+				ch1 := string(v.Buf.LineRunes(v.Cursor.Y)[x-2 : x-1])
+				ch2 := string(v.Buf.LineRunes(v.Cursor.Y)[x : x+1])
+				if noAutoCloseChar(ch1) || noAutoCloseChar(ch2) {
+					n = -1
+				}
+			}
+		}
+		if n >= 0 {
+			v.Buf.Insert(v.Cursor.Loc, autocloseClose[n:n+1])
+			v.Cursor.Left()
+		}
+	}
+	return
 }
