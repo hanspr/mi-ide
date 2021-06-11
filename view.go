@@ -606,10 +606,6 @@ func (v *View) SetCursor(c *Cursor) bool {
 	return true
 }
 
-const autocloseOpen = "\"'`({["
-const autocloseClose = "\"'`)}]"
-const autocloseNewLine = ")}]"
-
 // HandleEvent handles an event passed by the main loop
 func (v *View) HandleEvent(event tcell.Event) {
 	if v.Type == vtTerm {
@@ -634,6 +630,8 @@ func (v *View) HandleEvent(event tcell.Event) {
 	// This bool determines whether the view is relocated at the end of the function
 	// By default it's true because most events should cause a relocate
 	relocate := true
+	isSelection := false
+	var cursorSelection [2]Loc
 
 	v.Buf.CheckModTime()
 
@@ -702,8 +700,15 @@ func (v *View) HandleEvent(event tcell.Event) {
 
 					// Insert a character
 					if v.Cursor.HasSelection() {
-						v.Cursor.DeleteSelection()
-						v.Cursor.ResetSelection()
+						if v.Buf.Settings["autoclose"].(bool) && strings.Index(autocloseOpen, string(e.Rune())) != -1 {
+							isSelection = true
+							cursorSelection = v.Cursor.CurSelection
+							v.Cursor.ResetSelection()
+							v.Cursor.GotoLoc(cursorSelection[0])
+						} else {
+							v.Cursor.DeleteSelection()
+							v.Cursor.ResetSelection()
+						}
 					}
 
 					if v.isOverwriteMode {
@@ -716,34 +721,7 @@ func (v *View) HandleEvent(event tcell.Event) {
 
 					// Autoclose here for : {}[]()''""``
 					if v.Buf.Settings["autoclose"].(bool) {
-						n := strings.Index(autocloseOpen, string(e.Rune()))
-						m := strings.Index(autocloseClose, string(e.Rune()))
-						if n != -1 || m != -1 {
-							if n < 3 || m > 2 {
-								// Test we do not duplicate closing char
-								x := v.Cursor.X
-								if v.Cursor.X < len(v.Buf.LineRunes(v.Cursor.Y)) && v.Cursor.X > 1 {
-									chb := string(v.Buf.LineRunes(v.Cursor.Y)[x : x+1])
-									if chb == string(e.Rune()) {
-										v.Delete(false)
-										n = -1
-									}
-								}
-								if n >= 0 && n < 3 && v.Cursor.X < len(v.Buf.LineRunes(v.Cursor.Y))-1 && v.Cursor.X > 1 {
-									// Test surrounding chars
-									ch1 := string(v.Buf.LineRunes(v.Cursor.Y)[x-2 : x-1])
-									ch2 := string(v.Buf.LineRunes(v.Cursor.Y)[x : x+1])
-									messenger.AddLog(noAutoCloseChar(ch1), " || ", noAutoCloseChar(ch2))
-									if noAutoCloseChar(ch1) || noAutoCloseChar(ch2) {
-										n = -1
-									}
-								}
-							}
-							if n >= 0 {
-								v.Buf.Insert(v.Cursor.Loc, autocloseClose[n:n+1])
-								v.Cursor.Left()
-							}
-						}
+						AutoClose(v, e, isSelection, cursorSelection)
 					}
 
 					for pl := range loadedPlugins {
