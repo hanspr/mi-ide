@@ -241,7 +241,7 @@ func (v *View) paste(clip string) {
 		}
 		v.Buf.Insert(v.Cursor.Loc, clip)
 	}
-
+	v.Buf.highlighter.HighlightStates(v.Buf)
 	v.freshClip = false
 }
 

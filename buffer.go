@@ -1107,8 +1107,10 @@ func (b *Buffer) ChangeIndentation(cfrom, cto string, nfrom, nto int) {
 	}
 	if cto == "\t" {
 		sr = cto
+		b.setIndentationOptions("tab", nto)
 	} else {
 		sr = strings.Repeat(" ", nto)
+		b.setIndentationOptions("space", nto)
 	}
 	for y := 0; y < b.LinesNum()-1; y++ {
 		l := b.Line(y)
@@ -1158,16 +1160,22 @@ func (b *Buffer) SmartDetections() {
 	}
 	if found {
 		if tablines > spacelines {
-			b.Settings["indentchar"] = "\t"
-			b.Settings["tabstospaces"] = false
-			b.Settings["tabmovement"] = false
+			b.setIndentationOptions("tab", int(b.Settings["tabsize"].(float64)))
 		} else {
-			b.Settings["indentchar"] = " "
-			b.Settings["tabstospaces"] = true
-			b.Settings["tabmovement"] = true
-			if spclen > 1 {
-				b.Settings["tabsize"] = float64(spclen)
-			}
+			b.setIndentationOptions("space", spclen)
 		}
 	}
+}
+
+func (b *Buffer) setIndentationOptions(indent string, n int) {
+	if indent == "tab" {
+		b.Settings["indentchar"] = "\t"
+		b.Settings["tabstospaces"] = false
+		b.Settings["tabmovement"] = false
+	} else {
+		b.Settings["indentchar"] = " "
+		b.Settings["tabstospaces"] = true
+		b.Settings["tabmovement"] = true
+	}
+	b.Settings["tabsize"] = float64(n)
 }
