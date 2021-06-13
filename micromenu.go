@@ -1341,8 +1341,6 @@ func (m *microMenu) SetTabSpace(name, value, event, when string, x, y int) bool 
 	b := CurView().Buf
 	n, _ := strconv.ParseFloat(value, 64)
 	b.ChangeIndentation(b.Settings["indentchar"].(string), iChar, int(b.Settings["tabsize"].(float64)), int(n))
-	SetLocalOption("indentchar", iChar, CurView())
-	SetLocalOption("tabsize", value, CurView())
 	m.Finish("TabSpaceType")
 	return true
 }
