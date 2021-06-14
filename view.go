@@ -630,9 +630,6 @@ func (v *View) HandleEvent(event tcell.Event) {
 	// This bool determines whether the view is relocated at the end of the function
 	// By default it's true because most events should cause a relocate
 	relocate := true
-	isSelection := false
-	var cursorSelection [2]Loc
-
 	v.Buf.CheckModTime()
 
 	switch e := event.(type) {
@@ -695,6 +692,9 @@ func (v *View) HandleEvent(event tcell.Event) {
 			if v.Type.Readonly == true {
 				messenger.Alert("error", Language.Translate("File is readonly"))
 			} else {
+				isSelection := false
+				var cursorSelection [2]Loc
+
 				for _, c := range v.Buf.cursors {
 					v.SetCursor(c)
 
@@ -728,8 +728,8 @@ func (v *View) HandleEvent(event tcell.Event) {
 						}
 						AutoClose(v, e, isSelection, cursorSelection)
 						if isSelection {
-							v.Cursor.GotoLoc(Loc{cursorSelection[0].X + 1, cursorSelection[0].Y})
-							v.Cursor.SelectTo(Loc{cursorSelection[1].X + x, cursorSelection[1].Y})
+							v.Cursor.SetSelectionStart(Loc{cursorSelection[0].X + 1, cursorSelection[0].Y})
+							v.Cursor.SetSelectionEnd(Loc{cursorSelection[1].X + x, cursorSelection[1].Y})
 						}
 					}
 
