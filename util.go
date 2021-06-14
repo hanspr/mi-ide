@@ -826,15 +826,24 @@ const autocloseNewLine = ")}]"
 
 // AutoClose
 func AutoClose(v *View, e *tcell.EventKey, isSelection bool, cursorSelection [2]Loc) {
-	n := strings.Index(autocloseOpen, string(e.Rune()))
-	if isSelection {
-		if n != -1 {
-			v.Cursor.GotoLoc(Loc{cursorSelection[1].X + 1, cursorSelection[1].Y})
-			v.Buf.Insert(v.Cursor.Loc, autocloseClose[n:n+1])
-		}
+	n, f := isAutoCloseOpen(v, e)
+	if f == false {
 		return
 	}
-	m := strings.Index(autocloseClose, string(e.Rune()))
+	Close := autocloseClose
+	if v.Buf.Settings["charsopen"] != nil && len(v.Buf.Settings["charsopen"].(string)) == len(v.Buf.Settings["charsclose"].(string)) {
+		Close = Close + v.Buf.Settings["charsclose"].(string)
+	}
+	if isSelection {
+		x := 1
+		if cursorSelection[0].Y < cursorSelection[1].Y {
+			x = 0
+		}
+		v.Cursor.GotoLoc(Loc{cursorSelection[1].X + x, cursorSelection[1].Y})
+		v.Buf.Insert(v.Cursor.Loc, string([]rune(Close)[n]))
+		return
+	}
+	m := strings.Index(Close, string(e.Rune()))
 	if n != -1 || m != -1 {
 		if n < 3 || m > 2 {
 			// Test we do not duplicate closing char
@@ -856,9 +865,24 @@ func AutoClose(v *View, e *tcell.EventKey, isSelection bool, cursorSelection [2]
 			}
 		}
 		if n >= 0 {
-			v.Buf.Insert(v.Cursor.Loc, autocloseClose[n:n+1])
+			v.Buf.Insert(v.Cursor.Loc, string([]rune(Close)[n]))
 			v.Cursor.Left()
 		}
 	}
 	return
+}
+
+func isAutoCloseOpen(v *View, e *tcell.EventKey) (int, bool) {
+	Open := autocloseOpen
+	if v.Buf.Settings["charsopen"] != nil && len(v.Buf.Settings["charsopen"].(string)) == len(v.Buf.Settings["charsclose"].(string)) {
+		Open = Open + v.Buf.Settings["charsopen"].(string)
+	}
+	n := -1
+	for _, runeValue := range Open {
+		n++
+		if runeValue == e.Rune() {
+			return n, true
+		}
+	}
+	return -1, false
 }

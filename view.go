@@ -700,7 +700,8 @@ func (v *View) HandleEvent(event tcell.Event) {
 
 					// Insert a character
 					if v.Cursor.HasSelection() {
-						if v.Buf.Settings["autoclose"].(bool) && strings.Index(autocloseOpen, string(e.Rune())) != -1 {
+						_, ok := isAutoCloseOpen(v, e)
+						if v.Buf.Settings["autoclose"].(bool) && ok {
 							isSelection = true
 							cursorSelection = v.Cursor.CurSelection
 							v.Cursor.ResetSelection()
@@ -721,7 +722,15 @@ func (v *View) HandleEvent(event tcell.Event) {
 
 					// Autoclose here for : {}[]()''""``
 					if v.Buf.Settings["autoclose"].(bool) {
+						x := 1
+						if cursorSelection[0].Y < cursorSelection[1].Y {
+							x = 0
+						}
 						AutoClose(v, e, isSelection, cursorSelection)
+						if isSelection {
+							v.Cursor.GotoLoc(Loc{cursorSelection[0].X + 1, cursorSelection[0].Y})
+							v.Cursor.SelectTo(Loc{cursorSelection[1].X + x, cursorSelection[1].Y})
+						}
 					}
 
 					for pl := range loadedPlugins {
