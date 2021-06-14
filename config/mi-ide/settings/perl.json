@@ -1,4 +1,6 @@
 {
+    "charsopen": "“”",
+    "charsclose": "“”",
     "smartindent": true,
     "tabstospaces": false
 }
