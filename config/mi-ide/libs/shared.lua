@@ -159,13 +159,13 @@ end
 
 -- END utf8 functions
 
--- Hans Peyrot, shared functions for micro-ide
+-- Hans Peyrot, shared functions for mi-ide
 -- Free to copy and do what ever you want with this code below.
 
 function GetLuaTable(s)
 	local values = {}
 	local vpairs = {}
-	
+
 	vpairs = gsplit(s,"\n")
 	for k,v in pairs(vpairs) do
 		val = gsplit(v,"=")
