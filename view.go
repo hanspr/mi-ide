@@ -989,6 +989,11 @@ func (v *View) SetCursorColorShape() {
 	}
 }
 
+// Set LastView used by plugins if they move views and cursor positions arround
+func (v *View) SetLastView() {
+	LastView = v.Num
+}
+
 // DisplayView draws the view to the screen
 func (v *View) DisplayView() {
 	ActiveView := true
@@ -1008,7 +1013,6 @@ func (v *View) DisplayView() {
 		// Log or raw views should always follow the cursor...
 		v.Relocate()
 	}
-
 	//messenger.AddLog(CurView().Type.Kind, "==0 && ", LastView, "!=", CurView().Num, " && ", CurView().Cursor.Loc, "!=", CurView().savedLoc, " && ", Mouse.Click, " == false")
 	if CurView().Type.Kind == 0 && LastView != CurView().Num && CurView().Cursor.Loc != CurView().savedLoc && Mouse.Click == false {
 		// HP : Set de cursor in last known position for this view
