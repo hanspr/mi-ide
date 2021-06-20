@@ -398,7 +398,7 @@ func (f *Frame) AddWindowButton(name, label, buttonType string, x, y int, callba
 //SetIndex set the index layer property of an element (0 - 5 layers)
 func (f *Frame) SetIndex(k string, v int) {
 	e, ok := f.elements[k]
-	if ok == false {
+	if !ok {
 		return
 	}
 	if v > 5 {
@@ -415,7 +415,7 @@ func (f *Frame) SetIndex(k string, v int) {
 // GetVisible get visible property of an element
 func (f *Frame) GetVisible(k string) bool {
 	e, ok := f.elements[k]
-	if ok == false {
+	if !ok {
 		return false
 	}
 	return e.visible
@@ -425,14 +425,14 @@ func (f *Frame) GetVisible(k string) bool {
 func (f *Frame) SetVisible(k string, v bool) {
 	a := f.microapp
 	e, ok := f.elements[k]
-	if ok == false {
+	if !ok {
 		return
 	}
 	if e.visible == v {
 		return
 	}
 	e.visible = v
-	if v == true {
+	if v {
 		e.Draw()
 	} else {
 		a.ResetFrames()
@@ -449,7 +449,7 @@ func (f *Frame) SetVisible(k string, v bool) {
 // GetgName get group name of this element
 func (f *Frame) GetgName(k string) string {
 	e, ok := f.elements[k]
-	if ok == false {
+	if !ok {
 		return ""
 	}
 	return e.gname
@@ -458,7 +458,7 @@ func (f *Frame) GetgName(k string) string {
 // SetgName Set a group name for this element
 func (f *Frame) SetgName(k, v string) {
 	e, ok := f.elements[k]
-	if ok == false {
+	if !ok {
 		return
 	}
 	e.gname = v
@@ -467,7 +467,7 @@ func (f *Frame) SetgName(k, v string) {
 // GetiKey get the integer user value to this element
 func (f *Frame) GetiKey(k string) int {
 	e, ok := f.elements[k]
-	if ok == false {
+	if !ok {
 		return 0
 	}
 	return e.iKey
@@ -476,7 +476,7 @@ func (f *Frame) GetiKey(k string) int {
 // SetiKey set the user integer value of this element
 func (f *Frame) SetiKey(k string, v int) {
 	e, ok := f.elements[k]
-	if ok == false {
+	if !ok {
 		return
 	}
 	e.iKey = v
@@ -485,7 +485,7 @@ func (f *Frame) SetiKey(k string, v int) {
 // GetValue get elements value property
 func (f *Frame) GetValue(k string) string {
 	e, ok := f.elements[k]
-	if ok == false {
+	if !ok {
 		return ""
 	}
 	return e.value
@@ -494,7 +494,7 @@ func (f *Frame) GetValue(k string) string {
 // SetValue set element value property
 func (f *Frame) SetValue(k, v string) {
 	e, ok := f.elements[k]
-	if ok == false {
+	if !ok {
 		return
 	}
 	a := f.microapp
@@ -533,7 +533,7 @@ func (e *AppElement) InsertStringAt(x int, clip string) {
 // GetChecked get checked property
 func (f *Frame) GetChecked(k string) bool {
 	e, ok := f.elements[k]
-	if ok == false {
+	if !ok {
 		return false
 	}
 	return e.checked
@@ -542,7 +542,7 @@ func (f *Frame) GetChecked(k string) bool {
 // SetChecked set checked property
 func (f *Frame) SetChecked(k string, v bool) {
 	e, ok := f.elements[k]
-	if ok == false {
+	if !ok {
 		return
 	}
 	a := f.microapp
@@ -554,7 +554,7 @@ func (f *Frame) SetChecked(k string, v bool) {
 // GetPos get the element coordinates of this element
 func (f *Frame) GetPos(k string) Loc {
 	e, ok := f.elements[k]
-	if ok == false {
+	if !ok {
 		return Loc{0, 0}
 	}
 	return e.pos
@@ -563,7 +563,7 @@ func (f *Frame) GetPos(k string) Loc {
 // SetPos set a new position for this element
 func (f *Frame) SetPos(k string, v Loc) {
 	e, ok := f.elements[k]
-	if ok == false {
+	if !ok {
 		return
 	}
 	a := f.microapp
@@ -575,7 +575,7 @@ func (f *Frame) SetPos(k string, v Loc) {
 // GetLabel set the label property of an element
 func (f *Frame) GetLabel(k string) string {
 	e, ok := f.elements[k]
-	if ok == false {
+	if !ok {
 		return ""
 	}
 	return e.label
@@ -584,7 +584,7 @@ func (f *Frame) GetLabel(k string) string {
 // SetLabel set the lable property of an element
 func (f *Frame) SetLabel(k, v string) {
 	e, ok := f.elements[k]
-	if ok == false {
+	if !ok {
 		return
 	}
 	a := f.microapp
@@ -607,7 +607,7 @@ func (f *Frame) SetLabel(k, v string) {
 // SetFocus set the cursor over this element
 func (f *Frame) SetFocus(k, where string) {
 	e, ok := f.elements[k]
-	if ok == false {
+	if !ok {
 		return
 	}
 	a := f.microapp
@@ -634,7 +634,7 @@ func (f *Frame) SetFocusPreviousInputElement(k string) {
 	var last AppElement
 
 	me, ok := f.elements[k]
-	if ok == false {
+	if !ok {
 		return
 	}
 	last.pos.Y = -1
@@ -674,7 +674,7 @@ func (f *Frame) SetFocusNextInputElement(k string) {
 	var first AppElement
 
 	me, ok := f.elements[k]
-	if ok == false {
+	if !ok {
 		return
 	}
 	first.pos.Y = 99999
@@ -722,7 +722,7 @@ func (f *Frame) DeleteElement(k string) {
 
 // Draw an element into the screen
 func (e *AppElement) Draw() {
-	if e.visible == false {
+	if !e.visible {
 		return
 	}
 	if e.form == "box" {
@@ -758,7 +758,7 @@ func (e *AppElement) DrawBox() {
 	URC := tcell.RuneURCorner
 	LLC := tcell.RuneLLCorner
 	LRC := tcell.RuneLRCorner
-	if e.checked == false {
+	if !e.checked {
 		Hborder = ' '
 		Vborder = ' '
 		ULC = ' '
@@ -853,7 +853,7 @@ func (e *AppElement) DrawRadio() {
 	s := tcell.Style.Foreground(e.microapp.defStyle, tcell.Color168)
 
 	radio = "◎ "
-	if e.checked == true {
+	if e.checked {
 		s = tcell.Style.Foreground(e.microapp.defStyle, tcell.Color107)
 		radio = "◉ "
 	}
@@ -866,7 +866,7 @@ func (e *AppElement) DrawCheckBox() {
 	s := tcell.Style.Foreground(e.microapp.defStyle, tcell.Color168)
 	check := "✗ "
 
-	if e.checked == true {
+	if e.checked {
 		s = tcell.Style.Foreground(e.microapp.defStyle, tcell.Color107)
 		check = "✔ "
 	}
@@ -1024,7 +1024,7 @@ func (e *AppElement) getECursorFromACursor() int {
 	return ac
 }
 
-// Set cursor absolute position from an elemen cursor position
+// Set cursor absolute position from an element cursor position
 func (e *AppElement) setACursorFromECursor() {
 	a := e.microapp
 	f := e.frame
@@ -1073,7 +1073,7 @@ func runeLastIndex(str, s string) int {
 func (a *MicroApp) DrawAll() {
 	// Draw all elements in index order from 0 to current max index (normally 2)
 	for _, f := range a.frames {
-		if f.visible == true {
+		if f.visible {
 			for i := 0; i <= f.maxindex; i++ {
 				for _, e := range f.elements {
 					if e.index == i {
@@ -1089,7 +1089,7 @@ func (a *MicroApp) DrawAll() {
 	a.screen.Show()
 }
 
-// Resize handle rezise events
+// Resize handle resize events
 func (a *MicroApp) Resize() {
 	for _, t := range tabs {
 		t.Resize()
@@ -1264,7 +1264,7 @@ func (e *AppElement) SelectClickEvent(event string, x, y int) {
 	f := e.frame
 	a.activeElement = e.name
 	// SELECT COMBO BEGIN
-	if e.height == 1 && e.checked == false {
+	if e.height == 1 && !e.checked {
 		// Open select. Set height, and new hotspot, save
 		e.height = len(e.opts) + 1
 		e.apose = Loc{e.apose.X, e.apose.Y + e.height - 1}
@@ -1275,7 +1275,7 @@ func (e *AppElement) SelectClickEvent(event string, x, y int) {
 		a.activeElement = e.name
 		a.DrawAll()
 		return
-	} else if e.checked == true {
+	} else if e.checked {
 		// Close select. Find element being clicked and saved as selected value
 		for i := 0; i < e.cursor.X; i++ {
 			if e.aposb.Y+i == y {
@@ -1319,10 +1319,10 @@ func (e *AppElement) SelectClickEvent(event string, x, y int) {
 func (e *AppElement) RadioCheckboxClickEvent(event string, x, y int) {
 	a := e.microapp
 	f := a.frames[e.frame.name]
-	if e.form == "radio" && e.checked == true {
+	if e.form == "radio" && e.checked {
 		return
 	}
-	if e.checked == true {
+	if e.checked {
 		e.checked = false
 	} else {
 		e.checked = true
@@ -1330,7 +1330,7 @@ func (e *AppElement) RadioCheckboxClickEvent(event string, x, y int) {
 	if e.form == "radio" {
 		e.DrawRadio()
 		for _, r := range f.elements {
-			if r.form == "radio" && r.gname == e.gname && r.name != e.name && e.checked == true {
+			if r.form == "radio" && r.gname == e.gname && r.name != e.name && e.checked {
 				r.checked = false
 				r.DrawRadio()
 			}
@@ -1355,7 +1355,7 @@ func (e *AppElement) ProcessElementClick(event string, x, y int) {
 		check = true
 	}
 	if e.callback != nil {
-		if e.callback(name, e.value, event, "PRE", x, y) == false {
+		if !e.callback(name, e.value, event, "PRE", x, y) {
 			return
 		}
 	} else if e.luacallback != "" {
@@ -1366,7 +1366,7 @@ func (e *AppElement) ProcessElementClick(event string, x, y int) {
 	}
 	if event == "mouse-click1" {
 		a.activeElement = name
-		if check == true {
+		if check {
 			e.RadioCheckboxClickEvent(event, x, y)
 		} else if e.form == "textbox" {
 			e.TextBoxClickEvent(event, x, y)
@@ -1380,9 +1380,9 @@ func (e *AppElement) ProcessElementClick(event string, x, y int) {
 	}
 	if e.callback != nil || e.luacallback != "" {
 		value := e.value
-		if check == true {
+		if check {
 			value = "false"
-			if e.checked == true {
+			if e.checked {
 				value = "true"
 			}
 		}
@@ -1397,7 +1397,7 @@ func (e *AppElement) ProcessElementClick(event string, x, y int) {
 // ProcessElementMouseMove find element to send a mouse move event
 func (e *AppElement) ProcessElementMouseMove(event string, x, y int) {
 	if e.callback != nil {
-		if e.callback(e.name, e.value, event, "", x, y) == false {
+		if !e.callback(e.name, e.value, event, "", x, y) {
 			return
 		}
 	} else if e.luacallback != "" {
@@ -1477,7 +1477,7 @@ func (e *AppElement) SelectKeyEvent(key string, x, y int) {
 		e.offset = e.cursor.X - 1
 	} else if key == "Enter" {
 		a.activeElement = ""
-		if a.lockActive == true || e.checked == true {
+		if a.lockActive || e.checked {
 			if e.aposb.Y+e.height > f.maxheight {
 				RedrawAll(false)
 			}
@@ -1571,7 +1571,6 @@ func (e *AppElement) TextAreaKeyEvent(key string, x, y int) {
 	e.DrawTextArea()
 	e.setACursorFromECursor()
 	a.screen.Show()
-	return
 }
 
 // TextBoxKeyEvent handle key event
@@ -1673,7 +1672,7 @@ func (e *AppElement) ProcessElementKey(key string, x, y int) {
 		return
 	}
 	if e.callback != nil {
-		if e.callback(e.name, e.value, key, "PRE", x, y) == false {
+		if !e.callback(e.name, e.value, key, "PRE", x, y) {
 			return
 		}
 	} else if e.luacallback != "" {
@@ -1696,8 +1695,8 @@ func (e *AppElement) ProcessElementKey(key string, x, y int) {
 	}
 }
 
-// Check if event occures on top of an element hotspot
-// If it does, dispacth the appropiate method
+// Check if event occurs on top of an element hotspot
+// If it does, dispatch the apropiate method
 
 // CheckElementsActions find kind of event and pass action to the proper routine
 func (a *MicroApp) CheckElementsActions(event string, x, y int) bool {
@@ -1705,7 +1704,7 @@ func (a *MicroApp) CheckElementsActions(event string, x, y int) bool {
 		return false
 	}
 	for _, f := range a.frames {
-		if f.visible == true {
+		if f.visible {
 			for _, e := range f.elements {
 				if e.index == 0 {
 					// Skip boxes
@@ -1713,7 +1712,7 @@ func (a *MicroApp) CheckElementsActions(event string, x, y int) bool {
 				}
 				// Check if location is inside the element hotspot
 				if x >= e.aposb.X && x <= e.apose.X && y >= e.aposb.Y && y <= e.apose.Y {
-					if a.lockActive == true && a.activeElement != e.name {
+					if a.lockActive && a.activeElement != e.name {
 						continue
 					}
 					if a.activeFrame != e.frame.name {
@@ -1864,7 +1863,7 @@ func (a *MicroApp) HandleEvents(event tcell.Event) {
 		if len(a.frames) > 1 {
 			// Check if location inside a different frame
 			for fn, fx := range a.frames {
-				if fx.visible == true && fx.name != a.activeFrame && xa >= fx.left && xa <= fx.right && ya >= fx.top && ya <= fx.bottom {
+				if fx.visible && fx.name != a.activeFrame && xa >= fx.left && xa <= fx.right && ya >= fx.top && ya <= fx.bottom {
 					// Change active frame interaction
 					f = fx
 					a.activeFrame = fn
@@ -1877,7 +1876,7 @@ func (a *MicroApp) HandleEvents(event tcell.Event) {
 		button := ev.Buttons()
 		action := ""
 		if button == tcell.ButtonNone {
-			if a.mousedown == true {
+			if a.mousedown {
 				// This is a possible exit
 				if xa < f.left || xa > f.right || ya < f.top || ya > f.bottom {
 					exit = true
@@ -1899,9 +1898,9 @@ func (a *MicroApp) HandleEvents(event tcell.Event) {
 			} else {
 				action = "mousemove"
 			}
-		} else if ev.HasMotion() == true {
+		} else if ev.HasMotion() {
 			action = "mousemove-drag" + a.lastbutton
-		} else if ev.HasMotion() == false {
+		} else if !ev.HasMotion() {
 			a.mousedown = true
 
 			if strings.Count(ev.EscSeq(), "[") > 1 {
@@ -1936,7 +1935,7 @@ func (a *MicroApp) HandleEvents(event tcell.Event) {
 		if a.WindowMouseEvent != nil {
 			a.WindowMouseEvent(action, x, y)
 		}
-		if a.CheckElementsActions(action, x, y) == false && exit {
+		if !a.CheckElementsActions(action, x, y) && exit {
 			if a.Finish == nil {
 				MicroAppStop()
 			} else {
@@ -2010,7 +2009,7 @@ func (a *MicroApp) GetValues() map[string]string {
 		for _, e := range f.elements {
 			if e.form != "box" && e.form != "button" && e.form != "label" {
 				if e.form == "checkbox" {
-					if e.checked == true {
+					if e.checked {
 						if values[e.gname] == "" {
 							values[e.gname] = e.value
 						} else {
@@ -2018,7 +2017,7 @@ func (a *MicroApp) GetValues() map[string]string {
 						}
 					}
 				} else if e.form == "radio" {
-					if e.checked == true {
+					if e.checked {
 						values[e.gname] = e.value
 					}
 				} else {

@@ -184,7 +184,7 @@ func (l *LeafNode) Delete() {
 	l.parent.children = l.parent.children[:len(l.parent.children)-1]
 
 	// Changed to use curTab, instead of l.parent.tabNum.
-	// curTab garanties that the Tab that is viewed is the one that we are working on
+	// curTab guaranties that the Tab that is viewed is the one that we are working on
 	tab := tabs[curTab]
 	j := findView(tab.Views, l.view)
 	copy(tab.Views[j:], tab.Views[j+1:])
@@ -395,7 +395,7 @@ func loadNumMap(l *LeafNode) {
 
 // GetNextPrevView find next or previous view
 func (l *LeafNode) GetNextPrevView(direction int) int {
-	// Reload only if the ammount fo views has changed
+	// Reload only if the amount fo views has changed
 	if viewIndex[curTab] != len(tabs[curTab].Views) {
 		loadNumMap(l)
 	}

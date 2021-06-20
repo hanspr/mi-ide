@@ -134,7 +134,6 @@ func (b *Buffer) GetFileSettings(filename string) {
 			b.encoder = settings["encoder"].(string)
 		}
 	}
-	return
 }
 
 // NewBufferFromFile opens a new buffer using the given path
@@ -254,7 +253,6 @@ func NewBuffer(reader io.Reader, size int64, path string, cursorPosition []strin
 		// If either savecursor or saveundo is turned on, we need to load the serialized information
 		// from ~/.config/mi-ide/buffers
 		file, err := os.Open(configDir + "/buffers/" + EscapePath(b.AbsPath))
-		defer file.Close()
 		if err == nil {
 			var buffer SerializedBuffer
 			decoder := gob.NewDecoder(file)
@@ -277,6 +275,7 @@ func NewBuffer(reader io.Reader, size int64, path string, cursorPosition []strin
 				}
 			}
 		}
+		defer file.Close()
 	}
 
 	if !b.Settings["fastdirty"].(bool) {
@@ -478,7 +477,7 @@ func (b *Buffer) SmartIndent(Start, Stop Loc, once bool) {
 		comment := regexp.MustCompile(`^(#|//|(<!)?--|/\*)`)
 		for y := Ys; y >= 0; y-- {
 			l := b.Line(y)
-			if len(l) > 0 && comment.MatchString(l) == false {
+			if len(l) > 0 && !comment.MatchString(l) {
 				n = GetLineIndentetion(b.Line(y), iChar, iMult)
 				if n < 0 {
 					messenger.Alert("error", Language.Translate("You have mixed space and tabs in line above"))
@@ -487,7 +486,7 @@ func (b *Buffer) SmartIndent(Start, Stop Loc, once bool) {
 				//n = CountLeadingWhitespace(b.Line(y)) / iMult
 				B = BracePairsAreBalanced(b.Line(y))
 				break
-			} else if comment.MatchString(l) == true {
+			} else if comment.MatchString(l) {
 				Ys--
 			}
 		}
@@ -495,7 +494,7 @@ func (b *Buffer) SmartIndent(Start, Stop Loc, once bool) {
 	if Ys < 0 {
 		Ys = 0
 	}
-	// Add as meany spaces to use as default indentetion from here on
+	// Add as meany spaces to use as default indentation from here on
 	for i := 0; i < n; i++ {
 		iStr = iStr + iChar
 	}
@@ -519,7 +518,7 @@ func (b *Buffer) SmartIndent(Start, Stop Loc, once bool) {
 			for i := 0; i < n-1; i++ {
 				iStr = iStr + iChar
 			}
-		} else if c == -2 && C == B && once == true {
+		} else if c == -2 && C == B && once {
 			// Is unbalanced } ... { or closing ... } decrease indentation on current line
 			iStr = ""
 			for i := 0; i < n-1; i++ {
@@ -562,7 +561,7 @@ func (b *Buffer) CheckModTime() {
 	modTime, ok := GetModTime(b.Path)
 	if ok {
 		if modTime != b.ModTime {
-			if b.Settings["autoreload"].(bool) && b.IsModified == false {
+			if b.Settings["autoreload"].(bool) && !b.IsModified {
 				messenger.Alert("info", Language.Translate("Buffer reloaded"))
 				b.ReOpen()
 			} else {
@@ -585,7 +584,7 @@ func (b *Buffer) CheckModTime() {
 func (b *Buffer) ReOpen() {
 	var txt string
 	data, err := ioutil.ReadFile(b.Path)
-	if b.encoding == true {
+	if b.encoding {
 		enc := ioencoder.New()
 		txt = enc.DecodeString(b.encoder, string(data))
 	} else {
@@ -602,7 +601,7 @@ func (b *Buffer) ReOpen() {
 	b.IsModified = false
 	b.Update()
 	b.Cursor.Relocate()
-	if b.encoding == true {
+	if b.encoding {
 		screen.Sync()
 	}
 }
@@ -729,7 +728,7 @@ func (b *Buffer) SaveAs(filename string) error {
 		var eol []byte
 		enc := ioencoder.New()
 
-		if b.encoding == true {
+		if b.encoding {
 			fileutf8, err = enc.GetWriter(b.encoder, file)
 			if err != nil {
 				messenger.AddLog("Error!:", err.Error())
@@ -775,7 +774,7 @@ func (b *Buffer) SaveAs(filename string) error {
 
 	if err != nil {
 		messenger.AddLog(err.Error())
-		if b.encoding == true {
+		if b.encoding {
 			newerr := b.RetryOnceSaveAs(filename)
 			if newerr != nil {
 				return err
@@ -1019,7 +1018,7 @@ func (b *Buffer) RemoveTrailingSpace(pos Loc) {
 	line := b.Line(pos.Y)[pos.X:]
 	end := len(b.LineRunes(pos.Y))
 	re, _ := regexp.Compile(`[\t ]+$`)
-	if re.MatchString(line) == true {
+	if re.MatchString(line) {
 		line = re.ReplaceAllString(line, "")
 		b.Replace(Loc{pos.X, pos.Y}, Loc{end, pos.Y}, line)
 	}

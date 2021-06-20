@@ -18,7 +18,7 @@ var (
 	searching bool
 
 	// Stores the history for searching
-	searchHistory []string
+	//searchHistory []string
 )
 
 // StartSearchMode starts the current search
@@ -41,7 +41,7 @@ func ExitSearch(v *View) {
 // HandleSearchEvent takes an event and a view and will do a real time match from the messenger's output
 // to the current buffer. It searches down the buffer.
 func HandleSearchEvent(event tcell.Event, v *View) {
-	if searching == false {
+	if !searching {
 		return
 	}
 	switch e := event.(type) {
@@ -62,7 +62,6 @@ func HandleSearchEvent(event tcell.Event, v *View) {
 			return
 		}
 	}
-	return
 }
 
 func searchDown(r *regexp.Regexp, v *View, start, end Loc) bool {

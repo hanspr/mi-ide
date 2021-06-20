@@ -53,9 +53,9 @@ func InitColorscheme() {
 	defStyle = tcell.StyleDefault.
 		Foreground(tcell.ColorDefault).
 		Background(tcell.ColorDefault)
-	if screen != nil {
-		// screen.SetStyle(defStyle)
-	}
+	//if screen != nil {
+	// screen.SetStyle(defStyle)
+	//}
 
 	LoadDefaultColorscheme()
 }
@@ -108,9 +108,9 @@ func ParseColorscheme(text string) Colorscheme {
 			if link == "default" {
 				defStyle = style
 			}
-			if screen != nil {
-				// screen.SetStyle(defStyle)
-			}
+			//if screen != nil {
+			// screen.SetStyle(defStyle)
+			//}
 		} else {
 			fmt.Println("Color-link statement is not valid:", line)
 		}

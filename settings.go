@@ -45,14 +45,14 @@ func InitGlobalSettings() {
 		input, err := ioutil.ReadFile(filename)
 		if !strings.HasPrefix(string(input), "null") {
 			if err != nil {
-				TermMessage("Error reading settings.json file: " + err.Error())
+				TermMessage("error reading settings.json file: " + err.Error())
 				invalidSettings = true
 				return
 			}
 
 			err = json5.Unmarshal(input, &parsed)
 			if err != nil {
-				TermMessage("Error reading settings.json:", err.Error())
+				TermMessage("error reading settings.json:", err.Error())
 				invalidSettings = true
 			}
 		} else {
@@ -73,7 +73,7 @@ func InitGlobalSettings() {
 	if _, err := os.Stat(filename); os.IsNotExist(err) || writeSettings {
 		err := WriteSettings(filename)
 		if err != nil {
-			TermMessage("Error writing settings.json file: " + err.Error())
+			TermMessage("error writing settings.json file: " + err.Error())
 		}
 	}
 	// Check for mi-ide services, setup service
@@ -96,14 +96,14 @@ func InitLocalSettings(buf *Buffer) {
 	if _, e := os.Stat(filename); e == nil {
 		input, err := ioutil.ReadFile(filename)
 		if err != nil {
-			TermMessage("Error reading settings.json file: " + err.Error())
+			TermMessage("error reading settings.json file: " + err.Error())
 			invalidSettings = true
 			return
 		}
 
 		err = json5.Unmarshal(input, &parsed)
 		if err != nil {
-			TermMessage("Error reading settings.json:", err.Error())
+			TermMessage("error reading settings.json:", err.Error())
 			invalidSettings = true
 		}
 	}
@@ -119,7 +119,7 @@ func InitLocalSettings(buf *Buffer) {
 			} else {
 				g, err := glob.Compile(k)
 				if err != nil {
-					TermMessage("Error with glob setting ", k, ": ", err)
+					TermMessage("error with glob setting ", k, ": ", err)
 					continue
 				}
 
@@ -179,7 +179,7 @@ func WriteSettings(filename string) error {
 
 				err = json5.Unmarshal(input, &parsed)
 				if err != nil {
-					TermMessage("Error reading settings.json:", err.Error())
+					TermMessage("error reading settings.json:", err.Error())
 					invalidSettings = true
 				}
 
@@ -208,7 +208,7 @@ func AddOption(name string, value interface{}) {
 	globalSettings[name] = value
 	err := WriteSettings(configDir + "/settings.json")
 	if err != nil {
-		TermMessage("Error writing settings.json file: " + err.Error())
+		TermMessage("error writing settings.json file: " + err.Error())
 	}
 }
 
@@ -328,7 +328,7 @@ func DefaultLocalSettings() map[string]interface{} {
 func SetOption(option, value string) error {
 	if _, ok := globalSettings[option]; !ok {
 		if _, ok := CurView().Buf.Settings[option]; !ok {
-			return errors.New("Invalid option")
+			return errors.New("invalid option")
 		}
 		SetLocalOption(option, value, CurView())
 		return nil
@@ -340,7 +340,7 @@ func SetOption(option, value string) error {
 	if kind == reflect.Bool {
 		b, err := ParseBool(value)
 		if err != nil {
-			return errors.New("Invalid value")
+			return errors.New("invalid value")
 		}
 		nativeValue = b
 	} else if kind == reflect.String {
@@ -348,11 +348,11 @@ func SetOption(option, value string) error {
 	} else if kind == reflect.Float64 {
 		i, err := strconv.Atoi(value)
 		if err != nil {
-			return errors.New("Invalid value")
+			return errors.New("invalid value")
 		}
 		nativeValue = float64(i)
 	} else {
-		return errors.New("Option has unsupported value type")
+		return errors.New("option has unsupported value type")
 	}
 
 	if err := optionIsValid(option, nativeValue); err != nil {
@@ -400,7 +400,7 @@ func SetOption(option, value string) error {
 func SetLocalOption(option, value string, view *View) error {
 	buf := view.Buf
 	if _, ok := buf.Settings[option]; !ok {
-		return errors.New("Invalid option")
+		return errors.New("invalid option")
 	}
 
 	var nativeValue interface{}
@@ -409,7 +409,7 @@ func SetLocalOption(option, value string, view *View) error {
 	if kind == reflect.Bool {
 		b, err := ParseBool(value)
 		if err != nil {
-			return errors.New("Invalid value")
+			return errors.New("invalid value")
 		}
 		nativeValue = b
 	} else if kind == reflect.String {
@@ -417,11 +417,11 @@ func SetLocalOption(option, value string, view *View) error {
 	} else if kind == reflect.Float64 {
 		i, err := strconv.Atoi(value)
 		if err != nil {
-			return errors.New("Invalid value")
+			return errors.New("invalid value")
 		}
 		nativeValue = float64(i)
 	} else {
-		return errors.New("Option has unsupported value type")
+		return errors.New("option has unsupported value type")
 	}
 
 	if err := optionIsValid(option, nativeValue); err != nil {
@@ -500,7 +500,7 @@ func SetOptionAndSettings(option, value string) {
 
 	err = WriteSettings(filename)
 	if err != nil {
-		messenger.Alert("error", "Error writing to settings.json: "+err.Error())
+		messenger.Alert("error", "error writing to settings.json: "+err.Error())
 		return
 	}
 }
@@ -547,7 +547,7 @@ func validateColorscheme(option string, value interface{}) error {
 	colorscheme, ok := value.(string)
 
 	if !ok {
-		return errors.New("Expected string type for colorscheme")
+		return errors.New("expected string type for colorscheme")
 	}
 
 	if !ColorschemeExists(colorscheme) {
@@ -561,11 +561,11 @@ func validateLineEnding(option string, value interface{}) error {
 	endingType, ok := value.(string)
 
 	if !ok {
-		return errors.New("Expected string type for file format")
+		return errors.New("expected string type for file format")
 	}
 
 	if endingType != "unix" && endingType != "dos" {
-		return errors.New("File format must be either 'unix' or 'dos'")
+		return errors.New("file format must be either 'unix' or 'dos'")
 	}
 
 	return nil

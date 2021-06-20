@@ -133,7 +133,7 @@ func (t *ToolBar) CloudDownload() {
 func (t *ToolBar) ToolbarHandleMouseEvent(x int) {
 	var pos int
 
-	if t.active == false {
+	if !t.active {
 		return
 	}
 	pos = x / 3
@@ -145,7 +145,7 @@ func (t *ToolBar) FixTabsIconArea() {
 	// prefill the length with with black background spaces
 	var tStyle tcell.Style
 
-	if t.active == false {
+	if !t.active {
 		return
 	}
 	tStyle = StringToStyle("normal #000000,#000000")
@@ -241,7 +241,7 @@ func TabbarHandleMouseEvent(event tcell.Event) {
 	var tabnum int
 
 	toffset := toolBarOffset
-	if MicroToolBar.active == false {
+	if !MicroToolBar.active {
 		toffset = 0
 	}
 	if Mouse.Button == 1 || Mouse.Button == 3 {
@@ -296,7 +296,6 @@ func TabbarHandleMouseEvent(event tcell.Event) {
 		}
 		return
 	}
-	return
 }
 
 // -------------------------------------------
@@ -415,7 +414,7 @@ func DisplayTabs() {
 	// Display Tabs
 	for x := 0; x < w; x++ {
 		if x < len(tabsRunes) {
-			if string(tabsRunes[x]) == tabOpen && tabActive == false {
+			if string(tabsRunes[x]) == tabOpen && !tabActive {
 				// Hightlight the current tab
 				tStyle = StringToStyle("bold #ffd700,#000087")
 				tabActive = true

@@ -3,7 +3,6 @@ package main
 import (
 	"io/ioutil"
 	"os"
-	"path"
 	"path/filepath"
 )
 
@@ -30,13 +29,13 @@ var allFiles map[string][]RuntimeFile
 type realFile string
 
 // some asset file
-type assetFile string
+//type assetFile string
 
 // some file on filesystem but with a different name
-type namedFile struct {
-	realFile
-	name string
-}
+//type namedFile struct {
+//	realFile
+//	name string
+//}
 
 // a file with the data stored in memory
 type memoryFile struct {
@@ -60,14 +59,14 @@ func (rf realFile) Data() ([]byte, error) {
 	return ioutil.ReadFile(string(rf))
 }
 
-func (af assetFile) Name() string {
-	fn := path.Base(string(af))
-	return fn[:len(fn)-len(path.Ext(fn))]
-}
+//func (af assetFile) Name() string {
+//	fn := path.Base(string(af))
+//	return fn[:len(fn)-len(path.Ext(fn))]
+//}
 
-func (nf namedFile) Name() string {
-	return nf.name
-}
+//func (nf namedFile) Name() string {
+//	return nf.name
+//}
 
 // AddRuntimeFile registers a file for the given filetype
 func AddRuntimeFile(fileType string, file RuntimeFile) {

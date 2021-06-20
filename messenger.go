@@ -98,7 +98,7 @@ func (m *Messenger) Message(msg ...interface{}) {
 	displayMessage := fmt.Sprint(msg...)
 	// only display a new message if there isn't an active prompt
 	// this is to prevent overwriting an existing prompt to the user
-	if m.hasPrompt == false {
+	if !m.hasPrompt {
 		// if there is no active prompt then style and display the message as normal
 		m.message = displayMessage
 
@@ -121,7 +121,7 @@ func (m *Messenger) Alert(kind string, msg ...interface{}) {
 
 	// only display a new message if there isn't an active prompt
 	// this is to prevent overwriting an existing prompt to the user
-	if m.hasPrompt == false {
+	if !m.hasPrompt {
 		// if there is no active prompt then style and display the message as normal
 		m.message = buf.String()
 		if kind == "error" {
@@ -572,7 +572,6 @@ func (m *Messenger) Display() {
 func (m *Messenger) LoadHistory() {
 	if GetGlobalOption("savehistory").(bool) {
 		file, err := os.Open(configDir + "/buffers/history")
-		defer file.Close()
 		var decodedMap map[string][]string
 		if err == nil {
 			decoder := gob.NewDecoder(file)
@@ -583,6 +582,7 @@ func (m *Messenger) LoadHistory() {
 				return
 			}
 		}
+		defer file.Close()
 
 		if decodedMap != nil {
 			m.history = decodedMap
@@ -606,7 +606,6 @@ func (m *Messenger) SaveHistory() {
 		}
 
 		file, err := os.Create(configDir + "/buffers/history")
-		defer file.Close()
 		if err == nil {
 			encoder := gob.NewEncoder(file)
 
@@ -616,6 +615,7 @@ func (m *Messenger) SaveHistory() {
 				return
 			}
 		}
+		defer file.Close()
 	}
 }
 
