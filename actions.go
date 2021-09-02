@@ -104,9 +104,9 @@ func (v *View) MousePress(usePlugin bool, e *tcell.EventMouse) bool {
 			v.lastClickTime = time.Now()
 		}
 		v.mouseReleased = false
-		if v.tripleClick == true {
+		if v.tripleClick {
 			v.Cursor.SelectLine()
-		} else if v.doubleClick == true {
+		} else if v.doubleClick {
 			v.Cursor.SelectWord(true)
 		} else {
 			v.Cursor.OrigSelection[0] = v.Cursor.Loc
@@ -757,7 +757,7 @@ func (v *View) InsertSpace(usePlugin bool) bool {
 // InsertNewline inserts a newline plus possible some whitespace if autoindent is on
 func (v *View) InsertNewline(usePlugin bool) bool {
 	if usePlugin && !PreActionCall("InsertNewline", v) {
-		//		return false
+		return false
 	}
 
 	// Insert a newline
@@ -806,7 +806,7 @@ func (v *View) InsertNewline(usePlugin bool) bool {
 	v.Cursor.LastVisualX = v.Cursor.GetVisualX()
 
 	if usePlugin {
-		//		return PostActionCall("InsertNewline", v)
+		return PostActionCall("InsertNewline", v)
 	}
 	return true
 }
@@ -1032,7 +1032,7 @@ func (v *View) InsertTab(usePlugin bool) bool {
 
 	tabBytes := len(v.Buf.IndentString())
 	bytesUntilIndent := tabBytes - (v.Cursor.GetVisualX() % tabBytes)
-	if v.Buf.Settings["smartindent"].(bool) == true {
+	if v.Buf.Settings["smartindent"].(bool) {
 		v.Buf.RemoveTrailingSpace(Loc{0, v.Cursor.Loc.Y})
 		cSave := v.Cursor.Loc
 		spc := CountLeadingWhitespace(v.Buf.Line(v.Cursor.Y))
@@ -1041,7 +1041,7 @@ func (v *View) InsertTab(usePlugin bool) bool {
 		if diff != 0 && v.Buf.IsModified {
 			v.Cursor.GotoLoc(Loc{cSave.X + diff, v.Cursor.Y})
 		}
-	} else if v.Buf.Settings["tabindents"].(bool) == false {
+	} else if !v.Buf.Settings["tabindents"].(bool) {
 		v.Buf.Insert(v.Cursor.Loc, v.Buf.IndentString()[:bytesUntilIndent])
 	} else {
 		v.Buf.Insert(Loc{0, v.Cursor.Loc.Y}, v.Buf.IndentString()[:bytesUntilIndent])
@@ -1085,7 +1085,7 @@ func (v *View) Save(usePlugin bool) bool {
 			return false
 		}
 
-		if v.Type.Scratch == true {
+		if v.Type.Scratch {
 			// We can't save any view type with scratch set. eg help and log text
 			return false
 		}
@@ -1146,7 +1146,7 @@ func (v *View) SaveAs(usePlugin bool) bool {
 // FindNext searches forwards for the last used search term
 func (v *View) FindNext(usePlugin bool) bool {
 
-	if searching == false {
+	if !searching {
 		return false
 	}
 
@@ -1174,7 +1174,7 @@ func (v *View) FindNext(usePlugin bool) bool {
 // FindPrevious searches backwards for the last used search term
 func (v *View) FindPrevious(usePlugin bool) bool {
 
-	if searching == false {
+	if !searching {
 		return false
 	}
 
@@ -1257,10 +1257,7 @@ func (v *View) SelectionTooBig() bool {
 	for _, l := range v.Cursor.CurSelection {
 		total += len(v.Buf.LineBytes(l.Y))
 	}
-	if total > MaxClipboardSize {
-		return true
-	}
-	return false
+	return total > MaxClipboardSize
 }
 
 // Copy the selection to the clipboard
@@ -1310,12 +1307,12 @@ func (v *View) CutLine(usePlugin bool) bool {
 		messenger.Alert("error", Language.Translate("Line is too big, can not cut. You may move (up/down) or delete only."))
 		return false
 	}
-	if v.freshClip == true {
+	if v.freshClip {
 		if v.Cursor.HasSelection() {
 			text := v.Cursor.GetSelection()
 			Clip.AppendTo(&text, "local")
 		}
-	} else if time.Since(v.lastCutTime)/time.Second > 10*time.Second || v.freshClip == false {
+	} else if time.Since(v.lastCutTime)/time.Second > 10*time.Second || v.freshClip {
 		v.Copy(true)
 	}
 	v.freshClip = true

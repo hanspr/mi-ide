@@ -95,7 +95,7 @@ func (c *CellView) Draw(buf *Buffer, top, height, left, width int, ActiveView bo
 	softwrap := buf.Settings["softwrap"].(bool)
 	indentrunes := []rune(buf.Settings["indentchar"].(string))
 	// if empty indentchar settings, use space
-	if indentrunes == nil || len(indentrunes) == 0 {
+	if len(indentrunes) == 0 {
 		indentrunes = []rune{' '}
 	}
 	indentchar := indentrunes[0]

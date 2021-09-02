@@ -48,22 +48,22 @@ func toRunes(b []byte) []rune {
 	return runes
 }
 
-func sliceStart(slc []byte, index int) []byte {
-	len := len(slc)
-	i := 0
-	totalSize := 0
-	for totalSize < len {
-		if i >= index {
-			return slc[totalSize:]
-		}
-
-		_, size := utf8.DecodeRune(slc[totalSize:])
-		totalSize += size
-		i++
-	}
-
-	return slc[totalSize:]
-}
+//func sliceStart(slc []byte, index int) []byte {
+//	len := len(slc)
+//	i := 0
+//	totalSize := 0
+//	for totalSize < len {
+//		if i >= index {
+//			return slc[totalSize:]
+//		}
+//
+//		_, size := utf8.DecodeRune(slc[totalSize:])
+//		totalSize += size
+//		i++
+//	}
+//
+//	return slc[totalSize:]
+//}
 
 func sliceEnd(slc []byte, index int) []byte {
 	len := len(slc)
@@ -145,9 +145,7 @@ func IsStrWhitespace(str string) bool {
 }
 
 func noAutoCloseChar(str string) bool {
-	var x bool
-
-	x = IsWordChar(str)
+	x := IsWordChar(str)
 	if x {
 		return x
 	}
@@ -215,14 +213,14 @@ func BracePairsAreBalanced(str string) int {
 		c := str[i : i+1]
 		if c == "{" || c == "[" || c == "(" {
 			b++
-			if f == false {
+			if f {
 				f = true
-				if w == true {
+				if w {
 					w = false
 				}
 			}
 		} else if c == "}" || c == "]" || c == ")" {
-			if bs == true && (pc == "}" || pc == "]" || pc == ")") {
+			if bs && (pc == "}" || pc == "]" || pc == ")") {
 				if b == -1 {
 					b--
 				}
@@ -253,8 +251,8 @@ func RemoveNestedBrace(str string) string {
 	var rBreak rune
 
 	count := 0
-	b := []rune(str)
-	for _, c := range b {
+	//b := []rune(str)
+	for _, c := range str {
 		if c == '{' || c == '[' {
 			count++
 			stack = append(stack, c)
@@ -827,7 +825,7 @@ const autocloseNewLine = ")}]"
 // AutoClose
 func AutoClose(v *View, e *tcell.EventKey, isSelection bool, cursorSelection [2]Loc) {
 	n, f := isAutoCloseOpen(v, e)
-	if f == false {
+	if !f {
 		return
 	}
 	Close := autocloseClose
@@ -869,7 +867,6 @@ func AutoClose(v *View, e *tcell.EventKey, isSelection bool, cursorSelection [2]
 			v.Cursor.Left()
 		}
 	}
-	return
 }
 
 func isAutoCloseOpen(v *View, e *tcell.EventKey) (int, bool) {

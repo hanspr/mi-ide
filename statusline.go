@@ -33,7 +33,7 @@ func (sline *Statusline) EncodingSelected(values map[string]string) {
 
 // MouseEvent handle mouse events on the status line
 func (sline *Statusline) MouseEvent(e *tcell.EventMouse, rx, ry int) {
-	if e.Buttons() != tcell.Button1 || e.HasMotion() == true {
+	if e.Buttons() != tcell.Button1 || e.HasMotion() {
 		return
 	}
 	for action, hs := range sline.hotspot {
@@ -62,7 +62,6 @@ func (sline *Statusline) MouseEvent(e *tcell.EventMouse, rx, ry int) {
 			}
 		}
 	}
-	return
 }
 
 const fwidth = 60
@@ -165,7 +164,7 @@ func (sline *Statusline) Display() {
 		} else {
 			file += " Ins "
 		}
-		if sline.view.Type.Readonly == true || sline.view.Buf.RO {
+		if sline.view.Type.Readonly || sline.view.Buf.RO {
 			file += " (ro) "
 		}
 	}
@@ -176,7 +175,7 @@ func (sline *Statusline) Display() {
 	if style, ok := colorscheme["statusline"]; ok {
 		statusLineStyle = style
 	}
-	if active == false {
+	if !active {
 		if style, ok := colorscheme["unfocused"]; ok {
 			statusLineStyle = style
 		}

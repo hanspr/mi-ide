@@ -27,7 +27,7 @@ const (
 	autosaveTime         = 8   // Number of seconds to wait before autosaving
 )
 
-// MouseClick mouse clic structur to follow mouse clics
+// MouseClick mouse clic structure to follow mouse clics
 type MouseClick struct {
 	Click     bool
 	Since     time.Time
@@ -257,7 +257,7 @@ func InitScreen() {
 		os.Setenv("TERM", "xterm-truecolor")
 	}
 
-	// Initilize tcell
+	// Initialize tcell
 	var err error
 	screen, err = tcell.NewScreen()
 	if err != nil {
@@ -353,8 +353,10 @@ func loadAll() {
 }
 
 // Finish One Place Global Exit
-// to control anything that could be necesary (to have a clean exit) in a sinlge point
+// to control anything that could be necessary (to have a clean exit) in a single point
 func Finish(status int) {
+	screen.DisableMouse()
+	time.Sleep(100 * time.Millisecond)
 	if cursorHadColor {
 		screen.SetCursorColorShape("white", "")
 	}
@@ -654,7 +656,7 @@ func main() {
 				x, y := e.Position()
 				button := e.Buttons()
 				// Try to get full mouse clicks on different terminals
-				if button == tcell.ButtonNone && Mouse.MouseDown == true {
+				if button == tcell.ButtonNone && Mouse.MouseDown {
 					if Mouse.Pos.X == x && Mouse.Pos.Y == y {
 						Mouse.Click = true
 					}

@@ -65,7 +65,7 @@ func JobSpawn(cmdName string, cmdArgs []string, onStdout, onStderr, onExit strin
 	go func() {
 		// Run the process in the background and create the onExit callback
 		proc.Run()
-		jobFunc := JobFunction{LuaFunctionJob(onExit), string(outbuf.Bytes()), userargs}
+		jobFunc := JobFunction{LuaFunctionJob(onExit), outbuf.String(), userargs}
 		jobs <- jobFunc
 	}()
 

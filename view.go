@@ -576,7 +576,7 @@ func (v *View) ExecuteActions(actions []func(*View, bool) bool) bool {
 		readonlyBindingsResult := false
 		funcName := ShortFuncName(action)
 		// Check check for not allowed actions
-		if v.Type.Readonly == true {
+		if v.Type.Readonly {
 			// check for readonly and if true only let key bindings get called if they do not change the contents.
 			for _, readonlyBindings := range readonlyBindingsList {
 				if strings.Contains(funcName, readonlyBindings) {
@@ -689,7 +689,7 @@ func (v *View) HandleEvent(event tcell.Event) {
 
 		if !isBinding && e.Key() == tcell.KeyRune {
 			// Check viewtype if readonly don't insert a rune (readonly help and log view etc.)
-			if v.Type.Readonly == true {
+			if v.Type.Readonly {
 				messenger.Alert("error", Language.Translate("File is readonly"))
 			} else {
 				isSelection := false
@@ -749,7 +749,7 @@ func (v *View) HandleEvent(event tcell.Event) {
 		}
 	case *tcell.EventPaste:
 		// Check viewtype if readonly don't paste (readonly help and log view etc.)
-		if v.Type.Readonly == false {
+		if !v.Type.Readonly {
 			if !PreActionCall("Paste", v) {
 				break
 			}
@@ -975,7 +975,7 @@ func (v *View) SetCursorEscapeString() {
 			cursorOverwrite.shape = "underline"
 		}
 	}
-	if ((ci.color != cursorInsert.color || ci.shape != cursorInsert.shape) && v.isOverwriteMode == false) || ((co.color != cursorOverwrite.color || co.shape != cursorOverwrite.shape) && v.isOverwriteMode) {
+	if ((ci.color != cursorInsert.color || ci.shape != cursorInsert.shape) && !v.isOverwriteMode) || ((co.color != cursorOverwrite.color || co.shape != cursorOverwrite.shape) && v.isOverwriteMode) {
 		v.SetCursorColorShape()
 	}
 }
@@ -1014,7 +1014,7 @@ func (v *View) DisplayView() {
 		v.Relocate()
 	}
 	//messenger.AddLog(CurView().Type.Kind, "==0 && ", LastView, "!=", CurView().Num, " && ", CurView().Cursor.Loc, "!=", CurView().savedLoc, " && ", Mouse.Click, " == false")
-	if CurView().Type.Kind == 0 && LastView != CurView().Num && CurView().Cursor.Loc != CurView().savedLoc && Mouse.Click == false {
+	if CurView().Type.Kind == 0 && LastView != CurView().Num && CurView().Cursor.Loc != CurView().savedLoc && !Mouse.Click {
 		// HP : Set de cursor in last known position for this view
 		// It happens when 2+ views point to same buffer
 		// Set into current view boudaries
@@ -1084,7 +1084,7 @@ func (v *View) DisplayView() {
 
 	if ActiveView {
 		// Have a window margin on edges for long lines if the windows is not wide enough
-		if v.Buf.Settings["softwrap"].(bool) == false && StringWidth(v.Buf.Line(v.Cursor.Loc.Y), int(v.Buf.Settings["tabsize"].(float64))) > width-v.lineNumOffset {
+		if !v.Buf.Settings["softwrap"].(bool) && StringWidth(v.Buf.Line(v.Cursor.Loc.Y), int(v.Buf.Settings["tabsize"].(float64))) > width-v.lineNumOffset {
 			shift := 0
 			if v.Cursor.GetVisualX()+1 < width-v.lineNumOffset && v.Cursor.GetVisualX()+1 > width-v.lineNumOffset-WindowOffset && left == 0 {
 				shift = WindowOffset - (width - v.lineNumOffset - v.Cursor.GetVisualX())
@@ -1099,7 +1099,7 @@ func (v *View) DisplayView() {
 
 	v.cellview.Draw(v.Buf, top, height, left, width-v.lineNumOffset, ActiveView)
 	_, bgDisabled, _ := defStyle.Decompose()
-	if ActiveView == false {
+	if !ActiveView {
 		if style, ok := colorscheme["unfocused"]; ok {
 			_, bgDisabled, _ = style.Decompose()
 		} else {
@@ -1265,7 +1265,7 @@ func (v *View) DisplayView() {
 					style := GetColor("cursor-line")
 					fg, _, _ := style.Decompose()
 					lineStyle = lineStyle.Background(fg)
-				} else if ActiveView == false {
+				} else if !ActiveView {
 					lineStyle = lineStyle.Background(bgDisabled)
 				}
 
@@ -1344,7 +1344,7 @@ func (v *View) DisplayView() {
 		}
 
 		// Fill trailing space with inactive background
-		if ActiveView == false {
+		if !ActiveView {
 			for i := lastX; i < xOffset+v.Width-v.lineNumOffset; i++ {
 				screen.SetContent(i, yOffset+visualLineN, ' ', nil, defStyle.Background(bgDisabled))
 			}

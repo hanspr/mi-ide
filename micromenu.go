@@ -181,7 +181,7 @@ func (m *microMenu) closeSubmenus() {
 func (m *microMenu) MenuItemClick(name, value, event, when string, x, y int) bool {
 	f := m.myapp.frames["menu"]
 	_, err := f.elements[name]
-	if err == false {
+	if !err {
 		return false
 	}
 	if event == "mouseout" {
@@ -430,7 +430,7 @@ func (m *microMenu) KeyBindingsDialog() {
 			} else {
 				bindings[v] = k
 				_, ok := mkeys[v]
-				if ok == false {
+				if !ok {
 					keys = append(keys, v)
 				}
 			}
@@ -448,7 +448,7 @@ func (m *microMenu) KeyBindingsDialog() {
 		col := 2
 		for _, k := range keys {
 			_, ok := bindings[k]
-			if ok == false {
+			if !ok {
 				bindings[k] = ""
 			}
 			str := strings.Split(k, "!")
@@ -544,7 +544,7 @@ func (m *microMenu) SetBinding(name, value, event, when string, x, y int) bool {
 		}
 	}
 	_, ok := findKey(event)
-	if ok == false {
+	if !ok {
 		f.SetLabel("?msg", "{red}"+Language.Translate("Error")+" : {/red}"+event)
 		if name == "?test" {
 			f.SetValue(name, "")
@@ -740,7 +740,7 @@ func (m *microMenu) ChangeSource(name, value, event, when string, x, y int) bool
 			}
 			val = name + "?" + p.Author + "?" + strings.ToLower(p.Name) + "?" + cver.String()
 			_, loaded := loadedPlugins[strings.ToLower(p.Name)]
-			if loaded == false {
+			if !loaded {
 				str = fmt.Sprintf("%-20s%-11s %-11s%-18s%-44s  ", p.Name, " ", cver.String(), p.Author, p.Description)
 			} else {
 				version := GetPluginOption(strings.ToLower(p.Name), "version")
@@ -1028,7 +1028,7 @@ func (m *microMenu) StartSearch(name, value, event, when string, x, y int) bool 
 	if when == "POST" {
 		return true
 	}
-	if m.searchMatch == false {
+	if !m.searchMatch {
 		f.SetValue("search", "")
 	}
 	m.myapp.WindowFinish(m.myapp.GetValues())
@@ -1042,7 +1042,7 @@ func (m *microMenu) SubmitSearchOnEnter(name, value, event, when string, x, y in
 		return true
 	}
 	if event == "Enter" && when == "PRE" && (name == "find" || name == "replace") {
-		if m.searchMatch == false {
+		if !m.searchMatch {
 			f.SetValue("search", "")
 			f.SetValue("find", "")
 		}

@@ -241,7 +241,7 @@ func LoadPluginOptions(pname string) {
 // WritePluginSettings write the plugin settings to file
 func WritePluginSettings(pname string) error {
 	if pname == "" {
-		return errors.New("Missing plugin name, can not write settings")
+		return errors.New("missing plugin name, can not write settings")
 	}
 	if _, e := os.Stat(configDir + "/plugins/" + pname); e == nil {
 		filename := configDir + "/plugins/" + pname + "/settings.json"
@@ -263,7 +263,7 @@ func WritePluginSettings(pname string) error {
 func AddPluginOption(pname, option string, value interface{}) error {
 	opt := pname + "-" + option
 	_, ok := pluginOption[opt]
-	if ok == true {
+	if ok {
 		return nil
 	}
 	pluginOption[opt] = value
@@ -279,7 +279,7 @@ func SetPluginOption(pname, option string, value interface{}) {
 // GetPluginOption get value of an option
 func GetPluginOption(pname, option string) interface{} {
 	value, ok := pluginOption[pname+"-"+option]
-	if ok == false {
+	if !ok {
 		return nil
 	}
 	return value
