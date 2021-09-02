@@ -355,6 +355,8 @@ func loadAll() {
 // Finish One Place Global Exit
 // to control anything that could be necessary (to have a clean exit) in a single point
 func Finish(status int) {
+	screen.DisableMouse()
+	time.Sleep(100 * time.Millisecond)
 	if cursorHadColor {
 		screen.SetCursorColorShape("white", "")
 	}
