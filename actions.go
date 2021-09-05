@@ -1312,7 +1312,7 @@ func (v *View) CutLine(usePlugin bool) bool {
 			text := v.Cursor.GetSelection()
 			Clip.AppendTo(&text, "local")
 		}
-	} else if time.Since(v.lastCutTime)/time.Second > 10*time.Second || v.freshClip {
+	} else if time.Since(v.lastCutTime)/time.Second > 10*time.Second || !v.freshClip {
 		v.Copy(true)
 	}
 	v.freshClip = true
