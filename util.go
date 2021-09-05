@@ -213,7 +213,7 @@ func BracePairsAreBalanced(str string) int {
 		c := str[i : i+1]
 		if c == "{" || c == "[" || c == "(" {
 			b++
-			if f {
+			if !f {
 				f = true
 				if w {
 					w = false
