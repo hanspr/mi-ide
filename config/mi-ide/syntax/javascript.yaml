@@ -34,8 +34,10 @@ rules:
     - type.keyword1: "\\w+=['\"]"
     - constant.string: "\'.*?\'"
     - special: "/.+/[gim,]"
-    - comment: "^//.*"
-    - comment: "\\s//.*"
+    - comment: "^//.*$"
+    - comment: "\\s//.*$"
+    - todo: "^[ \\t]*// ?(todo|TODO):.*$"
+    - error: "^[ \\t]*// ?(fix|FIX):.*$"
 
     - constant.string:
         start: "`"

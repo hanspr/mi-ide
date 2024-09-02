@@ -23,7 +23,7 @@ rules:
     - symbol.tag: "/[^/\\\\]*(?:\\\\.[^/\\\\]*)*/([^/\\\\]*(?:\\\\.[^/\\\\]*)*/)?"
     - symbol.tag: "[ms][\\|#!][^/\\\\]*(?:\\\\.[^/\\\\]*)*[\\|#!]([^/\\\\]*(?:\\\\.[^/\\\\]*)*[\\|#!])?"
     - constant.string: "\"[^\"\\\\]*(?:\\\\.[^\"\\\\]*)*\""
-    - constant.string: "qq“.*“"
+    - constant.string: "qq[“°].*“"
     - statement: "\\b(insert|into|values|update|set|delete|select|from|where|and|or|isnull|join|left|right|outer|as|order by|limit|distinct|on)\\b"
     - identifier.var: "[\\$@%]\\$*[\\p{L}\\p{N}_]*"
     - identifier.var: "\\$+\\{[\\p{L}\\p{N}_]+\\}"
@@ -40,8 +40,8 @@ rules:
         end: "’[\\)\\'\\\"]*?;"
         rules: []
     - default:
-        start: "qq[¡°”]"
-        end: "[¡°”]\\)?;"
+        start: "qq[¡”·]"
+        end: "[¡”·]\\)?;"
         rules:
             - constant.number: "\\b[-+]?([1-9][0-9]*|0[0-7]*|0x[0-9a-fA-F]+)([uU][lL]?|[lL][uU]?)?\\b"
             - constant.number: "\\b[-+]?([0-9]+\\.[0-9]*|[0-9]*\\.[0-9]+)([EePp][+-]?[0-9]+)?[fFlL]?"

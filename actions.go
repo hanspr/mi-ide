@@ -7,7 +7,6 @@ import (
 	"strconv"
 	"strings"
 	"time"
-	"unicode/utf8"
 
 	"github.com/hanspr/tcell"
 	lua "github.com/yuin/gopher-lua"
@@ -831,20 +830,23 @@ func (v *View) Backspace(usePlugin bool) bool {
 		v.Cursor.DeleteSelection()
 		v.Cursor.ResetSelection()
 	} else if v.Cursor.Loc.GreaterThan(v.Buf.Start()) {
-		lineStart := sliceEnd(v.Buf.LineBytes(v.Cursor.Y), v.Cursor.X)
-		tabSize := int(v.Buf.Settings["tabsize"].(float64))
-		loc := v.Cursor.Loc
-		if v.Buf.Settings["tabstospaces"].(bool) && IsSpaces(lineStart) && utf8.RuneCount(lineStart) != 0 && utf8.RuneCount(lineStart)%tabSize == 0 {
-			nloc := new(Loc)
-			nloc.X = loc.X
-			nloc.Y = loc.Y
-			for i := 1; i <= tabSize; i++ {
-				*nloc = nloc.left(v.Buf)
-			}
-			v.Buf.Remove(*nloc, loc)
-		} else {
-			v.Buf.Remove(loc.left(v.Buf), loc)
-		}
+		// Cursor Left, then Delete
+		v.CursorLeft(false)
+		v.Delete(false)
+		// lineStart := sliceEnd(v.Buf.LineBytes(v.Cursor.Y), v.Cursor.X)
+		// tabSize := int(v.Buf.Settings["tabsize"].(float64))
+		// loc := v.Cursor.Loc
+		// if v.Buf.Settings["tabstospaces"].(bool) && IsSpaces(lineStart) && utf8.RuneCount(lineStart) != 0 && utf8.RuneCount(lineStart)%tabSize == 0 {
+		// 	nloc := new(Loc)
+		// 	nloc.X = loc.X
+		// 	nloc.Y = loc.Y
+		// 	for i := 1; i <= tabSize; i++ {
+		// 		*nloc = nloc.left(v.Buf)
+		// 	}
+		// 	v.Buf.Remove(*nloc, loc)
+		// } else {
+		// 	v.Buf.Remove(loc.left(v.Buf), loc)
+		// }
 	}
 	v.savedLoc = v.Cursor.Loc
 	v.Cursor.LastVisualX = v.Cursor.GetVisualX()
