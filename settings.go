@@ -253,7 +253,7 @@ func DefaultGlobalSettings() map[string]interface{} {
 		"lang":           "en_US",
 		"matchbrace":     false,
 		"matchbraceleft": false,
-		"mi-server":      "https://clip.microflow.com:8443",
+		"mi-server":      "https://clip.microflow.com.mx:8443",
 		"mi-key":         "",
 		"mi-pass":        "",
 		"mi-phrase":      "",

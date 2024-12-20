@@ -126,7 +126,7 @@ var (
 
 	MouseEnabled = false
 
-	cloudPath = "https://clip.microflow.com:8443" // Cloud service url
+	cloudPath = "https://clip.microflow.com.mx:8443" // Cloud service url
 )
 
 // LoadInput determines which files should be loaded into buffers
