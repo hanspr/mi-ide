@@ -3,7 +3,7 @@ package main
 
 import (
 	"fmt"
-	"io/ioutil"
+	"os"
 	"reflect"
 	"sort"
 	"strconv"
@@ -507,9 +507,7 @@ func (m *microMenu) SetBinding(name, value, event, when string, x, y int) bool {
 		event = strings.Replace(event, "ShiftAlt", "AltShift", 1)
 	} else if strings.Contains(event, "Ctrl") {
 		event = strings.ReplaceAll(event, "+", "")
-		if strings.Contains(event, "ShiftCtrl") {
-			event = strings.Replace(event, "ShiftCtrl", "CtrlShift", 1)
-		}
+		event = strings.Replace(event, "ShiftCtrl", "CtrlShift", 1)
 	} else if strings.Contains(event, "Shift") {
 		event = strings.ReplaceAll(event, "+", "")
 		event = strings.Replace(event, "PgUp", "PageUp", 1)
@@ -1660,7 +1658,7 @@ func (m *microMenu) getDir() (string, int) {
 	}
 	width := 0
 	dir = "../]{d}📂 ../"
-	files, _ := ioutil.ReadDir(m.LastPath)
+	files, _ := os.ReadDir(m.LastPath)
 	for _, f := range files {
 		if f.IsDir() {
 			s = "/]{d}📂 " + f.Name() + "/"

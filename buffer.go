@@ -7,7 +7,6 @@ import (
 	"encoding/gob"
 	"errors"
 	"io"
-	"io/ioutil"
 	"os"
 	"path/filepath"
 	"reflect"
@@ -294,7 +293,7 @@ func NewBuffer(reader io.Reader, size int64, path string, cursorPosition []strin
 
 // GetBufferCursorLocation get cursor
 func GetBufferCursorLocation(cursorPosition []string, b *Buffer) (Loc, error) {
-	// parse the cursor position. The cursor location is ALWAYS initialised to 0, 0 even when
+	// parse the cursor position. The cursor location is ALWAYS initialized to 0, 0 even when
 	// an error occurs due to lack of arguments or because the arguments are not numbers
 	cursorLocation, cursorLocationError := ParseCursorLocation(cursorPosition)
 
@@ -536,7 +535,7 @@ func (b *Buffer) SmartIndent(Start, Stop Loc, once bool) {
 			b.Replace(Loc{0, y}, Loc{x, y}, str)
 		}
 		// We need a second pass (to outdent wrong ones)
-		// To avoid rewwriting all code above over again, call recursivevly only one time
+		// To avoid rewriting all code above over again, call recursively only one time
 		if once {
 			return
 		}
@@ -544,7 +543,7 @@ func (b *Buffer) SmartIndent(Start, Stop Loc, once bool) {
 		// if c == -2 unbalanced close brace like ....}
 		// check if we really did an indentation on this case
 		if c == -2 && strB == b.Line(y) && b.IsModified && Start.Y == Stop.Y && sMod != b.IsModified {
-			// Not dirty, this is just a consecuence of the algorithm, reverse modified status, undos, cursor
+			// Not dirty, this is just a consequence of the algorithm, reverse modified status, undos, cursor
 			b.IsModified = false
 			b.Cursor.GotoLoc(sCursor)
 			for stack < b.UndoStack.Len() {
@@ -583,7 +582,7 @@ func (b *Buffer) CheckModTime() {
 // ReOpen reloads the current buffer from disk
 func (b *Buffer) ReOpen() {
 	var txt string
-	data, err := ioutil.ReadFile(b.Path)
+	data, err := os.ReadFile(b.Path)
 	if b.encoding {
 		enc := ioencoder.New()
 		txt = enc.DecodeString(b.encoder, string(data))

@@ -2,7 +2,6 @@ package main
 
 import (
 	"fmt"
-	"io/ioutil"
 	"os"
 	"strings"
 	"unicode"
@@ -287,7 +286,7 @@ func InitBindings() {
 
 	filename := configDir + "/bindings.json"
 	if _, e := os.Stat(filename); e == nil {
-		input, err := ioutil.ReadFile(filename)
+		input, err := os.ReadFile(filename)
 		if err != nil {
 			TermMessage("Error reading bindings.json file: " + err.Error())
 			return
@@ -424,7 +423,7 @@ func findMouseAction(v string) func(*View, bool, *tcell.EventMouse) bool {
 func TryBindKey(k, v string) {
 	filename := configDir + "/bindings.json"
 	if _, e := os.Stat(filename); e == nil {
-		input, err := ioutil.ReadFile(filename)
+		input, err := os.ReadFile(filename)
 		if err != nil {
 			TermMessage("Error reading bindings.json file: " + err.Error())
 			return
@@ -449,7 +448,7 @@ func TryBindKey(k, v string) {
 			lines = append(append(lines[:conflict], binding), lines[conflict+1:]...)
 		}
 		txt := strings.Join(lines, "\n")
-		err = ioutil.WriteFile(filename, []byte(txt), 0644)
+		err = os.WriteFile(filename, []byte(txt), 0644)
 		if err != nil {
 			TermMessage("Error")
 		}

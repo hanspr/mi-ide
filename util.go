@@ -65,22 +65,22 @@ func toRunes(b []byte) []rune {
 //	return slc[totalSize:]
 //}
 
-func sliceEnd(slc []byte, index int) []byte {
-	len := len(slc)
-	i := 0
-	totalSize := 0
-	for totalSize < len {
-		if i >= index {
-			return slc[:totalSize]
-		}
+// func sliceEnd(slc []byte, index int) []byte {
+// 	len := len(slc)
+// 	i := 0
+// 	totalSize := 0
+// 	for totalSize < len {
+// 		if i >= index {
+// 			return slc[:totalSize]
+// 		}
 
-		_, size := utf8.DecodeRune(slc[totalSize:])
-		totalSize += size
-		i++
-	}
+// 		_, size := utf8.DecodeRune(slc[totalSize:])
+// 		totalSize += size
+// 		i++
+// 	}
 
-	return slc[:totalSize]
-}
+// 	return slc[:totalSize]
+// }
 
 // NumOccurrences counts the number of occurrences of a byte in a string
 func NumOccurrences(s string, c byte) int {
@@ -311,7 +311,7 @@ func GetLineIndentetion(str, char string, q int) int {
 	return ws / q
 }
 
-// CountLeadingWhitespace returns the ammount of leading whitespace of the given string
+// CountLeadingWhitespace returns the amount of leading whitespace of the given string
 func CountLeadingWhitespace(str string) int {
 	ws := 0
 	for _, c := range str {

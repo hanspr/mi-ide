@@ -21,9 +21,9 @@ var (
 	vtDefault = ViewType{0, false, false}
 	vtHelp    = ViewType{1, true, true}
 	vtLog     = ViewType{2, true, true}
-	vtScratch = ViewType{3, false, true}
-	vtRaw     = ViewType{4, true, true}
-	vtTerm    = ViewType{5, true, true}
+	// vtScratch = ViewType{3, false, true}
+	vtRaw  = ViewType{4, true, true}
+	vtTerm = ViewType{5, true, true}
 )
 
 // LastView to decide if we should trigger a focus event
@@ -496,7 +496,7 @@ func (v *View) Relocate() bool {
 	if !v.Buf.Settings["softwrap"].(bool) {
 		// HPR
 		// Force go all the way to the left when visual X in range to fit at the begging
-		// This avoids having shifted lines close to the begining of the window
+		// This avoids having shifted lines close to the beginning of the window
 		cx := v.Cursor.GetVisualX()
 		if cx < v.Width*10/11 {
 			cx = 0
@@ -513,8 +513,8 @@ func (v *View) Relocate() bool {
 	return ret
 }
 
-// GetMouseRelativePositon mouse relative position inside view
-func (v *View) GetMouseRelativePositon(x, y int) (int, int) {
+// GetMouseRelativePosition mouse relative position inside view
+func (v *View) GetMouseRelativePosition(x, y int) (int, int) {
 	x -= v.x - v.leftCol
 	y = y - v.y + 1
 	return x, y
@@ -771,10 +771,10 @@ func (v *View) HandleEvent(event tcell.Event) {
 
 		button := e.Buttons()
 
-		// This events are relative to each view dimentions
+		// This events are relative to each view dimensions
 		if e.Buttons() == tcell.Button1 || button == tcell.Button3 || button == tcell.Button2 {
 			x, y := e.Position()
-			rx, ry := v.GetMouseRelativePositon(x, y)
+			rx, ry := v.GetMouseRelativePosition(x, y)
 			//messenger.AddLog(x, ",", y, "?", rx, ",", ry)
 			if v.Type.Kind == 0 {
 				//messenger.Message(ry, "?", v.Height, ": rx", rx, "?", v.lineNumOffset)
@@ -989,7 +989,7 @@ func (v *View) SetCursorColorShape() {
 	}
 }
 
-// Set LastView used by plugins if they move views and cursor positions arround
+// Set LastView used by plugins if they move views and cursor positions around
 func (v *View) SetLastView() {
 	LastView = v.Num
 }
@@ -1017,7 +1017,7 @@ func (v *View) DisplayView() {
 	if CurView().Type.Kind == 0 && LastView != CurView().Num && CurView().Cursor.Loc != CurView().savedLoc && !Mouse.Click {
 		// HP : Set de cursor in last known position for this view
 		// It happens when 2+ views point to same buffer
-		// Set into current view boudaries
+		// Set into current view boundaries
 		//messenger.AddLog("Focus event")
 		if CurView().savedLoc.Y > CurView().Buf.End().Y {
 			CurView().savedLoc.Y = CurView().Buf.End().Y
@@ -1028,7 +1028,7 @@ func (v *View) DisplayView() {
 		currLine := SubstringSafe(CurView().Buf.Line(CurView().savedLoc.Y), 0, 20)
 		if LastView > 0 && currLine != CurView().savedLine {
 			var newLoc Loc
-			// Line has moved, find new position using as a reference the last known line beggining
+			// Line has moved, find new position using as a reference the last known line beginning
 			newLoc = CurView().FindCurLine(-1, CurView().savedLine)
 			if newLoc.Y < 0 {
 				newLoc = CurView().FindCurLine(1, CurView().savedLine)
@@ -1107,7 +1107,6 @@ func (v *View) DisplayView() {
 		}
 	}
 
-	screenX := v.x
 	realLineN := top - 1
 	visualLineN := 0
 	var line []*Char
@@ -1135,7 +1134,7 @@ func (v *View) DisplayView() {
 			screen.SetContent(xOffset+colorcolumn-v.leftCol, yOffset+visualLineN, ' ', nil, st)
 		}
 
-		screenX = v.x
+		screenX := v.x
 
 		// If there are gutter messages we need to display the '>>' symbol here
 		if hasGutterMessages {

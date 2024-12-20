@@ -1,7 +1,6 @@
 package main
 
 import (
-	"io/ioutil"
 	"os"
 	"strings"
 )
@@ -17,15 +16,15 @@ func FileComplete(input string) (string, []string) {
 	var sep string = string(os.PathSeparator)
 	dirs := strings.Split(input, sep)
 
-	var files []os.FileInfo
+	var files []os.DirEntry
 	var err error
 	if len(dirs) > 1 {
 		directories := strings.Join(dirs[:len(dirs)-1], sep) + sep
 
 		directories = ReplaceHome(directories)
-		files, err = ioutil.ReadDir(directories)
+		files, err = os.ReadDir(directories)
 	} else {
-		files, err = ioutil.ReadDir(".")
+		files, err = os.ReadDir(".")
 	}
 
 	var suggestions []string
