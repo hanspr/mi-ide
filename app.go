@@ -14,7 +14,7 @@ import (
 // Opt option element of a select
 type Opt struct {
 	value string
-	lable string
+	label string
 	style *AppStyle
 }
 
@@ -37,9 +37,9 @@ type AppElement struct {
 	checked     bool                                                // Checkbox, Radio checked. Select is open
 	gname       string                                              // Original name, required for radio buttons
 	offset      int                                                 // Select = indexSelected, Text = offset from the age id box smaller than maxlength
-	visible     bool                                                // Set element vibilility attribute
+	visible     bool                                                // Set element visibility attribute
 	iKey        int                                                 // Used to store temporary integer value
-	opts        []Opt                                               // Hold splited select data
+	opts        []Opt                                               // Hold split select data
 	microapp    *MicroApp
 	frame       *Frame
 	luacallback string
@@ -228,7 +228,7 @@ func (a *MicroApp) AddWindowElement(frame, name, label, form, value, valueType s
 		e.gname = name
 		e.name = name + strconv.Itoa(n)
 	}
-	// Calculate begin and end coordenates for the hotspot for element type
+	// Calculate begin and end coordinates for the hotspot for element type
 	r := []rune(label)
 	lblwidth := len(r)
 	if form == "label" || form == "button" {
@@ -268,7 +268,7 @@ func (a *MicroApp) AddWindowElement(frame, name, label, form, value, valueType s
 				opt[1] = opt[0]
 			}
 			vp.value = opt[0]
-			vp.lable = opt[1]
+			vp.label = opt[1]
 			e.opts = append(e.opts, vp)
 			if opt[0] == e.value {
 				e.offset = i
@@ -395,7 +395,7 @@ func (f *Frame) AddWindowButton(name, label, buttonType string, x, y int, callba
 // Element Methods
 // ------------------------------------------------
 
-//SetIndex set the index layer property of an element (0 - 5 layers)
+// SetIndex set the index layer property of an element (0 - 5 layers)
 func (f *Frame) SetIndex(k string, v int) {
 	e, ok := f.elements[k]
 	if !ok {
@@ -513,7 +513,7 @@ func (f *Frame) SetValue(k, v string) {
 	a.screen.Show()
 }
 
-//InsertStringAt Inserts string in current value at position X
+// InsertStringAt Inserts string in current value at position X
 func (e *AppElement) InsertStringAt(x int, clip string) {
 	a := e.microapp
 	var nr []rune
@@ -581,7 +581,7 @@ func (f *Frame) GetLabel(k string) string {
 	return e.label
 }
 
-// SetLabel set the lable property of an element
+// SetLabel set the label property of an element
 func (f *Frame) SetLabel(k, v string) {
 	e, ok := f.elements[k]
 	if !ok {
@@ -594,7 +594,7 @@ func (f *Frame) SetLabel(k, v string) {
 	lx := re.ReplaceAllString(e.label, "")
 	lx = strings.TrimRight(lx, " ")
 	if Count(vx) < Count(lx) {
-		// First overwrite n spaces to erease current lable
+		// First overwrite n spaces to erease current label
 		e.label = strings.Repeat(" ", Count(lx))
 		e.Draw()
 	}
@@ -932,7 +932,7 @@ func (e *AppElement) DrawSelect() {
 		if Y >= e.height {
 			break
 		}
-		label := []rune(fmt.Sprintf(ft, e.opts[i].lable) + chr)
+		label := []rune(fmt.Sprintf(ft, e.opts[i].label) + chr)
 		for N := 0; N < len(label); N++ {
 			a.screen.SetContent(e.aposb.X+N+f.left, e.aposb.Y+Y+f.top, label[N], nil, style)
 		}
@@ -993,7 +993,7 @@ func WordWrap(str string, w int) string {
 	return str1 + "\\N" + WordWrap(str2, w)
 }
 
-// Get the cursor positon from an absolut cursor position
+// Get the cursor position from an absolute cursor position
 func (e *AppElement) getECursorFromACursor() int {
 	a := e.microapp
 	f := e.frame
@@ -1147,7 +1147,7 @@ func (a *MicroApp) ResetFrames() {
 
 // Print Routines
 
-// Debug works with absolute coordenates
+// Debug works with absolute coordinates
 func (a *MicroApp) Debug(msg string, x, y int) {
 	a.PrintAbsolute(msg, x, y, nil)
 	a.screen.Show()
@@ -1287,7 +1287,7 @@ func (e *AppElement) SelectClickEvent(event string, x, y int) {
 			}
 		}
 
-		// Reset to height=1, hotspot, savew
+		// Reset to height=1, hotspot, save
 		if e.aposb.Y+e.height > f.maxheight {
 			RedrawAll(false)
 		}
@@ -1696,7 +1696,7 @@ func (e *AppElement) ProcessElementKey(key string, x, y int) {
 }
 
 // Check if event occurs on top of an element hotspot
-// If it does, dispatch the apropiate method
+// If it does, dispatch the appropriate method
 
 // CheckElementsActions find kind of event and pass action to the proper routine
 func (a *MicroApp) CheckElementsActions(event string, x, y int) bool {

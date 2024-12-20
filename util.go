@@ -7,7 +7,6 @@ import (
 
 	//"fmt"
 	"io"
-	"io/ioutil"
 	"net/http"
 	"os"
 	"os/user"
@@ -542,7 +541,7 @@ func DownLoadExtractZip(url, targetDir string) error {
 		return err
 	}
 	defer resp.Body.Close()
-	data, err := ioutil.ReadAll(resp.Body)
+	data, err := io.ReadAll(resp.Body)
 	if err != nil {
 		return err
 	}
@@ -626,7 +625,7 @@ func ExtractZip(data *[]byte, targetDir string) error {
 // GeTFileListFromPath gets a full file list from a path
 func GeTFileListFromPath(path, extension string) []string {
 	Files := []string{}
-	files, err := ioutil.ReadDir(path)
+	files, err := os.ReadDir(path)
 	if err != nil {
 		return nil
 	}
@@ -692,7 +691,7 @@ func WriteFileJSON(filename string, values map[string]string, parsedValues bool)
 	} else {
 		txt, _ = json.MarshalIndent(values, "", "    ")
 	}
-	err := ioutil.WriteFile(filename, append(txt, '\n'), 0644)
+	err := os.WriteFile(filename, append(txt, '\n'), 0644)
 	if err != nil {
 		return errors.New("Could not write " + filename)
 	}
@@ -704,7 +703,7 @@ func ReadFileJSON(filename string) (map[string]interface{}, error) {
 	var parsed map[string]interface{}
 
 	if _, e := os.Stat(filename); e == nil {
-		input, err := ioutil.ReadFile(filename)
+		input, err := os.ReadFile(filename)
 		if err != nil {
 			return parsed, err
 		}
@@ -811,7 +810,7 @@ func Slurp(path string) string {
 		return ""
 	}
 	defer file.Close()
-	b, err := ioutil.ReadAll(file)
+	b, err := io.ReadAll(file)
 	if err != nil {
 		return ""
 	}

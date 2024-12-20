@@ -5,7 +5,6 @@ import (
 	"encoding/json"
 	"errors"
 	"io"
-	"io/ioutil"
 	"os"
 	"reflect"
 	"strconv"
@@ -42,7 +41,7 @@ func InitGlobalSettings() {
 	filename := configDir + "/settings.json"
 	writeSettings := false
 	if _, e := os.Stat(filename); e == nil {
-		input, err := ioutil.ReadFile(filename)
+		input, err := os.ReadFile(filename)
 		if !strings.HasPrefix(string(input), "null") {
 			if err != nil {
 				TermMessage("error reading settings.json file: " + err.Error())
@@ -94,7 +93,7 @@ func InitLocalSettings(buf *Buffer) {
 	// 1.- Load Micro-Ide Settings
 	filename := configDir + "/settings.json"
 	if _, e := os.Stat(filename); e == nil {
-		input, err := ioutil.ReadFile(filename)
+		input, err := os.ReadFile(filename)
 		if err != nil {
 			TermMessage("error reading settings.json file: " + err.Error())
 			invalidSettings = true
@@ -171,7 +170,7 @@ func WriteSettings(filename string) error {
 			parsed[k] = v
 		}
 		if _, e := os.Stat(filename); e == nil {
-			input, err := ioutil.ReadFile(filename)
+			input, err := os.ReadFile(filename)
 			if string(input) != "null" {
 				if err != nil {
 					return err
@@ -194,7 +193,7 @@ func WriteSettings(filename string) error {
 		}
 
 		txt, _ := json.MarshalIndent(parsed, "", "    ")
-		err = ioutil.WriteFile(filename, append(txt, '\n'), 0600)
+		err = os.WriteFile(filename, append(txt, '\n'), 0600)
 		xerr := permbits.Chmod(filename, permbits.PermissionBits(0600))
 		if xerr != nil {
 			messenger.AddLog(xerr)

@@ -1,7 +1,6 @@
 package main
 
 import (
-	"io/ioutil"
 	"os"
 	"path/filepath"
 )
@@ -56,7 +55,7 @@ func (rf realFile) Name() string {
 }
 
 func (rf realFile) Data() ([]byte, error) {
-	return ioutil.ReadFile(string(rf))
+	return os.ReadFile(string(rf))
 }
 
 //func (af assetFile) Name() string {
@@ -79,7 +78,7 @@ func AddRuntimeFile(fileType string, file RuntimeFile) {
 // AddRuntimeFilesFromDirectory registers each file from the given directory for
 // the filetype which matches the file-pattern
 func AddRuntimeFilesFromDirectory(fileType, directory, pattern string) {
-	files, _ := ioutil.ReadDir(directory)
+	files, _ := os.ReadDir(directory)
 	for _, f := range files {
 		if ok, _ := filepath.Match(pattern, f.Name()); !f.IsDir() && ok {
 			fullPath := filepath.Join(directory, f.Name())
@@ -118,7 +117,7 @@ func InitRuntimeFiles() {
 	add(RTHelp, "help", "*.md")
 
 	// Search configDir for plugin-scripts
-	files, _ := ioutil.ReadDir(filepath.Join(configDir, "plugins"))
+	files, _ := os.ReadDir(filepath.Join(configDir, "plugins"))
 	for _, f := range files {
 		realpath, _ := filepath.EvalSymlinks(filepath.Join(configDir, "plugins", f.Name()))
 		realpathStat, _ := os.Stat(realpath)

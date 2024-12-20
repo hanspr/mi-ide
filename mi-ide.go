@@ -3,7 +3,7 @@ package main
 import (
 	"flag"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"os"
 	"path/filepath"
 	"runtime"
@@ -182,7 +182,7 @@ func LoadInput() []*Buffer {
 		// Option 2
 		// The input is not a terminal, so something is being piped in
 		// and we should read from stdin
-		input, err = ioutil.ReadAll(os.Stdin)
+		input, err = io.ReadAll(os.Stdin)
 		if err != nil {
 			TermMessage("Error reading from stdin: ", err)
 			input = []byte{}
@@ -687,7 +687,7 @@ func main() {
 						// Happened during a search lock, release Search
 						ExitSearch(CurView())
 					} else if y >= h-2 {
-						// Ignore clicks on satus and message area
+						// Ignore clicks on status and message area
 						didAction = true
 					}
 					if !didAction {
