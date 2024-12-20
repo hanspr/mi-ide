@@ -129,6 +129,8 @@ func (m *Messenger) Alert(kind string, msg ...interface{}) {
 			if _, ok := colorscheme["error-message"]; ok {
 				m.style = colorscheme["error-message"]
 			}
+		} else if kind == "warning" {
+			m.style = defStyle.Foreground(tcell.ColorYellow).Normal()
 		} else if kind == "success" {
 			m.style = defStyle.Foreground(tcell.ColorGreen).Normal()
 		} else if kind == "info" {

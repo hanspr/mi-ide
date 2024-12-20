@@ -129,7 +129,7 @@ func (sline *Statusline) Display() {
 	file += fmt.Sprintf(" %6s/%s,%-4s ", lineNum, totColumn, columnNum)
 
 	// bellow 69 columns begin hidding information
-	if w > 69 {
+	if w > 69 && MouseEnabled {
 		var ff string
 
 		sline.hotspot["BUFFERSET"] = Loc{Count(file) + offset, Count(file) + offset + 2}

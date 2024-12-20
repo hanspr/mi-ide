@@ -119,6 +119,7 @@ var bindingActions = map[string]func(*View, bool) bool{
 	"UploadToCloud":     (*View).UploadToCloud,
 	"DownloadFromCloud": (*View).DownloadFromCloud,
 	"CloudSettings":     (*View).CloudSettings,
+	"ToggleMouse":       (*View).ToggleMouse,
 }
 
 var bindingMouse = map[string]tcell.ButtonMask{
@@ -555,6 +556,7 @@ func DefaultBindings() map[string]string {
 		"CtrlD":         "DuplicateLine",
 		"CtrlV":         "Paste",
 		"CtrlA":         "SelectAll",
+		"CtrlP":         "ToggleMouse",
 		"Home":          "StartOfLine",
 		"End":           "EndOfLine",
 		"PageUp":        "CursorPageUp",

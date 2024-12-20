@@ -124,6 +124,8 @@ var (
 
 	currEnv appEnv
 
+	MouseEnabled = false
+
 	cloudPath = "https://api.mi-ide.com:60443" // Cloud service url
 )
 
@@ -290,12 +292,7 @@ func InitScreen() {
 		os.Setenv("TERM", oldTerm)
 	}
 
-	if GetGlobalOption("mouse").(bool) {
-		screen.EnableMouse()
-	}
-
 	os.Setenv("TCELLDB", tcelldb)
-
 }
 
 // RedrawAll redraws everything -- all the views and the messenger
@@ -377,6 +374,7 @@ var flagOptions = flag.Bool("options", false, "Show all option help")
 func MicroAppStop() {
 	apprunning = nil
 	MicroToolBar.FixTabsIconArea()
+	MouseOnOff(false)
 }
 
 func main() {
@@ -683,44 +681,45 @@ func main() {
 					didAction = true
 				} else if Mouse.Click && Mouse.Button == 1 {
 					// Mouse 1 click events only
-					if searching {
-						// Happened during a search lock, release Search
-						ExitSearch(CurView())
-					} else if y >= h-2 {
+					// if searching {
+					// Happened during a search lock, release Search
+					// ExitSearch(CurView())
+					// } else if y >= h-2 {
+					if y >= h-2 {
 						// Ignore clicks on status and message area
 						didAction = true
 					}
-					if !didAction {
-						num := CurView().Num
-						// Set current view
-						// We loop through each view in the current tab and make sure the current view
-						// is the one being clicked in
-						for _, v := range tabs[curTab].Views {
-							if x >= v.x && x < v.x+v.Width && y >= v.y && y < v.y+v.Height {
-								tabs[curTab].CurView = v.Num
-								if num != v.Num {
-									v.moveMousePosition(x, y)
-								}
-							}
-						}
-					}
-				} else if button == tcell.WheelUp || button == tcell.WheelDown {
-					// Scroll event
-					didAction = true
-					// Some terminal send the event twice others not!
-					// Patch for that, don't know in how many it will work
-					if strings.Count(e.EscSeq(), "[") > 1 {
-						break
-					}
-					var view *View
-					for _, v := range tabs[curTab].Views {
-						if x >= v.x && x < v.x+v.Width && y >= v.y && y < v.y+v.Height {
-							view = tabs[curTab].Views[v.Num]
-						}
-					}
-					if view != nil {
-						view.HandleEvent(e)
-					}
+					// if !didAction {
+					// 	num := CurView().Num
+					// 	// Set current view
+					// 	// We loop through each view in the current tab and make sure the current view
+					// 	// is the one being clicked in
+					// 	for _, v := range tabs[curTab].Views {
+					// 		if x >= v.x && x < v.x+v.Width && y >= v.y && y < v.y+v.Height {
+					// 			tabs[curTab].CurView = v.Num
+					// 			if num != v.Num {
+					// 				v.moveMousePosition(x, y)
+					// 			}
+					// 		}
+					// 	}
+					// }
+					// } else if button == tcell.WheelUp || button == tcell.WheelDown {
+					// 	// Scroll event
+					// 	didAction = true
+					// 	// Some terminal send the event twice others not!
+					// 	// Patch for that, don't know in how many it will work
+					// 	if strings.Count(e.EscSeq(), "[") > 1 {
+					// 		break
+					// 	}
+					// 	var view *View
+					// 	for _, v := range tabs[curTab].Views {
+					// 		if x >= v.x && x < v.x+v.Width && y >= v.y && y < v.y+v.Height {
+					// 			view = tabs[curTab].Views[v.Num]
+					// 		}
+					// 	}
+					// 	if view != nil {
+					// 		view.HandleEvent(e)
+					// 	}
 				} else {
 					if y >= h-1 {
 						// Ignore moves at the message area

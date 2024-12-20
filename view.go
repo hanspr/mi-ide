@@ -691,6 +691,8 @@ func (v *View) HandleEvent(event tcell.Event) {
 			// Check viewtype if readonly don't insert a rune (readonly help and log view etc.)
 			if v.Type.Readonly {
 				messenger.Alert("error", Language.Translate("File is readonly"))
+			} else if MouseEnabled {
+				messenger.Alert("warning", "Exit mouse mode to edit")
 			} else {
 				isSelection := false
 				var cursorSelection [2]Loc

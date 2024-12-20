@@ -257,7 +257,6 @@ func DefaultGlobalSettings() map[string]interface{} {
 		"mi-key":         "",
 		"mi-pass":        "",
 		"mi-phrase":      "",
-		"mouse":          true,
 		"pluginchannels": []string{"https://raw.githubusercontent.com/mi-ide/plugin-channel/master/channel.json"},
 		"pluginrepos":    []string{},
 		"rmtrailingws":   false,
@@ -372,14 +371,6 @@ func SetOption(option, value string) error {
 
 	for _, tab := range tabs {
 		tab.Resize()
-	}
-
-	if option == "mouse" {
-		if !nativeValue.(bool) {
-			screen.DisableMouse()
-		} else {
-			screen.EnableMouse()
-		}
 	}
 
 	if len(tabs) != 0 {

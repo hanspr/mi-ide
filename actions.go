@@ -2599,3 +2599,27 @@ func (v *View) CloudSettings(plugin bool) bool {
 	micromenu.MiCloudSync()
 	return true
 }
+
+// Mouse Toggle
+func (v *View) ToggleMouse(usePlugin bool) bool {
+	if MouseEnabled {
+		messenger.Alert("success", "Mouse mode off")
+		screen.DisableMouse()
+	} else {
+		messenger.Alert("warning", "Mouse mode on")
+		screen.EnableMouse()
+	}
+	MouseEnabled = !MouseEnabled
+	return true
+}
+
+func MouseOnOff(b bool) {
+	if b {
+		messenger.Alert("warning", "Mouse mode on")
+		screen.EnableMouse()
+	} else {
+		messenger.Alert("success", "Mouse mode off")
+		screen.DisableMouse()
+	}
+	MouseEnabled = b
+}
