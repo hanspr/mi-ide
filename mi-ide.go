@@ -126,7 +126,7 @@ var (
 
 	MouseEnabled = false
 
-	cloudPath = "https://api.mi-ide.com:60443" // Cloud service url
+	cloudPath = "https://clip.microflow.com" // Cloud service url
 )
 
 // LoadInput determines which files should be loaded into buffers
