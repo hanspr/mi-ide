@@ -137,9 +137,9 @@ func (sline *Statusline) Display() {
 
 		// Create hotspots for status line events
 		if sline.view.Buf.Settings["indentchar"] == "\t" {
-			ff = "Tab"
+			ff = "Tab "
 		} else {
-			ff = "Spc"
+			ff = "Spc "
 		}
 		ff = fmt.Sprintf("%-4s%-2d▴", ff, int(sline.view.Buf.Settings["tabsize"].(float64)))
 		sline.hotspot["TABSPACE"] = Loc{Count(file) + offset, Count(file) + offset + Count(ff) - 1}
@@ -154,6 +154,20 @@ func (sline *Statusline) Display() {
 
 		sline.hotspot["ENCODER"] = Loc{Count(file) + offset - 1, Count(file) + offset + 1 + Count(sline.view.Buf.encoder)}
 		file += sline.view.Buf.encoder + " ▴"
+	} else if !MouseEnabled {
+		var ff string
+
+		file += " ⎈ "
+		if sline.view.Buf.Settings["indentchar"] == "\t" {
+			ff = "tab "
+		} else {
+			ff = "spc "
+		}
+		file += fmt.Sprintf("%-4s%-2d", ff, int(sline.view.Buf.Settings["tabsize"].(float64))) + "| "
+		file += sline.view.Buf.FileType() + " | "
+		file += fmt.Sprintf("%-4s", sline.view.Buf.Settings["fileformat"].(string)) + " | "
+		file += sline.view.Buf.encoder + " |"
+		showbuttons = false
 	} else {
 		showbuttons = false
 	}
