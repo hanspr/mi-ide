@@ -1973,6 +1973,7 @@ func (a *MicroApp) New(name string) {
 // Start start the application
 func (a *MicroApp) Start() {
 	a.DrawAll()
+	MouseOnOff(true)
 	a.screen.HideCursor()
 	a.screen.Show()
 }
