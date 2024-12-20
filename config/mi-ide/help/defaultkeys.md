@@ -11,7 +11,7 @@ Be aware that Alt-A and Alt-a are considered different key combinations, but
 Ctrl-A and Ctrl-a are the same key combination, the terminal looks at it as
 Ctrl-A
 
-### Function keys, and alternatives
+## Function keys, and alternatives
 
 | Key       :| Description of function                  |
 |------------|------------------------------------------|
@@ -28,6 +28,7 @@ Ctrl-A
 | F8         | Move to next Tab                         |
 | F9-F12     | Keys reserved for plug-ins               |
 | Alt-[1-0]  | Keys reserved for plug-ins               |
+| Ctrl-P     | Toggle Mouse mode enabled,disabled       |
 
 ### Navigation
 
