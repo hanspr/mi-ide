@@ -23,7 +23,7 @@ rules:
     - symbol.tag: "/[^/\\\\]*(?:\\\\.[^/\\\\]*)*/([^/\\\\]*(?:\\\\.[^/\\\\]*)*/)?"
     - symbol.tag: "[ms][\\|#!][^/\\\\]*(?:\\\\.[^/\\\\]*)*[\\|#!]([^/\\\\]*(?:\\\\.[^/\\\\]*)*[\\|#!])?"
     - constant.string: "\"[^\"\\\\]*(?:\\\\.[^\"\\\\]*)*\""
-    - constant.string: "qq[“°].*“"
+    - constant.string: "qq[“°].*[“°]"
     - statement: "\\b(insert|into|values|update|set|delete|select|from|where|and|or|isnull|join|left|right|outer|as|order by|limit|distinct|on)\\b"
     - identifier.var: "[\\$@%]\\$*[\\p{L}\\p{N}_]*"
     - identifier.var: "\\$+\\{[\\p{L}\\p{N}_]+\\}"
