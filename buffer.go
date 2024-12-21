@@ -125,12 +125,18 @@ func (b *Buffer) GetFileSettings(filename string) {
 	}
 	b.encoder = "UTF8"
 	// Find last encoding used for this file
-	cachename := filename + ".settings"
-	cachename = configDir + "/buffers/" + strings.ReplaceAll(cachename, "/", "")
-	settings, jerr := ReadFileJSON(cachename)
+	setpath := filename + ".settings"
+	setpath = configDir + "/buffers/" + strings.ReplaceAll(setpath, "/", "")
+	settings, jerr := ReadFileJSON(setpath)
 	if jerr == nil {
 		if settings["encoder"] != nil {
 			b.encoder = settings["encoder"].(string)
+		}
+		if settings["blockopen"] == nil {
+			settings["blockopen"] = ""
+		}
+		if settings["blockclose"] == nil {
+			settings["blockclose"] = ""
 		}
 	}
 }
@@ -473,7 +479,7 @@ func (b *Buffer) SmartIndent(Start, Stop Loc, once bool) {
 		Ys = 0
 	} else {
 		// Look back for the first line that is not empty, is not a comment, get that indentation as reference
-		comment := regexp.MustCompile(`^(#|//|(<!)?--|/\*)`)
+		comment := regexp.MustCompile(`^(?:#|//|(?:<!)?--|/\*)`)
 		for y := Ys; y >= 0; y-- {
 			l := b.Line(y)
 			if len(l) > 0 && !comment.MatchString(l) {

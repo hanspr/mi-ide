@@ -2605,7 +2605,6 @@ func (v *View) ToggleMouse(usePlugin bool) bool {
 	if MouseEnabled {
 		screen.DisableMouse()
 	} else {
-		messenger.Alert("warning", "Mouse mode on")
 		screen.EnableMouse()
 	}
 	MouseEnabled = !MouseEnabled
@@ -2614,10 +2613,14 @@ func (v *View) ToggleMouse(usePlugin bool) bool {
 
 func MouseOnOff(b bool) {
 	if b {
-		messenger.Alert("warning", "Mouse mode on")
 		screen.EnableMouse()
 	} else {
 		screen.DisableMouse()
 	}
 	MouseEnabled = b
+}
+
+func (v *View) BufferSettings(usePlugin bool) bool {
+	micromenu.SelLocalSettings(v.Buf)
+	return true
 }
