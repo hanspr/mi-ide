@@ -2603,7 +2603,6 @@ func (v *View) CloudSettings(plugin bool) bool {
 // Mouse Toggle
 func (v *View) ToggleMouse(usePlugin bool) bool {
 	if MouseEnabled {
-		messenger.Alert("success", "Mouse mode off")
 		screen.DisableMouse()
 	} else {
 		messenger.Alert("warning", "Mouse mode on")
@@ -2618,7 +2617,6 @@ func MouseOnOff(b bool) {
 		messenger.Alert("warning", "Mouse mode on")
 		screen.EnableMouse()
 	} else {
-		messenger.Alert("success", "Mouse mode off")
 		screen.DisableMouse()
 	}
 	MouseEnabled = b
