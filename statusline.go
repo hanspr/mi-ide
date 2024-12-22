@@ -149,10 +149,10 @@ func (sline *Statusline) Display() {
 		file += sline.view.Buf.FileType() + " ▴"
 
 		ff = fmt.Sprintf("%-4s", sline.view.Buf.Settings["fileformat"].(string))
-		sline.hotspot["FILEFORMAT"] = Loc{Count(file) + offset, Count(file) + offset + 5}
-		file += " " + ff + " "
+		sline.hotspot["FILEFORMAT"] = Loc{Count(file) + offset, Count(file) + offset + 6}
+		file += " " + ff + "   "
 
-		sline.hotspot["ENCODER"] = Loc{Count(file) + offset - 1, Count(file) + offset + 1 + Count(sline.view.Buf.encoder)}
+		sline.hotspot["ENCODER"] = Loc{Count(file) + offset - 2, Count(file) + offset + 1 + Count(sline.view.Buf.encoder)}
 		file += sline.view.Buf.encoder + " ▴"
 	} else if !MouseEnabled {
 		var ff string
