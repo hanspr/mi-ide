@@ -111,6 +111,7 @@ var bindingActions = map[string]func(*View, bool) bool{
 	"SkipMultiCursor":        (*View).SkipMultiCursor,
 	"JumpToMatchingBrace":    (*View).JumpToMatchingBrace,
 	"OpenDirView":            (*View).OpenDirView,
+	"BufferSettings":         (*View).BufferSettings,
 
 	// This was changed to InsertNewline but I don't want to break backwards compatibility
 	"InsertEnter": (*View).InsertNewline,
@@ -589,7 +590,7 @@ func DefaultBindings() map[string]string {
 		"Alt-K":     "DeleteLine",
 		"Alt-V":     "VSplit",
 		"Alt-H":     "HSplit",
-		"Alt-L":     "ToggleCase",
+		"Alt-Y":     "ToggleCase",
 		"Alt-Enter": "EndOfLine,InsertNewline",
 		"CtrlJ":     "EndOfLine,InsertNewline",
 		"Alt-j":     "CursorLeft",
@@ -600,6 +601,12 @@ func DefaultBindings() map[string]string {
 		"Alt-o":     "CursorPageDown",
 		"Alt-I":     "ToggleOverwriteMode",
 		"Alt-B":     "BufferSettings",
+		"Alt-L":     "SelectWordRight",
+		"Alt-J":     "SelectWordLeft",
+		"Alt-U":     "SelectLeft",
+		"Alt-O":     "SelectRight",
+		"Alt-h":     "StartOfLine",
+		"Alt-e":     "EndOfLine",
 
 		// Mouse bindings
 		"MouseWheelUp":   "ScrollUp",
