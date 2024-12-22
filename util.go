@@ -47,39 +47,23 @@ func toRunes(b []byte) []rune {
 	return runes
 }
 
-//func sliceStart(slc []byte, index int) []byte {
-//	len := len(slc)
-//	i := 0
-//	totalSize := 0
-//	for totalSize < len {
-//		if i >= index {
-//			return slc[totalSize:]
-//		}
-//
-//		_, size := utf8.DecodeRune(slc[totalSize:])
-//		totalSize += size
-//		i++
-//	}
-//
-//	return slc[totalSize:]
-//}
+// Remove everything to the end starting from index
+func sliceEnd(slc []byte, index int) []byte {
+	len := len(slc)
+	i := 0
+	totalSize := 0
+	for totalSize < len {
+		if i >= index {
+			return slc[:totalSize]
+		}
 
-// func sliceEnd(slc []byte, index int) []byte {
-// 	len := len(slc)
-// 	i := 0
-// 	totalSize := 0
-// 	for totalSize < len {
-// 		if i >= index {
-// 			return slc[:totalSize]
-// 		}
+		_, size := utf8.DecodeRune(slc[totalSize:])
+		totalSize += size
+		i++
+	}
 
-// 		_, size := utf8.DecodeRune(slc[totalSize:])
-// 		totalSize += size
-// 		i++
-// 	}
-
-// 	return slc[:totalSize]
-// }
+	return slc[:totalSize]
+}
 
 // NumOccurrences counts the number of occurrences of a byte in a string
 func NumOccurrences(s string, c byte) int {
