@@ -523,7 +523,6 @@ func DefaultBindings() map[string]string {
 		"ShiftPageUp":   "SelectPageUp",
 		"ShiftPageDown": "SelectPageDown",
 		"Enter":         "InsertNewline",
-		"Tab":           "IndentSelection,InsertTab",
 		"Backtab":       "OutdentSelection,OutdentLine",
 		"Home":          "StartOfLine",
 		"End":           "EndOfLine",
@@ -601,6 +600,8 @@ func DefaultBindings() map[string]string {
 		"Alt-?":     "command-edit:help ",
 		"Alt-Enter": "EndOfLine,InsertNewline",
 		"Esc":       "Escape",
+		"Tab":       "IndentSelection,InsertTab",
+		"Alt-r":     "IndentSelection,InsertTab",
 
 		// Mouse bindings
 		"MouseWheelUp":   "ScrollUp",
