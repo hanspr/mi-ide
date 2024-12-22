@@ -1770,48 +1770,6 @@ func (v *View) CursorPageDown(usePlugin bool) bool {
 	return true
 }
 
-// HalfPageUp scrolls the view up half a page
-//func (v *View) HalfPageUp(usePlugin bool) bool {
-//	if v.mainCursor() {
-//		if usePlugin && !PreActionCall("HalfPageUp", v) {
-//			return false
-//		}
-
-//		if v.Topline > v.Height/2 {
-//			v.ScrollUp(v.Height / 2)
-//		} else {
-//			v.Topline = 0
-//		}
-
-//		if usePlugin {
-//			return PostActionCall("HalfPageUp", v)
-//		}
-//	}
-//	return false
-//}
-
-// HalfPageDown scrolls the view down half a page
-//func (v *View) HalfPageDown(usePlugin bool) bool {
-//	if v.mainCursor() {
-//		if usePlugin && !PreActionCall("HalfPageDown", v) {
-//			return false
-//		}
-
-//		if v.Buf.NumLines-(v.Topline+v.Height) > v.Height/2 {
-//			v.ScrollDown(v.Height / 2)
-//		} else {
-//			if v.Buf.NumLines >= v.Height {
-//				v.Topline = v.Buf.NumLines - v.Height
-//			}
-//		}
-
-//		if usePlugin {
-//			return PostActionCall("HalfPageDown", v)
-//		}
-//	}
-//	return false
-//}
-
 // ToggleRuler turns line numbers off and on
 func (v *View) ToggleRuler(usePlugin bool) bool {
 	if v.mainCursor() {
@@ -2625,5 +2583,10 @@ func MouseOnOff(b bool) {
 
 func (v *View) BufferSettings(usePlugin bool) bool {
 	micromenu.SelLocalSettings(v.Buf)
+	return true
+}
+
+func (v *View) NotImplemented(usePlugin bool) bool {
+	messenger.Alert("Not implemented")
 	return true
 }
