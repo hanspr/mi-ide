@@ -566,8 +566,7 @@ func DefaultBindings() map[string]string {
 		"CtrlK":     "CutLine",
 		"CtrlL":     "Center",
 		"CtrlN":     "NotImplemented", // free
-		"CtrlO":     "ToggleOverwriteMode",
-		"Insert":    "ToggleOverwriteMode",
+		"CtrlO":     "OpenFile",
 		"CtrlP":     "ToggleMouse",
 		"CtrlQ":     "QuitAll",
 		"CtrlR":     "SearchDialog",
@@ -602,6 +601,7 @@ func DefaultBindings() map[string]string {
 		"Esc":       "Escape",
 		"Tab":       "IndentSelection,InsertTab",
 		"Alt-r":     "IndentSelection,InsertTab",
+		"Insert":    "ToggleOverwriteMode",
 
 		// Mouse bindings
 		"MouseWheelUp":   "ScrollUp",
