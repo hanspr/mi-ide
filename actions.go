@@ -7,6 +7,7 @@ import (
 	"strconv"
 	"strings"
 	"time"
+	"unicode/utf8"
 
 	"github.com/hanspr/tcell"
 	lua "github.com/yuin/gopher-lua"
@@ -810,53 +811,6 @@ func (v *View) InsertNewline(usePlugin bool) bool {
 	return true
 }
 
-// Backspace deletes the previous character
-func (v *View) Backspace(usePlugin bool) bool {
-	if usePlugin && !PreActionCall("Backspace", v) {
-		return false
-	}
-
-	// Remove autoclose here
-	if v.Buf.Settings["autoclose"].(bool) && v.Cursor.X > 0 && v.Cursor.X < len(v.Buf.LineRunes(v.Cursor.Y)) {
-		n := strings.Index(autocloseClose, string(v.Buf.LineRunes(v.Cursor.Y)[v.Cursor.X:v.Cursor.X+1]))
-		m := strings.Index(autocloseOpen, string(v.Buf.LineRunes(v.Cursor.Y)[v.Cursor.X-1:v.Cursor.X]))
-		if n >= 0 && m == n {
-			v.Delete(false)
-		}
-	}
-
-	// Delete a character
-	if v.Cursor.HasSelection() {
-		v.Cursor.DeleteSelection()
-		v.Cursor.ResetSelection()
-	} else if v.Cursor.Loc.GreaterThan(v.Buf.Start()) {
-		// Cursor Left, then Delete
-		v.CursorLeft(false)
-		v.Delete(false)
-		// lineStart := sliceEnd(v.Buf.LineBytes(v.Cursor.Y), v.Cursor.X)
-		// tabSize := int(v.Buf.Settings["tabsize"].(float64))
-		// loc := v.Cursor.Loc
-		// if v.Buf.Settings["tabstospaces"].(bool) && IsSpaces(lineStart) && utf8.RuneCount(lineStart) != 0 && utf8.RuneCount(lineStart)%tabSize == 0 {
-		// 	nloc := new(Loc)
-		// 	nloc.X = loc.X
-		// 	nloc.Y = loc.Y
-		// 	for i := 1; i <= tabSize; i++ {
-		// 		*nloc = nloc.left(v.Buf)
-		// 	}
-		// 	v.Buf.Remove(*nloc, loc)
-		// } else {
-		// 	v.Buf.Remove(loc.left(v.Buf), loc)
-		// }
-	}
-	v.savedLoc = v.Cursor.Loc
-	v.Cursor.LastVisualX = v.Cursor.GetVisualX()
-
-	if usePlugin {
-		return PostActionCall("Backspace", v)
-	}
-	return true
-}
-
 // DeleteWordRight deletes the word to the right of the cursor
 func (v *View) DeleteWordRight(usePlugin bool) bool {
 	if usePlugin && !PreActionCall("DeleteWordRight", v) {
@@ -895,6 +849,51 @@ func (v *View) DeleteWordLeft(usePlugin bool) bool {
 	return true
 }
 
+// Backspace deletes the previous character
+func (v *View) Backspace(usePlugin bool) bool {
+	if usePlugin && !PreActionCall("Backspace", v) {
+		return false
+	}
+
+	// Remove autoclose here
+	if v.Buf.Settings["autoclose"].(bool) && v.Cursor.X > 0 && v.Cursor.X < len(v.Buf.LineRunes(v.Cursor.Y)) {
+		n := strings.Index(autocloseClose, string(v.Buf.LineRunes(v.Cursor.Y)[v.Cursor.X:v.Cursor.X+1]))
+		m := strings.Index(autocloseOpen, string(v.Buf.LineRunes(v.Cursor.Y)[v.Cursor.X-1:v.Cursor.X]))
+		if n >= 0 && m == n {
+			v.Delete(false)
+		}
+	}
+
+	// Delete a character
+	if v.Cursor.HasSelection() {
+		v.Cursor.DeleteSelection()
+		v.Cursor.ResetSelection()
+	} else if v.Cursor.Loc.GreaterThan(v.Buf.Start()) {
+		// Cursor Left, then Delete
+		lineStart := sliceEnd(v.Buf.LineBytes(v.Cursor.Y), v.Cursor.X)
+		tabSize := int(v.Buf.Settings["tabsize"].(float64))
+		loc := v.Cursor.Loc
+		if v.Buf.Settings["tabstospaces"].(bool) && IsSpaces(lineStart) && utf8.RuneCount(lineStart) != 0 && utf8.RuneCount(lineStart)%tabSize == 0 {
+			nloc := new(Loc)
+			nloc.X = loc.X
+			nloc.Y = loc.Y
+			for i := 1; i <= tabSize; i++ {
+				*nloc = nloc.left(v.Buf)
+			}
+			v.Buf.Remove(*nloc, loc)
+		} else {
+			v.Buf.Remove(loc.left(v.Buf), loc)
+		}
+	}
+	v.savedLoc = v.Cursor.Loc
+	v.Cursor.LastVisualX = v.Cursor.GetVisualX()
+
+	if usePlugin {
+		return PostActionCall("Backspace", v)
+	}
+	return true
+}
+
 // Delete deletes the next character
 func (v *View) Delete(usePlugin bool) bool {
 	if usePlugin && !PreActionCall("Delete", v) {
@@ -905,8 +904,12 @@ func (v *View) Delete(usePlugin bool) bool {
 		v.Cursor.DeleteSelection()
 		v.Cursor.ResetSelection()
 	} else {
+		tabSize := int(v.Buf.Settings["tabsize"].(float64))
 		loc := v.Cursor.Loc
-		if loc.LessThan(v.Buf.End()) {
+		lineStart := sliceEnd(v.Buf.LineBytes(v.Cursor.Y), v.Cursor.X+tabSize)
+		if v.Cursor.X%tabSize == 0 && v.Buf.Settings["tabstospaces"].(bool) && IsSpaces(lineStart) && utf8.RuneCount(lineStart)%tabSize == 0 {
+			v.Buf.Remove(loc, loc.Move(tabSize, v.Buf))
+		} else if loc.LessThan(v.Buf.End()) {
 			v.Buf.Remove(loc, loc.Move(1, v.Buf))
 		}
 	}
