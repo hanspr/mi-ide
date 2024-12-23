@@ -544,8 +544,8 @@ func DefaultBindings() map[string]string {
 		"Alt-O":         "SelectWordRight",
 		"Alt-I":         "SelectUp",
 		"Alt-K":         "SelectDown",
-		"Alt-h":         "StartOfLine",
-		"Alt-e":         "EndOfLine",
+		"Alt-y":         "StartOfLine",
+		"Alt-h":         "EndOfLine",
 		"Alt-{":         "ParagraphPrevious",
 		"Alt-}":         "ParagraphNext",
 		"Alt-Y":         "MoveLinesUp",
@@ -600,7 +600,7 @@ func DefaultBindings() map[string]string {
 		"Alt-Enter": "EndOfLine,InsertNewline",
 		"Esc":       "Escape",
 		"Tab":       "IndentSelection,InsertTab",
-		"Alt-r":     "IndentSelection,InsertTab",
+		"Alt-t":     "IndentSelection,InsertTab",
 		"Insert":    "ToggleOverwriteMode",
 
 		// Mouse bindings
@@ -637,10 +637,10 @@ func DefaultBindings() map[string]string {
 		"Alt-;": "SkipMultiCursor",
 
 		// Micro-ide services
-		"Alt-c": "CopyToCloud",
 		"Alt-x": "CutToCloud",
+		"Alt-c": "CopyToCloud",
 		"Alt-v": "PasteCloud",
-		"Alt-t": "UploadToCloud",
+		"Alt-f": "UploadToCloud",
 		"Alt-d": "DownloadFromCloud",
 		"Alt-+": "CloudSettings",
 	}
