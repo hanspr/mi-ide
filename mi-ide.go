@@ -126,6 +126,8 @@ var (
 
 	MouseEnabled = false
 
+	NavigationMode = false
+
 	cloudPath = "https://clip.microflow.com.mx:8443" // Cloud service url
 )
 

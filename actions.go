@@ -2590,3 +2590,9 @@ func (v *View) NotImplemented(usePlugin bool) bool {
 	messenger.Alert("Not implemented")
 	return true
 }
+
+func (v *View) NavigationMode(usePlugin bool) bool {
+	MouseOnOff(false)
+	NavigationMode = !NavigationMode
+	return true
+}

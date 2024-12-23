@@ -634,6 +634,9 @@ func (v *View) HandleEvent(event tcell.Event) {
 
 	switch e := event.(type) {
 	case *tcell.EventRaw:
+		if NavigationMode {
+			return
+		}
 		for key, actions := range bindings {
 			if key.keyCode == -1 {
 				if e.EscSeq() == key.escape {
@@ -654,45 +657,50 @@ func (v *View) HandleEvent(event tcell.Event) {
 	case *tcell.EventKey:
 		// Check first if input is a key binding, if it is we 'eat' the input and don't insert a rune
 		isBinding := false
-		for key, actions := range bindings {
-			if e.Key() == key.keyCode {
-				if e.Key() == tcell.KeyRune {
-					if e.Rune() != key.r {
-						continue
-					}
-				}
-				if e.Modifiers() == key.modifiers {
-					var cursors []*Cursor
-					if len(v.Buf.cursors) > 1 && e.Name() == "Enter" {
-						// Multicursor, newline. Reverse cursor order so it works
-						for i := len(v.Buf.cursors) - 1; i >= 0; i-- {
-							cursors = append(cursors, v.Buf.cursors[i])
+		if NavigationMode && e.Name() == "Esc" {
+			v.NavigationMode(true)
+			return
+		} else {
+			for key, actions := range bindings {
+				if e.Key() == key.keyCode {
+					if e.Key() == tcell.KeyRune {
+						if e.Rune() != key.r {
+							continue
 						}
-					} else {
-						cursors = v.Buf.cursors
 					}
-					for _, c := range cursors {
-						ok := v.SetCursor(c)
-						if !ok {
-							break
+					if e.Modifiers() == key.modifiers || NavigationMode {
+						var cursors []*Cursor
+						if len(v.Buf.cursors) > 1 && e.Name() == "Enter" {
+							// Multicursor, newline. Reverse cursor order so it works
+							for i := len(v.Buf.cursors) - 1; i >= 0; i-- {
+								cursors = append(cursors, v.Buf.cursors[i])
+							}
+						} else {
+							cursors = v.Buf.cursors
 						}
-						relocate = false
-						isBinding = true
-						relocate = v.ExecuteActions(actions) || relocate
+						for _, c := range cursors {
+							ok := v.SetCursor(c)
+							if !ok {
+								break
+							}
+							relocate = false
+							isBinding = true
+							relocate = v.ExecuteActions(actions) || relocate
+						}
+						v.SetCursor(&v.Buf.Cursor)
+						v.Buf.MergeCursors()
+						break
 					}
-					v.SetCursor(&v.Buf.Cursor)
-					v.Buf.MergeCursors()
-					break
 				}
 			}
 		}
-
 		if !isBinding && e.Key() == tcell.KeyRune {
 			// Check viewtype if readonly don't insert a rune (readonly help and log view etc.)
 			if v.Type.Readonly {
 				messenger.Alert("error", Language.Translate("File is readonly"))
-			} else if MouseEnabled {
-				messenger.Alert("warning", "Exit mouse mode to edit")
+				return
+			} else if NavigationMode || MouseEnabled {
+				return
 			} else {
 				isSelection := false
 				var cursorSelection [2]Loc

@@ -112,6 +112,7 @@ var bindingActions = map[string]func(*View, bool) bool{
 	"JumpToMatchingBrace":    (*View).JumpToMatchingBrace,
 	"OpenDirView":            (*View).OpenDirView,
 	"BufferSettings":         (*View).BufferSettings,
+	"NavigationMode":         (*View).NavigationMode,
 
 	// This was changed to InsertNewline but I don't want to break backwards compatibility
 	"InsertEnter": (*View).InsertNewline,
@@ -548,8 +549,10 @@ func DefaultBindings() map[string]string {
 		"Alt-h":         "EndOfLine",
 		"Alt-{":         "ParagraphPrevious",
 		"Alt-}":         "ParagraphNext",
-		"Alt-Y":         "MoveLinesUp",
-		"Alt-H":         "MoveLinesDown",
+		"Alt-e":         "MoveLinesUp",
+		"Alt-r":         "MoveLinesDown",
+		"Alt-H":         "SelectToEndOfLine",
+		"Alt-Y":         "SelectToStartOfLine",
 		"Alt-Backspace": "DeleteWordLeft",
 
 		// Control Keys
@@ -565,7 +568,7 @@ func DefaultBindings() map[string]string {
 		"CtrlJ":     "DeleteLine",
 		"CtrlK":     "CutLine",
 		"CtrlL":     "Center",
-		"CtrlN":     "NotImplemented", // free
+		"CtrlN":     "NavigationMode",
 		"CtrlO":     "OpenFile",
 		"CtrlP":     "ToggleMouse",
 		"CtrlQ":     "QuitAll",

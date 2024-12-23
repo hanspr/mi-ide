@@ -215,6 +215,9 @@ func (sline *Statusline) Display() {
 	}
 	for x := 0; x < w; x++ {
 		tStyle := statusLineStyle
+		if NavigationMode {
+			tStyle = StringToStyle("#ffffff,#A90000")
+		}
 		if showbuttons {
 			if sline.hotspot["BUFFERSET"].X-offset <= x && x <= sline.hotspot["BUFFERSET"].Y-offset && active {
 				tStyle = StringToStyle("#ffffff,#585858")
