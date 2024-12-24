@@ -758,6 +758,10 @@ func (v *View) HandleEvent(event tcell.Event) {
 			}
 		}
 	case *tcell.EventPaste:
+		if NavigationMode {
+			// Do not pase on Navigation mode from terminal (fat fingers arrive here too)
+			return
+		}
 		// Check viewtype if readonly don't paste (readonly help and log view etc.)
 		if !v.Type.Readonly {
 			if !PreActionCall("Paste", v) {
