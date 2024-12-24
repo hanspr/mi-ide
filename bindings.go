@@ -554,6 +554,10 @@ func DefaultBindings() map[string]string {
 		"Alt-H":         "SelectToEndOfLine",
 		"Alt-Y":         "SelectToStartOfLine",
 		"Alt-Backspace": "DeleteWordLeft",
+		"Alt-A":         "CursorStart",
+		"Alt-S":         "CursorEnd",
+		"Alt-N":         "SelectToStart",
+		"Alt-M":         "SelectToEnd",
 
 		// Control Keys
 		"CtrlA":     "SelectAll",
