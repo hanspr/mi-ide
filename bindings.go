@@ -263,10 +263,6 @@ var bindingKeys = map[string]tcell.Key{
 	"OldBackspace":   tcell.KeyBackspace,
 	"ShiftPageUp":    tcell.KeyShfPgUp,
 	"ShiftPageDown":  tcell.KeyShfPgDn,
-
-	// I renamed these keys to PageUp and PageDown but I don't want to break someone's keybindings
-	//	"PgUp":   tcell.KeyPgUp,
-	//	"PgDown": tcell.KeyPgDn,
 }
 
 // The Key struct holds the data for a keypress (keycode + modifiers)
@@ -563,7 +559,7 @@ func DefaultBindings() map[string]string {
 		"CtrlE":     "CommandMode",
 		"CtrlF":     "FindDialog",
 		"CtrlG":     "JumpLine",
-		"CtrlH":     "Backspace",
+		"CtrlH":     "ToggleCase",
 		"Backspace": "Backspace",
 		"CtrlJ":     "DeleteLine",
 		"CtrlK":     "CutLine",
@@ -574,7 +570,7 @@ func DefaultBindings() map[string]string {
 		"CtrlQ":     "QuitAll",
 		"CtrlR":     "SearchDialog",
 		"CtrlS":     "Save",
-		"CtrlT":     "ToggleCase",
+		"CtrlT":     "AddTab",
 		"CtrlU":     "Delete",
 		"Delete":    "Delete",
 		"CtrlV":     "Paste",
@@ -592,10 +588,9 @@ func DefaultBindings() map[string]string {
 		"F3":        "SaveAs",
 		"F4":        "Quit",
 		"F16":       "QuitOthers", // Shift F4
-		"Alt-T":     "AddTab",
-		"Alt-F":     "VSplit",
-		"Alt-G":     "HSplit",
-		"Alt-B":     "BufferSettings",
+		"Alt-g":     "HSplit",
+		"Alt-b":     "VSplit",
+		"Alt-p":     "BufferSettings",
 		"Alt-!":     "ToggleSoftWrap",
 		"Alt-#":     "ToggleRuler",
 		"Alt-<":     "ClearStatus",
