@@ -465,6 +465,7 @@ func (b *Buffer) SmartIndent(Start, Stop Loc, once bool) {
 	sMod := b.IsModified
 	iChar := b.Settings["indentchar"].(string)
 	iMult := 1
+	comment := regexp.MustCompile(`^(?:#|//|(?:<!)?--|/\*)`)
 	if iChar == " " {
 		iMult = int(b.Settings["tabsize"].(float64))
 		iChar = strings.Repeat(" ", iMult)
@@ -479,7 +480,6 @@ func (b *Buffer) SmartIndent(Start, Stop Loc, once bool) {
 		Ys = 0
 	} else {
 		// Look back for the first line that is not empty, is not a comment, get that indentation as reference
-		comment := regexp.MustCompile(`^(?:#|//|(?:<!)?--|/\*)`)
 		for y := Ys; y >= 0; y-- {
 			l := b.Line(y)
 			if len(l) > 0 && !comment.MatchString(l) {
@@ -515,6 +515,10 @@ func (b *Buffer) SmartIndent(Start, Stop Loc, once bool) {
 		x := Count(b.Line(y))
 		str := b.Line(y)
 		strB := str
+		if comment.MatchString(str) {
+			// ignore commented lines
+			continue
+		}
 		// Check if this line has balanced braces
 		c := BracePairsAreBalanced(str)
 		if c == -1 {
