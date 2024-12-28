@@ -100,7 +100,6 @@ var bindingActions = map[string]func(*View, bool) bool{
 	"Unsplit":                (*View).Unsplit,
 	"VSplit":                 (*View).VSplitBinding,
 	"HSplit":                 (*View).HSplitBinding,
-	"Suspend":                (*View).Suspend,
 	"ScrollUp":               (*View).ScrollUpAction,
 	"ScrollDown":             (*View).ScrollDownAction,
 	"SpawnMultiCursor":       (*View).SpawnMultiCursor,
