@@ -458,6 +458,25 @@ func (b *Buffer) IndentString() string {
 	return "\t"
 }
 
+func (b *Buffer) AddMultiComment(Start, Stop Loc) {
+	cstring := b.Settings["comment"].(string)
+	comment := regexp.MustCompile("^" + cstring)
+	start := Start.Y
+	end := Stop.Y + 1
+	for y := start; y < end; y++ {
+		str := b.Line(y)
+		if comment.MatchString(str) {
+			// Remove comment from line
+			str = strings.Replace(str, cstring, "", 1)
+		} else {
+			// Add comment to line
+			str = cstring + str
+		}
+		x := Count(b.Line(y))
+		b.Replace(Loc{0, y}, Loc{x, y}, str)
+	}
+}
+
 // SmartIndent indent the line
 func (b *Buffer) SmartIndent(Start, Stop Loc, once bool) {
 	stack := b.UndoStack.Len()

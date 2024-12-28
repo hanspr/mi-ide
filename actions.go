@@ -2565,14 +2565,37 @@ func MouseOnOff(b bool) {
 	MouseEnabled = b
 }
 
+// Show Buffersettings
 func (v *View) BufferSettings(usePlugin bool) bool {
 	micromenu.SelLocalSettings(v.Buf)
 	return true
 }
 
+// Toggle Navigation Mode
 func (v *View) NavigationMode(usePlugin bool) bool {
 	MouseOnOff(false)
 	NavigationMode = !NavigationMode
+	return true
+}
+
+// Add Multicomments
+func (v *View) MultiComment(usePlugin bool) bool {
+	if v.Cursor.HasSelection() {
+		start := v.Cursor.CurSelection[0]
+		end := v.Cursor.CurSelection[1]
+		if end.Y < start.Y {
+			start, end = end, start
+			v.Cursor.SetSelectionStart(start)
+			v.Cursor.SetSelectionEnd(end)
+		}
+		v.Buf.AddMultiComment(start, end)
+		v.Cursor.SetSelectionStart(start)
+		v.Cursor.Relocate()
+		v.savedLoc = v.Cursor.Loc
+		return true
+	}
+	v.Buf.AddMultiComment(v.Cursor.Loc, v.Cursor.Loc)
+	v.Cursor.Start()
 	return true
 }
 
