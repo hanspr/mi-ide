@@ -1888,25 +1888,6 @@ func (v *View) ToggleHelp(usePlugin bool) bool {
 	return true
 }
 
-// ShellMode opens a terminal to run a shell command
-func (v *View) ShellMode(usePlugin bool) bool {
-	if v.mainCursor() {
-		if usePlugin && !PreActionCall("ShellMode", v) {
-			return false
-		}
-
-		input, canceled := messenger.Prompt("$ ", "", "Shell", NoCompletion)
-		if !canceled {
-			// The true here is for openTerm to make the command interactive
-			HandleShellCommand(input, true, true)
-			if usePlugin {
-				return PostActionCall("ShellMode", v)
-			}
-		}
-	}
-	return false
-}
-
 // CommandMode lets the user enter a command
 func (v *View) CommandMode(usePlugin bool) bool {
 	if v.mainCursor() {

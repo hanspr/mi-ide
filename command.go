@@ -38,7 +38,6 @@ func init() {
 		"SetLocal":   SetLocal,
 		"Show":       Show,
 		"ShowKey":    ShowKey,
-		"Run":        Run,
 		"Bind":       Bind,
 		"Quit":       Quit,
 		"Save":       Save,
@@ -524,12 +523,6 @@ func Bind(args []string) {
 		return
 	}
 	BindKey(args[0], args[1])
-}
-
-// Run runs a shell command in the background
-func Run(args []string) {
-	// Run a shell command in the background (openTerm is false)
-	HandleShellCommand(shellwords.Join(args...), false, true)
 }
 
 // Quit closes the main view

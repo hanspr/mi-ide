@@ -84,7 +84,6 @@ var bindingActions = map[string]func(*View, bool) bool{
 	"ToggleSoftWrap":         (*View).ToggleSoftWrap,
 	"JumpLine":               (*View).JumpLine,
 	"ClearStatus":            (*View).ClearStatus,
-	"ShellMode":              (*View).ShellMode,
 	"CommandMode":            (*View).CommandMode,
 	"ToggleOverwriteMode":    (*View).ToggleOverwriteMode,
 	"Escape":                 (*View).Escape,
