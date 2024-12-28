@@ -111,7 +111,6 @@ var bindingActions = map[string]func(*View, bool) bool{
 	"OpenDirView":            (*View).OpenDirView,
 	"BufferSettings":         (*View).BufferSettings,
 	"NavigationMode":         (*View).NavigationMode,
-	"NotImplemented":         (*View).NotImplemented,
 
 	// This was changed to InsertNewline but I don't want to break backwards compatibility
 	"InsertEnter": (*View).InsertNewline,
@@ -562,7 +561,6 @@ func DefaultBindings() map[string]string {
 		"CtrlE":     "CommandMode",
 		"CtrlF":     "FindDialog",
 		"CtrlG":     "JumpLine",
-		"CtrlH":     "NotImplemented",
 		"Backspace": "Backspace",
 		"CtrlJ":     "DeleteLine",
 		"CtrlK":     "CutLine",

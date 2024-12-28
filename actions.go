@@ -2567,11 +2567,6 @@ func (v *View) BufferSettings(usePlugin bool) bool {
 	return true
 }
 
-func (v *View) NotImplemented(usePlugin bool) bool {
-	messenger.Alert("", "keybinding <free>")
-	return true
-}
-
 func (v *View) NavigationMode(usePlugin bool) bool {
 	MouseOnOff(false)
 	NavigationMode = !NavigationMode
