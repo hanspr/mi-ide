@@ -2587,7 +2587,7 @@ func (v *View) BufferSettings(usePlugin bool) bool {
 }
 
 func (v *View) NotImplemented(usePlugin bool) bool {
-	messenger.Alert("Not implemented")
+	messenger.Alert("", "keybinding <free>")
 	return true
 }
 
