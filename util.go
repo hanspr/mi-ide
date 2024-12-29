@@ -9,6 +9,7 @@ import (
 	"io"
 	"net/http"
 	"os"
+	"os/exec"
 	"os/user"
 	"path/filepath"
 	"reflect"
@@ -21,6 +22,7 @@ import (
 
 	"github.com/flynn/json5"
 	"github.com/go-errors/errors"
+	"github.com/hanspr/shellwords"
 	"github.com/hanspr/tcell"
 )
 
@@ -865,4 +867,61 @@ func isAutoCloseOpen(v *View, e *tcell.EventKey) (int, bool) {
 		}
 	}
 	return -1, false
+}
+
+// Shell commands
+
+// ExecCommand executes a command using exec
+// It returns any output/errors
+func ExecCommand(name string, arg ...string) (string, error) {
+	var err error
+	cmd := exec.Command(name, arg...)
+	outputBytes := &bytes.Buffer{}
+	cmd.Stdout = outputBytes
+	cmd.Stderr = outputBytes
+	err = cmd.Start()
+	if err != nil {
+		return "", err
+	}
+	err = cmd.Wait() // wait for command to finish
+	outstring := outputBytes.String()
+	return outstring, err
+}
+
+// RunShellCommand executes a shell command and returns the output/error
+func RunShellCommand(input string) (string, error) {
+	args, err := shellwords.Split(input)
+	if err != nil {
+		return "", err
+	}
+	inputCmd := args[0]
+
+	return ExecCommand(inputCmd, args[1:]...)
+}
+
+// RunBackgroundShell running shell in background
+func RunBackgroundShell(input string) {
+	args, err := shellwords.Split(input)
+	if err != nil {
+		messenger.Alert("error", err)
+		return
+	}
+	inputCmd := args[0]
+	messenger.Message("Running...")
+	go func() {
+		output, err := RunShellCommand(input)
+		totalLines := strings.Split(output, "\n")
+
+		if len(totalLines) < 3 {
+			if err == nil {
+				messenger.Message(inputCmd, " exited without error")
+			} else {
+				messenger.Message(inputCmd, " exited with error: ", err, ": ", output)
+			}
+		} else {
+			messenger.Message(output)
+		}
+		// We have to make sure to redraw
+		RedrawAll(true)
+	}()
 }

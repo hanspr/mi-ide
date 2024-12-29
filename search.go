@@ -204,3 +204,11 @@ func DialogSearch(searchStr string) string {
 	}
 	return ""
 }
+
+// Search for function declaration
+
+func SearchFunctionDeclaration(searchStr string) (filename string, line int, ok bool) {
+	ok = false
+
+	return filename, line, ok
+}
