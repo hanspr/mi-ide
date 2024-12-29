@@ -535,8 +535,6 @@ func main() {
 	L.SetGlobal("ExecCommand", luar.New(L, ExecCommand))
 	L.SetGlobal("RunShellCommand", luar.New(L, RunShellCommand))
 	L.SetGlobal("RunBackgroundShell", luar.New(L, RunBackgroundShell))
-	L.SetGlobal("TermEmuSupported", luar.New(L, TermEmuSupported))
-	L.SetGlobal("RunTermEmulator", luar.New(L, RunTermEmulator))
 	L.SetGlobal("GetLeadingWhitespace", luar.New(L, GetLeadingWhitespace))
 	L.SetGlobal("MakeCompletion", luar.New(L, MakeCompletion))
 	L.SetGlobal("NewBuffer", luar.New(L, NewBufferFromString))
