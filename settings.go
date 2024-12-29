@@ -298,6 +298,7 @@ func DefaultLocalSettings() map[string]interface{} {
 		"fileformat":     "unix",
 		"filetype":       "",
 		"indentchar":     " ",
+		"comment":        "",
 		"keepautoindent": false,
 		"matchbrace":     false,
 		"matchbraceleft": false,
