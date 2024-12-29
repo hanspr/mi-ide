@@ -3,6 +3,8 @@ package main
 import (
 	"os"
 	"path/filepath"
+
+	"github.com/hanspr/highlight"
 )
 
 // RTColorscheme Color Scheme definitions
@@ -170,4 +172,24 @@ func PluginAddRuntimeFilesFromDirectory(plugin, filetype, directory, pattern str
 // PluginAddRuntimeFileFromMemory adds a file to the runtime files for a plugin from a given string
 func PluginAddRuntimeFileFromMemory(plugin, filetype, filename, data string) {
 	AddRuntimeFile(filetype, memoryFile{filename, []byte(data)})
+}
+
+func TestFileType(path string, f RuntimeFile) bool {
+	if f == nil {
+		return false
+	}
+	data, err := f.Data()
+	if err != nil {
+		return false
+	}
+	file, err := highlight.ParseFile(data)
+	if err != nil {
+		return false
+	}
+	ftdetect, err := highlight.ParseFtDetect(file)
+	if err != nil {
+		return false
+	}
+	header := ReadHeaderBytes(path)
+	return highlight.MatchFiletype(ftdetect, path, header)
 }

@@ -230,15 +230,17 @@ func FindLineWith(r *regexp.Regexp, v *View, start, end Loc, deep bool) (int, bo
 	return FindLineWith(r, v, Loc{0, 0}, start, true)
 }
 
-func FindFileWith(r *regexp.Regexp, path, ext string) (string, int, bool) {
-	if ext == "." || ext == "" {
-		return "", 0, false
-	}
+func FindFileWith(r *regexp.Regexp, path, filetype, ext string) (string, int, bool) {
+	rtf := FindRuntimeFile(RTSyntax, filetype)
 	files, _ := os.ReadDir(path)
 	for _, f := range files {
-		if !f.IsDir() && strings.Contains(f.Name(), ext) {
+		if f.IsDir() {
+			continue
+		}
+		filepath := path + "/" + f.Name()
+		ftype := TestFileType(filepath, rtf)
+		if strings.Contains(f.Name(), ext) || ftype {
 			i := 0
-			filepath := path + "/" + f.Name()
 			file, err := os.Open(filepath)
 			if err != nil {
 				continue

@@ -2604,6 +2604,7 @@ func (v *View) MultiComment(usePlugin bool) bool {
 
 // Find function in current buffer or search current dir for function
 func (v *View) FindFunctionDeclaration(usePlugin bool) bool {
+	messenger.Message("")
 	loc := v.Cursor.Loc
 	v.Cursor.SelectWord(false)
 	word := v.Cursor.GetSelection()
@@ -2622,14 +2623,18 @@ func (v *View) FindFunctionDeclaration(usePlugin bool) bool {
 		CurView().PreviousSplit(false)
 		v.Cursor.Loc = v.savedLoc
 		v.NextSplit(false)
+		messenger.Success("function found : ", word)
 		return true
 	}
 	// search in files in the current directory
-	filename, line, ok := FindFileWith(r, filepath.Dir(v.Buf.Path), path.Ext(v.Buf.fname))
+	filename, line, ok := FindFileWith(r, filepath.Dir(v.Buf.Path), v.Buf.FileType(), path.Ext(v.Buf.fname))
 	if ok {
 		v.VSplit(v.Buf)
 		CurView().Open(filename)
 		CurView().savedLoc = Loc{0, line}
+		messenger.Success("function found : ", word)
+	} else {
+		messenger.Warning("function not found : ", word)
 	}
 	return true
 }

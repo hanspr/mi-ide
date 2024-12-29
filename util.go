@@ -2,6 +2,7 @@ package main
 
 import (
 	"archive/zip"
+	"bufio"
 	"bytes"
 	"encoding/json"
 
@@ -801,6 +802,20 @@ func Slurp(path string) string {
 		return ""
 	}
 	return string(b)
+}
+
+func ReadHeaderBytes(path string) []byte {
+	var line []byte
+	file, err := os.Open(path)
+	if err != nil {
+		return line
+	}
+	defer file.Close()
+	scanner := bufio.NewScanner(file)
+	for scanner.Scan() {
+		return scanner.Bytes()
+	}
+	return line
 }
 
 const autocloseOpen = "\"'`({["

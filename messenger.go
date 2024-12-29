@@ -142,14 +142,14 @@ func (m *Messenger) Alert(kind string, msg ...interface{}) {
 			}
 		}
 		m.hasMessage = true
+		go func() {
+			time.Sleep(8 * time.Second)
+			m.Reset()
+			m.Clear()
+		}()
 	}
 	// add the message to the log regardless of active prompts
 	m.AddLog(buf.String())
-	go func() {
-		time.Sleep(8 * time.Second)
-		m.Reset()
-		m.Clear()
-	}()
 }
 
 // Success : compatibility for plugins
@@ -160,6 +160,11 @@ func (m *Messenger) Success(msg ...interface{}) {
 // Error : compatibility for plugins
 func (m *Messenger) Error(msg ...interface{}) {
 	m.Alert("error", msg...)
+}
+
+// Warning : compatibility for plugins
+func (m *Messenger) Warning(msg ...interface{}) {
+	m.Alert("warning", msg...)
 }
 
 // Information : compatibility for plugins
