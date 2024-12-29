@@ -209,6 +209,31 @@ func DialogSearch(searchStr string) string {
 
 func SearchFunctionDeclaration(searchStr string) (filename string, line int, ok bool) {
 	ok = false
-
+	// GeTFileListFromPath(path,extension)
 	return filename, line, ok
+}
+
+func FindLineWith(r *regexp.Regexp, v *View, start, end Loc, deep bool) (int, bool) {
+	if start.Y >= v.Buf.NumLines {
+		start.Y = v.Buf.NumLines - 1
+	}
+	if start.Y < 0 {
+		start.Y = 0
+	}
+	for i := start.Y; i <= end.Y; i++ {
+		l := string(v.Buf.lines[i].data)
+		match := r.FindAllStringIndex(l, -1)
+		messenger.AddLog("search i=", i, " ? ", match)
+		if match != nil {
+			return i, true
+		}
+	}
+	if deep || start.Y == 0 {
+		return 0, false
+	}
+	return FindLineWith(r, v, Loc{0, 0}, start, true)
+}
+
+func FindFileWith(r *regexp.Regexp, ext string) (int, bool) {
+	return 0, false
 }

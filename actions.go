@@ -2601,6 +2601,31 @@ func (v *View) MultiComment(usePlugin bool) bool {
 	return true
 }
 
+// Find function in current buffer or search current dir for function
 func (v *View) FindFunctionDeclaration(usePlugin bool) bool {
+	v.Cursor.SelectWord(false)
+	word := v.Cursor.GetSelection()
+	v.Cursor.ResetSelection()
+	if word == "" {
+		return true
+	}
+	r := regexp.MustCompile(`(?:func(?:tion)?|def(?:n|un|ine)?|fn|sub|let|\w+)\s+(?:\(.*?\)\s+)?` + word + `\s*[\(\{]`)
+	//search function definition in current view
+	line, ok := FindLineWith(r, v, v.Cursor.Loc, v.Buf.End(), false)
+	if ok {
+		v.MoveToFunction(line)
+		return true
+	}
+	//todo: not found, search on filesystem
 	return true
+}
+
+func (v *View) MoveToFunction(line int) {
+	v.VSplit(v.Buf)
+	CurView().Cursor.X = 0
+	CurView().Cursor.Y = line
+	CurView().Center(false)
+	CurView().PreviousSplit(false)
+	v.Cursor.Loc = v.savedLoc
+	v.NextSplit(false)
 }
