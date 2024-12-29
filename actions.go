@@ -2580,6 +2580,11 @@ func (v *View) NavigationMode(usePlugin bool) bool {
 
 // Add Multicomments
 func (v *View) MultiComment(usePlugin bool) bool {
+	val, ok := v.Buf.Settings["comment"]
+	if !ok || val.(string) == "" {
+		messenger.Alert("warning", "settings comment not configured")
+		return true
+	}
 	if v.Cursor.HasSelection() {
 		start := v.Cursor.CurSelection[0]
 		end := v.Cursor.CurSelection[1]
