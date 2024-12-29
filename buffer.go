@@ -460,7 +460,7 @@ func (b *Buffer) IndentString() string {
 
 func (b *Buffer) AddMultiComment(Start, Stop Loc) {
 	cstring := b.Settings["comment"].(string)
-	comment := regexp.MustCompile("^" + cstring)
+	comment := regexp.MustCompile(`^\s*` + cstring)
 	start := Start.Y
 	end := Stop.Y + 1
 	for y := start; y < end; y++ {
