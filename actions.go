@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"path"
 	"path/filepath"
 	"regexp"
 	"strconv"
@@ -2603,9 +2604,11 @@ func (v *View) MultiComment(usePlugin bool) bool {
 
 // Find function in current buffer or search current dir for function
 func (v *View) FindFunctionDeclaration(usePlugin bool) bool {
+	loc := v.Cursor.Loc
 	v.Cursor.SelectWord(false)
 	word := v.Cursor.GetSelection()
 	v.Cursor.ResetSelection()
+	v.Cursor.Loc = loc
 	if word == "" {
 		return true
 	}
@@ -2613,19 +2616,20 @@ func (v *View) FindFunctionDeclaration(usePlugin bool) bool {
 	//search function definition in current view
 	line, ok := FindLineWith(r, v, v.Cursor.Loc, v.Buf.End(), false)
 	if ok {
-		v.MoveToFunction(line)
+		v.VSplit(v.Buf)
+		CurView().Cursor.GotoLoc(Loc{0, line})
+		CurView().Center(false)
+		CurView().PreviousSplit(false)
+		v.Cursor.Loc = v.savedLoc
+		v.NextSplit(false)
 		return true
 	}
-	//todo: not found, search on filesystem
+	// search in files in the current directory
+	filename, line, ok := FindFileWith(r, filepath.Dir(v.Buf.Path), path.Ext(v.Buf.fname))
+	if ok {
+		v.VSplit(v.Buf)
+		CurView().Open(filename)
+		CurView().savedLoc = Loc{0, line}
+	}
 	return true
-}
-
-func (v *View) MoveToFunction(line int) {
-	v.VSplit(v.Buf)
-	CurView().Cursor.X = 0
-	CurView().Cursor.Y = line
-	CurView().Center(false)
-	CurView().PreviousSplit(false)
-	v.Cursor.Loc = v.savedLoc
-	v.NextSplit(false)
 }

@@ -2,7 +2,10 @@ package main
 
 import (
 	//"fmt"
+	"bufio"
+	"os"
 	"regexp"
+	"strings"
 
 	"github.com/hanspr/tcell"
 )
@@ -207,12 +210,6 @@ func DialogSearch(searchStr string) string {
 
 // Search for function declaration
 
-func SearchFunctionDeclaration(searchStr string) (filename string, line int, ok bool) {
-	ok = false
-	// GeTFileListFromPath(path,extension)
-	return filename, line, ok
-}
-
 func FindLineWith(r *regexp.Regexp, v *View, start, end Loc, deep bool) (int, bool) {
 	if start.Y >= v.Buf.NumLines {
 		start.Y = v.Buf.NumLines - 1
@@ -223,7 +220,6 @@ func FindLineWith(r *regexp.Regexp, v *View, start, end Loc, deep bool) (int, bo
 	for i := start.Y; i <= end.Y; i++ {
 		l := string(v.Buf.lines[i].data)
 		match := r.FindAllStringIndex(l, -1)
-		messenger.AddLog("search i=", i, " ? ", match)
 		if match != nil {
 			return i, true
 		}
@@ -234,6 +230,30 @@ func FindLineWith(r *regexp.Regexp, v *View, start, end Loc, deep bool) (int, bo
 	return FindLineWith(r, v, Loc{0, 0}, start, true)
 }
 
-func FindFileWith(r *regexp.Regexp, ext string) (int, bool) {
-	return 0, false
+func FindFileWith(r *regexp.Regexp, path, ext string) (string, int, bool) {
+	if ext == "." || ext == "" {
+		return "", 0, false
+	}
+	files, _ := os.ReadDir(path)
+	for _, f := range files {
+		if !f.IsDir() && strings.Contains(f.Name(), ext) {
+			i := 0
+			filepath := path + "/" + f.Name()
+			file, err := os.Open(filepath)
+			if err != nil {
+				continue
+			}
+			defer file.Close()
+			scanner := bufio.NewScanner(file)
+			for scanner.Scan() {
+				l := scanner.Text()
+				match := r.FindAllStringIndex(l, -1)
+				if match != nil {
+					return filepath, i, true
+				}
+				i++
+			}
+		}
+	}
+	return "", 0, false
 }
