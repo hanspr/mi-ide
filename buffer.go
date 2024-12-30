@@ -462,7 +462,10 @@ func (b *Buffer) AddMultiComment(Start, Stop Loc) {
 	cstring := b.Settings["comment"].(string)
 	comment := regexp.MustCompile(`^\s*` + cstring)
 	start := Start.Y
-	end := Stop.Y + 1
+	end := Stop.Y
+	if Start.Y == Stop.Y || Stop.X > 0 {
+		end++
+	}
 	for y := start; y < end; y++ {
 		str := b.Line(y)
 		if comment.MatchString(str) {
