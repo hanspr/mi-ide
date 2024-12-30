@@ -527,8 +527,9 @@ func DefaultBindings() map[string]string {
 		"PageDown":      "CursorPageDown",
 		"Alt-a":         "PreviousTab",
 		"Alt-d":         "MoveLinesUp",
-		"Alt-e":         "VSplit",
-		"Alt-f":         "MoveLinesDown",
+		"Alt-e":         "MoveLinesDown",
+		"Alt-f":         "OpenDirView",
+		// "Alt-g":         "",
 		"Alt-h":         "CursorPageDown",
 		"Alt-i":         "CursorUp",
 		"Alt-j":         "CursorLeft",
@@ -536,7 +537,8 @@ func DefaultBindings() map[string]string {
 		"Alt-l":         "CursorRight",
 		"Alt-o":         "EndOfLine",
 		"Alt-q":         "PreviousSplit",
-		"Alt-r":         "HSplit",
+		"Alt-r":         "ToggleOverwriteMode",
+		"Alt-t":         "ToggleCase",
 		"Alt-s":         "NextTab",
 		"Alt-u":         "StartOfLine",
 		"Alt-w":         "NextSplit",
@@ -554,10 +556,12 @@ func DefaultBindings() map[string]string {
 		"Alt-}":         "CursorEnd",
 		"Alt-[":         "SelectToStart",
 		"Alt-]":         "SelectToEnd",
+		"Alt-:":         "VSplit",
+		"Alt-_":         "HSplit",
 
 		// Control Keys
-		"CtrlA":          "SelectAll",
-		"CtrlB":          "ToggleCase",
+		"CtrlA": "SelectAll",
+		// "CtrlB":          "",
 		"CtrlC":          "Copy",
 		"CtrlD":          "DuplicateLine",
 		"CtrlE":          "CommandMode",
@@ -642,5 +646,6 @@ func DefaultBindings() map[string]string {
 		"Alt-v": "PasteCloud",
 		"Alt-z": "UploadToCloud",
 		"Alt-b": "DownloadFromCloud",
+		"Alt-+": "CloudSettings",
 	}
 }
