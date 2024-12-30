@@ -230,16 +230,32 @@ func FindLineWith(r *regexp.Regexp, v *View, start, end Loc, deep bool) (int, bo
 	return FindLineWith(r, v, Loc{0, 0}, start, true)
 }
 
-func FindFileWith(r *regexp.Regexp, path, filetype, ext string) (string, int, bool) {
+const MAX_FAILS = 20
+
+// Recursively test each file to find a matching string on regex
+// If dir fails N times aborts searching to avoid large subdirectories with no code files
+func FindFileWith(r *regexp.Regexp, path, filetype, ext string, depth int) (string, int, bool) {
+	abort := MAX_FAILS
 	rtf := FindRuntimeFile(RTSyntax, filetype)
 	files, _ := os.ReadDir(path)
 	for _, f := range files {
 		if f.IsDir() {
+			if depth == 0 {
+				continue
+			}
+			depth--
+			path := path + "/" + f.Name()
+			filename, line, ok := FindFileWith(r, path, filetype, ext, depth)
+			depth++
+			if ok {
+				return filename, line, ok
+			}
 			continue
 		}
 		filepath := path + "/" + f.Name()
 		ftype := TestFileType(filepath, rtf)
 		if strings.Contains(f.Name(), ext) || ftype {
+			abort = MAX_FAILS
 			i := 0
 			file, err := os.Open(filepath)
 			if err != nil {
@@ -254,6 +270,11 @@ func FindFileWith(r *regexp.Regexp, path, filetype, ext string) (string, int, bo
 					return filepath, i, true
 				}
 				i++
+			}
+		} else {
+			abort--
+			if abort <= 0 {
+				return "", 0, false
 			}
 		}
 	}
