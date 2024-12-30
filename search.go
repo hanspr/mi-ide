@@ -219,8 +219,8 @@ func FindLineWith(r *regexp.Regexp, v *View, start, end Loc, deep bool) (int, bo
 	}
 	for i := start.Y; i <= end.Y; i++ {
 		l := string(v.Buf.lines[i].data)
-		match := r.FindAllStringIndex(l, -1)
-		if match != nil {
+		// messenger.AddLog(l)
+		if r.MatchString(l) {
 			return i, true
 		}
 	}
