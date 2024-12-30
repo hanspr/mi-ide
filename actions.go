@@ -2625,16 +2625,17 @@ func (v *View) FindFunctionDeclaration(usePlugin bool) bool {
 		CurView().PreviousSplit(false)
 		v.Cursor.Loc = v.savedLoc
 		v.NextSplit(false)
-		messenger.Success("function found : ", word)
+		messenger.Success("function found in current file : ", word)
 		return true
 	}
 	// search in files in the current directory
-	filename, line, ok := FindFileWith(r, filepath.Dir(v.Buf.Path), v.Buf.FileType(), path.Ext(v.Buf.fname))
+	messenger.Message("Searching in file system, wait ....")
+	filename, line, ok := FindFileWith(r, filepath.Dir(v.Buf.Path), v.Buf.FileType(), path.Ext(v.Buf.fname), 2)
 	if ok {
 		v.VSplit(v.Buf)
 		CurView().Open(filename)
 		CurView().savedLoc = Loc{0, line}
-		messenger.Success("function found : ", word)
+		messenger.Success("function found on file (", filename, ") : ", word)
 	} else {
 		messenger.Warning("function not found : ", word)
 	}
