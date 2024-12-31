@@ -183,7 +183,7 @@ func (sline *Statusline) Display() {
 		}
 	}
 
-	rightText := ""
+	rightText := Version
 
 	statusLineStyle := defStyle.Reverse(true)
 	if style, ok := colorscheme["statusline"]; ok {
