@@ -517,6 +517,9 @@ func (f *Frame) SetValue(k, v string) {
 func (e *AppElement) InsertStringAt(x int, clip string) {
 	a := e.microapp
 	var nr []rune
+	if len(clip)+len(e.value) > e.height {
+		clip = SubstringSafe(clip, 0, e.height-len(e.value)-3)
+	}
 	r := []rune(e.value)
 	cr := []rune(clip)
 	nr = append(nr, r[:e.cursor.X]...)
