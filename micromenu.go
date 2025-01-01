@@ -1565,6 +1565,10 @@ func (m *microMenu) DirTreeView() {
 }
 
 func (m *microMenu) TreeViewEvent(name, value, event, when string, x, y int) bool {
+	// Navmode binding
+	if event == "l" {
+		event = "Right"
+	}
 	if event == "mouse-click1" {
 		return true
 	} else if when == "POST" {

@@ -1445,8 +1445,31 @@ func (e *AppElement) ProcessElementMouseWheel(event string, x, y int) {
 // Key Events
 // ------------------------------------------------
 
+func (e *AppElement) SetNavModeBindings(key string) string {
+	// Navmode binding
+	if key == "i" {
+		key = "Up"
+	} else if key == "k" {
+		key = "Down"
+	} else if key == "y" {
+		key = "PgUp"
+	} else if key == "l" {
+		key = "Right"
+	} else if key == "j" {
+		key = "Left"
+	} else if key == "h" {
+		key = "PgDn"
+	} else if key == "u" {
+		key = "Home"
+	} else if key == "o" {
+		key = "End"
+	}
+	return key
+}
+
 // SelectKeyEvent handle key event
 func (e *AppElement) SelectKeyEvent(key string, x, y int) {
+	key = e.SetNavModeBindings(key)
 	a := e.microapp
 	f := e.frame
 	r := []rune(key)
