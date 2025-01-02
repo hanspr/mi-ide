@@ -1209,3 +1209,24 @@ func (b *Buffer) setIndentationOptions(indent string, n int) {
 	}
 	b.Settings["tabsize"] = float64(n)
 }
+
+// Buffer Utilities
+
+// Check if formmatter is enabled for the current buffer and a formatter exists
+// If formatter exists, run it
+func (b *Buffer) RunFormatter() bool {
+	if !b.Settings["useformatter"].(bool) {
+		return false
+	}
+	formatterPath := configDir + "/formatters/" + b.FileType()
+	info, err := os.Stat(formatterPath)
+	if err != nil {
+		return false
+	}
+	mode := info.Mode()
+	if !strings.Contains(mode.String(), "rwx") {
+		return false
+	}
+	_, err = ExecCommand(formatterPath, b.AbsPath)
+	return err == nil
+}

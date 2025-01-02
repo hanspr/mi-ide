@@ -317,6 +317,7 @@ func DefaultLocalSettings() map[string]interface{} {
 		"tabsize":        float64(4),
 		"tabstospaces":   false,
 		"tabindents":     false,
+		"useformatter":   true,
 	}
 }
 

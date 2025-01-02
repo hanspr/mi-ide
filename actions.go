@@ -1102,6 +1102,10 @@ func (v *View) Save(usePlugin bool) bool {
 			v.saveToFile(v.Buf.Path)
 		}
 
+		if v.Buf.RunFormatter() {
+			v.ReOpen()
+		}
+
 		if usePlugin {
 			return PostActionCall("Save", v)
 		}
