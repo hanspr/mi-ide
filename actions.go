@@ -791,6 +791,10 @@ func (v *View) InsertNewline(usePlugin bool) bool {
 	} else {
 		v.Buf.Insert(v.Cursor.Loc, "\n")
 		if v.Buf.Settings["autoindent"].(bool) && !v.Buf.Settings["smartindent"].(bool) {
+			wsn := GetLeadingWhitespace(v.Buf.Line(v.Cursor.Y + 1))
+			if len(wsn) > len(ws) {
+				ws = wsn
+			}
 			v.Buf.Insert(v.Cursor.Loc, ws)
 
 			// Remove the whitespaces if keepautoindent setting is off
