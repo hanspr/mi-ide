@@ -488,6 +488,9 @@ func (b *Buffer) SmartIndent(Start, Stop Loc, once bool) {
 	iChar := b.Settings["indentchar"].(string)
 	iMult := 1
 	comment := regexp.MustCompile(`^(?:#|//|(?:<!)?--|/\*)`)
+	skipBlockStart := regexp.MustCompile(`^(?:#|//|(?:<!)?--|/\*)<<<`)
+	skipBlockEnd := regexp.MustCompile(`^(?:#|//|(?:<!)?--|/\*)>>>`)
+	skipBlock := false
 	if iChar == " " {
 		iMult = int(b.Settings["tabsize"].(float64))
 		iChar = strings.Repeat(" ", iMult)
@@ -537,6 +540,16 @@ func (b *Buffer) SmartIndent(Start, Stop Loc, once bool) {
 		x := Count(b.Line(y))
 		str := b.Line(y)
 		strB := str
+		if skipBlock {
+			if skipBlockEnd.MatchString(str) {
+				skipBlock = false
+			}
+			continue
+		}
+		if skipBlockStart.MatchString(str) {
+			skipBlock = true
+			continue
+		}
 		if comment.MatchString(str) {
 			// ignore commented lines
 			continue
