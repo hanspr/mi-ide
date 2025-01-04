@@ -125,7 +125,8 @@ func (m *Messenger) Alert(kind string, msg ...interface{}) {
 		// if there is no active prompt then style and display the message as normal
 		m.message = buf.String()
 		if kind == "error" {
-			m.style = defStyle.Foreground(tcell.ColorBlack).Background(tcell.ColorMaroon)
+			// m.style = defStyle.Foreground(tcell.ColorWhite).Background(tcell.Color196)
+			m.style = defStyle.Foreground(tcell.Color196).Bold(true)
 			if _, ok := colorscheme["error-message"]; ok {
 				m.style = colorscheme["error-message"]
 			}
