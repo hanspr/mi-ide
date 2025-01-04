@@ -22,7 +22,7 @@ var (
 )
 
 // CorePluginName is a plugin dependency name for the mi-ide core.
-const CorePluginName = "micro"
+const CorePluginName = "miide"
 
 // PluginChannel contains an url to a json list of PluginRepository
 type PluginChannel string
