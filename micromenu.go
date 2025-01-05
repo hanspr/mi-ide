@@ -1347,7 +1347,7 @@ func (m *microMenu) SetTabSpace(name, value, event, when string, x, y int) bool 
 // Local Configuration : language or file
 // ---------------------------------------
 
-const mmBufferSettings = "autoclose,autoindent,eofnewline,fileformat,indentchar,keepautoindent,matchbrace,rmtrailingws,smartindent,smartpaste,softwrap,tabindents,tabmovement,tabstospaces,tabsize,useformatter"
+const mmBufferSettings = "autoclose,autoindent,eofnewline,fileformat,indentchar,keepautoindent,matchbrace,rmtrailingws,smartindent,smartpaste,softwrap,tabindents,tabmovement,tabstospaces,tabsize,useformatter,blockopen,blockclose,blockinter"
 
 func (m *microMenu) SelLocalSettings(b *Buffer) {
 	var f *Frame
@@ -1360,8 +1360,8 @@ func (m *microMenu) SelLocalSettings(b *Buffer) {
 		}
 		m.myapp.Reset()
 		m.myapp.defStyle = StringToStyle("#ffffff,#262626")
-		width := 80
-		height := 16
+		width := 100
+		height := 20
 		f = m.myapp.AddFrame("f", -1, -1, width, height, "relative")
 		f.AddWindowBox("enc", Language.Translate("Buffer Settings"), 0, 0, width, height, true, nil, "", "")
 		f.AddWindowRadio("savefor", Language.Translate("Save as this file settings only"), "file", 2, height-4, false, nil, "", "")
@@ -1396,7 +1396,7 @@ func (m *microMenu) SelLocalSettings(b *Buffer) {
 				if kind == reflect.Bool {
 					f.AddWindowCheckBox(k, k, "true", col, row, b.Settings[k].(bool), nil, "", "")
 				} else if kind == reflect.String {
-					f.AddWindowTextBox(k, k+" ", b.Settings[k].(string), "string", col, row, 10, 20, nil, "", "")
+					f.AddWindowTextBox(k, k+" ", b.Settings[k].(string), "string", col, row, 30, 100, nil, "", "")
 				} else if kind == reflect.Float64 {
 					f.AddWindowTextBox(k, k+" ", fmt.Sprintf("%g", b.Settings[k].(float64)), "integer", col, row, 5, 10, nil, "", "")
 				} else {
@@ -1406,7 +1406,7 @@ func (m *microMenu) SelLocalSettings(b *Buffer) {
 			row += 2
 			if row > height-6 {
 				row = 2
-				col += 20
+				col += 40
 			}
 		}
 	} else {
