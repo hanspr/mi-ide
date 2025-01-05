@@ -2219,6 +2219,9 @@ func (v *View) NextSplit(usePlugin bool) bool {
 		v.savedLine = SubstringSafe(v.Buf.Line(v.Cursor.Loc.Y), 0, 20)
 		// Find next View parsing tree_split downward
 		tab.CurView = v.splitNode.GetNextPrevView(1)
+		if CurView().Type.Readonly {
+			NavigationMode = true
+		}
 		if usePlugin {
 			return PostActionCall("NextSplit", v)
 		}
@@ -2239,7 +2242,9 @@ func (v *View) PreviousSplit(usePlugin bool) bool {
 		v.savedLine = SubstringSafe(v.Buf.Line(v.Cursor.Loc.Y), 0, 20)
 		// Find next View parsing tree_split upward
 		tab.CurView = v.splitNode.GetNextPrevView(-1)
-
+		if CurView().Type.Readonly {
+			NavigationMode = true
+		}
 		if usePlugin {
 			return PostActionCall("PreviousSplit", v)
 		}
@@ -2585,8 +2590,7 @@ func (v *View) NavigationMode(usePlugin bool) bool {
 
 // Add Multicomments
 func (v *View) MultiComment(usePlugin bool) bool {
-	val, ok := v.Buf.Settings["comment"]
-	if !ok || val.(string) == "" {
+	if v.Buf.Settings["comment"].(string) == "" {
 		messenger.Alert("warning", "settings comment not configured")
 		return true
 	}
