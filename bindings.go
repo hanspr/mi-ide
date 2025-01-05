@@ -585,7 +585,7 @@ func DefaultBindings() map[string]string {
 		// "CtrlH":          "",
 		"Backspace":      "Backspace",
 		"CtrlJ":          "DeleteLine",
-		"CtrlK":          "CutLine",
+		"CtrlK":          "SelectLine",
 		"CtrlL":          "Center",
 		"CtrlN":          "NavigationMode",
 		"CtrlO":          "OpenFile",
