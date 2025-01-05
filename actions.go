@@ -773,9 +773,9 @@ func (v *View) InsertNewline(usePlugin bool) bool {
 	if v.Buf.Settings["autoclose"].(bool) && v.Cursor.X < len(v.Buf.LineRunes(v.Cursor.Y)) {
 		cha := string(v.Buf.LineRunes(v.Cursor.Y)[v.Cursor.X : v.Cursor.X+1])
 		if strings.Contains(autocloseNewLine, cha) {
-			v.Buf.Insert(v.Cursor.Loc, "\n\n")
+			wsn := GetLeadingWhitespace(v.Buf.Line(v.Cursor.Y))
+			v.Buf.Insert(v.Cursor.Loc, "\n"+wsn+"\n"+wsn)
 			if v.Buf.Settings["smartindent"].(bool) {
-				v.Buf.SmartIndent(v.Cursor.Loc, v.Cursor.Loc)
 				v.Cursor.Up()
 				v.Buf.SmartIndent(v.Cursor.Loc, v.Cursor.Loc)
 			}
