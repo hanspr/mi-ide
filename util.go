@@ -168,19 +168,15 @@ func MakeRelative(path, base string) (string, error) {
 	return path, nil
 }
 
-// BracePairsAreBalanced check if the expression has ballanced brackets
-// 0 = Line has balanced brace or dirty close brace " text} , text)" treated as balanced line
-// > 0 unbalanced indent
-// == -1 balanced } .. {, but requires indent on next line
-// == -2 unbalanced but is a closing brace and is the first one
-func BracePairsAreBalanced(str string) int {
+// Prepare line to process with smartindent
+func SmartIndentPrepareLine(str string) string {
 	// Make string easy to work on with
 	// Remove quoted strings so they do not fool the algorithm
 	r := regexp.MustCompile(`"(?:[^"\\]|\\.)*"`)
 	str = r.ReplaceAllString(str, "")
 	r = regexp.MustCompile(`'(?:[^'\\]|\\.)*'`)
 	str = r.ReplaceAllString(str, "")
-	// Remove scaped characterd so they do not fool the algorithm
+	// Remove scaped characters so they do not fool the algorithm
 	r = regexp.MustCompile(`\\.`)
 	str = r.ReplaceAllString(str, "")
 	// Reduce string size
@@ -188,45 +184,7 @@ func BracePairsAreBalanced(str string) int {
 	str = r.ReplaceAllString(str, "")
 	// Remove {..} [..] from string so it does not fool the algorithm
 	str = RemoveNestedBrace(str)
-	//messenger.AddLog(str)
-	k := 0
-	b := 0
-	pc := ""
-	bs := false
-	w := false
-	f := false
-	for i := 0; i < len(str); i++ {
-		c := str[i : i+1]
-		if c == "{" || c == "[" || c == "(" {
-			b++
-			if !f {
-				f = true
-				if w {
-					w = false
-				}
-			}
-		} else if c == "}" || c == "]" || c == ")" {
-			if bs && (pc == "}" || pc == "]" || pc == ")") {
-				if b == -1 {
-					b--
-				}
-			} else {
-				b--
-				if k == 0 {
-					f = true
-					bs = true
-					b--
-				} else if w {
-					b++
-				}
-			}
-		} else if k == 0 {
-			w = true
-		}
-		pc = c
-		k++
-	}
-	return b
+	return str
 }
 
 // RemoveNestedBrace Remove nested {..} [..]
@@ -265,15 +223,6 @@ func RemoveNestedBrace(str string) string {
 		}
 	}
 	return string(stack)
-}
-
-// BalanceBracePairs Find y line has a balanced braces
-func BalanceBracePairs(str string) string {
-	n := BracePairsAreBalanced(str)
-	if n > 0 || n == -1 {
-		return "\t"
-	}
-	return ""
 }
 
 // GetIndentation returns how many leves of indentation in a line depending in the

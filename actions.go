@@ -768,7 +768,6 @@ func (v *View) InsertNewline(usePlugin bool) bool {
 	}
 
 	ws := GetLeadingWhitespace(v.Buf.Line(v.Cursor.Y))
-	ws = ws + BalanceBracePairs(v.Buf.Line(v.Cursor.Y))
 
 	// Autoclose for (),[],{}
 	if v.Buf.Settings["autoclose"].(bool) && v.Cursor.X < len(v.Buf.LineRunes(v.Cursor.Y)) {
@@ -776,15 +775,15 @@ func (v *View) InsertNewline(usePlugin bool) bool {
 		if strings.Contains(autocloseNewLine, cha) {
 			v.Buf.Insert(v.Cursor.Loc, "\n\n")
 			if v.Buf.Settings["smartindent"].(bool) {
-				v.Buf.SmartIndent(v.Cursor.Loc, v.Cursor.Loc, false)
+				v.Buf.SmartIndent(v.Cursor.Loc, v.Cursor.Loc)
 				v.Cursor.Up()
-				v.Buf.SmartIndent(v.Cursor.Loc, v.Cursor.Loc, false)
+				v.Buf.SmartIndent(v.Cursor.Loc, v.Cursor.Loc)
 			}
 		} else {
 			v.Buf.Insert(v.Cursor.Loc, "\n")
 			cSave := v.Cursor.Loc
 			if v.Buf.Settings["smartindent"].(bool) {
-				v.Buf.SmartIndent(v.Cursor.Loc, v.Cursor.Loc, false)
+				v.Buf.SmartIndent(v.Cursor.Loc, v.Cursor.Loc)
 			}
 			v.Cursor.GotoLoc(Loc{cSave.X + CountLeadingWhitespace(v.Buf.Line(v.Cursor.Y)), v.Cursor.Y})
 		}
@@ -803,8 +802,8 @@ func (v *View) InsertNewline(usePlugin bool) bool {
 				v.Buf.Remove(Loc{0, v.Cursor.Y - 1}, Loc{Count(line), v.Cursor.Y - 1})
 			}
 		} else if v.Buf.Settings["smartindent"].(bool) {
-			v.Buf.SmartIndent(Loc{v.Cursor.Loc.X, v.Cursor.Loc.Y - 1}, Loc{v.Cursor.Loc.X, v.Cursor.Loc.Y - 1}, false)
-			v.Buf.SmartIndent(v.Cursor.Loc, v.Cursor.Loc, false)
+			v.Buf.SmartIndent(Loc{v.Cursor.Loc.X, v.Cursor.Loc.Y - 1}, Loc{v.Cursor.Loc.X, v.Cursor.Loc.Y - 1})
+			v.Buf.SmartIndent(v.Cursor.Loc, v.Cursor.Loc)
 		}
 	}
 	v.savedLoc = v.Cursor.Loc
@@ -941,7 +940,7 @@ func (v *View) IndentSelection(usePlugin bool) bool {
 			v.Cursor.SetSelectionEnd(end)
 		}
 		if v.Buf.Settings["smartindent"].(bool) {
-			v.Buf.SmartIndent(start, end, false)
+			v.Buf.SmartIndent(start, end)
 			v.Cursor.SetSelectionStart(start)
 		} else {
 			startY := start.Y
@@ -1046,7 +1045,7 @@ func (v *View) InsertTab(usePlugin bool) bool {
 		v.Buf.RemoveTrailingSpace(Loc{0, v.Cursor.Loc.Y})
 		cSave := v.Cursor.Loc
 		spc := CountLeadingWhitespace(v.Buf.Line(v.Cursor.Y))
-		v.Buf.SmartIndent(v.Cursor.Loc, v.Cursor.Loc, false)
+		v.Buf.SmartIndent(v.Cursor.Loc, v.Cursor.Loc)
 		diff := CountLeadingWhitespace(v.Buf.Line(v.Cursor.Y)) - spc
 		if diff != 0 && v.Buf.IsModified {
 			v.Cursor.GotoLoc(Loc{cSave.X + diff, v.Cursor.Y})

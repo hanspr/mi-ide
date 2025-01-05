@@ -481,24 +481,21 @@ func (b *Buffer) AddMultiComment(Start, Stop Loc) {
 }
 
 // SmartIndent indent the line
-func (b *Buffer) SmartIndent(Start, Stop Loc, once bool) {
-	stack := b.UndoStack.Len()
-	sCursor := b.Cursor.Loc
-	sMod := b.IsModified
+func (b *Buffer) SmartIndent(Start, Stop Loc) {
 	iChar := b.Settings["indentchar"].(string)
 	iMult := 1
 	comment := regexp.MustCompile(`^(?:#|//|(?:<!)?--|/\*)`)
 	skipBlockStart := regexp.MustCompile(`^(?:#|//|(?:<!)?--|/\*)<<<`)
 	skipBlockEnd := regexp.MustCompile(`^(?:#|//|(?:<!)?--|/\*)>>>`)
 	skipBlock := false
+	openBlock := regexp.MustCompile(`[\{\[\\(]$`)
+	closeBlock := regexp.MustCompile(`^[\}\]\)]`)
+	interBlock := regexp.MustCompile(`^[\}\]\)].+?[\{\[\\(]$`)
 	if iChar == " " {
 		iMult = int(b.Settings["tabsize"].(float64))
 		iChar = strings.Repeat(" ", iMult)
 	}
-	iStr := ""
-	n := 0
-	B := 0
-	re := regexp.MustCompile(`^[ \t]*`)
+	I := 0
 	Ys := Start.Y - 1
 	Ye := Stop.Y
 	if Ys < 0 {
@@ -508,13 +505,12 @@ func (b *Buffer) SmartIndent(Start, Stop Loc, once bool) {
 		for y := Ys; y >= 0; y-- {
 			l := b.Line(y)
 			if len(l) > 0 && !comment.MatchString(l) {
-				n = GetLineIndentetion(b.Line(y), iChar, iMult)
+				n := GetLineIndentetion(b.Line(y), iChar, iMult)
 				if n < 0 {
 					messenger.Alert("error", Language.Translate("You have mixed space and tabs in line above"))
 					continue
 				}
-				//n = CountLeadingWhitespace(b.Line(y)) / iMult
-				B = BracePairsAreBalanced(b.Line(y))
+				I = CountLeadingWhitespace(b.Line(y)) / iMult
 				break
 			} else if comment.MatchString(l) {
 				Ys--
@@ -524,76 +520,46 @@ func (b *Buffer) SmartIndent(Start, Stop Loc, once bool) {
 	if Ys < 0 {
 		Ys = 0
 	}
-	// Add as meany spaces to use as default indentation from here on
-	for i := 0; i < n; i++ {
-		iStr = iStr + iChar
-	}
-	// Check if this line has balanced braces
-	C := BracePairsAreBalanced(b.Line(Ys))
-	if C > 0 || C == -1 {
-		// Is unbalanced increase indentation
-		n++
-		iStr = iStr + iChar
-	}
-	Ys++
+	ci := 0
+	IndRef := 0
 	for y := Ys; y <= Ye; y++ {
-		x := Count(b.Line(y))
-		str := b.Line(y)
-		strB := str
+		lc := SmartIndentPrepareLine(b.Line(y))
 		if skipBlock {
-			if skipBlockEnd.MatchString(str) {
+			if skipBlockEnd.MatchString(lc) {
 				skipBlock = false
 			}
 			continue
 		}
-		if skipBlockStart.MatchString(str) {
+		if skipBlockStart.MatchString(lc) {
 			skipBlock = true
 			continue
 		}
-		if comment.MatchString(str) {
+		if comment.MatchString(lc) {
 			// ignore commented lines
 			continue
 		}
-		// Check if this line has balanced braces
-		c := BracePairsAreBalanced(str)
-		if c == -1 {
-			// Is unbalanced } ... { or closing ... } decrease indentation on current line
-			iStr = ""
-			for i := 0; i < n-1; i++ {
-				iStr = iStr + iChar
+		ci = I + IndRef
+		if interBlock.MatchString(lc) {
+			if y == Ys {
+				// if reference is an interblock, the reference already is correct, treat as indenting
+				IndRef++
+				continue
 			}
-		} else if c == -2 && C == B && once {
-			// Is unbalanced } ... { or closing ... } decrease indentation on current line
-			iStr = ""
-			for i := 0; i < n-1; i++ {
-				iStr = iStr + iChar
+			ci--
+		} else if openBlock.MatchString(lc) {
+			IndRef++
+		} else if closeBlock.MatchString(lc) {
+			if y == Ys {
+				// if reference outdent, is already outdented
+				continue
 			}
+			IndRef--
+			ci--
 		}
-
-		str = re.ReplaceAllString(str, iStr)
-		if c > 0 || c == -1 {
-			// Is unbalanced increase indentation again for next line
-			n++
-			iStr = iStr + iChar
-		}
-		if strB != str {
-			b.Replace(Loc{0, y}, Loc{x, y}, str)
-		}
-		// We need a second pass (to outdent wrong ones)
-		// To avoid rewriting all code above over again, call recursively only one time
-		if once {
-			return
-		}
-		b.SmartIndent(Loc{0, y}, Loc{0, y}, true)
-		// if c == -2 unbalanced close brace like ....}
-		// check if we really did an indentation on this case
-		if c == -2 && strB == b.Line(y) && b.IsModified && Start.Y == Stop.Y && sMod != b.IsModified {
-			// Not dirty, this is just a consequence of the algorithm, reverse modified status, undos, cursor
-			b.IsModified = false
-			b.Cursor.GotoLoc(sCursor)
-			for stack < b.UndoStack.Len() {
-				b.UndoStack.Pop()
-			}
+		li := CountLeadingWhitespace(b.Line(y))
+		if li != ci {
+			indentation := strings.Repeat(iChar, ci)
+			b.Replace(Loc{0, y}, Loc{li, y}, indentation)
 		}
 	}
 }

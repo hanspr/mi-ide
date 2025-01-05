@@ -221,7 +221,7 @@ func (v *View) paste(clip string) {
 		v.Buf.Insert(v.Cursor.Loc, clip)
 		x := v.Cursor.Loc.X
 		spc := CountLeadingWhitespace(v.Buf.Line(v.Cursor.Y))
-		v.Buf.SmartIndent(Start, v.Cursor.Loc, false)
+		v.Buf.SmartIndent(Start, v.Cursor.Loc)
 		if multiline {
 			v.Cursor.StartOfText()
 		} else {
