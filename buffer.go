@@ -546,23 +546,33 @@ func (b *Buffer) SmartIndent(Start, Stop Loc) {
 			// ignore commented lines
 			continue
 		}
+		// messenger.AddLog("ci + IndRef:", ci, "+", IndRef)
 		ci = I + IndRef
 		if interBlock.MatchString(lc) {
+			// messenger.AddLog("interblock")
 			if y == Ys {
 				// if reference is an interblock, the reference already is correct, treat as indenting
+				// messenger.AddLog("startline")
 				IndRef++
 				continue
 			}
 			ci--
 		} else if openBlock.MatchString(lc) {
+			// messenger.AddLog("indent")
 			IndRef++
 		} else if closeBlock.MatchString(lc) {
+			// messenger.AddLog("outdent")
 			if y == Ys {
+				// messenger.AddLog("start line")
 				// if reference outdent, is already outdented
 				continue
 			}
 			IndRef--
 			ci--
+		}
+		if ci < 0 {
+			// messenger.AddLog("NEGATIVO !!!!!")
+			ci = 0
 		}
 		li := CountLeadingWhitespace(b.Line(y))
 		if li != ci {
