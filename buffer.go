@@ -482,15 +482,23 @@ func (b *Buffer) AddMultiComment(Start, Stop Loc) {
 
 // SmartIndent indent the line
 func (b *Buffer) SmartIndent(Start, Stop Loc) {
+	bopen := `[\{\[\\(]$`
+	bclose := `^[\}\]\)]`
+	binter := `^[\}\]\)].+?[\{\[\\(]$`
+	if b.Settings["blockopen"].(string) != "" && b.Settings["blockclose"].(string) != "" && b.Settings["blockinter"].(string) != "" {
+		bopen = b.Settings["blockopen"].(string)
+		bclose = b.Settings["blockclose"].(string)
+		binter = b.Settings["blockinter"].(string)
+	}
 	iChar := b.Settings["indentchar"].(string)
 	iMult := 1
 	comment := regexp.MustCompile(`^(?:#|//|(?:<!)?--|/\*)`)
 	skipBlockStart := regexp.MustCompile(`^(?:#|//|(?:<!)?--|/\*)<<<`)
 	skipBlockEnd := regexp.MustCompile(`^(?:#|//|(?:<!)?--|/\*)>>>`)
 	skipBlock := false
-	openBlock := regexp.MustCompile(`[\{\[\\(]$`)
-	closeBlock := regexp.MustCompile(`^[\}\]\)]`)
-	interBlock := regexp.MustCompile(`^[\}\]\)].+?[\{\[\\(]$`)
+	openBlock := regexp.MustCompile(bopen)
+	closeBlock := regexp.MustCompile(bclose)
+	interBlock := regexp.MustCompile(binter)
 	if iChar == " " {
 		iMult = int(b.Settings["tabsize"].(float64))
 		iChar = strings.Repeat(" ", iMult)
