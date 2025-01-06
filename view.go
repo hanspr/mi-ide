@@ -349,9 +349,7 @@ func (v *View) ReOpen() {
 		screen.Clear()
 		v.Buf.ReOpen()
 		v.Relocate()
-		go func() {
-			v.Buf.SmartDetections()
-		}()
+		go v.Buf.SmartDetections()
 	}
 }
 
