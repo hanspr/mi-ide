@@ -343,11 +343,15 @@ func (v *View) CloseBuffer() {
 }
 
 // ReOpen reloads the current buffer
+// Trigger smart detection, to catch changes
 func (v *View) ReOpen() {
 	if v.CanClose() {
 		screen.Clear()
 		v.Buf.ReOpen()
 		v.Relocate()
+		go func() {
+			v.Buf.SmartDetections()
+		}()
 	}
 }
 

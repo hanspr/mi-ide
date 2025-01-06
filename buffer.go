@@ -1149,7 +1149,7 @@ func (b *Buffer) ChangeIndentation(cfrom, cto string, nfrom, nto int) {
 	b.IsModified = true
 }
 
-// SmartDetections detections or am I creating more problems?
+// Check buffer to confirm current settings are consistent
 func (b *Buffer) SmartDetections() {
 	check := 0
 	end := b.LinesNum()
