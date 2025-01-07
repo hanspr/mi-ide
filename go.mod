@@ -1,15 +1,13 @@
 module mi-ide
 
-go 1.22
-
-toolchain go1.22.0
+go 1.23.4
 
 require (
 	github.com/blang/semver v3.5.1+incompatible
 	github.com/dustin/go-humanize v1.0.0
 	github.com/flynn/json5 v0.0.0-20160717195620-7620272ed633
 	github.com/go-errors/errors v1.1.1
-	github.com/hanspr/clipboard v0.0.0-20210113190622-dadf6e273d68
+	github.com/hanspr/clipboard v0.1.0
 	github.com/hanspr/glob v0.0.0-20170209203856-dd4023a66dc3
 	github.com/hanspr/highlight v0.0.0-20190824225941-89571b5c169b
 	github.com/hanspr/ioencoder v0.0.0-20190927223910-112aaa3e7dca
@@ -29,7 +27,6 @@ require (
 
 require (
 	github.com/gdamore/encoding v1.0.0 // indirect
-	github.com/gtank/cryptopasta v0.0.0-20170601214702-1f550f6f2f69 // indirect
 	github.com/kylelemons/godebug v1.1.0 // indirect
 	github.com/lucasb-eyer/go-colorful v1.2.0 // indirect
 	github.com/npat-efault/poller v2.0.0+incompatible // indirect
@@ -39,8 +36,7 @@ require (
 	github.com/stretchr/testify v1.8.1 // indirect
 	github.com/zyedidia/poller v2.0.0+incompatible // indirect
 	github.com/zyedidia/pty v2.0.0+incompatible // indirect
-	golang.org/x/crypto v0.0.0-20210921155107-089bfa567519 // indirect
-	golang.org/x/sys v0.6.0 // indirect
-	golang.org/x/text v0.8.0 // indirect
+	golang.org/x/sys v0.29.0 // indirect
+	golang.org/x/text v0.21.0 // indirect
 	gopkg.in/yaml.v2 v2.4.0 // indirect
 )
