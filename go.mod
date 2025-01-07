@@ -36,7 +36,6 @@ require (
 	github.com/stretchr/testify v1.8.1 // indirect
 	github.com/zyedidia/poller v2.0.0+incompatible // indirect
 	github.com/zyedidia/pty v2.0.0+incompatible // indirect
-	golang.org/x/crypto v0.32.0 // indirect
 	golang.org/x/sys v0.29.0 // indirect
 	golang.org/x/text v0.21.0 // indirect
 	gopkg.in/yaml.v2 v2.4.0 // indirect
