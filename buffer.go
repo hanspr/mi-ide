@@ -513,12 +513,11 @@ func (b *Buffer) SmartIndent(Start, Stop Loc) {
 		for y := Ys; y >= 0; y-- {
 			l := b.Line(y)
 			if len(l) > 0 && !comment.MatchString(l) {
-				n := GetLineIndentetion(b.Line(y), iChar, iMult)
-				if n < 0 {
-					messenger.Alert("error", Language.Translate("You have mixed space and tabs in line above"))
+				I = GetLineIndentetion(b.Line(y), iChar, iMult)
+				if I < 0 {
+					I = 0
 					continue
 				}
-				I = CountLeadingWhitespace(b.Line(y)) / iMult
 				break
 			} else if comment.MatchString(l) {
 				Ys--
