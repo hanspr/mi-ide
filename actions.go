@@ -2624,8 +2624,8 @@ func (v *View) FindFunctionDeclaration(usePlugin bool) bool {
 	if word == "" {
 		return true
 	}
-	exp := `^\s*(?:func(?:tion)?|def(?:n|un|ine)?|fn|sub|let|\w+)\s*\s+(?:\(.*?\)\s+)?` + word + `\s*(?:(?:\(.*?\))|\s*\W)$`
-	// messenger.AddLog(exp)
+	exp := `^\s*(?:func(?:tion)?|def(?:n|un|ine)?|fn|sub|let|\w+)\s*\s+(?:\(.*?\)\s+)?` + word + `\s*(?:(?:\(.*?\))|\s*\W)$|` + word + `\s*:?=\s*(?:func(?:tion|fn|sub)[\s\{\(])`
+	messenger.AddLog(exp)
 	r := regexp.MustCompile(exp)
 	//search function definition in current view
 	line, ok := FindLineWith(r, v, v.Cursor.Loc, v.Buf.End(), false)
