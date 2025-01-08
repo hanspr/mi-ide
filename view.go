@@ -1290,7 +1290,7 @@ func (v *View) DisplayView() {
 					v.SetCursor(c)
 					if ActiveView && !v.Cursor.HasSelection() &&
 						v.Cursor.Y == char.realLoc.Y && v.Cursor.X == char.realLoc.X && (!cursorSet || i != 0) {
-						ShowMultiCursor(xOffset+char.visualLoc.X, yOffset+char.visualLoc.Y, i)
+						ShowMultiCursor(xOffset+char.visualLoc.X, yOffset+char.visualLoc.Y, i, v)
 						cursorSet = true
 					}
 				}
@@ -1312,7 +1312,7 @@ func (v *View) DisplayView() {
 				v.SetCursor(c)
 				if ActiveView && !v.Cursor.HasSelection() &&
 					v.Cursor.Y == lastChar.realLoc.Y && v.Cursor.X == lastChar.realLoc.X+1 {
-					ShowMultiCursor(lastX, yOffset+lastChar.visualLoc.Y, i)
+					ShowMultiCursor(lastX, yOffset+lastChar.visualLoc.Y, i, v)
 					cx, cy = lastX, yOffset+lastChar.visualLoc.Y
 				}
 			}
@@ -1324,7 +1324,7 @@ func (v *View) DisplayView() {
 				v.SetCursor(c)
 				if ActiveView && !v.Cursor.HasSelection() &&
 					v.Cursor.Y == realLineN {
-					ShowMultiCursor(xOffset, yOffset+visualLineN, i)
+					ShowMultiCursor(xOffset, yOffset+visualLineN, i, v)
 					cx, cy = xOffset, yOffset+visualLineN
 				}
 			}
@@ -1399,12 +1399,13 @@ func (v *View) DisplayView() {
 // ShowMultiCursor will display a cursor at a location
 // If i == 0 then the terminal cursor will be used
 // Otherwise a fake cursor will be drawn at the position
-func ShowMultiCursor(x, y, i int) {
+func ShowMultiCursor(x, y, i int, v *View) {
+	cursorColor := tcell.GetColor(v.Buf.Settings["cursorcolor"].(string))
 	if i == 0 {
 		screen.ShowCursor(x, y)
 	} else {
 		r, _, _, _ := screen.GetContent(x, y)
-		screen.SetContent(x, y, r, nil, defStyle.Reverse(true))
+		screen.SetContent(x, y, r, nil, defStyle.Background(cursorColor).Foreground(tcell.ColorBlack).Bold(true))
 	}
 }
 
