@@ -2319,7 +2319,7 @@ func (v *View) SpawnMultiCursorSelect(usePlugin bool) bool {
 			v.Cursor.ResetSelection()
 			v.Cursor.GotoLoc(Loc{0, startLine})
 
-			for i := startLine; i <= endLine; i++ {
+			for i := startLine; i < endLine; i++ {
 				c := &Cursor{
 					buf: v.Buf,
 				}
