@@ -61,7 +61,7 @@ func (m *microMenu) Menu() {
 		name := "microide"
 		row := 0
 		f := m.myapp.AddFrame("menu", 1, 0, 1, 1, "fixed")
-		m.AddSubmenu(name, "Micro-ide")
+		m.AddSubmenu(name, "Mi-ide")
 		f.AddWindowMenuLabel(name, fmt.Sprintf("%-"+strconv.Itoa(m.maxwidth+1)+"s", "Mi-ide"), "", 0, row, m.ShowSubmenuItems, "", "")
 		m.AddSubMenuItem("microide", Language.Translate("Global Settings"), m.GlobalConfigDialog)
 		m.AddSubMenuItem("microide", Language.Translate("KeyBindings"), m.KeyBindingsDialog)

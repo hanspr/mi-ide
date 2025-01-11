@@ -466,7 +466,7 @@ func main() {
 	defer func() {
 		if err := recover(); err != nil {
 			screen.Fini()
-			fmt.Println("Micro-ide encountered an error:", err)
+			fmt.Println("mi-ide encountered an error:", err)
 			// Print the stack trace too
 			fmt.Print(errors.Wrap(err, 2).ErrorStack())
 			os.Exit(1)

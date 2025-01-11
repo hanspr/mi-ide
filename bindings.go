@@ -566,7 +566,7 @@ func DefaultBindings() map[string]string {
 		"Alt-.": "RemoveAllMultiCursors",
 		"Alt-;": "SkipMultiCursor",
 
-		// Micro-ide services
+		// mi-ide services
 		"Alt-x": "CutToCloud",
 		"Alt-c": "CopyToCloud",
 		"Alt-v": "PasteCloud",
