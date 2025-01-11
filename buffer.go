@@ -503,6 +503,7 @@ func (b *Buffer) SmartIndent(Start, Stop Loc) {
 		iMult = int(b.Settings["tabsize"].(float64))
 		iChar = strings.Repeat(" ", iMult)
 	}
+	indentChangeDone := false
 	I := 0
 	Ys := Start.Y - 1
 	Ye := Stop.Y
@@ -514,8 +515,14 @@ func (b *Buffer) SmartIndent(Start, Stop Loc) {
 			l := b.Line(y)
 			if len(l) > 0 && !comment.MatchString(l) {
 				I = GetLineIndentetion(b.Line(y), iChar, iMult)
-				if I < 0 {
-					I = 0
+				if I < 0 && !indentChangeDone {
+					indentChangeDone = true
+					cfrom := "\t"
+					if b.Settings["indentchar"].(string) == "\t" {
+						cfrom = " "
+					}
+					b.ChangeIndentation(cfrom, b.Settings["indentchar"].(string), int(b.Settings["tabsize"].(float64)), int(b.Settings["tabsize"].(float64)))
+					y--
 					continue
 				}
 				break
