@@ -522,7 +522,7 @@ func (b *Buffer) SmartIndent(Start, Stop Loc) {
 						cfrom = " "
 					}
 					b.ChangeIndentation(cfrom, b.Settings["indentchar"].(string), int(b.Settings["tabsize"].(float64)), int(b.Settings["tabsize"].(float64)))
-					y--
+					y++
 					continue
 				}
 				break
