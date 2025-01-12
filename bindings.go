@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"os"
 	"strings"
 	"unicode"
@@ -415,43 +414,6 @@ func findMouseAction(v string) func(*View, bool, *tcell.EventMouse) bool {
 		action = LuaFunctionMouseBinding(v)
 	}
 	return action
-}
-
-// TryBindKey tries to bind a key by writing to configDir/bindings.json
-// This function is unused for now
-func TryBindKey(k, v string) {
-	filename := configDir + "/bindings.json"
-	if _, e := os.Stat(filename); e == nil {
-		input, err := os.ReadFile(filename)
-		if err != nil {
-			TermMessage("Error reading bindings.json file: " + err.Error())
-			return
-		}
-
-		conflict := -1
-		lines := strings.Split(string(input), "\n")
-		for i, l := range lines {
-			parts := strings.Split(l, ":")
-			if len(parts) >= 2 {
-				if strings.Contains(parts[0], k) {
-					conflict = i
-					TermMessage("Warning: Keybinding conflict:", k, " has been overwritten")
-				}
-			}
-		}
-
-		binding := fmt.Sprintf("    \"%s\": \"%s\",", k, v)
-		if conflict == -1 {
-			lines = append([]string{lines[0], binding}, lines[conflict:]...)
-		} else {
-			lines = append(append(lines[:conflict], binding), lines[conflict+1:]...)
-		}
-		txt := strings.Join(lines, "\n")
-		err = os.WriteFile(filename, []byte(txt), 0644)
-		if err != nil {
-			TermMessage("Error")
-		}
-	}
 }
 
 // BindKey takes a key and an action and binds the two together
