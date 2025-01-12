@@ -203,11 +203,6 @@ func (sline *Statusline) Display() {
 	// Maybe there is a unicode filename?
 	fileRunes := []rune(file)
 
-	// if sline.view.Type == vtTerm {
-	// 	fileRunes = []rune(sline.view.term.title)
-	// 	rightText = ""
-	// }
-
 	viewX := sline.view.x
 	if viewX != 0 {
 		screen.SetContent(viewX, y, '█', nil, statusLineStyle)

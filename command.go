@@ -55,10 +55,9 @@ func init() {
 		"Pwd":        Pwd,
 		"Open":       Open,
 		"TabSwitch":  TabSwitch,
-		// "Term":       Term,
-		"MemUsage": MemUsage,
-		"Retab":    Retab,
-		"Raw":      Raw,
+		"MemUsage":   MemUsage,
+		"Retab":      Retab,
+		"Raw":        Raw,
 	}
 }
 
@@ -684,19 +683,6 @@ func ReplaceAll(args []string) {
 	Replace(append(args, "-a"))
 	replacing = false
 }
-
-// Term opens a terminal in the current view
-// func Term(args []string) {
-// 	var err error
-// 	if len(args) == 0 {
-// 		err = CurView().StartTerminal([]string{os.Getenv("SHELL"), "-i"}, true, false, "")
-// 	} else {
-// 		err = CurView().StartTerminal(args, true, false, "")
-// 	}
-// 	if err != nil {
-// 		messenger.Alert("error", err)
-// 	}
-// }
 
 // HandleCommand handles input from the user
 func HandleCommand(input string) {

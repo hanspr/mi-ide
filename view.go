@@ -111,9 +111,6 @@ type View struct {
 
 	splitNode *LeafNode
 
-	// Virtual terminal
-	// term *Terminal
-
 	frozen bool
 }
 
@@ -145,8 +142,6 @@ func NewViewWidthHeight(buf *Buffer, w, h int) *View {
 		hotspot: make(map[string]Loc),
 	}
 
-	// v.term = new(Terminal)
-
 	for pl := range loadedPlugins {
 		if GetPluginOption(pl, "ftype") != "*" && (GetPluginOption(pl, "ftype") == nil || GetPluginOption(pl, "ftype").(string) != CurView().Buf.FileType()) {
 			continue
@@ -163,24 +158,6 @@ func NewViewWidthHeight(buf *Buffer, w, h int) *View {
 	}
 	return v
 }
-
-// StartTerminal execs a command in this view
-// func (v *View) StartTerminal(execCmd []string, wait bool, getOutput bool, luaCallback string) error {
-// 	err := v.term.Start(execCmd, v, getOutput)
-// 	v.term.wait = wait
-// 	v.term.callback = luaCallback
-// 	if err == nil {
-// 		v.term.Resize(v.Width, v.Height)
-// 		v.Type = vtTerm
-// 	}
-// 	return err
-// }
-
-// // CloseTerminal shuts down the tty running in this view
-// // and returns it to the default view type
-// func (v *View) CloseTerminal() {
-// 	v.term.Stop()
-// }
 
 // AddTabbarSpace creates an extra row for the tabbar if necessary
 func (v *View) AddTabbarSpace() {
@@ -282,13 +259,8 @@ func (v *View) CanClose() bool {
 	if v.Type == vtDefault && v.Buf.Modified() {
 		var choice bool
 		var canceled bool
-		// if v.Buf.Settings["autosave"].(bool) {
-		// 	choice = true
-		// } else {
 		choice, canceled = messenger.YesNoPrompt(Language.Translate("Save changes to") + " " + v.Buf.GetName() + " " + Language.Translate("before closing? (y,n,esc)"))
-		// }
 		if !canceled {
-			//if char == 'y' {
 			if choice {
 				v.Save(true)
 			}
@@ -610,11 +582,6 @@ func (v *View) SetCursor(c *Cursor) bool {
 
 // HandleEvent handles an event passed by the main loop
 func (v *View) HandleEvent(event tcell.Event) {
-	// if v.Type == vtTerm {
-	// 	v.term.HandleEvent(event)
-	// 	return
-	// }
-
 	if v.Type == vtRaw {
 		v.Buf.Insert(v.Cursor.Loc, reflect.TypeOf(event).String()[7:])
 		v.Buf.Insert(v.Cursor.Loc, fmt.Sprintf(": %q\n", event.EscSeq()))
@@ -1016,10 +983,6 @@ func (v *View) DisplayView() {
 	if CurView().Num != v.Num {
 		ActiveView = false
 	}
-	// if v.Type == vtTerm {
-	// 	v.term.Display()
-	// 	return
-	// }
 
 	if v.Buf.Settings["softwrap"].(bool) && v.leftCol != 0 {
 		v.leftCol = 0

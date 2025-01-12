@@ -235,10 +235,9 @@ func GetOption(name string) interface{} {
 // Note that colorscheme is a global only option
 func DefaultGlobalSettings() map[string]interface{} {
 	return map[string]interface{}{
-		"autoclose":  true,
-		"autoindent": true,
-		"autoreload": true,
-		// "autosave":       false,
+		"autoclose":      true,
+		"autoindent":     true,
+		"autoreload":     true,
 		"basename":       false,
 		"colorcolumn":    float64(0),
 		"colorscheme":    "default",
@@ -284,10 +283,9 @@ func DefaultGlobalSettings() map[string]interface{} {
 // Note that filetype is a local only option
 func DefaultLocalSettings() map[string]interface{} {
 	return map[string]interface{}{
-		"autoclose":  true,
-		"autoindent": true,
-		"autoreload": true,
-		// "autosave":       false,
+		"autoclose":      true,
+		"autoindent":     true,
+		"autoreload":     true,
 		"basename":       false,
 		"blockopen":      "",
 		"blockclose":     "",

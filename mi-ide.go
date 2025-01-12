@@ -24,7 +24,6 @@ import (
 const (
 	doubleClickThreshold = 400 // How many milliseconds to wait before a second click is not a double click
 	undoThreshold        = 500 // If two events are less than n milliseconds apart, undo both of them
-	// autosaveTime         = 8   // Number of seconds to wait before autosaving
 )
 
 // MouseClick mouse clic structure to follow mouse clics
@@ -86,11 +85,6 @@ var (
 
 	// Event channel
 	events chan tcell.Event
-	// autosave chan bool
-
-	// Channels for the terminal emulator
-	// updateterm chan bool
-	// closeterm  chan int
 
 	// How many redraws have happened
 	numRedraw uint
@@ -571,9 +565,6 @@ func main() {
 
 	jobs = make(chan JobFunction, 100)
 	events = make(chan tcell.Event, 100)
-	// autosave = make(chan bool)
-	// updateterm = make(chan bool)
-	// closeterm = make(chan int)
 
 	// Loading all plugins
 	LoadPlugins()
@@ -598,15 +589,6 @@ func main() {
 		}
 	}()
 
-	// go func() {
-	// 	for {
-	// 		time.Sleep(autosaveTime * time.Second)
-	// 		if globalSettings["autosave"].(bool) {
-	// 			autosave <- true
-	// 		}
-	// 	}
-	// }()
-
 	for {
 		// Display everything (if app is not running)
 		if apprunning == nil {
@@ -621,14 +603,6 @@ func main() {
 			// If a new job has finished while running in the background we should execute the callback
 			f.function(f.output, f.args...)
 			continue
-		// case <-autosave:
-		// 	if CurView().Buf.Path != "" {
-		// 		CurView().Save(true)
-		// 	}
-		// case <-updateterm:
-		// 	continue
-		// case vnum := <-closeterm:
-		// 	tabs[curTab].Views[vnum].CloseTerminal()
 		case event = <-events:
 		}
 

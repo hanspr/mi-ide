@@ -218,9 +218,6 @@ func (t *Tab) Resize() {
 
 	for i, v := range t.Views {
 		v.Num = i
-		// if v.Type == vtTerm {
-		// 	v.term.Resize(v.Width, v.Height)
-		// }
 	}
 	MicroToolBar.FixTabsIconArea()
 }
