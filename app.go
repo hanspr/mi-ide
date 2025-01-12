@@ -1537,22 +1537,22 @@ func (e *AppElement) TextAreaKeyEvent(key string, x, y int) {
 			e.cursor.X--
 			b = a.removeCharAt(b, e.cursor.X)
 			e.value = string(b)
-		} else if key == "Delete" {
+		} else if key == "Delete" || key == "Ctrl+U" {
 			b = a.removeCharAt(b, e.cursor.X)
 			e.value = string(b)
-		} else if key == "Left" {
+		} else if key == "Left" || key == "Alt+j" {
 			if e.cursor.X-1 < 0 {
 				return
 			}
 			e.cursor.X--
 			e.setACursorFromECursor()
-		} else if key == "Right" {
+		} else if key == "Right" || key == "Alt+l" {
 			if e.cursor.X+1 > len(b) || (x+1 > e.apose.X && y == e.apose.Y) {
 				return
 			}
 			e.cursor.X++
 			e.setACursorFromECursor()
-		} else if key == "Up" {
+		} else if key == "Up" || key == "Alt+i" {
 			if a.cursor.Y-1 < e.aposb.Y {
 				return
 			}
@@ -1560,7 +1560,7 @@ func (e *AppElement) TextAreaKeyEvent(key string, x, y int) {
 			e.cursor.X = e.getECursorFromACursor()
 			a.screen.Show()
 			return
-		} else if key == "Down" {
+		} else if key == "Down" || key == "Alt+k" {
 			if a.cursor.Y+1 > e.apose.Y {
 				return
 			}
@@ -1568,11 +1568,11 @@ func (e *AppElement) TextAreaKeyEvent(key string, x, y int) {
 			e.cursor.X = e.getECursorFromACursor()
 			a.screen.Show()
 			return
-		} else if key == "Home" {
+		} else if key == "Home" || key == "Alt+u" {
 			a.cursor.X = e.aposb.X
 			e.cursor.X = 0
 			a.cursor.Y = e.aposb.Y
-		} else if key == "End" {
+		} else if key == "End" || key == "Alt+o" {
 			e.cursor.X = len(b)
 		} else if key == "Enter" {
 			return
@@ -1581,7 +1581,7 @@ func (e *AppElement) TextAreaKeyEvent(key string, x, y int) {
 			e.value = e.value + clip
 			e.TextAreaKeyEvent("End", x, y)
 			return
-		} else if key == "Ctrl+R" || key == "Ctrl+K" {
+		} else if key == "Ctrl+R" || key == "Ctrl+J" {
 			e.value = ""
 			a.cursor.X = e.aposb.X
 			e.cursor.X = 0
@@ -1618,10 +1618,10 @@ func (e *AppElement) TextBoxKeyEvent(key string, x, y int) {
 			}
 			b = a.removeCharAt(b, e.cursor.X)
 			e.value = string(b)
-		} else if key == "Delete" {
+		} else if key == "Delete" || key == "Ctrl+U" {
 			b = a.removeCharAt(b, e.cursor.X)
 			e.value = string(b)
-		} else if key == "Left" {
+		} else if key == "Left" || key == "Alt+j" {
 			if e.cursor.X-1 < 0 {
 				return
 			}
@@ -1629,18 +1629,18 @@ func (e *AppElement) TextBoxKeyEvent(key string, x, y int) {
 				a.cursor.X--
 			}
 			e.cursor.X--
-		} else if key == "Right" {
+		} else if key == "Right" || key == "Alt+l" {
 			if e.cursor.X < maxlength-1 && e.cursor.X < len(b) {
 				e.cursor.X++
 				if a.cursor.X+1 <= e.apose.X {
 					a.cursor.X++
 				}
 			}
-		} else if key == "Home" {
+		} else if key == "Home" || key == "Alt+u" {
 			a.cursor.X = e.aposb.X
 			e.cursor.X = 0
 			e.offset = 0
-		} else if key == "End" {
+		} else if key == "End" || key == "Alt+o" {
 			if len(b) == maxlength {
 				e.cursor.X = len(b) - 1
 				a.cursor.X = e.aposb.X + len(b) - 1
@@ -1662,7 +1662,7 @@ func (e *AppElement) TextBoxKeyEvent(key string, x, y int) {
 		} else if key == "Ctrl+V" {
 			clip := Clip.ReadFrom("local", "cip")
 			e.InsertStringAt(e.cursor.X, clip)
-		} else if key == "Ctrl+R" || key == "Ctrl+K" {
+		} else if key == "Ctrl+R" || key == "Ctrl+J" {
 			e.value = ""
 			a.cursor.X = e.aposb.X
 			e.cursor.X = 0
@@ -1875,7 +1875,13 @@ func (a *MicroApp) HandleEvents(event tcell.Event) {
 		if ev.Key() == 256 && ev.Modifiers() == 0 {
 			char = string(ev.Rune())
 		} else {
-			char = ev.Name()
+			if ev.Modifiers() == 4 {
+				char = "Alt+" + string(ev.Rune())
+			} else if ev.Modifiers() == 3 {
+				char = "Ctrl+" + string(ev.Rune())
+			} else {
+				char = ev.Name()
+			}
 		}
 		if a.WindowKeyEvent != nil {
 			a.WindowKeyEvent(char, a.cursor.X, a.cursor.Y)
