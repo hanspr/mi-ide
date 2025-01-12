@@ -2,6 +2,7 @@ package main
 
 import (
 	"os"
+	"sort"
 	"strings"
 )
 
@@ -60,7 +61,12 @@ func FileComplete(input string) (string, []string) {
 // CommandComplete autocompletes commands
 func CommandComplete(input string) (string, []string) {
 	var suggestions []string
-	for cmd := range commands {
+	keys := make([]string, 0, len(commands))
+	for k := range commands {
+		keys = append(keys, k)
+	}
+	sort.Strings(keys)
+	for _, cmd := range keys {
 		if strings.HasPrefix(cmd, input) {
 			suggestions = append(suggestions, cmd)
 		}
