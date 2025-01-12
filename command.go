@@ -4,10 +4,8 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
-	"regexp"
 	"runtime"
 	"strings"
-	"time"
 
 	humanize "github.com/dustin/go-humanize"
 	"github.com/hanspr/shellwords"
@@ -33,48 +31,42 @@ var (
 
 func init() {
 	commandActions = map[string]func([]string){
-		"Set":        Set,
-		"SetLocal":   SetLocal,
-		"Show":       Show,
-		"ShowKey":    ShowKey,
-		"Bind":       Bind,
-		"Replace":    Replace,
-		"ReplaceAll": ReplaceAll,
-		"VSplit":     VSplit,
-		"HSplit":     HSplit,
-		"Help":       Help,
-		"Eval":       Eval,
-		"ToggleLog":  ToggleLog,
-		"Plugin":     PluginCmd,
-		"Reload":     Reload,
-		"Cd":         Cd,
-		"Pwd":        Pwd,
-		"MemUsage":   MemUsage,
-		"Raw":        Raw,
+		"Set":       Set,
+		"SetLocal":  SetLocal,
+		"Show":      Show,
+		"ShowKey":   ShowKey,
+		"Bind":      Bind,
+		"VSplit":    VSplit,
+		"HSplit":    HSplit,
+		"Help":      Help,
+		"ToggleLog": ToggleLog,
+		"Plugin":    PluginCmd,
+		"Reload":    Reload,
+		"Cd":        Cd,
+		"Pwd":       Pwd,
+		"MemUsage":  MemUsage,
+		"Raw":       Raw,
 	}
 }
 
 // DefaultCommands returns a map containing mi-ide's default commands
 func DefaultCommands() map[string]StrCommand {
 	return map[string]StrCommand{
-		"set":        {"Set", []Completion{OptionCompletion, OptionValueCompletion}},
-		"setlocal":   {"SetLocal", []Completion{OptionCompletion, OptionValueCompletion}},
-		"show":       {"Show", []Completion{OptionCompletion, NoCompletion}},
-		"showkey":    {"ShowKey", []Completion{NoCompletion}},
-		"bind":       {"Bind", []Completion{NoCompletion}},
-		"replace":    {"Replace", []Completion{NoCompletion}},
-		"replaceall": {"ReplaceAll", []Completion{NoCompletion}},
-		"vsplit":     {"VSplit", []Completion{FileCompletion, NoCompletion}},
-		"hsplit":     {"HSplit", []Completion{FileCompletion, NoCompletion}},
-		"help":       {"Help", []Completion{HelpCompletion, NoCompletion}},
-		"eval":       {"Eval", []Completion{NoCompletion}},
-		"log":        {"ToggleLog", []Completion{NoCompletion}},
-		"plugin":     {"Plugin", []Completion{PluginCmdCompletion, PluginNameCompletion}},
-		"reload":     {"Reload", []Completion{NoCompletion}},
-		"cd":         {"Cd", []Completion{FileCompletion}},
-		"pwd":        {"Pwd", []Completion{NoCompletion}},
-		"memusage":   {"MemUsage", []Completion{NoCompletion}},
-		"raw":        {"Raw", []Completion{NoCompletion}},
+		"set":      {"Set", []Completion{OptionCompletion, OptionValueCompletion}},
+		"setlocal": {"SetLocal", []Completion{OptionCompletion, OptionValueCompletion}},
+		"show":     {"Show", []Completion{OptionCompletion, NoCompletion}},
+		"showkey":  {"ShowKey", []Completion{NoCompletion}},
+		"bind":     {"Bind", []Completion{NoCompletion}},
+		"vsplit":   {"VSplit", []Completion{FileCompletion, NoCompletion}},
+		"hsplit":   {"HSplit", []Completion{FileCompletion, NoCompletion}},
+		"help":     {"Help", []Completion{HelpCompletion, NoCompletion}},
+		"log":      {"ToggleLog", []Completion{NoCompletion}},
+		"plugin":   {"Plugin", []Completion{PluginCmdCompletion, PluginNameCompletion}},
+		"reload":   {"Reload", []Completion{NoCompletion}},
+		"cd":       {"Cd", []Completion{FileCompletion}},
+		"pwd":      {"Pwd", []Completion{NoCompletion}},
+		"memusage": {"MemUsage", []Completion{NoCompletion}},
+		"raw":      {"Raw", []Completion{NoCompletion}},
 	}
 }
 
@@ -350,43 +342,6 @@ func HSplit(args []string) {
 	}
 }
 
-// Eval evaluates a lua expression
-func Eval(args []string) {
-	if len(args) >= 1 {
-		err := L.DoString(args[0])
-		if err != nil {
-			messenger.Alert("error", err)
-		}
-	} else {
-		messenger.Alert("error", Language.Translate("Not enough arguments"))
-	}
-}
-
-// NewTab opens the given file in a new tab
-func NewTab(args []string) {
-	if len(args) == 0 {
-		CurView().AddTab(true)
-	} else {
-		buf, err := NewBufferFromFile(args[0])
-		if err != nil {
-			messenger.Alert("error", err)
-			return
-		}
-
-		tab := NewTabFromView(NewView(buf))
-		tab.SetNum(len(tabs))
-		tabs = append(tabs, tab)
-		curTab = len(tabs) - 1
-		if len(tabs) == 2 {
-			for _, t := range tabs {
-				for _, v := range t.Views {
-					v.AddTabbarSpace()
-				}
-			}
-		}
-	}
-}
-
 // Set sets an option
 func Set(args []string) {
 	if len(args) < 2 {
@@ -454,150 +409,6 @@ func Bind(args []string) {
 		return
 	}
 	BindKey(args[0], args[1])
-}
-
-// Replace runs search and replace
-func Replace(args []string) {
-
-	if len(args) < 2 || args[0] == args[1] {
-		// We need to find both a search and replace expression
-		messenger.Alert("error", Language.Translate("Invalid replace statement:"), " "+strings.Join(args, " "))
-		return
-	}
-
-	all := false
-	noRegex := false
-	mods := "(?m)"
-	if len(args) > 2 {
-		for _, arg := range args[2:] {
-			switch arg {
-			case "a":
-				all = true
-			case "i":
-				mods = mods + "(?i)"
-			case "s":
-				mods = mods + "(?s)"
-			case "l":
-				noRegex = true
-			case "":
-			default:
-				messenger.Alert("error", Language.Translate("Invalid flag:"), " ", arg)
-				return
-			}
-		}
-	}
-
-	search := string(args[0])
-
-	if noRegex {
-		search = regexp.QuoteMeta(search)
-	} else {
-		search = mods + search
-	}
-
-	replace := string(args[1])
-	replace = ExpandString(replace)
-	regex, err := regexp.Compile(search)
-	if err != nil {
-		// There was an error with the user's regex
-		messenger.Alert("error", err.Error())
-		return
-	}
-
-	view := CurView()
-	startLine := view.searchSave.Y
-	found := 0
-	view.searchLoops = 0
-
-	for {
-		var choice rune
-		var canceled bool
-		// The 'check' flag was used
-		Search(search, view, true)
-		if !view.Cursor.HasSelection() {
-			break
-		}
-		view.Relocate()
-		RedrawAll(true)
-		if view.searchLoops > 0 && view.Cursor.Y > startLine {
-			view.searchLoops = 0
-			if view.Cursor.HasSelection() {
-				view.Cursor.Loc = view.Cursor.CurSelection[0]
-				view.Cursor.ResetSelection()
-			}
-			messenger.Reset()
-			break
-		}
-		y := []rune(Language.Translate("y"))[0]
-		n := []rune(Language.Translate("n"))[0]
-		q := []rune(Language.Translate("q"))[0]
-		I := []rune(Language.Translate("!"))[0]
-		if all && !freeze {
-			freeze = true
-		} else if !all {
-			choice, canceled = messenger.LetterPrompt(true, Language.Translate("Perform replacement? (y,n,q,!)"), y, n, q, I)
-		}
-		if canceled {
-			if view.Cursor.HasSelection() {
-				view.Cursor.Loc = view.Cursor.CurSelection[0]
-				view.Cursor.ResetSelection()
-			}
-			messenger.Reset()
-			break
-		} else if choice == y || choice == I || all {
-			sel := view.Cursor.GetSelection()
-			rep := regex.ReplaceAllString(sel, replace)
-			if Count(rep) > Count(sel) {
-				searchStart = Loc{view.Cursor.CurSelection[1].X + 1, view.Cursor.Loc.Y}
-			} else {
-				searchStart = Loc{view.Cursor.CurSelection[1].X - 1, view.Cursor.Loc.Y}
-			}
-			if searchStart.X > len(view.Buf.LineBytes(searchStart.Y))-1 {
-				searchStart = Loc{0, searchStart.Y + 1}
-				if searchStart.Y > view.Buf.Len()-1 {
-					searchStart.Y = view.Buf.Len() - 1
-				}
-			}
-			view.Cursor.DeleteSelection()
-			view.Buf.Insert(view.Cursor.Loc, rep)
-			if !all {
-				messenger.Reset()
-			}
-			if choice == I && !all {
-				all = true
-			}
-			found++
-		} else if choice == q {
-			if view.Cursor.HasSelection() {
-				view.Cursor.Loc = view.Cursor.CurSelection[0]
-				view.Cursor.ResetSelection()
-			}
-			messenger.Reset()
-			break
-		} else {
-			searchStart = view.Cursor.CurSelection[1]
-		}
-	}
-	replacing = false
-	freeze = false
-	view.Cursor.Relocate()
-
-	if found > 1 {
-		messenger.Message(Language.Translate("Replaced"), " ", found, " "+Language.Translate("occurrences of"), " ", search)
-	} else if found == 1 {
-		messenger.Message(Language.Translate("Replaced"), " ", found, " "+Language.Translate("occurrence of "), search)
-	} else {
-		messenger.Message(Language.Translate("Nothing matched"), " ", search)
-	}
-}
-
-// ReplaceAll replaces search term all at once
-func ReplaceAll(args []string) {
-	// aliased to Replace command
-	replacing = true
-	replaceTime = time.Now()
-	Replace(append(args, "-a"))
-	replacing = false
 }
 
 // HandleCommand handles input from the user

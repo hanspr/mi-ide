@@ -2510,6 +2510,141 @@ func (v *View) FindDialogFinished(values map[string]string) {
 	}
 }
 
+// Replace runs search and replace
+func Replace(args []string) {
+
+	if len(args) < 2 || args[0] == args[1] {
+		// We need to find both a search and replace expression
+		messenger.Alert("error", Language.Translate("Invalid replace statement:"), " "+strings.Join(args, " "))
+		return
+	}
+
+	all := false
+	noRegex := false
+	mods := "(?m)"
+	if len(args) > 2 {
+		for _, arg := range args[2:] {
+			switch arg {
+			case "a":
+				all = true
+			case "i":
+				mods = mods + "(?i)"
+			case "s":
+				mods = mods + "(?s)"
+			case "l":
+				noRegex = true
+			case "":
+			default:
+				messenger.Alert("error", Language.Translate("Invalid flag:"), " ", arg)
+				return
+			}
+		}
+	}
+
+	search := string(args[0])
+
+	if noRegex {
+		search = regexp.QuoteMeta(search)
+	} else {
+		search = mods + search
+	}
+
+	replace := string(args[1])
+	replace = ExpandString(replace)
+	regex, err := regexp.Compile(search)
+	if err != nil {
+		// There was an error with the user's regex
+		messenger.Alert("error", err.Error())
+		return
+	}
+
+	view := CurView()
+	startLine := view.searchSave.Y
+	found := 0
+	view.searchLoops = 0
+
+	for {
+		var choice rune
+		var canceled bool
+		// The 'check' flag was used
+		Search(search, view, true)
+		if !view.Cursor.HasSelection() {
+			break
+		}
+		view.Relocate()
+		RedrawAll(true)
+		if view.searchLoops > 0 && view.Cursor.Y > startLine {
+			view.searchLoops = 0
+			if view.Cursor.HasSelection() {
+				view.Cursor.Loc = view.Cursor.CurSelection[0]
+				view.Cursor.ResetSelection()
+			}
+			messenger.Reset()
+			break
+		}
+		y := []rune(Language.Translate("y"))[0]
+		n := []rune(Language.Translate("n"))[0]
+		q := []rune(Language.Translate("q"))[0]
+		I := []rune(Language.Translate("!"))[0]
+		if all && !freeze {
+			freeze = true
+		} else if !all {
+			choice, canceled = messenger.LetterPrompt(true, Language.Translate("Perform replacement? (y,n,q,!)"), y, n, q, I)
+		}
+		if canceled {
+			if view.Cursor.HasSelection() {
+				view.Cursor.Loc = view.Cursor.CurSelection[0]
+				view.Cursor.ResetSelection()
+			}
+			messenger.Reset()
+			break
+		} else if choice == y || choice == I || all {
+			sel := view.Cursor.GetSelection()
+			rep := regex.ReplaceAllString(sel, replace)
+			if Count(rep) > Count(sel) {
+				searchStart = Loc{view.Cursor.CurSelection[1].X + 1, view.Cursor.Loc.Y}
+			} else {
+				searchStart = Loc{view.Cursor.CurSelection[1].X - 1, view.Cursor.Loc.Y}
+			}
+			if searchStart.X > len(view.Buf.LineBytes(searchStart.Y))-1 {
+				searchStart = Loc{0, searchStart.Y + 1}
+				if searchStart.Y > view.Buf.Len()-1 {
+					searchStart.Y = view.Buf.Len() - 1
+				}
+			}
+			view.Cursor.DeleteSelection()
+			view.Buf.Insert(view.Cursor.Loc, rep)
+			if !all {
+				messenger.Reset()
+			}
+			if choice == I && !all {
+				all = true
+			}
+			found++
+		} else if choice == q {
+			if view.Cursor.HasSelection() {
+				view.Cursor.Loc = view.Cursor.CurSelection[0]
+				view.Cursor.ResetSelection()
+			}
+			messenger.Reset()
+			break
+		} else {
+			searchStart = view.Cursor.CurSelection[1]
+		}
+	}
+	replacing = false
+	freeze = false
+	view.Cursor.Relocate()
+
+	if found > 1 {
+		messenger.Message(Language.Translate("Replaced"), " ", found, " "+Language.Translate("occurrences of"), " ", search)
+	} else if found == 1 {
+		messenger.Message(Language.Translate("Replaced"), " ", found, " "+Language.Translate("occurrence of "), search)
+	} else {
+		messenger.Message(Language.Translate("Nothing matched"), " ", search)
+	}
+}
+
 // mi-ide Services
 
 // UploadToCloud uload file to the cloud

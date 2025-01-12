@@ -436,3 +436,28 @@ func DisplayTabs() {
 		}
 	}
 }
+
+// NewTab opens the given file in a new tab
+func NewTab(args []string) {
+	if len(args) == 0 {
+		CurView().AddTab(true)
+	} else {
+		buf, err := NewBufferFromFile(args[0])
+		if err != nil {
+			messenger.Alert("error", err)
+			return
+		}
+
+		tab := NewTabFromView(NewView(buf))
+		tab.SetNum(len(tabs))
+		tabs = append(tabs, tab)
+		curTab = len(tabs) - 1
+		if len(tabs) == 2 {
+			for _, t := range tabs {
+				for _, v := range t.Views {
+					v.AddTabbarSpace()
+				}
+			}
+		}
+	}
+}
