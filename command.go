@@ -36,6 +36,8 @@ func init() {
 		"Show":      Show,
 		"ShowKey":   ShowKey,
 		"Bind":      Bind,
+		"Quit":      Quit,
+		"Save":      Save,
 		"VSplit":    VSplit,
 		"HSplit":    HSplit,
 		"Help":      Help,
@@ -44,6 +46,7 @@ func init() {
 		"Reload":    Reload,
 		"Cd":        Cd,
 		"Pwd":       Pwd,
+		"Open":      Open,
 		"MemUsage":  MemUsage,
 		"Raw":       Raw,
 	}
@@ -57,6 +60,8 @@ func DefaultCommands() map[string]StrCommand {
 		"show":     {"Show", []Completion{OptionCompletion, NoCompletion}},
 		"showkey":  {"ShowKey", []Completion{NoCompletion}},
 		"bind":     {"Bind", []Completion{NoCompletion}},
+		"quit":     {"Quit", []Completion{NoCompletion}},
+		"save":     {"Save", []Completion{NoCompletion}},
 		"vsplit":   {"VSplit", []Completion{FileCompletion, NoCompletion}},
 		"hsplit":   {"HSplit", []Completion{FileCompletion, NoCompletion}},
 		"help":     {"Help", []Completion{HelpCompletion, NoCompletion}},
@@ -65,6 +70,7 @@ func DefaultCommands() map[string]StrCommand {
 		"reload":   {"Reload", []Completion{NoCompletion}},
 		"cd":       {"Cd", []Completion{FileCompletion}},
 		"pwd":      {"Pwd", []Completion{NoCompletion}},
+		"open":     {"Open", []Completion{FileCompletion}},
 		"memusage": {"MemUsage", []Completion{NoCompletion}},
 		"raw":      {"Raw", []Completion{NoCompletion}},
 	}
@@ -270,6 +276,40 @@ func Pwd(args []string) {
 		messenger.Message(err.Error())
 	} else {
 		messenger.Message(wd)
+	}
+}
+
+// Open opens a new buffer with a given filename
+func Open(args []string) {
+	if len(args) > 0 {
+		filename := args[0]
+		// the filename might or might not be quoted, so unquote first then join the strings.
+		args, err := shellwords.Split(filename)
+		if err != nil {
+			messenger.Alert("error", Language.Translate("Error parsing args"), " ", err)
+			return
+		}
+		filename = strings.Join(args, " ")
+
+		CurView().Open(filename)
+	} else {
+		messenger.Alert("error", Language.Translate("No filename"))
+	}
+}
+
+// Quit closes the main view
+func Quit(args []string) {
+	// Close the main view
+	CurView().Quit(true)
+}
+
+// Save saves the buffer in the main view
+func Save(args []string) {
+	if len(args) == 0 {
+		// Save the main view
+		CurView().Save(true)
+	} else {
+		CurView().Buf.SaveAs(args[0])
 	}
 }
 
