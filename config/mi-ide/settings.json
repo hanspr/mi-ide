@@ -2,7 +2,6 @@
     "autoclose": true,
     "autoindent": true,
     "autoreload": true,
-    "autosave": false,
     "basename": false,
     "colorcolumn": 0,
     "colorscheme": "default",
