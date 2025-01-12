@@ -6,7 +6,6 @@ import (
 	"path/filepath"
 	"regexp"
 	"runtime"
-	"strconv"
 	"strings"
 	"time"
 
@@ -39,13 +38,10 @@ func init() {
 		"Show":       Show,
 		"ShowKey":    ShowKey,
 		"Bind":       Bind,
-		"Quit":       Quit,
-		"Save":       Save,
 		"Replace":    Replace,
 		"ReplaceAll": ReplaceAll,
 		"VSplit":     VSplit,
 		"HSplit":     HSplit,
-		"Tab":        NewTab,
 		"Help":       Help,
 		"Eval":       Eval,
 		"ToggleLog":  ToggleLog,
@@ -53,11 +49,32 @@ func init() {
 		"Reload":     Reload,
 		"Cd":         Cd,
 		"Pwd":        Pwd,
-		"Open":       Open,
-		"TabSwitch":  TabSwitch,
 		"MemUsage":   MemUsage,
-		"Retab":      Retab,
 		"Raw":        Raw,
+	}
+}
+
+// DefaultCommands returns a map containing mi-ide's default commands
+func DefaultCommands() map[string]StrCommand {
+	return map[string]StrCommand{
+		"set":        {"Set", []Completion{OptionCompletion, OptionValueCompletion}},
+		"setlocal":   {"SetLocal", []Completion{OptionCompletion, OptionValueCompletion}},
+		"show":       {"Show", []Completion{OptionCompletion, NoCompletion}},
+		"showkey":    {"ShowKey", []Completion{NoCompletion}},
+		"bind":       {"Bind", []Completion{NoCompletion}},
+		"replace":    {"Replace", []Completion{NoCompletion}},
+		"replaceall": {"ReplaceAll", []Completion{NoCompletion}},
+		"vsplit":     {"VSplit", []Completion{FileCompletion, NoCompletion}},
+		"hsplit":     {"HSplit", []Completion{FileCompletion, NoCompletion}},
+		"help":       {"Help", []Completion{HelpCompletion, NoCompletion}},
+		"eval":       {"Eval", []Completion{NoCompletion}},
+		"log":        {"ToggleLog", []Completion{NoCompletion}},
+		"plugin":     {"Plugin", []Completion{PluginCmdCompletion, PluginNameCompletion}},
+		"reload":     {"Reload", []Completion{NoCompletion}},
+		"cd":         {"Cd", []Completion{FileCompletion}},
+		"pwd":        {"Pwd", []Completion{NoCompletion}},
+		"memusage":   {"MemUsage", []Completion{NoCompletion}},
+		"raw":        {"Raw", []Completion{NoCompletion}},
 	}
 }
 
@@ -86,36 +103,6 @@ func MakeCommand(name, function string, completions ...Completion) {
 	}
 
 	commands[name] = Command{action, completions}
-}
-
-// DefaultCommands returns a map containing mi-ide's default commands
-func DefaultCommands() map[string]StrCommand {
-	return map[string]StrCommand{
-		"set":        {"Set", []Completion{OptionCompletion, OptionValueCompletion}},
-		"setlocal":   {"SetLocal", []Completion{OptionCompletion, OptionValueCompletion}},
-		"show":       {"Show", []Completion{OptionCompletion, NoCompletion}},
-		"showkey":    {"ShowKey", []Completion{NoCompletion}},
-		"bind":       {"Bind", []Completion{NoCompletion}},
-		"quit":       {"Quit", []Completion{NoCompletion}},
-		"save":       {"Save", []Completion{NoCompletion}},
-		"replace":    {"Replace", []Completion{NoCompletion}},
-		"replaceall": {"ReplaceAll", []Completion{NoCompletion}},
-		"vsplit":     {"VSplit", []Completion{FileCompletion, NoCompletion}},
-		"hsplit":     {"HSplit", []Completion{FileCompletion, NoCompletion}},
-		"tab":        {"Tab", []Completion{FileCompletion, NoCompletion}},
-		"help":       {"Help", []Completion{HelpCompletion, NoCompletion}},
-		"eval":       {"Eval", []Completion{NoCompletion}},
-		"log":        {"ToggleLog", []Completion{NoCompletion}},
-		"plugin":     {"Plugin", []Completion{PluginCmdCompletion, PluginNameCompletion}},
-		"reload":     {"Reload", []Completion{NoCompletion}},
-		"cd":         {"Cd", []Completion{FileCompletion}},
-		"pwd":        {"Pwd", []Completion{NoCompletion}},
-		"open":       {"Open", []Completion{FileCompletion}},
-		"tabswitch":  {"TabSwitch", []Completion{NoCompletion}},
-		"memusage":   {"MemUsage", []Completion{NoCompletion}},
-		"retab":      {"Retab", []Completion{NoCompletion}},
-		"raw":        {"Raw", []Completion{NoCompletion}},
-	}
 }
 
 // CommandEditAction returns a bindable function that opens a prompt with
@@ -223,12 +210,6 @@ func PluginCmd(args []string) {
 	}
 }
 
-// Retab changes all spaces to tabs or all tabs to spaces
-// depending on the user's settings
-func Retab(args []string) {
-	CurView().Retab(true)
-}
-
 // Raw opens a new raw view which displays the escape sequences mi-ide
 // is receiving in real-time
 func Raw(args []string) {
@@ -246,35 +227,6 @@ func Raw(args []string) {
 		for _, t := range tabs {
 			for _, v := range t.Views {
 				v.AddTabbarSpace()
-			}
-		}
-	}
-}
-
-// TabSwitch switches to a given tab either by name or by number
-func TabSwitch(args []string) {
-	if len(args) > 0 {
-		num, err := strconv.Atoi(args[0])
-		if err != nil {
-			// Check for tab with this name
-
-			found := false
-			for _, t := range tabs {
-				v := t.Views[t.CurView]
-				if v.Buf.GetName() == args[0] {
-					curTab = v.TabNum
-					found = true
-				}
-			}
-			if !found {
-				messenger.Alert("error", Language.Translate("Could not find tab:"), " ", err)
-			}
-		} else {
-			num--
-			if num >= 0 && num < len(tabs) {
-				curTab = num
-			} else {
-				messenger.Alert("error", Language.Translate("Invalid tab index"))
 			}
 		}
 	}
@@ -326,24 +278,6 @@ func Pwd(args []string) {
 		messenger.Message(err.Error())
 	} else {
 		messenger.Message(wd)
-	}
-}
-
-// Open opens a new buffer with a given filename
-func Open(args []string) {
-	if len(args) > 0 {
-		filename := args[0]
-		// the filename might or might not be quoted, so unquote first then join the strings.
-		args, err := shellwords.Split(filename)
-		if err != nil {
-			messenger.Alert("error", Language.Translate("Error parsing args"), " ", err)
-			return
-		}
-		filename = strings.Join(args, " ")
-
-		CurView().Open(filename)
-	} else {
-		messenger.Alert("error", Language.Translate("No filename"))
 	}
 }
 
@@ -428,31 +362,6 @@ func Eval(args []string) {
 	}
 }
 
-// NewTab opens the given file in a new tab
-func NewTab(args []string) {
-	if len(args) == 0 {
-		CurView().AddTab(true)
-	} else {
-		buf, err := NewBufferFromFile(args[0])
-		if err != nil {
-			messenger.Alert("error", err)
-			return
-		}
-
-		tab := NewTabFromView(NewView(buf))
-		tab.SetNum(len(tabs))
-		tabs = append(tabs, tab)
-		curTab = len(tabs) - 1
-		if len(tabs) == 2 {
-			for _, t := range tabs {
-				for _, v := range t.Views {
-					v.AddTabbarSpace()
-				}
-			}
-		}
-	}
-}
-
 // Set sets an option
 func Set(args []string) {
 	if len(args) < 2 {
@@ -520,22 +429,6 @@ func Bind(args []string) {
 		return
 	}
 	BindKey(args[0], args[1])
-}
-
-// Quit closes the main view
-func Quit(args []string) {
-	// Close the main view
-	CurView().Quit(true)
-}
-
-// Save saves the buffer in the main view
-func Save(args []string) {
-	if len(args) == 0 {
-		// Save the main view
-		CurView().Save(true)
-	} else {
-		CurView().Buf.SaveAs(args[0])
-	}
 }
 
 // Replace runs search and replace
