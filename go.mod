@@ -14,7 +14,6 @@ require (
 	github.com/hanspr/lang v0.0.0-20190927223733-9af21a7298b1
 	github.com/hanspr/shellwords v0.0.0-20190824230231-432d02ac431a
 	github.com/hanspr/tcell v0.0.0-20200408034724-6d213337e4cd
-	// github.com/hanspr/terminal v0.0.0-20180726154117-533c623e2415
 	github.com/hanspr/terminfo v0.0.0-20190824230337-a52f7edce2f4
 	github.com/mattn/go-isatty v0.0.12
 	github.com/mattn/go-runewidth v0.0.12
@@ -35,7 +34,6 @@ require (
 	github.com/smartystreets/goconvey v1.8.1 // indirect
 	github.com/stretchr/testify v1.8.1 // indirect
 	github.com/zyedidia/poller v2.0.0+incompatible // indirect
-	// github.com/zyedidia/pty v2.0.0+incompatible // indirect
 	golang.org/x/sys v0.29.0 // indirect
 	golang.org/x/text v0.21.0 // indirect
 	gopkg.in/yaml.v2 v2.4.0 // indirect

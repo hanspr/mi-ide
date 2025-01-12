@@ -30,8 +30,6 @@ github.com/hanspr/shellwords v0.0.0-20190824230231-432d02ac431a h1:B9W+IiQ6bordA
 github.com/hanspr/shellwords v0.0.0-20190824230231-432d02ac431a/go.mod h1:cravepi4TUF5VbF6J7omr85vNrNaUuysIy9yuUx84mU=
 github.com/hanspr/tcell v0.0.0-20200408034724-6d213337e4cd h1:O8M5dtLKzIylIY9hgTwLqVI0llAlxsyWlTzxrzl2BSo=
 github.com/hanspr/tcell v0.0.0-20200408034724-6d213337e4cd/go.mod h1:rmByC539RkMuxcwZymNlLulSLzuyYyC8DO7Y5y0KzKA=
-github.com/hanspr/terminal v0.0.0-20180726154117-533c623e2415 h1:rJg3r6ou5kN8b2Jor0TfJuJ5TU9tFD08zMfn+hcI3QU=
-github.com/hanspr/terminal v0.0.0-20180726154117-533c623e2415/go.mod h1:FwalaPmDDE5YX6cOjaIjpIVpqqRGDxGvAye7cBFIbXI=
 github.com/hanspr/terminfo v0.0.0-20190824230337-a52f7edce2f4 h1:XOKdbcMhQTsUxbd0oWWsgCYDqXa9bE7fBfU3kf4Exa0=
 github.com/hanspr/terminfo v0.0.0-20190824230337-a52f7edce2f4/go.mod h1:tBJEalXy3AQbW/fCcLPfxW6f6e+IwbT++75Th/bTLPw=
 github.com/jtolds/gls v4.20.0+incompatible h1:xdiiI2gbIgH/gLH7ADydsJ1uDOEzR8yvV7C0MuV77Wo=
@@ -80,8 +78,6 @@ github.com/yuin/gopher-lua v0.0.0-20200816102855-ee81675732da h1:NimzV1aGyq29m5u
 github.com/yuin/gopher-lua v0.0.0-20200816102855-ee81675732da/go.mod h1:E1AXubJBdNmFERAOucpDIxNzeGfLzg0mYh+UfMWdChA=
 github.com/zyedidia/poller v2.0.0+incompatible h1:DMOvB0EXz2JTokqOKfxPWN/8xXFJbO+m4vNhMkOY7Lo=
 github.com/zyedidia/poller v2.0.0+incompatible/go.mod h1:vZXJOHGDcuK08GXhF6IAY0ZFd2WcgOR5DOTp84Uk5eE=
-github.com/zyedidia/pty v2.0.0+incompatible h1:Ou5vXL6tvjst+RV8sUFISbuKDnUJPhnpygApMFGweqw=
-github.com/zyedidia/pty v2.0.0+incompatible/go.mod h1:4y9l9yJZNxRa7GB/fB+mmDmGkG3CqmzLf4vUxGGotEA=
 golang.org/x/sys v0.0.0-20190204203706-41f3e6584952/go.mod h1:STP8DvDyc/dI5b8T5hshtkjS+E42TnysNCUPdjciGhY=
 golang.org/x/sys v0.0.0-20200116001909-b77594299b42/go.mod h1:h1NjWce9XRLGQEsW7wpKNCjG9DtNlClVuFLEZdDNbEs=
 golang.org/x/sys v0.29.0 h1:TPYlXGxvx1MGTn2GiZDhnjPA9wZzZeGKHHmKhHYvgaU=
