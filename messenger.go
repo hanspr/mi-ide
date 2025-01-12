@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"os"
 	"strconv"
+	"strings"
 	"time"
 	"unicode"
 
@@ -451,6 +452,43 @@ func (m *Messenger) Paste() {
 func (m *Messenger) HandleEvent(event tcell.Event, history []string) {
 	switch e := event.(type) {
 	case *tcell.EventKey:
+		// Check cursor bindings
+		for key := range bindings {
+			if e.Key() == key.keyCode {
+				if e.Key() == tcell.KeyRune {
+					if e.Rune() != key.r {
+						continue
+					}
+				}
+				if e.Modifiers() == key.modifiers && key.modifiers == 4 {
+					xKey := "Alt-" + string(e.Rune())
+					// messenger.AddLog(xKey, "=", bindingsStr[xKey])
+					if strings.Contains(bindingsStr[xKey], "Cursor") || strings.Contains(bindingsStr[xKey], "OfLine") {
+						switch bindingsStr[xKey] {
+						case "CursorLeft":
+							m.CursorLeft()
+							return
+						case "CursorRight":
+							m.CursorRight()
+							return
+						case "StartOfLine":
+							m.Start()
+							return
+						case "EndOfLine":
+							m.End()
+							return
+						case "CursorUp":
+							m.UpHistory(history)
+							return
+						case "CurorDown":
+							m.DownHistory(history)
+							return
+						}
+					}
+					return
+				}
+			}
+		}
 		switch e.Key() {
 		case tcell.KeyCtrlA:
 			m.Start()
