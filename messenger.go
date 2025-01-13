@@ -584,7 +584,23 @@ func (m *Messenger) DisplaySuggestions(suggestions []string) {
 	}
 
 	x := 0
+	prev := ""
+	isGroup := false
+	groups := strings.SplitN(suggestions[0], ":", 2)
+	if len(groups) > 1 {
+		isGroup = true
+	}
 	for _, suggestion := range suggestions {
+		if !isGroup {
+			parts := strings.SplitN(suggestion, ":", 2)
+			if len(parts) > 1 {
+				if prev == parts[0] {
+					continue
+				}
+				suggestion = parts[0] + ":"
+			}
+			prev = parts[0]
+		}
 		for _, c := range suggestion {
 			screen.SetContent(x, y, c, nil, statusLineStyle)
 			x++
