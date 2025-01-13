@@ -31,48 +31,56 @@ var (
 
 func init() {
 	commandActions = map[string]func([]string){
-		"Set":       Set,
-		"SetLocal":  SetLocal,
-		"Show":      Show,
-		"ShowKey":   ShowKey,
-		"Bind":      Bind,
-		"Quit":      Quit,
-		"Save":      Save,
-		"VSplit":    VSplit,
-		"HSplit":    HSplit,
-		"Help":      Help,
-		"ToggleLog": ToggleLog,
-		"Plugin":    PluginCmd,
-		"Reload":    Reload,
-		"Cd":        Cd,
-		"Pwd":       Pwd,
-		"Open":      Open,
-		"MemUsage":  MemUsage,
-		"Raw":       Raw,
+		"SaveAs":        SaveAs,
+		"Set":           Set,
+		"SetLocal":      SetLocal,
+		"Show":          Show,
+		"ShowKey":       ShowKey,
+		"Bind":          Bind,
+		"Save":          Save,
+		"VSplit":        VSplit,
+		"HSplit":        HSplit,
+		"Help":          Help,
+		"ToggleLog":     ToggleLog,
+		"Plugin":        PluginCmd,
+		"Reload":        Reload,
+		"Cd":            Cd,
+		"Pwd":           Pwd,
+		"Open":          Open,
+		"MemUsage":      MemUsage,
+		"Raw":           Raw,
+		"Settings":      Settings,
+		"CloudSettings": CloudSettings,
+		"PluginManager": PluginManager,
+		"KeyBindings":   KeyBindings,
 	}
 }
 
 // DefaultCommands returns a map containing mi-ide's default commands
 func DefaultCommands() map[string]StrCommand {
 	return map[string]StrCommand{
-		"set":      {"Set", []Completion{OptionCompletion, OptionValueCompletion}},
-		"setlocal": {"SetLocal", []Completion{OptionCompletion, OptionValueCompletion}},
-		"show":     {"Show", []Completion{OptionCompletion, NoCompletion}},
-		"showkey":  {"ShowKey", []Completion{NoCompletion}},
-		"bind":     {"Bind", []Completion{NoCompletion}},
-		"quit":     {"Quit", []Completion{NoCompletion}},
-		"save":     {"Save", []Completion{NoCompletion}},
-		"vsplit":   {"VSplit", []Completion{FileCompletion, NoCompletion}},
-		"hsplit":   {"HSplit", []Completion{FileCompletion, NoCompletion}},
-		"help":     {"Help", []Completion{HelpCompletion, NoCompletion}},
-		"log":      {"ToggleLog", []Completion{NoCompletion}},
-		"plugin":   {"Plugin", []Completion{PluginCmdCompletion, PluginNameCompletion}},
-		"reload":   {"Reload", []Completion{NoCompletion}},
-		"cd":       {"Cd", []Completion{FileCompletion}},
-		"pwd":      {"Pwd", []Completion{NoCompletion}},
-		"open":     {"Open", []Completion{FileCompletion}},
-		"memusage": {"MemUsage", []Completion{NoCompletion}},
-		"raw":      {"Raw", []Completion{NoCompletion}},
+		"saveas":             {"SaveAs", []Completion{NoCompletion}},
+		"set":                {"Set", []Completion{OptionCompletion, OptionValueCompletion}},
+		"setlocal":           {"SetLocal", []Completion{OptionCompletion, OptionValueCompletion}},
+		"show":               {"Show", []Completion{OptionCompletion, NoCompletion}},
+		"showkey":            {"ShowKey", []Completion{NoCompletion}},
+		"bind":               {"Bind", []Completion{NoCompletion}},
+		"save":               {"Save", []Completion{NoCompletion}},
+		"vsplit":             {"VSplit", []Completion{FileCompletion, NoCompletion}},
+		"hsplit":             {"HSplit", []Completion{FileCompletion, NoCompletion}},
+		"help":               {"Help", []Completion{HelpCompletion, NoCompletion}},
+		"log":                {"ToggleLog", []Completion{NoCompletion}},
+		"plugin":             {"Plugin", []Completion{PluginCmdCompletion, PluginNameCompletion}},
+		"reload":             {"Reload", []Completion{NoCompletion}},
+		"cd":                 {"Cd", []Completion{FileCompletion}},
+		"pwd":                {"Pwd", []Completion{NoCompletion}},
+		"open":               {"Open", []Completion{FileCompletion}},
+		"memusage":           {"MemUsage", []Completion{NoCompletion}},
+		"raw":                {"Raw", []Completion{NoCompletion}},
+		"menu:settings":      {"Settings", []Completion{NoCompletion}},
+		"menu:cloudsettings": {"CloudSettings", []Completion{NoCompletion}},
+		"menu:plugins":       {"PluginManager", []Completion{NoCompletion}},
+		"menu:keys":          {"KeyBindings", []Completion{NoCompletion}},
 	}
 }
 
@@ -208,6 +216,13 @@ func PluginCmd(args []string) {
 	}
 }
 
+// SaveAs saves the buffer with a new name
+func SaveAs(args []string) {
+	if len(args) > 0 {
+		CurView().Buf.SaveAs(args[0])
+	}
+}
+
 // Raw opens a new raw view which displays the escape sequences mi-ide
 // is receiving in real-time
 func Raw(args []string) {
@@ -295,12 +310,6 @@ func Open(args []string) {
 	} else {
 		messenger.Alert("error", Language.Translate("No filename"))
 	}
-}
-
-// Quit closes the main view
-func Quit(args []string) {
-	// Close the main view
-	CurView().Quit(true)
 }
 
 // Save saves the buffer in the main view
@@ -479,4 +488,22 @@ func ExpandString(s string) string {
 	s = strings.Replace(s, `{ESCBS}`, `\`, -1)
 
 	return s
+}
+
+// Menu access
+
+func Settings(args []string) {
+	micromenu.GlobalConfigDialog()
+}
+
+func CloudSettings(args []string) {
+	micromenu.MiCloudServices()
+}
+
+func PluginManager(args []string) {
+	micromenu.PluginManagerDialog()
+}
+
+func KeyBindings(args []string) {
+	micromenu.KeyBindingsDialog()
 }
