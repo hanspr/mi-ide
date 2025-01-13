@@ -1347,7 +1347,7 @@ func (m *microMenu) SetTabSpace(name, value, event, when string, x, y int) bool 
 // Local Configuration : language or file
 // ---------------------------------------
 
-const mmBufferSettings = "autoclose,autoindent,eofnewline,fileformat,indentchar,keepautoindent,matchbrace,rmtrailingws,smartindent,smartpaste,softwrap,tabindents,tabmovement,tabstospaces,tabsize,useformatter,blockopen,blockclose,blockinter"
+const mmBufferSettings = "autoclose,autoindent,blockopen,blockclose,blockinter,comment,eofnewline,fileformat,indentchar,keepautoindent,matchbrace,rmtrailingws,smartindent,smartpaste,softwrap,tabindents,tabmovement,tabstospaces,tabsize,useformatter"
 
 func (m *microMenu) SelLocalSettings(b *Buffer) {
 	var f *Frame
