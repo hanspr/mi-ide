@@ -299,6 +299,7 @@ func DefaultLocalSettings() map[string]interface{} {
 		"fastdirty":      true,
 		"fileformat":     "unix",
 		"filetype":       "",
+		"findfuncregex":  "",
 		"indentchar":     " ",
 		"keepautoindent": false,
 		"matchbrace":     false,
