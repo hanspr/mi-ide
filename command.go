@@ -56,31 +56,32 @@ func init() {
 	}
 }
 
+// group commands with group:command
 // DefaultCommands returns a map containing mi-ide's default commands
 func DefaultCommands() map[string]StrCommand {
 	return map[string]StrCommand{
-		"saveas":             {"SaveAs", []Completion{NoCompletion}},
-		"set":                {"Set", []Completion{OptionCompletion, OptionValueCompletion}},
-		"setlocal":           {"SetLocal", []Completion{OptionCompletion, OptionValueCompletion}},
-		"show":               {"Show", []Completion{OptionCompletion, NoCompletion}},
-		"showkey":            {"ShowKey", []Completion{NoCompletion}},
-		"bind":               {"Bind", []Completion{NoCompletion}},
-		"save":               {"Save", []Completion{NoCompletion}},
-		"vsplit":             {"VSplit", []Completion{FileCompletion, NoCompletion}},
-		"hsplit":             {"HSplit", []Completion{FileCompletion, NoCompletion}},
-		"help":               {"Help", []Completion{HelpCompletion, NoCompletion}},
-		"log":                {"ToggleLog", []Completion{NoCompletion}},
-		"plugin":             {"Plugin", []Completion{PluginCmdCompletion, PluginNameCompletion}},
-		"reload":             {"Reload", []Completion{NoCompletion}},
-		"cd":                 {"Cd", []Completion{FileCompletion}},
-		"pwd":                {"Pwd", []Completion{NoCompletion}},
-		"open":               {"Open", []Completion{FileCompletion}},
-		"memusage":           {"MemUsage", []Completion{NoCompletion}},
-		"raw":                {"Raw", []Completion{NoCompletion}},
+		"cd":       {"Cd", []Completion{FileCompletion}},
+		"saveas":   {"SaveAs", []Completion{NoCompletion}},
+		"help":     {"Help", []Completion{HelpCompletion, NoCompletion}},
+		"log":      {"ToggleLog", []Completion{NoCompletion}},
+		"memusage": {"MemUsage", []Completion{NoCompletion}},
+		"open":     {"Open", []Completion{FileCompletion}},
+		"plugin":   {"Plugin", []Completion{PluginCmdCompletion, PluginNameCompletion}},
+		"pwd":      {"Pwd", []Completion{NoCompletion}},
+		"raw":      {"Raw", []Completion{NoCompletion}},
+		"reload":   {"Reload", []Completion{NoCompletion}},
+		// Groups
+		"keys:bind":          {"Bind", []Completion{NoCompletion}},
+		"keys:show":          {"Show", []Completion{OptionCompletion, NoCompletion}},
+		"keys:showkey":       {"ShowKey", []Completion{NoCompletion}},
 		"menu:settings":      {"Settings", []Completion{NoCompletion}},
 		"menu:cloudsettings": {"CloudSettings", []Completion{NoCompletion}},
 		"menu:plugins":       {"PluginManager", []Completion{NoCompletion}},
 		"menu:keys":          {"KeyBindings", []Completion{NoCompletion}},
+		"option:set":         {"Set", []Completion{OptionCompletion, OptionValueCompletion}},
+		"option:setlocal":    {"SetLocal", []Completion{OptionCompletion, OptionValueCompletion}},
+		"split:vertical":     {"VSplit", []Completion{FileCompletion, NoCompletion}},
+		"split:horizontal":   {"HSplit", []Completion{FileCompletion, NoCompletion}},
 	}
 }
 
