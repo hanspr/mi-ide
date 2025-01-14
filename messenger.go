@@ -587,8 +587,7 @@ func (m *Messenger) DisplaySuggestions(suggestions []string) {
 	// Add groups to suggestions with group:command
 	prev := ""
 	isGroup := false
-	groups := strings.SplitN(suggestions[0], ":", 2)
-	if len(groups) > 1 {
+	if strings.Contains(suggestions[0], ":") {
 		isGroup = true
 	}
 	for _, suggestion := range suggestions {
@@ -598,7 +597,7 @@ func (m *Messenger) DisplaySuggestions(suggestions []string) {
 				if prev == parts[0] {
 					continue
 				}
-				suggestion = parts[0] + "▸"
+				suggestion = parts[0] + "‥"
 			}
 			prev = parts[0]
 		}
