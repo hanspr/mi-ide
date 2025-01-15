@@ -274,6 +274,9 @@ func GetLeadingWhitespace(str string) string {
 
 // IsSpaces checks if a given string is only spaces
 func IsSpaces(str []byte) bool {
+	if len(str) == 0 {
+		return false
+	}
 	for _, c := range str {
 		if c != ' ' {
 			return false
@@ -285,6 +288,9 @@ func IsSpaces(str []byte) bool {
 
 // IsSpacesOrTabs checks if a given string contains only spaces and tabs
 func IsSpacesOrTabs(str string) bool {
+	if len(str) == 0 {
+		return false
+	}
 	for _, c := range str {
 		if c != ' ' && c != '\t' {
 			return false
