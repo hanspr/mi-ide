@@ -220,7 +220,7 @@ func PluginCmd(args []string) {
 // SaveAs saves the buffer with a new name
 func SaveAs(args []string) {
 	if len(args) > 0 {
-		CurView().Buf.SaveAs(args[0])
+		CurView().saveToFile(args[0])
 	}
 }
 
