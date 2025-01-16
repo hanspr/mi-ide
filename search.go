@@ -69,6 +69,7 @@ func HandleSearchEvent(event tcell.Event, v *View) {
 
 func searchDown(r *regexp.Regexp, v *View, start, end Loc) bool {
 	var startX int
+	newLineSearch := strings.Contains(r.String(), "\\n")
 	if start.Y >= v.Buf.NumLines {
 		start.Y = v.Buf.NumLines - 1
 	}
@@ -83,6 +84,9 @@ func searchDown(r *regexp.Regexp, v *View, start, end Loc) bool {
 		}
 
 		l := string(v.Buf.lines[i].data)
+		if newLineSearch && v.Buf.NumLines > i+1 {
+			l = l + "\n" + string(v.Buf.lines[i+1].data)
+		}
 		match := r.FindAllStringIndex(l, -1)
 
 		if match != nil {
@@ -90,8 +94,16 @@ func searchDown(r *regexp.Regexp, v *View, start, end Loc) bool {
 				X := runePos(match[j][0], l)
 				Y := runePos(match[j][1], l)
 				if X >= startX {
+					nl := i
+					if newLineSearch {
+						nl++
+						Y = Y - len(v.Buf.lines[i].data) - 1
+						if Y < 0 {
+							Y = 0
+						}
+					}
 					v.Cursor.SetSelectionStart(Loc{X, i})
-					v.Cursor.SetSelectionEnd(Loc{Y, i})
+					v.Cursor.SetSelectionEnd(Loc{Y, nl})
 					v.Cursor.OrigSelection[0] = v.Cursor.CurSelection[0]
 					v.Cursor.OrigSelection[1] = v.Cursor.CurSelection[1]
 					v.Cursor.Loc = v.Cursor.CurSelection[0]
@@ -108,6 +120,7 @@ func searchDown(r *regexp.Regexp, v *View, start, end Loc) bool {
 
 func searchUp(r *regexp.Regexp, v *View, start, end Loc) bool {
 	var startX int
+	newLineSearch := strings.Contains(r.String(), "\\n")
 	if start.Y >= v.Buf.NumLines {
 		start.Y = v.Buf.NumLines - 1
 	}
@@ -122,6 +135,9 @@ func searchUp(r *regexp.Regexp, v *View, start, end Loc) bool {
 		}
 
 		l := string(v.Buf.lines[i].data)
+		if newLineSearch && v.Buf.NumLines > i+1 {
+			l = l + "\n" + string(v.Buf.lines[i+1].data)
+		}
 		match := r.FindAllStringIndex(l, -1)
 
 		if match != nil {
@@ -129,8 +145,16 @@ func searchUp(r *regexp.Regexp, v *View, start, end Loc) bool {
 				X := runePos(match[j][0], l)
 				Y := runePos(match[j][1], l)
 				if X < startX {
+					nl := i
+					if newLineSearch {
+						nl++
+						Y = Y - len(v.Buf.lines[i].data) - 1
+						if Y < 0 {
+							Y = 0
+						}
+					}
 					v.Cursor.SetSelectionStart(Loc{X, i})
-					v.Cursor.SetSelectionEnd(Loc{Y, i})
+					v.Cursor.SetSelectionEnd(Loc{Y, nl})
 					v.Cursor.OrigSelection[0] = v.Cursor.CurSelection[0]
 					v.Cursor.OrigSelection[1] = v.Cursor.CurSelection[1]
 					v.Cursor.Loc = v.Cursor.CurSelection[0]
@@ -203,7 +227,13 @@ func DialogSearch(searchStr string) string {
 		if xs[0].X-doff >= 0 {
 			x1 = xs[0].X - doff
 		}
-		return string(line[x1:xs[0].X]) + "{f}" + v.Cursor.GetSelection() + "{/f}" + string(line[xs[1].X:])
+		d1 := 0
+		d2 := 0
+		if xs[0].X >= len(line) || xs[1].X >= len(line) {
+			d1 = len(line) - xs[0].X
+			d2 = len(line) - xs[1].X
+		}
+		return string(line[x1:xs[0].X+d1]) + "{f}" + v.Cursor.GetSelection() + "{/f}" + string(line[xs[1].X+d2:])
 	}
 	return ""
 }
