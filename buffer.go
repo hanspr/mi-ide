@@ -511,6 +511,7 @@ func (b *Buffer) SmartIndent(Start, Stop Loc) {
 		Ys = 0
 	} else {
 		// Look back for the first line that is not empty, is not a comment, get that indentation as reference
+	restart:
 		for y := Ys; y >= 0; y-- {
 			l := b.Line(y)
 			if len(l) > 0 && !comment.MatchString(l) {
@@ -521,9 +522,9 @@ func (b *Buffer) SmartIndent(Start, Stop Loc) {
 					if b.Settings["indentchar"].(string) == "\t" {
 						cfrom = " "
 					}
+					messenger.AddLog("smartindent, mixed: from >", cfrom, "< to >", b.Settings["indentchar"].(string), "< size:", b.Settings["tabsize"].(float64))
 					b.ChangeIndentation(cfrom, b.Settings["indentchar"].(string), int(b.Settings["tabsize"].(float64)), int(b.Settings["tabsize"].(float64)))
-					y++
-					continue
+					goto restart
 				}
 				break
 			} else if comment.MatchString(l) {
