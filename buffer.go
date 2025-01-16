@@ -537,20 +537,27 @@ func (b *Buffer) SmartIndent(Start, Stop Loc) {
 	}
 	ci := 0
 	IndRef := 0
+	// messenger.AddLog("inicio encontrado:", Ys)
+	// messenger.AddLog("I:", I)
 	for y := Ys; y <= Ye; y++ {
+		// messenger.AddLog("Linea:", string(b.Line(y)))
 		lc := SmartIndentPrepareLine(b.Line(y))
+		// messenger.AddLog("linea:", lc)
 		if skipBlock {
+			// messenger.AddLog("skipblock")
 			if skipBlockEnd.MatchString(lc) {
 				skipBlock = false
 			}
 			continue
 		}
 		if skipBlockStart.MatchString(lc) {
+			// messenger.AddLog("start block")
 			skipBlock = true
 			continue
 		}
 		if comment.MatchString(lc) {
 			// ignore commented lines
+			// messenger.AddLog("comentario")
 			continue
 		}
 		// messenger.AddLog("ci + IndRef:", ci, "+", IndRef)
@@ -578,12 +585,12 @@ func (b *Buffer) SmartIndent(Start, Stop Loc) {
 			ci--
 		}
 		if ci < 0 {
-			// messenger.AddLog("NEGATIVO !!!!!")
+			messenger.AddLog("NEGATIVO !!!!!")
 			ci = 0
 		}
-		li := CountLeadingWhitespace(b.Line(y))
-		if li != ci {
+		if GetLineIndentetion(b.Line(y), iChar, iMult) != ci {
 			indentation := strings.Repeat(iChar, ci)
+			li := CountLeadingWhitespace(b.Line(y))
 			b.Replace(Loc{0, y}, Loc{li, y}, indentation)
 		}
 	}
