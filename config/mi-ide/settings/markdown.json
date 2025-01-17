@@ -1,0 +1,19 @@
+{
+    "autoclose": true,
+    "charsopen": "_*",
+    "charsclose": "_*",
+    "autoindent": true,
+    "eofnewline": false,
+    "fileformat": "unix",
+    "indentchar": " ",
+    "keepautoindent": true,
+    "matchbrace": true,
+    "rmtrailingws": true,
+    "smartindent": false,
+    "smartpaste": true,
+    "softwrap": false,
+    "tabindents": false,
+    "tabmovement": false,
+    "tabsize": 4,
+    "tabstospaces": false
+}

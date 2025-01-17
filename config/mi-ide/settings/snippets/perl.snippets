@@ -1,0 +1,247 @@
+
+# Function
+snippet sub
+	sub ${1:function_name} {
+		${2:#code}
+	}
+
+# Conditional
+snippet if
+	if (${1:test}) {
+		${2:# code}
+	}
+
+# Conditional if..else
+snippet ife
+	if (${1:test}) {
+		${2:# code}
+	} else {
+		${3:# code}
+	}
+
+# Conditional if..elsif..else
+snippet ifee
+	if (${1:test}) {
+		${2:# code}
+	} elsif (${3:test}) {
+		${4:# elsif...}
+	} else {
+		${5:# code}
+	}
+
+snippet eif
+	elsif (${1:test}) {
+		${2:# code}
+	}
+
+snippet eval
+	eval {
+		${1:# do something risky...}
+	};
+	if ($@) {
+		${2:# handle failure...}
+	}
+
+# While Loop
+snippet while
+	while (${1:test}) {
+		${2:# code}
+	}
+
+snippet for
+	for (my $${1:var} = 0; $${1:var} < $${2:limit}; $${1:var}${3:++}) {
+		${4:# code}
+	}
+
+snippet foreach
+	foreach my $${1:v} (@${2:array}) {
+		${3:# code}
+	}
+
+snippet foreachk
+	foreach my $${1:k} (keys %${2:hash}) {
+		${3:# code}
+	}
+
+snippet vers
+	## no critic
+	our $VERSION = '${0:version}';
+	eval $VERSION;
+	## use critic
+
+# Anonymous subroutine
+snippet asub
+	sub {
+		${0:# code}
+	}
+
+snippet perlx
+	#!/usr/bin/perl
+
+	use utf8;
+	binmode STDOUT,':utf8';
+	use Eflow::user_check;
+
+	our (%in,$lib,$CMD,$EMP,$Emp,$CSSVER,$JSVER);
+
+	user_check();
+	print PrintHeader();
+	ReadParse();
+	$lib=Libs->new();
+	$lib->hash_decode(\%in);
+	if ($in{'cmd'} =~ /^cmd_/) {
+		$CMD=$in{'cmd'};
+	}
+
+	top();
+	if(!$CMD){
+		inicio();
+	} elsif (exists &$CMD) {
+		&$CMD;
+	} else {
+		inicio();
+	}
+	bottom();
+
+	sub inicio {
+		print "INICIO";
+	}
+
+	sub top {
+		print qq${1:”}
+		<!DOCTYPE html>
+		<html>
+		<head>
+		<title>TITULO</title>
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+		<link rel="stylesheet" type="text/css" href="/css/eflow.css?version=$CSSVER">
+		<link rel="stylesheet" type="text/css" href="/css/gcalendar.css?version=$CSSVER">
+		<script src="/lib/gcalendar.js?version=$JSVER"></script>
+		<script src="/lib/navigate.js?version=$JSVER"></script>
+		<script src="/lib/validate.js?version=$JSVER"></script>
+		<script src="/lib/jquery.min.js?version=$JSVER"></script>
+		<body onload="addShadowMarkUp();">
+		<form name="Forma" action="script.cgi" method="post" onsubmit="ShadowOn();">
+		${1:”};
+	}
+
+	sub bottom {
+		print qq${1:”}
+		<input type="hidden" name="" value="">
+		<input type="hidden" name="" value="">
+		<input type="hidden" name="" value="">
+		</form>
+		</body>
+		</html>
+		${1:”};
+	}
+
+# HTML
+
+snippet text
+	<input type="text" name="${1:name}" value="$in{'${1:name}'}" class="${2:form}" size="${3:10}" onfocus="${4:this.value=delCommas(this.value);}" onkeypress="return validate(this,'${5:type}','${6:options}',event);" onblur="validate2(this,'${5:type}','${6:options}');" />
+snippet textid
+	<input id="${1:id}" type="text" name="${2:name}" value="$in{'${2:name}'}" class="${3:form}" size="${4:10}" onfocus="${5:this.value=delCommas(this.value);}" onkeypress="return validate(this,'${6:type}','${7:options}',event);" onblur="validate2(this,'${6:type}','${7:options}');" />
+snippet submit
+	<input id="${1:sx}" type="submit" name="${2:x}" value="${3:Guardar}" class="${4:form}" onclick="return valida_forma();" />
+snippet table
+	<table border="0" cellspacing="0" class="table0 fw">
+	<tr class="${1:title}"><td></td><td></td><td></td><td></td></tr>
+	<tr class="${2:folio}" onmouseover="this.className='${3:foliolit}';" onmouseout="this.className='${2:folio}';"><td></td><td></td><td></td><td></td></tr>
+	</table>
+snippet tr
+	<tr class="${1:folio}" onmouseover="this.className='${2:foliolit}';" onmouseout="this.className='${3:folio}';"><td>${4:var}</td></tr>
+snippet td
+	<td>${1: }</td>
+snippet a
+	<a href="${1:url}" onclick="">${2:liga}</a>
+snippet img
+	<img src="/images/${1:file}" title="${2:titulo}">
+snippet div
+	<div id="${1: }">${2: }</div>
+snippet h1
+	<h1>${1: }</h1>
+snippet h2
+	<h2>${1: }</h2>
+snippet h3
+	<h3>${1: }</h3>
+snippet iframe
+	<iframe id="" src="${1:src}" frameborder="0" style="display:;width:1px;height:1px;border:1px solid black;"></iframe>
+snippet label
+	<label for="${1:id}">${2:nombre}</label>
+snippet hidden
+	<input type="hidden" name="${1:name}" value="${2:value}" />
+snippet button
+	<input type="button" name="${1:name}" value="${2:value}" />
+snippet file
+	<input type="file" id="" name="${1:name}" value="" class="form" accept="${2:.pdf,.xsl,.xlsx}" />
+snippet ul
+	<ul><li>${1:etiqueta}</li></ul>
+snippet li
+	<li>${1:etiqueta}</li>
+snippet textarea
+	<textarea name="${1:name}" rows="${2:4}" cols="${3:60}" class="form"></textarea>
+snippet textareaid
+	<textarea id="${1:taid}" name="${2:name}" rows="${3:4}" cols="${4:60}" class="form"></textarea>
+snippet check
+	<input type="checkbox" name="${1:name}" value="${2:0}"/>
+snippet checkid
+	<input type="checkbox" id="${1:id}" name="${2:name}" value="${3:0}"/>
+snippet checkl
+	<input type="checkbox" name="${1:name}" value="${2:0}" id="${3:chk0}"/><label for="${3}">${4:etiqueta}</label>
+snippet radio
+	<input type="radio" name="${1:name}" value="${2:0}"/>
+snippet radioid
+	<input type="radio" id="${1:id}" name="${2:name}" value="${3:0}"/>
+snippet radiol
+	<input type="radio" name="${1:name}" value="${2:0}" id="${3:rd0}"/><label for="${3}">${4:etiqueta}</label>
+snippet date
+	<input type="text" name="${1:fi}" value="$in{'${1:fi}'}" class="form wdate" maxlength="10" size="10" readonly><a href="javascript: void(0);" onclick="displayCalendar(document.Forma.${1:fi});"><img src="/images/cal.png" class="vam"></a>
+snippet select
+	<select name="${1:name}" class="form">${2:}</select>
+snippet selectid
+	<select id="${1:id}" name="${2:name}" class="form" onchange="${3:jsfunc}">${4:}</select>
+snippet opt
+	<option value="${1: }">${2:label}</option>${3:}
+snippet br
+	<br>
+
+# JS
+snippet script
+	<script>${1: }</script>
+snippet jsfunc
+	function ${1:function_name}(${2:v}) {
+		${3:var}
+	}
+snippet jsmessage
+	setMessage("${1:message}");
+snippet jsalert
+	alert("${1:alert}");
+# try
+snippet jstry
+	try {
+		${1://code}
+	} catch (${2:e}) {
+		${0:/* handle error */}
+	}
+# loops
+snippet jsfor
+	for (var ${1:i} = 0; ${1} < ${2:arr}.length; ${1}++) {
+		${3: }
+	}
+snippet jswh
+	while (${1:/* condition */}) {
+		${2:/* do */}
+	}
+snippet jsinterval
+	xi = setInterval('${1:funcion}()',${2:1000});
+snippet jstimeout
+	xt = setTimeout('${1:funcion}()',${2:1000});
+snippet jsunload
+	window.onunload = function(){};
+snippet jsencode
+	encodeURIComponent(${1:string});
+snippet gcal
+	<link rel="stylesheet" type="text/css" href="/css/gcalendar.css">
+	<script src="/lib/gcalendar.js"></script>

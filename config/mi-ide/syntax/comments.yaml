@@ -1,0 +1,12 @@
+filetype: comments
+
+detect:
+    filename: " "
+
+rules:
+    # Operators
+    - comment: "^[ \\t]*(?:#|//|--).*$"
+    - info: "^[ \\t]*(?:#|//|--) ?(?:\\w+):.*$"
+    - todo: "(?i)^[ \\t]*(?:#|//|--) ?TODO:.*$"
+    - error: "(?i)^[ \\t]*(?:#|//|--) ?FIX:.*$"
+    - default: "^[\\t ]+"

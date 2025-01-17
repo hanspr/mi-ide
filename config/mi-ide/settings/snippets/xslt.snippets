@@ -1,0 +1,76 @@
+# xml declaration
+snippet xslt
+	<xsl:stylesheet version = "1.0">
+	<xsl:output method = "html" />
+	<xsl:template match="${1:xpath}">
+	${0: }
+	</xsl:template>
+	</xsl:stylesheet>
+snippet template
+	<xsl:template match="${1:xpath}">${0: }</xsl:template>
+snippet current
+	<xsl:for-each select="current()/${1:xpath}">${0: }</xsl:for-each>
+snippet var
+	<xsl:variable name="${1:varname}" select="${2:xpath}" />
+snippet var2
+	<xsl:variable name="${1:varname}">${0: }</xsl:variable>
+snippet if
+	<xsl:if test="${1:test}">${0: }</xsl:if>
+snippet choose
+	<xsl:choose>
+	<xsl:when test="${0: }"></xsl:when>
+	<xsl:when test="test"></xsl:when>
+	<xsl:otherwise></xsl:otherwise>
+	</xsl:choose>
+snippet foreach
+	<xsl:for-each select="${1:xpath}">
+	${0}
+	</xsl:for-each>
+snippet select
+	<xsl:value-of select="${1:xpath/@value}"/>
+snippet nbsp
+	<xsl:text disable-output-escaping="yes">&amp;</xsl:text>nbsp;
+snippet cnt
+	[CNT:${1:conf}!${2: label}]
+snippet cod
+	[COD:<xsl:value-of select="${1:xpath/@value}"/>!${2:table}!${3:value column}!${4:search column}]
+snippet set
+	[SET:${1:s,logosa,letra,factura}!<xsl:value-of select="${2:xpath/@value}"/>]
+snippet qry
+	[QRY:${1:value}!${2:table}!${3:where}]
+snippet date
+	[DATE:<xsl:value-of select="${2:xpath/@value}"/>!${1:NT,vacio}]
+snippet dec
+	[DEC:<xsl:value-of select="${1:xpath/@value}"/>!${2:D,X,cantidad decimales}]
+snippet del
+	[DEL:<xsl:value-of select="${1:xpath/@value}"/>!regex]
+snippet spc
+	[SPC:<xsl:value-of select="${1:xpath/@value}"/>!regex]
+snippet tasa
+	[TASA:<xsl:value-of select="${1:xpath/@value}"/>]
+snippet br
+	<br/>
+snippet h1
+	<h1>${0: }</h1>
+snippet h2
+	<h2>${0: }</h2>
+snippet h3
+	<h3>${0: }</h3>
+snippet h4
+	<h4>${0: }</h4>
+snippet h5
+	<h5>${0: }</h5>
+snippet h6
+	<h6>${0: }</h6>
+snippet hr
+	<hr />
+snippet pre
+	<pre>${0: }</pre>
+snippet span
+	<span>${0: }</span>
+snippet table
+	<table border="0" cellspacing="0" cellpadding="2" class="fw">${0: }</table>
+snippet tr
+	<tr class="${1: }">${0: }</tr>
+snippet td
+	<td>${0: }</td>
