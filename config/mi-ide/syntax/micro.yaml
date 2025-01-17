@@ -7,7 +7,7 @@ rules:
     - statement: "\\b(syntax|color(-link)?)\\b"
     - statement: "\\b(start=|end=)\\b"
     # Simple one-liners
-    - identifier: "\\b(default|number|statement|underlined|error|todo|statusline|indent-char|cursor\\-line|color\\-column|ignore|divider|tabbar|function|method|other|unfocused|selection|matchbrace|markup\\-head|markup\\-bold|markup\\-table|markup\\-url|var|char)\\b"
+    - identifier: "\\b(default|number|statement|underlined|info|error|todo|statusline|indent-char|cursor\\-line|color\\-column|ignore|divider|tabbar|function|method|other|unfocused|selection|matchbrace|markup\\-head|markup\\-bold|markup\\-table|markup\\-url|var|char|label)\\b"
     # Separate identifiers to keep "complex" regex clean
     - identifier: "\\b(special(Char)?)\\b"
     - identifier: "\\b((current\\-)?line\\-number)\\b"
