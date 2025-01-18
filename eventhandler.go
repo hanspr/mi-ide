@@ -5,7 +5,7 @@ import (
 	"time"
 
 	dmp "github.com/sergi/go-diff/diffmatchpatch"
-	"github.com/yuin/gopher-lua"
+	lua "github.com/yuin/gopher-lua"
 )
 
 const (
@@ -195,6 +195,12 @@ func (eh *EventHandler) Execute(t *TextEvent) {
 	}
 
 	eh.UndoStack.Push(t)
+
+	// Execute Snippet Event Handler
+
+	if !SnippetOnBeforeTextEvent(t) {
+		return
+	}
 
 	for pl := range loadedPlugins {
 		if GetPluginOption(pl, "ftype") != "*" && (GetPluginOption(pl, "ftype") == nil || GetPluginOption(pl, "ftype").(string) != CurView().Buf.FileType()) {
