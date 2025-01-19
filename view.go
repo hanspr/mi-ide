@@ -883,6 +883,7 @@ func (v *View) openHelp(helpPage string) {
 			v.HSplit(helpBuffer)
 			CurView().Type = vtHelp
 			v.Relocate()
+			NavigationMode = true
 		}
 	}
 }
