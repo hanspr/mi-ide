@@ -1361,7 +1361,7 @@ func (m *microMenu) SelLocalSettings(b *Buffer) {
 		m.myapp.Reset()
 		m.myapp.defStyle = StringToStyle("#ffffff,#262626")
 		width := 100
-		height := 20
+		height := 22
 		f = m.myapp.AddFrame("f", -1, -1, width, height, "relative")
 		f.AddWindowBox("enc", Language.Translate("Buffer Settings"), 0, 0, width, height, true, nil, "", "")
 		f.AddWindowRadio("savefor", Language.Translate("Save as this file settings only"), "file", 2, height-4, false, nil, "", "")
@@ -1406,7 +1406,7 @@ func (m *microMenu) SelLocalSettings(b *Buffer) {
 			row += 2
 			if row > height-6 {
 				row = 2
-				col += 40
+				col += 42
 			}
 		}
 	} else {
