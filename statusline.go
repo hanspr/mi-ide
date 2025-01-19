@@ -200,6 +200,11 @@ func (sline *Statusline) Display() {
 		lastOverwriteStatus = sline.view.isOverwriteMode
 	}
 
+	//Git status
+	if git.enabled {
+		file = file + "  " + git.status + "}"
+	}
+
 	// Maybe there is a unicode filename?
 	fileRunes := []rune(file)
 
@@ -208,6 +213,7 @@ func (sline *Statusline) Display() {
 		screen.SetContent(viewX, y, '█', nil, statusLineStyle)
 		viewX++
 	}
+	gstart := 0
 	for x := 0; x < w; x++ {
 		tStyle := statusLineStyle
 		if NavigationMode {
@@ -227,6 +233,27 @@ func (sline *Statusline) Display() {
 			}
 		}
 		if x < len(fileRunes) {
+			if gstart > 0 {
+				if fileRunes[x] == '}' {
+					gstart = 99
+					fileRunes[x] = ' '
+					tStyle = StringToStyle("#ffffff," + git.bgcolor)
+				} else if gstart == 1 {
+					if fileRunes[x] == '{' {
+						gstart = 2
+						fileRunes[x] = ' '
+					}
+					tStyle = StringToStyle("#ffffff," + git.bgcolor)
+				} else if fileRunes[x] != ' ' {
+					tStyle = StringToStyle("bold " + git.fgcolor[string(fileRunes[x])] + "," + git.bgcolor)
+				} else {
+					tStyle = StringToStyle("#ffffff," + git.bgcolor)
+				}
+			} else if fileRunes[x] == '[' {
+				gstart = 1
+				fileRunes[x] = '↳'
+				tStyle = StringToStyle("#ffffff," + git.bgcolor)
+			}
 			screen.SetContent(viewX+x, y, fileRunes[x], nil, tStyle)
 		} else if x >= w-len(rightText) && x < len(rightText)+w-len(rightText) {
 			screen.SetContent(viewX+x, y, []rune(rightText)[x-w+len(rightText)], nil, tStyle)

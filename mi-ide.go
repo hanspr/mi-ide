@@ -123,6 +123,8 @@ var (
 	NavigationMode = false
 
 	cloudPath = "https://clip.microflow.com.mx:8443" // Cloud service url
+
+	git = &gitstatus{}
 )
 
 // LoadInput determines which files should be loaded into buffers
@@ -382,6 +384,7 @@ func main() {
 	currEnv.Gid = os.Getgid()
 	currEnv.Groups, _ = os.Getgroups()
 	currEnv.ClipWhere = "local"
+	git = NewGitStatus()
 
 	flag.Usage = func() {
 		fmt.Println("Usage: mi-ide [OPTIONS] [FILE]...")
@@ -471,6 +474,8 @@ func main() {
 	// This is used for sending the user messages in the bottom of the editor
 	messenger = new(Messenger)
 	messenger.LoadHistory()
+
+	git.GitSetStatus()
 
 	// Now we load the input
 	buffers := LoadInput()
