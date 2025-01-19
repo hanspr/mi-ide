@@ -73,11 +73,10 @@ func (sl *SnippetLocation) focus() {
 	view := sl.snippet.view
 	startP := sl.startPos()
 	endP := sl.endPos()
-
 	for view.Cursor.LessThan(startP) {
 		view.Cursor.Right()
 	}
-	for view.Cursor.GreaterThan(endP) {
+	for view.Cursor.GreaterEqual(endP) {
 		view.Cursor.Left()
 	}
 	if Count(sl.ph.value) > 0 {
@@ -229,6 +228,9 @@ func (s *snippet) findLocation(loc Loc) *SnippetLocation {
 
 func (s *snippet) remove() {
 	endPos := s.startPos.Move(len(s.str()), s.view.Buf)
+	if endPos.GreaterThan(s.view.Buf.End()) {
+		endPos = s.view.Buf.End()
+	}
 	s.modText = true
 	s.view.Cursor.SetSelectionStart(s.startPos)
 	s.view.Cursor.SetSelectionEnd(endPos)
