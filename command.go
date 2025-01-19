@@ -31,29 +31,31 @@ var (
 
 func init() {
 	commandActions = map[string]func([]string){
-		"SaveAs":        SaveAs,
+		"Bind":          Bind,
+		"Cd":            Cd,
+		"CloudSettings": CloudSettings,
+		"EditSettings":  EditSettings,
+		"EditSnippets":  EditSnippets,
+		"Help":          Help,
+		"HSplit":        HSplit,
+		"KeyBindings":   KeyBindings,
+		"MemUsage":      MemUsage,
+		"Open":          Open,
+		"Plugin":        PluginCmd,
+		"PluginManager": PluginManager,
+		"Pwd":           Pwd,
+		"Raw":           Raw,
+		"Reload":        Reload,
 		"Set":           Set,
 		"SetLocal":      SetLocal,
 		"Show":          Show,
 		"ShowKey":       ShowKey,
-		"Bind":          Bind,
 		"Save":          Save,
-		"VSplit":        VSplit,
-		"HSplit":        HSplit,
-		"Help":          Help,
-		"ToggleLog":     ToggleLog,
-		"Plugin":        PluginCmd,
-		"Reload":        Reload,
-		"Cd":            Cd,
-		"Pwd":           Pwd,
-		"Open":          Open,
-		"MemUsage":      MemUsage,
-		"Raw":           Raw,
+		"SaveAs":        SaveAs,
 		"Settings":      Settings,
 		"ShowSnippets":  ShowSnippets,
-		"CloudSettings": CloudSettings,
-		"PluginManager": PluginManager,
-		"KeyBindings":   KeyBindings,
+		"ToggleLog":     ToggleLog,
+		"VSplit":        VSplit,
 	}
 }
 
@@ -72,6 +74,8 @@ func DefaultCommands() map[string]StrCommand {
 		"reload":   {"Reload", []Completion{NoCompletion}},
 		"saveas":   {"SaveAs", []Completion{NoCompletion}},
 		// Groups
+		"edit:settings":      {"EditSettings", []Completion{NoCompletion}},
+		"edit:snippets":      {"EditSnippets", []Completion{NoCompletion}},
 		"keys:bind":          {"Bind", []Completion{NoCompletion}},
 		"keys:showkey":       {"ShowKey", []Completion{NoCompletion}},
 		"menu:settings":      {"Settings", []Completion{NoCompletion}},
@@ -355,6 +359,17 @@ func ShowSnippets(args []string) {
 	CurView().Type = vtLog
 	CurView().Buf.UpdateRules()
 	NavigationMode = true
+}
+
+func EditSettings(args []string) {
+	CurView().AddTab(false)
+	CurView().Open(configDir + "/settings.json")
+}
+
+func EditSnippets(args []string) {
+	ftype := CurView().Buf.FileType()
+	CurView().AddTab(false)
+	CurView().Open(configDir + "/settings/snippets/" + ftype + ".snippets")
 }
 
 // Reload reloads all files (syntax files, colorschemes...)
