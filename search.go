@@ -229,7 +229,7 @@ func DialogSearch(searchStr string) string {
 		}
 		d1 := 0
 		d2 := 0
-		if xs[0].X >= len(line) || xs[1].X >= len(line) {
+		if xs[0].X > len(line) || xs[1].X > len(line) {
 			d1 = len(line) - xs[0].X
 			d2 = len(line) - xs[1].X
 		}
