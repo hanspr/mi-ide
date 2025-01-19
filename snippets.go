@@ -343,6 +343,8 @@ func (v *View) SnippetInsert(usePlugin bool) bool {
 
 	loadSnippets(buf.FileType())
 	if curSn, ok = snippets[name]; !ok {
+		c.ResetSelection()
+		c.GotoLoc(xy)
 		messenger.Message("Unknown snippet : ", name)
 		return false
 	}
