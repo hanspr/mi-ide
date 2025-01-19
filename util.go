@@ -130,6 +130,19 @@ func IsStrWhitespace(str string) bool {
 	return true
 }
 
+func TrimWhiteSpaceBefore(str string) string {
+	nstr := ""
+	done := false
+	for _, c := range str {
+		if done || !IsWhitespace(c) {
+			nstr = nstr + string(c)
+			done = true
+			continue
+		}
+	}
+	return nstr
+}
+
 func noAutoCloseChar(str string) bool {
 	x := IsWordChar(str)
 	if x {
