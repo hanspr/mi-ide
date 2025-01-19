@@ -50,6 +50,7 @@ func init() {
 		"MemUsage":      MemUsage,
 		"Raw":           Raw,
 		"Settings":      Settings,
+		"ShowSnippets":  ShowSnippets,
 		"CloudSettings": CloudSettings,
 		"PluginManager": PluginManager,
 		"KeyBindings":   KeyBindings,
@@ -72,7 +73,6 @@ func DefaultCommands() map[string]StrCommand {
 		"saveas":   {"SaveAs", []Completion{NoCompletion}},
 		// Groups
 		"keys:bind":          {"Bind", []Completion{NoCompletion}},
-		"keys:show":          {"Show", []Completion{OptionCompletion, NoCompletion}},
 		"keys:showkey":       {"ShowKey", []Completion{NoCompletion}},
 		"menu:settings":      {"Settings", []Completion{NoCompletion}},
 		"menu:cloudsettings": {"CloudSettings", []Completion{NoCompletion}},
@@ -82,6 +82,8 @@ func DefaultCommands() map[string]StrCommand {
 		"option:setlocal":    {"SetLocal", []Completion{OptionCompletion, OptionValueCompletion}},
 		"split:vertical":     {"VSplit", []Completion{FileCompletion, NoCompletion}},
 		"split:horizontal":   {"HSplit", []Completion{FileCompletion, NoCompletion}},
+		"show:option":        {"Show", []Completion{OptionCompletion, NoCompletion}},
+		"show:snippets":      {"ShowSnippets", []Completion{OptionCompletion, NoCompletion}},
 	}
 }
 
@@ -338,6 +340,21 @@ func ToggleLog(args []string) {
 	} else {
 		CurView().Quit(true)
 	}
+}
+
+// Show loaded snippets
+func ShowSnippets(args []string) {
+	ftype := CurView().Buf.FileType()
+	snips := ""
+	loadSnippets(ftype)
+	for name, s := range snippets {
+		snips = snips + "snippet " + name + "\n" + s.code + "\n\n"
+	}
+	CurView().VSplit(NewBufferFromString(snips, ""))
+	CurView().Buf.Settings["filetype"] = "snippet"
+	CurView().Type = vtLog
+	CurView().Buf.UpdateRules()
+	NavigationMode = true
 }
 
 // Reload reloads all files (syntax files, colorschemes...)
