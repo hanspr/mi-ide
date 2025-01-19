@@ -66,13 +66,15 @@ func (sl *SnippetLocation) endPos() Loc {
 
 // check if the given loc is within the location
 func (sl *SnippetLocation) isWithin(loc Loc) bool {
+	messenger.AddLog(loc, ">=", sl.startPos(), " && ", loc, " <= ", sl.endPos())
 	return loc.GreaterEqual(sl.startPos()) && loc.LessEqual(sl.endPos())
 }
 
 func (sl *SnippetLocation) focus() {
+	messenger.AddLog("linelocation_focuse")
 	view := sl.snippet.view
-	startP := sl.startPos().Move(-1, view.Buf)
-	endP := sl.endPos().Move(-1, view.Buf)
+	startP := sl.startPos()
+	endP := sl.endPos()
 
 	for view.Cursor.LessThan(startP) {
 		view.Cursor.Right()
@@ -90,42 +92,56 @@ func (sl *SnippetLocation) focus() {
 
 func (sl *SnippetLocation) handleInput(ev *TextEvent) bool {
 	if ev.EventType == 1 {
-		if ev.Deltas[1].Text == "\n" {
+		if ev.Deltas[0].Text == "\n" {
 			sl.snippet.view.SnippetAccept(false)
 			return false
 		} else {
-			offset := 1
+			offset := 0
 			sp := sl.startPos()
-			for sp.LessEqual(ev.Deltas[1].Start) {
+			for sp.LessEqual(ev.Deltas[0].Start) {
 				sp = sp.Move(1, sl.snippet.view.Buf)
 				offset = offset + 1
 			}
 			sl.snippet.remove()
-			if offset == 1 {
-				sl.ph.value = ev.Deltas[1].Text + sl.ph.value[:offset]
+			if len(sl.ph.value) == 0 {
+				sl.ph.value = ev.Deltas[0].Text
 			} else {
-				sl.ph.value = sl.ph.value[0:offset-1] + ev.Deltas[1].Text + sl.ph.value[:offset]
+				if offset == 1 {
+					sl.ph.value = ev.Deltas[0].Text + sl.ph.value[:offset-1]
+				} else {
+					messenger.AddLog("value:", sl.ph.value)
+					messenger.AddLog("str1:", sl.ph.value[0:offset-1])
+					messenger.AddLog("str2:", ev.Deltas[0].Text)
+					messenger.AddLog("str3:", sl.ph.value[offset-1:])
+					sl.ph.value = sl.ph.value[0:offset-1] + ev.Deltas[0].Text + sl.ph.value[offset-1:]
+					messenger.AddLog("C:", sl.ph.value)
+				}
 			}
+			messenger.AddLog("+1 HANDLE_INPUT:Insertar texto")
 			sl.snippet.insert()
 			return true
 		}
 	} else if ev.EventType == -1 {
-		offset := 1
+		messenger.AddLog("Borrar??")
+		offset := 0
 		sp := sl.startPos()
-		for sp.LessEqual(ev.Deltas[1].Start) {
+		for sp.LessEqual(ev.Deltas[0].Start) {
 			sp = sp.Move(1, sl.snippet.view.Buf)
 			offset = offset + 1
 		}
-		if ev.Deltas[1].Start.Y != ev.Deltas[1].End.Y {
+		if ev.Deltas[0].Start.Y != ev.Deltas[0].End.Y {
 			return false
 		}
 		sl.snippet.remove()
-		l := ev.Deltas[1].End.X - ev.Deltas[1].Start.X
+		l := ev.Deltas[0].End.X - ev.Deltas[0].Start.X
 		if offset == 1 {
-			sl.ph.value = sl.ph.value[:offset+l]
+			sl.ph.value = sl.ph.value[:offset+l-1]
+			messenger.AddLog("value 1: ", sl.ph.value)
 		} else {
-			sl.ph.value = sl.ph.value[0:offset-1] + sl.ph.value[offset+l:]
+			sl.ph.value = sl.ph.value[0:offset-1] + sl.ph.value[offset:]
+			messenger.AddLog("value 2: ", sl.ph.value)
 		}
+		messenger.AddLog("-1 : HANDLE_INPUT:Insertar texto")
 		sl.snippet.insert()
 		return true
 	}
@@ -145,13 +161,14 @@ type snippet struct {
 }
 
 type ph struct {
-	num   int
+	num   int64
 	value string
 }
 
 func NewSnippet() *snippet {
 	s := &snippet{}
 	s.code = ""
+	s.focused = -1
 	return s
 }
 
@@ -164,8 +181,8 @@ func (s *snippet) addCodeLine(line string) {
 
 func (s *snippet) prepare() {
 	if s.placeholders == nil {
-		s.placeholders = make([]*ph, 1)
-		s.locations = make([]*SnippetLocation, 1)
+		s.placeholders = make([]*ph, 0)
+		s.locations = make([]*SnippetLocation, 0)
 		rgx, _ := regexp.Compile(`\${(\d+):?([^}]*)}`)
 		for {
 			match := rgx.FindStringSubmatch(s.code)
@@ -179,13 +196,25 @@ func (s *snippet) prepare() {
 			if r != "" {
 				s.code = strings.Replace(s.code, r, "", 1)
 			}
-			p := s.placeholders[num]
-			if p == nil {
-				p = &ph{num: int(num), value: value}
+			p := &ph{}
+			insert := true
+			for _, ph := range s.placeholders {
+				if ph.num == num {
+					insert = false
+					p = ph
+					break
+				}
+			}
+			if insert {
+				p = &ph{num: num, value: value}
 				s.placeholders = append(s.placeholders, p)
 			}
 			s.locations = append(s.locations, NewSnippetLocation(idx[0], p, s))
 		}
+		messenger.AddLog("final phs :", s.placeholders)
+		messenger.AddLog("final locs:", s.locations)
+		messenger.AddLog("len loc:", len(s.locations))
+		messenger.AddLog("len phs:", len(s.placeholders))
 	}
 }
 
@@ -198,16 +227,18 @@ func (s *snippet) clone() *snippet {
 
 func (s *snippet) str() string {
 	res := s.code
-	for i := len(s.locations); i > 0; i-- {
+	for i := len(s.locations) - 1; i >= 0; i-- {
 		loc := s.locations[i]
-		res = res[0:loc.idx-1] + loc.ph.value + res[loc.idx+1:]
+		res = res[0:loc.idx] + loc.ph.value + res[loc.idx:]
 	}
 	return res
 }
 
 func (s *snippet) findLocation(loc Loc) *SnippetLocation {
+	messenger.AddLog("findlocation:", loc)
 	for _, l := range s.locations {
 		if l.isWithin(loc) {
+			messenger.AddLog("regresarloc:", l.ph.value)
 			return l
 		}
 	}
@@ -226,15 +257,18 @@ func (s *snippet) remove() {
 
 func (s *snippet) insert() {
 	s.modText = true
+	messenger.AddLog("insert:", s.str())
 	s.view.Buf.insert(s.startPos, []byte(s.str()))
 	s.modText = false
 }
 
 func (s *snippet) focusNext() {
-	if s.focused != 0 {
+	if s.focused == -1 {
+		s.focused = 0
+	} else {
 		s.focused = (s.focused + 1) % len(s.placeholders)
 	}
-	ph := s.placeholders[s.focused+1]
+	ph := s.placeholders[s.focused]
 	for _, l := range s.locations {
 		if l.ph == ph {
 			l.focus()
@@ -244,7 +278,6 @@ func (s *snippet) focusNext() {
 }
 
 func loadSnippets(filetype string) {
-	messenger.AddLog("leyendo snippets, para lenguaje : ", filetype)
 	if filetype != snipFileType {
 		snippets = ReadSnippets(filetype)
 		snipFileType = filetype
@@ -252,13 +285,12 @@ func loadSnippets(filetype string) {
 }
 
 func ReadSnippets(filetype string) map[string]*snippet {
-	messenger.AddLog("Leyendo snippets")
 	lineNum := 0
 	rgxComment, _ := regexp.Compile(`^#`)
-	rgxSnip, _ := regexp.Compile(`^snippet \w`)
+	rgxSnip, _ := regexp.Compile(`^snippet `)
 	rgxCode, _ := regexp.Compile(`^\t`)
 	snippets := map[string]*snippet{}
-	filename := configDir + "settings/snippets/" + filetype + ".snippets"
+	filename := configDir + "/settings/snippets/" + filetype + ".snippets"
 	file, err := os.Open(filename)
 	if err != nil {
 		messenger.AddLog("No snippets for file ", filetype)
@@ -275,12 +307,12 @@ func ReadSnippets(filetype string) map[string]*snippet {
 		if rgxComment.Match(line) {
 			// comment line
 			continue
-		} else if rgxCode.Match(line) {
+		} else if rgxSnip.Match(line) {
 			// snippet word
 			name := strings.Replace(string(line), "snippet ", "", 1)
 			curSnip = NewSnippet()
 			snippets[name] = curSnip
-		} else if rgxSnip.Match(line) {
+		} else if rgxCode.Match(line) {
 			// snippet code
 			cline := strings.Replace(string(line), "\t", "", 1)
 			curSnip.addCodeLine(cline)
@@ -294,20 +326,30 @@ func ReadSnippets(filetype string) map[string]*snippet {
 func SnippetOnBeforeTextEvent(ev *TextEvent) bool {
 	if currentSnippet != nil && currentSnippet.view == CurView() {
 		if currentSnippet.modText {
+			messenger.AddLog("ignorar evento, es mio")
 			return true
 		}
 		locStart := &SnippetLocation{}
 		locEnd := &SnippetLocation{}
 		if currentSnippet != nil {
-			locStart = currentSnippet.findLocation(ev.Deltas[1].Start.Move(1, currentSnippet.view.Buf))
-			locEnd = currentSnippet.findLocation(ev.Deltas[1].End)
+			messenger.AddLog("Test locStart")
+			// locStart = currentSnippet.findLocation(ev.Deltas[0].Start.Move(1, CurView().Buf))
+			locStart = currentSnippet.findLocation(ev.Deltas[0].Start)
+			messenger.AddLog("locStart", locStart)
+			messenger.AddLog("Test locEnd")
+			locEnd = currentSnippet.findLocation(ev.Deltas[0].End)
+			messenger.AddLog("locEnd", locEnd)
 		}
-		if locStart != nil && (locStart == locEnd || (ev.Deltas[1].End.Y == 0 && ev.Deltas[1].End.X == 0)) {
+		messenger.AddLog("Estoy en rango?", locStart, ":", locEnd, ":", ev.Deltas[0].End.Y, ":", ev.Deltas[0].End.X)
+		if locStart != nil && (locStart == locEnd || (ev.Deltas[0].End.Y == 0 && ev.Deltas[0].End.X == 0)) {
+			messenger.AddLog("OK1 letra:", ev.Deltas[0].Text)
 			if locStart.handleInput(ev) {
-				currentSnippet.view.Cursor.Goto(ev.C)
+				messenger.AddLog("ok2")
+				CurView().Cursor.Goto(ev.C)
 				return false
 			}
 		}
+		messenger.AddLog("ACCEPT:::::::::::::::::")
 		currentSnippet.view.SnippetAccept(false)
 	}
 	return true
@@ -370,12 +412,14 @@ func (v *View) SnippetNext(usePlugin bool) bool {
 }
 
 func (v *View) SnippetAccept(usePlugin bool) bool {
+	messenger.AddLog("FINNNNNNNNNNNNNNNNNNN")
 	v.Buf.Settings["autoclose"] = snAutoclose
 	currentSnippet = nil
 	return true
 }
 
 func (v *View) SnippetCancel(usePlugin bool) bool {
+	messenger.AddLog("Cancelación ????????????")
 	if currentSnippet != nil {
 		currentSnippet.remove()
 	}
