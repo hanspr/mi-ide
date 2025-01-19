@@ -1955,6 +1955,9 @@ func (v *View) SafeQuit(usePlugin bool) bool {
 	for _, vo := range tabs[curTab].Views {
 		if vo.Type == vtLog || vo.Type == vtTerm || vo.Type == vtHelp {
 			vo.Quit(false)
+			if CurView().Type.Kind == 0 && NavigationMode {
+				NavigationMode = false
+			}
 			return false
 		}
 	}
