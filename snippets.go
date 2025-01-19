@@ -18,13 +18,15 @@ var (
 // Location
 type SnippetLocation struct {
 	idx     int
+	vidx    int
 	ph      *ph
 	snippet *snippet
 }
 
-func NewSnippetLocation(idx int, ph *ph, snip *snippet) *SnippetLocation {
+func NewSnippetLocation(idx, vidx int, ph *ph, snip *snippet) *SnippetLocation {
 	sl := &SnippetLocation{}
 	sl.idx = idx
+	sl.vidx = vidx
 	sl.ph = ph
 	sl.snippet = snip
 	return sl
@@ -40,7 +42,7 @@ func (sl *SnippetLocation) offset() int {
 			add = add + Count(loc.ph.value)
 		}
 	}
-	return sl.idx + add
+	return sl.vidx + add
 }
 
 func (sl *SnippetLocation) startPos() Loc {
@@ -179,6 +181,7 @@ func (s *snippet) prepare() {
 			num, _ := strconv.ParseInt(match[1], 10, 0)
 			value := match[2]
 			idx := rgx.FindStringIndex(s.code)
+			vidx := runePos(idx[0], s.code)
 			r := rgx.FindString(s.code)
 			if r != "" {
 				s.code = strings.Replace(s.code, r, "", 1)
@@ -196,7 +199,7 @@ func (s *snippet) prepare() {
 				p = &ph{num: num, value: value}
 				s.placeholders = append(s.placeholders, p)
 			}
-			s.locations = append(s.locations, NewSnippetLocation(idx[0], p, s))
+			s.locations = append(s.locations, NewSnippetLocation(idx[0], vidx, p, s))
 		}
 	}
 }
