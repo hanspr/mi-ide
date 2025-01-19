@@ -5,7 +5,7 @@
     "basename": false,
     "colorcolumn": 0,
     "colorscheme": "default",
-    "cursorcolor": "gold",
+    "cursorcolor": "#af5f5f",
     "cursorline": true,
     "cursorshape": "block",
     "eofnewline": false,
