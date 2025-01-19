@@ -81,9 +81,9 @@ snippet perlx
 	use utf8;
 	binmode STDOUT,':utf8';
 	use Eflow::user_check;
-
+	
 	our (%in,$lib,$CMD,$EMP,$Emp,$CSSVER,$JSVER);
-
+	
 	user_check();
 	print PrintHeader();
 	ReadParse();
@@ -92,7 +92,7 @@ snippet perlx
 	if ($in{'cmd'} =~ /^cmd_/) {
 		$CMD=$in{'cmd'};
 	}
-
+	
 	top();
 	if(!$CMD){
 		inicio();
@@ -102,11 +102,11 @@ snippet perlx
 		inicio();
 	}
 	bottom();
-
+	
 	sub inicio {
 		print "INICIO";
 	}
-
+	
 	sub top {
 		print qq${1:”}
 		<!DOCTYPE html>
@@ -125,7 +125,7 @@ snippet perlx
 		<form name="Forma" action="script.cgi" method="post" onsubmit="ShadowOn();">
 		${1:”};
 	}
-
+	
 	sub bottom {
 		print qq${1:”}
 		<input type="hidden" name="" value="">

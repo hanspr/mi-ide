@@ -5,6 +5,8 @@ detect:
 
 rules:
     - comment: "^[[:space:]]*[#]+.*"
+    - constant.string: "\"[^\"\\\\]*(?:\\\\.[^\"\\\\]*)*\""
+    - symbol: "\\$\\{\\w+:?.*?\\}"
     - special:
         start: "^snippet"
         end: "$"
