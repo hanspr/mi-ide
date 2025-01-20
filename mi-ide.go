@@ -490,6 +490,9 @@ func main() {
 				Cd(arg)
 				git.CheckGit()
 			}
+			if _, err := os.Stat(pwd + "/.miide/"); os.IsNotExist(err) {
+				os.Mkdir(pwd+"/.miide/", os.ModePerm)
+			}
 		}
 		// For each buffer we create a new tab and place the view in that tab
 		tab := NewTabFromView(NewView(buf))
