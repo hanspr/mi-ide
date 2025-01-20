@@ -44,7 +44,6 @@ func init() {
 		"KeyBindings":   KeyBindings,
 		"MemUsage":      MemUsage,
 		"Open":          Open,
-		"Plugin":        PluginCmd,
 		"PluginManager": PluginManager,
 		"Pwd":           Pwd,
 		"Raw":           Raw,
@@ -71,7 +70,6 @@ func DefaultCommands() map[string]StrCommand {
 		"log":      {"ToggleLog", []Completion{NoCompletion}},
 		"memusage": {"MemUsage", []Completion{NoCompletion}},
 		"open":     {"Open", []Completion{FileCompletion}},
-		"plugin":   {"Plugin", []Completion{PluginCmdCompletion, PluginNameCompletion}},
 		"pwd":      {"Pwd", []Completion{NoCompletion}},
 		"raw":      {"Raw", []Completion{NoCompletion}},
 		"reload":   {"Reload", []Completion{NoCompletion}},
@@ -146,87 +144,87 @@ func CommandAction(cmd string) func(*View, bool) bool {
 }
 
 // PluginCmd installs, removes, updates, lists, or searches for given plugins
-func PluginCmd(args []string) {
-	if len(args) >= 1 {
-		switch args[0] {
-		case "install":
-			installedVersions := GetInstalledVersions(false)
-			for _, plugin := range args[1:] {
-				pp := GetAllPluginPackages().Get(plugin)
-				if pp == nil {
-					messenger.Alert("error", Language.Translate("Unknown plugin:")+plugin)
-				} else if err := pp.IsInstallable(); err != nil {
-					messenger.Alert("error", Language.Translate("Error installing"), " ", plugin, ": ", err)
-				} else {
-					for _, installed := range installedVersions {
-						if pp.Name == installed.pack.Name {
-							if pp.Versions[0].Version.Compare(installed.Version) == 1 {
-								messenger.Alert("error", pp.Name, " "+Language.Translate("is already installed but out-of-date: use 'plugin update"), " ", pp.Name, Language.Translate("' to update"))
-							} else {
-								messenger.Alert("error", pp.Name, " "+Language.Translate("is already installed"))
-							}
-						}
-					}
-					pp.Install()
-				}
-			}
-		case "remove":
-			removed := ""
-			for _, plugin := range args[1:] {
-				// check if the plugin exists.
-				if _, ok := loadedPlugins[plugin]; ok {
-					UninstallPlugin(plugin)
-					removed += plugin + " "
-					continue
-				}
-			}
-			if !IsSpaces([]byte(removed)) {
-				messenger.Message(Language.Translate("Removed"), " ", removed)
-			} else {
-				messenger.Alert("error", Language.Translate("The requested plugins do not exist"))
-			}
-		case "update":
-			UpdatePlugins(args[1:])
-		case "list":
-			plugins := GetInstalledVersions(false)
-			messenger.AddLog("----------------")
-			messenger.AddLog(Language.Translate("The following plugins are currently installed:") + "\n")
-			for _, p := range plugins {
-				messenger.AddLog(fmt.Sprintf("%s (%s)", p.pack.Name, p.Version))
-			}
-			messenger.AddLog("----------------")
-			if len(plugins) > 0 {
-				if CurView().Type != vtLog {
-					ToggleLog([]string{})
-				}
-			}
-		case "search":
-			plugins := SearchPlugin(args[1:])
-			messenger.Message(len(plugins), " "+Language.Translate("plugins found"))
-			for _, p := range plugins {
-				messenger.AddLog("----------------")
-				messenger.AddLog(p.String())
-			}
-			messenger.AddLog("----------------")
-			if len(plugins) > 0 {
-				if CurView().Type != vtLog {
-					ToggleLog([]string{})
-				}
-			}
-		case "available":
-			packages := GetAllPluginPackages()
-			messenger.AddLog(Language.Translate("Available Plugins:"))
-			for _, pkg := range packages {
-				messenger.AddLog(pkg.Name)
-			}
-			if CurView().Type != vtLog {
-				ToggleLog([]string{})
-			}
-		}
-	} else {
-		messenger.Alert("error", Language.Translate("Not enough arguments"))
-	}
-}
+// func PluginCmd(args []string) {
+// 	if len(args) >= 1 {
+// 		switch args[0] {
+// 		case "install":
+// 			installedVersions := GetInstalledVersions(false)
+// 			for _, plugin := range args[1:] {
+// 				pp := GetAllPluginPackages().Get(plugin)
+// 				if pp == nil {
+// 					messenger.Alert("error", Language.Translate("Unknown plugin:")+plugin)
+// 				} else if err := pp.IsInstallable(); err != nil {
+// 					messenger.Alert("error", Language.Translate("Error installing"), " ", plugin, ": ", err)
+// 				} else {
+// 					for _, installed := range installedVersions {
+// 						if pp.Name == installed.pack.Name {
+// 							if pp.Versions[0].Version.Compare(installed.Version) == 1 {
+// 								messenger.Alert("error", pp.Name, " "+Language.Translate("is already installed but out-of-date: use 'plugin update"), " ", pp.Name, Language.Translate("' to update"))
+// 							} else {
+// 								messenger.Alert("error", pp.Name, " "+Language.Translate("is already installed"))
+// 							}
+// 						}
+// 					}
+// 					pp.Install()
+// 				}
+// 			}
+// 		case "remove":
+// 			removed := ""
+// 			for _, plugin := range args[1:] {
+// 				// check if the plugin exists.
+// 				if _, ok := loadedPlugins[plugin]; ok {
+// 					UninstallPlugin(plugin)
+// 					removed += plugin + " "
+// 					continue
+// 				}
+// 			}
+// 			if !IsSpaces([]byte(removed)) {
+// 				messenger.Message(Language.Translate("Removed"), " ", removed)
+// 			} else {
+// 				messenger.Alert("error", Language.Translate("The requested plugins do not exist"))
+// 			}
+// 		case "update":
+// 			UpdatePlugins(args[1:])
+// 		case "list":
+// 			plugins := GetInstalledVersions(false)
+// 			messenger.AddLog("----------------")
+// 			messenger.AddLog(Language.Translate("The following plugins are currently installed:") + "\n")
+// 			for _, p := range plugins {
+// 				messenger.AddLog(fmt.Sprintf("%s (%s)", p.pack.Name, p.Version))
+// 			}
+// 			messenger.AddLog("----------------")
+// 			if len(plugins) > 0 {
+// 				if CurView().Type != vtLog {
+// 					ToggleLog([]string{})
+// 				}
+// 			}
+// 		case "search":
+// 			plugins := SearchPlugin(args[1:])
+// 			messenger.Message(len(plugins), " "+Language.Translate("plugins found"))
+// 			for _, p := range plugins {
+// 				messenger.AddLog("----------------")
+// 				messenger.AddLog(p.String())
+// 			}
+// 			messenger.AddLog("----------------")
+// 			if len(plugins) > 0 {
+// 				if CurView().Type != vtLog {
+// 					ToggleLog([]string{})
+// 				}
+// 			}
+// 		case "available":
+// 			packages := GetAllPluginPackages()
+// 			messenger.AddLog(Language.Translate("Available Plugins:"))
+// 			for _, pkg := range packages {
+// 				messenger.AddLog(pkg.Name)
+// 			}
+// 			if CurView().Type != vtLog {
+// 				ToggleLog([]string{})
+// 			}
+// 		}
+// 	} else {
+// 		messenger.Alert("error", Language.Translate("Not enough arguments"))
+// 	}
+// }
 
 // SaveAs saves the buffer with a new name
 func SaveAs(args []string) {
