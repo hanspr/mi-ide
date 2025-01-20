@@ -6,6 +6,7 @@ import (
 	"errors"
 	"io"
 	"os"
+	"path/filepath"
 	"reflect"
 	"strconv"
 	"strings"
@@ -85,7 +86,8 @@ func InitGlobalSettings() {
 // InitLocalSettings get known local settings for this opened file
 // 1.- scans the congig/settings.json and sets the options
 // 2.- scans language settings for that particular filetype
-// 3.- scans users saved settings for this particular file
+// 3.- scans users saved settings for this particular project
+// 4.- scans users saved settings for this particular file
 func InitLocalSettings(buf *Buffer) {
 	invalidSettings = false
 	var parsed map[string]interface{}
@@ -133,16 +135,26 @@ func InitLocalSettings(buf *Buffer) {
 
 	// 2.- Load Settings based on settings/filetype.json
 	filename = configDir + "/settings/" + buf.Settings["filetype"].(string) + ".json"
-	ftypeSettings, err := ReadFileJSON(filename)
+	fSettings, err := ReadFileJSON(filename)
 	if err == nil {
-		for k, v := range ftypeSettings {
+		for k, v := range fSettings {
 			buf.Settings[k] = v
 		}
 	}
 
-	// 3.- Load Settings based on buffer/thisfile.settings
-	filename = configDir + "/buffers/" + strings.ReplaceAll(ReplaceHome(buf.AbsPath)+".settings", "/", "")
-	fSettings, err := ReadFileJSON(filename)
+	// 3.- Load Settings for this project
+	dir := filepath.Dir(buf.AbsPath)
+	filename = dir + "/.miide/settings.json"
+	fSettings, err = ReadFileJSON(filename)
+	if err == nil {
+		for k, v := range fSettings {
+			buf.Settings[k] = v
+		}
+	}
+
+	// 4.- Load Settings for this particular file
+	filename = dir + "/.miide/" + buf.fname + ".settings"
+	fSettings, err = ReadFileJSON(filename)
 	if err == nil {
 		// Load previous saved settings for this file
 		for k, v := range fSettings {
