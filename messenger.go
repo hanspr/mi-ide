@@ -490,10 +490,6 @@ func (m *Messenger) HandleEvent(event tcell.Event, history []string) {
 			}
 		}
 		switch e.Key() {
-		case tcell.KeyCtrlA:
-			m.Start()
-		case tcell.KeyCtrlE:
-			m.End()
 		case tcell.KeyUp:
 			m.UpHistory(history)
 		case tcell.KeyDown:
@@ -516,11 +512,14 @@ func (m *Messenger) HandleEvent(event tcell.Event, history []string) {
 			}
 		case tcell.KeyBackspace2, tcell.KeyBackspace:
 			m.Backspace()
-		case tcell.KeyDelete:
+		case tcell.KeyDelete, tcell.KeyCtrlU:
 			if m.cursorx < Count(m.response) {
 				m.cursorx++
 				m.Backspace()
 			}
+		case tcell.KeyCtrlJ:
+			m.response = ""
+			m.cursorx = m.offsetx
 		case tcell.KeyCtrlV:
 			m.Paste()
 		case tcell.KeyRune:
