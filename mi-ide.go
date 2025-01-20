@@ -475,14 +475,21 @@ func main() {
 	messenger = new(Messenger)
 	messenger.LoadHistory()
 
-	git.GitSetStatus()
-
 	// Now we load the input
 	buffers := LoadInput()
 	if len(buffers) == 0 {
 		Finish(1)
 	}
-	for _, buf := range buffers {
+	for i, buf := range buffers {
+		if i == 0 {
+			pwd := filepath.Dir(buf.AbsPath)
+			cpath, _ := os.Getwd()
+			if cpath != pwd {
+				arg := []string{pwd}
+				Cd(arg)
+				git.CheckGit()
+			}
+		}
 		// For each buffer we create a new tab and place the view in that tab
 		tab := NewTabFromView(NewView(buf))
 		tab.SetNum(len(tabs))
