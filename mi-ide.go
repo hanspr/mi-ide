@@ -379,6 +379,7 @@ func main() {
 	// Create Toolbar object
 	MicroToolBar = NewToolBar()
 	apprunning = nil
+	HelperWindow = nil
 	currEnv.OS = runtime.GOOS
 	currEnv.UID = os.Getuid()
 	currEnv.Gid = os.Getgid()
