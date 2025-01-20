@@ -162,6 +162,7 @@ func NewViewWidthHeight(buf *Buffer, w, h int) *View {
 var HelperWindow = &View{}
 
 func (v *View) OpenHelperView(dir string, data *string) {
+	h := v.Height
 	if HelperWindow == nil {
 		if dir == "h" {
 			CurView().HSplit(NewBufferFromString(*data, ""))
@@ -179,6 +180,15 @@ func (v *View) OpenHelperView(dir string, data *string) {
 		HelperWindow.Buf.remove(Loc{0, 0}, HelperWindow.Buf.End())
 		HelperWindow.Buf.insert(Loc{0, 0}, []byte(*data))
 		HelperWindow.Cursor.GotoLoc(Loc{0, 0})
+	}
+	if dir == "h" {
+		nh := int(float64(h)*0.25) - 1
+		if nh < 5 {
+			return
+		}
+		v.Height = h - nh - 2
+		HelperWindow.Height = h - v.Height - 1
+		HelperWindow.y = v.Height + 2
 	}
 }
 
