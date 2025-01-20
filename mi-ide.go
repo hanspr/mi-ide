@@ -125,6 +125,10 @@ var (
 	cloudPath = "https://clip.microflow.com.mx:8443" // Cloud service url
 
 	git = &gitstatus{}
+
+	WorkingDir = ""
+
+	HomeDir = ""
 )
 
 // LoadInput determines which files should be loaded into buffers
@@ -202,12 +206,7 @@ func InitConfigDir() {
 	xdgHome := os.Getenv("XDG_CONFIG_HOME")
 	if xdgHome == "" {
 		// The user has not set $XDG_CONFIG_HOME so we should act like it was set to ~/.config
-		home, err := homedir.Dir()
-		if err != nil {
-			TermMessage("Error finding your home directory\nCan't load config files")
-			return
-		}
-		xdgHome = home + "/.config"
+		xdgHome = HomeDir + "/.config"
 	}
 	configDir = xdgHome + "/mi-ide"
 
@@ -385,7 +384,9 @@ func main() {
 	currEnv.Gid = os.Getgid()
 	currEnv.Groups, _ = os.Getgroups()
 	currEnv.ClipWhere = "local"
+	WorkingDir, _ = os.Getwd()
 	git = NewGitStatus()
+	HomeDir, _ = homedir.Dir()
 
 	flag.Usage = func() {
 		fmt.Println("Usage: mi-ide [OPTIONS] [FILE]...")
@@ -458,6 +459,11 @@ func main() {
 	// Start the screen
 	InitScreen()
 
+	// Init local project settings
+	if _, err := os.Stat(WorkingDir + "/.miide/"); os.IsNotExist(err) {
+		os.Mkdir(WorkingDir+"/.miide/", os.ModePerm)
+	}
+
 	// This is just so if we have an error, we can exit cleanly and not completely
 	// mess up the terminal being worked in
 	// In other words we need to shut down tcell before the program crashes
@@ -481,18 +487,11 @@ func main() {
 	if len(buffers) == 0 {
 		Finish(1)
 	}
-	for i, buf := range buffers {
-		if i == 0 {
-			pwd := filepath.Dir(buf.AbsPath)
-			cpath, _ := os.Getwd()
-			if cpath != pwd {
-				arg := []string{pwd}
-				Cd(arg)
-				git.CheckGit()
-			}
-			if _, err := os.Stat(pwd + "/.miide/"); os.IsNotExist(err) {
-				os.Mkdir(pwd+"/.miide/", os.ModePerm)
-			}
+	for _, buf := range buffers {
+		// Validate filepath base dir to see if there is a configuraton directory
+		pwd := filepath.Dir(buf.AbsPath)
+		if _, err := os.Stat(pwd + "/.miide/"); os.IsNotExist(err) {
+			os.Mkdir(pwd+"/.miide/", os.ModePerm)
 		}
 		// For each buffer we create a new tab and place the view in that tab
 		tab := NewTabFromView(NewView(buf))
