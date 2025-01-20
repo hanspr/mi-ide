@@ -278,6 +278,7 @@ func Cd(args []string) {
 				}
 			}
 		}
+		git.CheckGit()
 	}
 }
 
@@ -504,6 +505,7 @@ func EditSnippets(args []string) {
 // Load git status into a window
 func GitStatus(args []string) {
 	if !git.enabled {
+		git.CheckGit()
 		return
 	}
 	status, err := RunShellCommand("git status")
@@ -534,7 +536,7 @@ func GitDiff(args []string) {
 	NavigationMode = true
 }
 
-// : Helper funcionts
+// : Helper functions
 
 // HandleCommand handles input from the user
 func HandleCommand(input string) {
