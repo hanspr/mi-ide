@@ -2815,3 +2815,7 @@ func (v *View) FindFunctionDeclaration(usePlugin bool) bool {
 	}
 	return true
 }
+
+func (v *View) HintFunction(usePlugin bool) bool {
+	return true
+}
