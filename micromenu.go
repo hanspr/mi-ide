@@ -4,6 +4,7 @@ package main
 import (
 	"fmt"
 	"os"
+	"path/filepath"
 	"reflect"
 	"sort"
 	"strconv"
@@ -1364,8 +1365,9 @@ func (m *microMenu) SelLocalSettings(b *Buffer) {
 		height := 22
 		f = m.myapp.AddFrame("f", -1, -1, width, height, "relative")
 		f.AddWindowBox("enc", Language.Translate("Buffer Settings"), 0, 0, width, height, true, nil, "", "")
-		f.AddWindowRadio("savefor", Language.Translate("Save as this file settings only"), "file", 2, height-4, false, nil, "", "")
-		f.AddWindowRadio("savefor", fmt.Sprintf(Language.Translate("Save as default settings for all (%s) files"), b.FileType()), "lang", 2, height-3, false, nil, "", "")
+		f.AddWindowRadio("savefor", Language.Translate("Save as this file settings only"), "file", 2, height-5, false, nil, "", "")
+		f.AddWindowRadio("savefor", fmt.Sprintf(Language.Translate("Save as default settings for all (%s) files"), b.FileType()), "lang", 2, height-4, false, nil, "", "")
+		f.AddWindowRadio("savefor", Language.Translate("Save as default settings for this project"), "project", 2, height-3, false, nil, "", "")
 		f.AddWindowRadio("savefor", Language.Translate("Change settings for this session only"), "none", 2, height-2, true, nil, "", "")
 		lbl := Language.Translate("Save")
 		f.AddWindowButton("set", lbl, "ok", width-Count(lbl)-3, height-1, m.SetLocalSettings, "", "")
@@ -1391,6 +1393,8 @@ func (m *microMenu) SelLocalSettings(b *Buffer) {
 				f.AddWindowSelect(k, k+" ", char, "t]Tab|s]Space", col, row, 0, 1, nil, "", "")
 			} else if k == "tabsize" {
 				f.AddWindowSelect(k, k+" ", fmt.Sprintf("%g", b.Settings[k].(float64)), "2|3|4|5|6|7|8|9|10", col, row, 3, 1, nil, "", "")
+			} else if k == "comment" {
+				f.AddWindowTextBox(k, k+" ", b.Settings[k].(string), "string", col, row, 5, 20, nil, "", "")
 			} else {
 				kind := reflect.TypeOf(b.Settings[k]).Kind()
 				if kind == reflect.Bool {
@@ -1404,7 +1408,7 @@ func (m *microMenu) SelLocalSettings(b *Buffer) {
 				}
 			}
 			row += 2
-			if row > height-6 {
+			if row > height-7 {
 				row = 2
 				col += 42
 			}
@@ -1449,17 +1453,22 @@ func (m *microMenu) SetLocalSettings(name, value, event, when string, x, y int) 
 			SetLocalOption(k, v, CurView())
 		}
 	}
-	// Set destination for this settings, default language
-	fname := configDir + "/settings/" + b.FileType() + ".json"
-	if values["savefor"] == "file" {
-		// Add current filetype selected too
-		values["encoder"] = b.buf.encoder
-		values["filetype"] = b.FileType()
-		// Change destintation to this file only
-		absFilename := ReplaceHome(b.AbsPath)
-		fname = configDir + "/buffers/" + strings.ReplaceAll(absFilename+".settings", "/", "")
-	}
+
 	if values["savefor"] != "none" {
+		// set path to current file directory
+		dir := filepath.Dir(b.AbsPath)
+		// Set destination for this settings, default language
+		fname := configDir + "/settings/" + b.FileType() + ".json"
+		if values["savefor"] == "file" {
+			// Add current filetype selected too
+			values["encoder"] = b.buf.encoder
+			values["filetype"] = b.FileType()
+			// Change destintation to for file only
+			fname = dir + "/.miide/" + b.fname + ".json"
+		} else if values["savefor"] == "project" {
+			dir = GetWorkingDir(dir, WorkingDir)
+			fname = dir + "/.miide/settings.json"
+		}
 		// Remove non buffer settings values
 		delete(values, "savefor")
 		// Update JSON file
