@@ -1102,7 +1102,7 @@ func (v *View) Save(usePlugin bool) bool {
 		if v.Buf.Path == "" {
 			v.SaveAs(false)
 		} else {
-			v.saveToFile(v.Buf.Path)
+			v.saveToFile(v.Buf.AbsPath)
 		}
 
 		if v.Buf.RunFormatter() {
@@ -1945,7 +1945,7 @@ func (v *View) Escape(usePlugin bool) bool {
 		}
 		// check if a prompt is shown, hide it and don't quit
 		if messenger.hasPrompt {
-			messenger.Reset() // FIXME
+			messenger.Reset()
 			return true
 		}
 	}
@@ -1997,6 +1997,9 @@ func (v *View) QuitOthers(usePlugin bool) bool {
 // Quit this will close the current tab or view that is open
 func (v *View) Quit(usePlugin bool) bool {
 	git.GitSetStatus()
+	if v == HelperWindow {
+		HelperWindow = nil
+	}
 
 	if v.mainCursor() {
 		if usePlugin && !PreActionCall("Quit", v) {
