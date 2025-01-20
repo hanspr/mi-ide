@@ -908,3 +908,13 @@ func RunBackgroundShell(input string) {
 		RedrawAll(true)
 	}()
 }
+
+func GetWorkingDir(wkdir, fdir string) string {
+	if wkdir == HomeDir {
+		return fdir
+	}
+	if wkdir != fdir && strings.Contains(fdir, wkdir) {
+		return wkdir
+	}
+	return fdir
+}
