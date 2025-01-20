@@ -2118,6 +2118,12 @@ func (v *View) PreviousTab(usePlugin bool) bool {
 			curTab--
 		}
 
+		if CurView().Type.Readonly {
+			NavigationMode = true
+		} else {
+			NavigationMode = false
+		}
+
 		if usePlugin {
 			return PostActionCall("PreviousTab", v)
 		}
@@ -2134,6 +2140,12 @@ func (v *View) NextTab(usePlugin bool) bool {
 
 		if curTab < len(tabs)-1 {
 			curTab++
+		}
+
+		if CurView().Type.Readonly {
+			NavigationMode = true
+		} else {
+			NavigationMode = false
 		}
 
 		if usePlugin {

@@ -49,13 +49,13 @@ func (g *gitstatus) GitSetStatus() {
 	s := false
 	for _, l := range lines {
 		if (!m || !s) && strings.Contains(l, "M") {
-			if !s && strings.Contains(l, "MM ") || strings.Contains(l, "M  ") {
+			if !s && (strings.Contains(l, "MM ") || strings.Contains(l, "M  ")) {
 				// staged
 				g.status = g.status + "+"
 				g.fgcolor["+"] = "gold"
 				s = true
 			}
-			if !m && strings.Contains(l, "MM ") || strings.Contains(l, " M ") {
+			if !m && (strings.Contains(l, "MM ") || strings.Contains(l, " M ")) {
 				m = true
 				g.status = g.status + "m"
 				g.fgcolor["m"] = "red"
@@ -66,7 +66,7 @@ func (g *gitstatus) GitSetStatus() {
 			g.status = g.status + "u"
 			g.fgcolor["u"] = "#5fd7ff"
 		}
-		if u && m {
+		if u && m && s {
 			break
 		}
 	}

@@ -36,6 +36,8 @@ func init() {
 		"CloudSettings": CloudSettings,
 		"EditSettings":  EditSettings,
 		"EditSnippets":  EditSnippets,
+		"GitDiff":       GitDiff,
+		"GitStatus":     GitStatus,
 		"Help":          Help,
 		"HSplit":        HSplit,
 		"KeyBindings":   KeyBindings,
@@ -76,6 +78,8 @@ func DefaultCommands() map[string]StrCommand {
 		// Groups
 		"edit:settings":      {"EditSettings", []Completion{NoCompletion}},
 		"edit:snippets":      {"EditSnippets", []Completion{NoCompletion}},
+		"git:status":         {"GitStatus", []Completion{NoCompletion}},
+		"git:diff":           {"GitDiff", []Completion{NoCompletion}},
 		"keys:bind":          {"Bind", []Completion{NoCompletion}},
 		"keys:showkey":       {"ShowKey", []Completion{NoCompletion}},
 		"menu:settings":      {"Settings", []Completion{NoCompletion}},
@@ -346,32 +350,6 @@ func ToggleLog(args []string) {
 	}
 }
 
-// Show loaded snippets
-func ShowSnippets(args []string) {
-	ftype := CurView().Buf.FileType()
-	snips := ""
-	loadSnippets(ftype)
-	for name, s := range snippets {
-		snips = snips + "snippet " + name + "\n" + s.code + "\n\n"
-	}
-	CurView().VSplit(NewBufferFromString(snips, ""))
-	CurView().Buf.Settings["filetype"] = "snippet"
-	CurView().Type = vtLog
-	CurView().Buf.UpdateRules()
-	NavigationMode = true
-}
-
-func EditSettings(args []string) {
-	CurView().AddTab(false)
-	CurView().Open(configDir + "/settings.json")
-}
-
-func EditSnippets(args []string) {
-	ftype := CurView().Buf.FileType()
-	CurView().AddTab(false)
-	CurView().Open(configDir + "/settings/snippets/" + ftype + ".snippets")
-}
-
 // Reload reloads all files (syntax files, colorschemes...)
 func Reload(args []string) {
 	loadAll()
@@ -492,6 +470,71 @@ func Bind(args []string) {
 	}
 	BindKey(args[0], args[1])
 }
+
+// : Snippets
+
+// Show loaded snippets
+func ShowSnippets(args []string) {
+	ftype := CurView().Buf.FileType()
+	snips := ""
+	loadSnippets(ftype)
+	for name, s := range snippets {
+		snips = snips + "snippet " + name + "\n" + s.code + "\n\n"
+	}
+	CurView().VSplit(NewBufferFromString(snips, ""))
+	CurView().Buf.Settings["filetype"] = "snippet"
+	CurView().Type = vtLog
+	CurView().Buf.UpdateRules()
+	NavigationMode = true
+}
+
+func EditSettings(args []string) {
+	CurView().AddTab(false)
+	CurView().Open(configDir + "/settings.json")
+}
+
+func EditSnippets(args []string) {
+	ftype := CurView().Buf.FileType()
+	CurView().AddTab(false)
+	CurView().Open(configDir + "/settings/snippets/" + ftype + ".snippets")
+}
+
+// : Git
+
+// Load git status into a window
+func GitStatus(args []string) {
+	if !git.enabled {
+		return
+	}
+	status, err := RunShellCommand("git status")
+	if err != nil {
+		return
+	}
+	CurView().HSplit(NewBufferFromString(status, ""))
+	CurView().Buf.Settings["filetype"] = "git-status"
+	CurView().Type = vtLog
+	CurView().Buf.UpdateRules()
+	NavigationMode = true
+}
+
+// Load git status into a window
+func GitDiff(args []string) {
+	if !git.enabled {
+		return
+	}
+	diff, err := RunShellCommand("git diff -w")
+	if err != nil {
+		return
+	}
+	CurView().AddTab(false)
+	CurView().Buf = NewBufferFromString(diff, "")
+	CurView().Buf.Settings["filetype"] = "git-diff"
+	CurView().Type = vtLog
+	CurView().Buf.UpdateRules()
+	NavigationMode = true
+}
+
+// : Helper funcionts
 
 // HandleCommand handles input from the user
 func HandleCommand(input string) {
