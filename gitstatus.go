@@ -22,7 +22,6 @@ func NewGitStatus() *gitstatus {
 func (g *gitstatus) CheckGit() {
 	_, err := RunShellCommand("git status --porcelain")
 	if err == nil {
-		g.status = " "
 		g.enabled = true
 		g.GitSetStatus()
 		return

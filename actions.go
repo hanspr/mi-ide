@@ -658,7 +658,7 @@ func (v *View) Retab(usePlugin bool) bool {
 	}
 
 	v.Buf.IsModified = dirty
-
+	git.GitSetStatus()
 	if usePlugin {
 		return PostActionCall("Retab", v)
 	}

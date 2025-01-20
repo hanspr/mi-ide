@@ -322,6 +322,7 @@ func (v *View) ReOpen() {
 		v.Buf.ReOpen()
 		v.Relocate()
 		go v.Buf.SmartDetections()
+		go git.GitSetStatus()
 	}
 }
 
