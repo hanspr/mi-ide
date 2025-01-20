@@ -159,6 +159,29 @@ func NewViewWidthHeight(buf *Buffer, w, h int) *View {
 	return v
 }
 
+var HelperWindow = &View{}
+
+func (v *View) OpenHelperView(dir string, data *string) {
+	if HelperWindow == nil {
+		if dir == "h" {
+			CurView().HSplit(NewBufferFromString(*data, ""))
+		} else {
+			CurView().VSplit(NewBufferFromString(*data, ""))
+		}
+		HelperWindow = CurView()
+		HelperWindow.Buf.Settings["filetype"] = "git-status"
+		HelperWindow.Type = vtLog
+		HelperWindow.Buf.UpdateRules()
+		SetLocalOption("softwrap", "true", HelperWindow)
+		SetLocalOption("statusline", "false", HelperWindow)
+		NavigationMode = true
+	} else {
+		HelperWindow.Buf.remove(Loc{0, 0}, HelperWindow.Buf.End())
+		HelperWindow.Buf.insert(Loc{0, 0}, []byte(*data))
+		HelperWindow.Cursor.GotoLoc(Loc{0, 0})
+	}
+}
+
 // AddTabbarSpace creates an extra row for the tabbar if necessary
 func (v *View) AddTabbarSpace() {
 	if v.y == 0 {
