@@ -202,7 +202,7 @@ func (sline *Statusline) Display() {
 
 	//Git status
 	if git.enabled {
-		file = file + "  " + git.status + "}"
+		file = file + "   " + git.status
 	}
 
 	// Maybe there is a unicode filename?
