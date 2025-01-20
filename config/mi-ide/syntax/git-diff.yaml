@@ -1,0 +1,20 @@
+filetype: git-diff
+
+detect:
+    filename: "^(.*[\\/])?(COMMIT_EDITMSG|TAG_EDITMSG)$"
+    header: "commit \\w+|diff\\s-+git"
+
+rules:
+    - constant: "commit \\w+"
+    - type: "commit "
+    - identifier.var: "Author: .+"
+    - type: "Author: "
+    - identifier.var: "Date: .+"
+    - type: "Date: "
+    - function: "@@ -\\d+.+"
+    - statement: "^-.*"
+    - constant.string: "^\\+.*"
+    - constant:
+        start: "diff --"
+        end: "\\+{3} .+"
+        rules: []
