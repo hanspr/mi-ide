@@ -5,6 +5,7 @@ import (
 	"os"
 	"path/filepath"
 	"runtime"
+	"sort"
 	"strings"
 
 	humanize "github.com/dustin/go-humanize"
@@ -326,12 +327,8 @@ func Open(args []string) {
 
 // Save saves the buffer in the main view
 func Save(args []string) {
-	if len(args) == 0 {
-		// Save the main view
-		CurView().Save(true)
-	} else {
-		CurView().Buf.SaveAs(args[0])
-	}
+	// Save the main view
+	CurView().Save(true)
 }
 
 // ToggleLog toggles the log view
@@ -479,14 +476,15 @@ func ShowSnippets(args []string) {
 	ftype := CurView().Buf.FileType()
 	snips := ""
 	loadSnippets(ftype)
-	for name, s := range snippets {
-		snips = snips + "snippet " + name + "\n" + s.code + "\n\n"
+	keys := make([]string, 0, len(snippets))
+	for k := range snippets {
+		keys = append(keys, k)
 	}
-	CurView().VSplit(NewBufferFromString(snips, ""))
-	CurView().Buf.Settings["filetype"] = "snippet"
-	CurView().Type = vtLog
-	CurView().Buf.UpdateRules()
-	NavigationMode = true
+	sort.Strings(keys)
+	for _, name := range keys {
+		snips = snips + "snippet " + name + "\n" + snippets[name].code + "\n\n"
+	}
+	CurView().OpenHelperView("v", &snips)
 }
 
 func EditSettings(args []string) {
@@ -512,11 +510,7 @@ func GitStatus(args []string) {
 	if err != nil {
 		return
 	}
-	CurView().HSplit(NewBufferFromString(status, ""))
-	CurView().Buf.Settings["filetype"] = "git-status"
-	CurView().Type = vtLog
-	CurView().Buf.UpdateRules()
-	NavigationMode = true
+	CurView().OpenHelperView("h", &status)
 }
 
 // Load git status into a window
@@ -533,6 +527,7 @@ func GitDiff(args []string) {
 	CurView().Buf.Settings["filetype"] = "git-diff"
 	CurView().Type = vtLog
 	CurView().Buf.UpdateRules()
+	CurView().Buf.fname = "git-diff"
 	NavigationMode = true
 }
 
