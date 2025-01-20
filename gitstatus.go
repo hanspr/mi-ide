@@ -24,6 +24,7 @@ func (g *gitstatus) CheckGit() {
 	if err == nil {
 		g.status = " "
 		g.enabled = true
+		g.GitSetStatus()
 		return
 	}
 	g.enabled = false
@@ -70,4 +71,5 @@ func (g *gitstatus) GitSetStatus() {
 			break
 		}
 	}
+	g.status = g.status + "}"
 }
