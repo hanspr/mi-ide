@@ -4,6 +4,7 @@ detect:
     filename: "^(.*[\\/])?(COMMIT_EDITMSG|TAG_EDITMSG)$"
 
 rules:
+    - constant.number: "\".*?\""
     - default:
         start: " (?:track|sin seg)\\w+:$"
         end: "^$"
