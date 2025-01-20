@@ -173,7 +173,7 @@ func (v *View) OpenHelperView(dir string, data *string) {
 		HelperWindow.Type = vtLog
 		HelperWindow.Buf.UpdateRules()
 		SetLocalOption("softwrap", "true", HelperWindow)
-		SetLocalOption("statusline", "false", HelperWindow)
+		SetLocalOption("ruler", "false", HelperWindow)
 		NavigationMode = true
 	} else {
 		HelperWindow.Buf.remove(Loc{0, 0}, HelperWindow.Buf.End())
