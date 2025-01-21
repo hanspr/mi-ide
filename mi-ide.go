@@ -69,10 +69,6 @@ var (
 	// Version is the version number or commit hash
 	// These variables should be set by the linker when compiling
 	Version = "1.1.45"
-	// CommitHash is the commit this version was built on
-	CommitHash = "Unknown"
-	// CompileDate is the date this binary was compiled on
-	CompileDate = "Unknown"
 
 	// The list of views
 	tabs []*Tab
@@ -418,9 +414,7 @@ func main() {
 
 	if *flagVersion {
 		// If -version was passed
-		fmt.Println("Version:", Version)
-		fmt.Println("Commit hash:", CommitHash)
-		fmt.Println("Compiled on", CompileDate)
+		fmt.Println(Version)
 		os.Exit(0)
 	}
 
