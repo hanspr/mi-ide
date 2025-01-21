@@ -161,13 +161,16 @@ func NewViewWidthHeight(buf *Buffer, w, h int) *View {
 
 var HelperWindow = &View{}
 
-func (v *View) OpenHelperView(dir, filetype string, data *string) {
+func (v *View) OpenHelperView(dir, filetype string, data string) {
+	if filetype == "" {
+		filetype = "text"
+	}
 	h := v.Height
 	if HelperWindow == nil {
 		if dir == "h" {
-			CurView().HSplit(NewBufferFromString(*data, ""))
+			CurView().HSplit(NewBufferFromString(data, ""))
 		} else {
-			CurView().VSplit(NewBufferFromString(*data, ""))
+			CurView().VSplit(NewBufferFromString(data, ""))
 		}
 		HelperWindow = CurView()
 		HelperWindow.Buf.Settings["filetype"] = filetype
@@ -178,7 +181,7 @@ func (v *View) OpenHelperView(dir, filetype string, data *string) {
 		NavigationMode = true
 	} else {
 		HelperWindow.Buf.remove(Loc{0, 0}, HelperWindow.Buf.End())
-		HelperWindow.Buf.insert(Loc{0, 0}, []byte(*data))
+		HelperWindow.Buf.insert(Loc{0, 0}, []byte(data))
 		HelperWindow.Cursor.GotoLoc(Loc{0, 0})
 	}
 	if dir == "h" {
@@ -190,6 +193,17 @@ func (v *View) OpenHelperView(dir, filetype string, data *string) {
 		HelperWindow.Height = h - v.Height - 1
 		HelperWindow.y = v.Height + 2
 	}
+}
+
+func (v *View) CloseHelperView() {
+	if HelperWindow == nil {
+		return
+	}
+	HelperWindow.Quit(false)
+}
+
+func (v *View) GetHelperView() *View {
+	return HelperWindow
 }
 
 // AddTabbarSpace creates an extra row for the tabbar if necessary

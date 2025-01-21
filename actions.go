@@ -2807,7 +2807,7 @@ func (v *View) HintFunction(usePlugin bool) bool {
 		messenger.Warning("function not found : ", word)
 		return true
 	}
-	v.OpenHelperView("h", v.Buf.Settings["filetype"].(string), &data)
+	v.OpenHelperView("h", v.Buf.Settings["filetype"].(string), data)
 	return true
 }
 

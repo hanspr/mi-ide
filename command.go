@@ -399,7 +399,7 @@ func ShowSnippets(args []string) {
 	for _, name := range keys {
 		snips = snips + "snippet " + name + "\n" + snippets[name].code + "\n\n"
 	}
-	CurView().OpenHelperView("v", "git-status", &snips)
+	CurView().OpenHelperView("v", "git-status", snips)
 }
 
 func EditSettings(args []string) {
@@ -425,7 +425,7 @@ func GitStatus(args []string) {
 	if err != nil {
 		return
 	}
-	CurView().OpenHelperView("h", "git-status", &status)
+	CurView().OpenHelperView("h", "git-status", status)
 }
 
 // Load git status into a window
