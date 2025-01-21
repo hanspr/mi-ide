@@ -21,6 +21,7 @@ rules:
     - symbol.brackets: "(\\{|\\})"
     - symbol.brackets: "(\\(|\\))"
     - symbol.brackets: "(\\[|\\])"
+    - default: "\\\\[/\\|\\-+*\\.{}[\\]()]"
     - method.other: "\\$?(([\\p{L}\\p{N}_])+(::|->))+"
     - preproc: "use .+?(\\W|qw)$"
     - preproc: "no .+?;$"
