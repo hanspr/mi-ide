@@ -2774,26 +2774,16 @@ func (v *View) MultiComment(usePlugin bool) bool {
 	return true
 }
 
-// Find function in current buffer or search current dir for function
+// Find function and show full file on split window
 func (v *View) FindFunctionDeclaration(usePlugin bool) bool {
 	messenger.Message("")
-	loc := v.Cursor.Loc
-	v.Cursor.SelectWord(false)
-	word := v.Cursor.GetSelection()
-	v.Cursor.ResetSelection()
-	v.Cursor.Loc = loc
-	if word == "" {
+	ok, where, word, line := v.SearchFunction(false)
+	if !ok {
+		messenger.Warning("function not found : ", word)
 		return true
 	}
-	exp := `^\s*(?:func(?:tion)?|def(?:n|un|ine)?|fn|sub|let|\w+\s+(?:\(.*?\)))\s+` + word + `\s*(?:(?:\(.*?\))|\s*\W)|` + word + `\s*:?=\s*(?:func(?:tion|fn|sub)[\s\{\(])`
-	if v.Buf.Settings["findfuncregex"].(string) != "" {
-		exp = strings.ReplaceAll(v.Buf.Settings["findfuncregex"].(string), "%word%", word)
-	}
-	r := regexp.MustCompile(exp)
-	//search function definition in current view
-	line, ok := FindLineWith(r, v, v.Cursor.Loc, v.Buf.End(), false)
-	if ok {
-		v.VSplit(v.Buf)
+	v.VSplit(v.Buf)
+	if where == "b" {
 		CurView().Cursor.GotoLoc(Loc{0, line})
 		CurView().Center(false)
 		CurView().PreviousSplit(false)
@@ -2803,19 +2793,63 @@ func (v *View) FindFunctionDeclaration(usePlugin bool) bool {
 		return true
 	}
 	// search in files in the current directory
-	messenger.Message("Searching in file system, wait ....")
-	filename, line, ok := FindFileWith(r, filepath.Dir(v.Buf.Path), v.Buf.FileType(), path.Ext(v.Buf.fname), 2)
-	if ok {
-		v.VSplit(v.Buf)
-		CurView().Open(filename)
-		CurView().savedLoc = Loc{0, line}
-		messenger.Success("function found on file (", filename, ") : ", word)
-	} else {
-		messenger.Warning("function not found : ", word)
-	}
+	CurView().Open(where)
+	CurView().savedLoc = Loc{0, line}
+	messenger.Success("function found on file (", where, ") : ", word)
 	return true
 }
 
+// Find function and show a small hint on window, with relevant information
 func (v *View) HintFunction(usePlugin bool) bool {
+	messenger.Message("")
+	ok, data, word, _ := v.SearchFunction(true)
+	if !ok {
+		messenger.Warning("function not found : ", word)
+		return true
+	}
+	v.OpenHelperView("h", v.Buf.Settings["filetype"].(string), &data)
 	return true
+}
+
+// SearchFunction
+// Search for word under cursor in the current buffer or the file system
+// If searching for hint, return previous comments, and first line of function
+func (v *View) SearchFunction(hint bool) (bool, string, string, int) {
+	loc := v.Cursor.Loc
+	v.Cursor.SelectWord(false)
+	word := v.Cursor.GetSelection()
+	v.Cursor.ResetSelection()
+	v.Cursor.Loc = loc
+	if word == "" {
+		return false, "", word, 0
+	}
+	exp := `^\s*(?:local )?(?:func(?:tion)?|def(?:n|un|ine)?|fn|sub|let|\w+\s+(?:\(.*?\)))\s+` + word + `\s*(?:(?:\(.*?\))|\s*\W)|` + word + `\s*:?=\s*(?:func(?:tion|fn|sub)[\s\{\(])`
+	if v.Buf.Settings["findfuncregex"].(string) != "" {
+		exp = strings.ReplaceAll(v.Buf.Settings["findfuncregex"].(string), "%word%", word)
+	}
+	r := regexp.MustCompile(exp)
+	//search function definition in current buffer
+	line, ok := FindLineWith(r, v, v.Cursor.Loc, v.Buf.End(), false)
+	if ok {
+		if !hint {
+			return true, "b", word, line
+		}
+		comment := regexp.MustCompile(`^\s*(?:#|//|(?:<!)?--|/\*)`)
+		data := ""
+		for l := line - 5; l < line && l > 0; l++ {
+			d := v.Buf.Line(l)
+			if comment.MatchString(d) {
+				data = data + TrimWhiteSpaceBefore(d) + "\n"
+			}
+		}
+		data = data + TrimWhiteSpaceBefore(v.Buf.Line(line))
+		return true, data, word, line
+	}
+	// search in files in the current directory
+	messenger.Message("Searching in file system, wait ....")
+	data, line, ok := FindFileWith(r, filepath.Dir(v.Buf.Path), v.Buf.FileType(), path.Ext(v.Buf.fname), 2, hint)
+	if ok {
+		return true, data, word, line
+	}
+	return false, "", word, 0
 }

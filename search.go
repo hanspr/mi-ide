@@ -249,7 +249,6 @@ func FindLineWith(r *regexp.Regexp, v *View, start, end Loc, deep bool) (int, bo
 	}
 	for i := start.Y; i <= end.Y; i++ {
 		l := string(v.Buf.lines[i].data)
-		// messenger.AddLog(l)
 		if r.MatchString(l) {
 			return i, true
 		}
@@ -266,7 +265,8 @@ var findFileDeep = -1
 
 // Recursively test each file to find a matching string on regex
 // If dir fails N times aborts searching to avoid large subdirectories with no code files
-func FindFileWith(r *regexp.Regexp, path, filetype, ext string, depth int) (string, int, bool) {
+func FindFileWith(r *regexp.Regexp, path, filetype, ext string, depth int, hint bool) (string, int, bool) {
+	var prevLines = make([]string, 5)
 	if findFileDeep < 0 {
 		findFileDeep = depth
 	}
@@ -280,7 +280,7 @@ func FindFileWith(r *regexp.Regexp, path, filetype, ext string, depth int) (stri
 			}
 			depth--
 			path := path + "/" + f.Name()
-			filename, line, ok := FindFileWith(r, path, filetype, ext, depth)
+			filename, line, ok := FindFileWith(r, path, filetype, ext, depth, hint)
 			depth++
 			if ok {
 				return filename, line, ok
@@ -292,6 +292,7 @@ func FindFileWith(r *regexp.Regexp, path, filetype, ext string, depth int) (stri
 		if strings.Contains(f.Name(), ext) || ftype {
 			abort = MAX_FAILS
 			i := 0
+			pos := -1
 			file, err := os.Open(filepath)
 			if err != nil {
 				continue
@@ -300,9 +301,30 @@ func FindFileWith(r *regexp.Regexp, path, filetype, ext string, depth int) (stri
 			scanner := bufio.NewScanner(file)
 			for scanner.Scan() {
 				l := scanner.Text()
+				if hint {
+					pos++
+					if pos > 4 {
+						for i := 0; i < 4; i++ {
+							prevLines[i] = prevLines[i+1]
+						}
+						pos = 4
+					}
+					prevLines[pos] = l
+				}
 				match := r.FindAllStringIndex(l, -1)
 				if match != nil {
-					return filepath, i, true
+					if !hint {
+						return filepath, i, true
+					}
+					comment := regexp.MustCompile(`^\s*(?:#|//|(?:<!)?--|/\*)`)
+					data := ""
+					for i := 0; i < 4; i++ {
+						if comment.MatchString(prevLines[i]) {
+							data = data + TrimWhiteSpaceBefore(prevLines[i]) + "\n"
+						}
+					}
+					data = data + prevLines[4]
+					return data, 0, true
 				}
 				i++
 			}
