@@ -492,7 +492,7 @@ func (b *Buffer) SmartIndent(Start, Stop Loc) {
 	}
 	iChar := b.Settings["indentchar"].(string)
 	iMult := 1
-	comment := regexp.MustCompile(`^(?:#|//|(?:<!)?--|/\*)`)
+	comment := regexp.MustCompile(`^\s*(?:#|//|(?:<!)?--|/\*)`)
 	skipBlockStart := regexp.MustCompile(`^(?:#|//|(?:<!)?--|/\*)<<<`)
 	skipBlockEnd := regexp.MustCompile(`^(?:#|//|(?:<!)?--|/\*)>>>`)
 	skipBlock := false
