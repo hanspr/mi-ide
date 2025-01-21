@@ -685,7 +685,7 @@ func (v *View) HandleEvent(event tcell.Event) {
 							continue
 						}
 					}
-					if e.Modifiers() == key.modifiers || NavigationMode {
+					if e.Modifiers() == key.modifiers || (NavigationMode && e.Key() == tcell.KeyRune) {
 						var cursors []*Cursor
 						if len(v.Buf.cursors) > 1 && e.Name() == "Enter" {
 							// Multicursor, newline. Reverse cursor order so it works
