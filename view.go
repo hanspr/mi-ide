@@ -161,7 +161,7 @@ func NewViewWidthHeight(buf *Buffer, w, h int) *View {
 
 var HelperWindow = &View{}
 
-func (v *View) OpenHelperView(dir string, data *string) {
+func (v *View) OpenHelperView(dir, filetype string, data *string) {
 	h := v.Height
 	if HelperWindow == nil {
 		if dir == "h" {
@@ -170,7 +170,7 @@ func (v *View) OpenHelperView(dir string, data *string) {
 			CurView().VSplit(NewBufferFromString(*data, ""))
 		}
 		HelperWindow = CurView()
-		HelperWindow.Buf.Settings["filetype"] = "git-status"
+		HelperWindow.Buf.Settings["filetype"] = filetype
 		HelperWindow.Type = vtLog
 		HelperWindow.Buf.UpdateRules()
 		SetLocalOption("softwrap", "true", HelperWindow)
