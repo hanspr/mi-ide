@@ -480,7 +480,7 @@ func (m *Messenger) HandleEvent(event tcell.Event, history []string) {
 						case "CursorUp":
 							m.UpHistory(history)
 							return
-						case "CurorDown":
+						case "CursorDown":
 							m.DownHistory(history)
 							return
 						}
