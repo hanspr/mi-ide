@@ -7,7 +7,6 @@ import (
 	"encoding/gob"
 	"errors"
 	"io"
-	"io/ioutil"
 	"os"
 	"path/filepath"
 	"reflect"
@@ -126,12 +125,18 @@ func (b *Buffer) GetFileSettings(filename string) {
 	}
 	b.encoder = "UTF8"
 	// Find last encoding used for this file
-	cachename := filename + ".settings"
-	cachename = configDir + "/buffers/" + strings.ReplaceAll(cachename, "/", "")
-	settings, jerr := ReadFileJSON(cachename)
+	setpath := filename + ".settings"
+	setpath = configDir + "/buffers/" + strings.ReplaceAll(setpath, "/", "")
+	settings, jerr := ReadFileJSON(setpath)
 	if jerr == nil {
 		if settings["encoder"] != nil {
 			b.encoder = settings["encoder"].(string)
+		}
+		if settings["blockopen"] == nil {
+			settings["blockopen"] = ""
+		}
+		if settings["blockclose"] == nil {
+			settings["blockclose"] = ""
 		}
 	}
 }
@@ -294,7 +299,7 @@ func NewBuffer(reader io.Reader, size int64, path string, cursorPosition []strin
 
 // GetBufferCursorLocation get cursor
 func GetBufferCursorLocation(cursorPosition []string, b *Buffer) (Loc, error) {
-	// parse the cursor position. The cursor location is ALWAYS initialised to 0, 0 even when
+	// parse the cursor position. The cursor location is ALWAYS initialized to 0, 0 even when
 	// an error occurs due to lack of arguments or because the arguments are not numbers
 	cursorLocation, cursorLocationError := ParseCursorLocation(cursorPosition)
 
@@ -453,38 +458,74 @@ func (b *Buffer) IndentString() string {
 	return "\t"
 }
 
+func (b *Buffer) AddMultiComment(Start, Stop Loc) {
+	cstring := b.Settings["comment"].(string)
+	comment := regexp.MustCompile(`^` + cstring)
+	start := Start.Y
+	end := Stop.Y
+	if Start.Y == Stop.Y || Stop.X > 0 {
+		end++
+	}
+	for y := start; y < end; y++ {
+		str := b.Line(y)
+		if comment.MatchString(str) {
+			// Remove comment from line
+			str = strings.Replace(str, cstring, "", 1)
+		} else {
+			// Add comment to line
+			str = cstring + str
+		}
+		x := Count(b.Line(y))
+		b.Replace(Loc{0, y}, Loc{x, y}, str)
+	}
+}
+
 // SmartIndent indent the line
-func (b *Buffer) SmartIndent(Start, Stop Loc, once bool) {
-	stack := b.UndoStack.Len()
-	sCursor := b.Cursor.Loc
-	sMod := b.IsModified
+func (b *Buffer) SmartIndent(Start, Stop Loc) {
+	bopen := `[\{\[\\(]$`
+	bclose := `^[\}\]\)]`
+	binter := `^[\}\]\)].+?[\{\[\\(]$`
+	if b.Settings["blockopen"].(string) != "" && b.Settings["blockclose"].(string) != "" && b.Settings["blockinter"].(string) != "" {
+		bopen = b.Settings["blockopen"].(string)
+		bclose = b.Settings["blockclose"].(string)
+		binter = b.Settings["blockinter"].(string)
+	}
 	iChar := b.Settings["indentchar"].(string)
 	iMult := 1
+	comment := regexp.MustCompile(`^\s*(?:#|//|(?:<!)?--|/\*)`)
+	skipBlockStart := regexp.MustCompile(`^(?:#|//|(?:<!)?--|/\*)<<<`)
+	skipBlockEnd := regexp.MustCompile(`^(?:#|//|(?:<!)?--|/\*)>>>`)
+	skipBlock := false
+	openBlock := regexp.MustCompile(bopen)
+	closeBlock := regexp.MustCompile(bclose)
+	interBlock := regexp.MustCompile(binter)
 	if iChar == " " {
 		iMult = int(b.Settings["tabsize"].(float64))
 		iChar = strings.Repeat(" ", iMult)
 	}
-	iStr := ""
-	n := 0
-	B := 0
-	re := regexp.MustCompile(`^[ \t]*`)
+	indentChangeDone := false
+	I := 0
 	Ys := Start.Y - 1
 	Ye := Stop.Y
 	if Ys < 0 {
 		Ys = 0
 	} else {
 		// Look back for the first line that is not empty, is not a comment, get that indentation as reference
-		comment := regexp.MustCompile(`^(#|//|(<!)?--|/\*)`)
+	restart:
 		for y := Ys; y >= 0; y-- {
 			l := b.Line(y)
 			if len(l) > 0 && !comment.MatchString(l) {
-				n = GetLineIndentetion(b.Line(y), iChar, iMult)
-				if n < 0 {
-					messenger.Alert("error", Language.Translate("You have mixed space and tabs in line above"))
-					continue
+				I = GetLineIndentetion(b.Line(y), iChar, iMult)
+				if I < 0 && !indentChangeDone {
+					indentChangeDone = true
+					cfrom := "\t"
+					if b.Settings["indentchar"].(string) == "\t" {
+						cfrom = " "
+					}
+					messenger.AddLog("smartindent, mixed: from >", cfrom, "< to >", b.Settings["indentchar"].(string), "< size:", b.Settings["tabsize"].(float64))
+					b.ChangeIndentation(cfrom, b.Settings["indentchar"].(string), int(b.Settings["tabsize"].(float64)), int(b.Settings["tabsize"].(float64)))
+					goto restart
 				}
-				//n = CountLeadingWhitespace(b.Line(y)) / iMult
-				B = BracePairsAreBalanced(b.Line(y))
 				break
 			} else if comment.MatchString(l) {
 				Ys--
@@ -494,62 +535,63 @@ func (b *Buffer) SmartIndent(Start, Stop Loc, once bool) {
 	if Ys < 0 {
 		Ys = 0
 	}
-	// Add as meany spaces to use as default indentation from here on
-	for i := 0; i < n; i++ {
-		iStr = iStr + iChar
-	}
-	// Check if this line has balanced braces
-	C := BracePairsAreBalanced(b.Line(Ys))
-	if C > 0 || C == -1 {
-		// Is unbalanced increase indentation
-		n++
-		iStr = iStr + iChar
-	}
-	Ys++
+	ci := 0
+	IndRef := 0
+	// messenger.AddLog("inicio encontrado:", Ys)
+	// messenger.AddLog("I:", I)
 	for y := Ys; y <= Ye; y++ {
-		x := Count(b.Line(y))
-		str := b.Line(y)
-		strB := str
-		// Check if this line has balanced braces
-		c := BracePairsAreBalanced(str)
-		if c == -1 {
-			// Is unbalanced } ... { or closing ... } decrease indentation on current line
-			iStr = ""
-			for i := 0; i < n-1; i++ {
-				iStr = iStr + iChar
+		// messenger.AddLog("Linea:", string(b.Line(y)))
+		lc := SmartIndentPrepareLine(b.Line(y))
+		// messenger.AddLog("linea:", lc)
+		if skipBlock {
+			// messenger.AddLog("skipblock")
+			if skipBlockEnd.MatchString(lc) {
+				skipBlock = false
 			}
-		} else if c == -2 && C == B && once {
-			// Is unbalanced } ... { or closing ... } decrease indentation on current line
-			iStr = ""
-			for i := 0; i < n-1; i++ {
-				iStr = iStr + iChar
+			continue
+		}
+		if skipBlockStart.MatchString(lc) {
+			// messenger.AddLog("start block")
+			skipBlock = true
+			continue
+		}
+		if comment.MatchString(lc) {
+			// ignore commented lines
+			// messenger.AddLog("comentario")
+			continue
+		}
+		// messenger.AddLog("ci + IndRef:", ci, "+", IndRef)
+		ci = I + IndRef
+		if interBlock.MatchString(lc) {
+			// messenger.AddLog("interblock")
+			if y == Ys {
+				// if reference is an interblock, the reference already is correct, treat as indenting
+				// messenger.AddLog("startline")
+				IndRef++
+				continue
 			}
-		}
-
-		str = re.ReplaceAllString(str, iStr)
-		if c > 0 || c == -1 {
-			// Is unbalanced increase indentation again for next line
-			n++
-			iStr = iStr + iChar
-		}
-		if strB != str {
-			b.Replace(Loc{0, y}, Loc{x, y}, str)
-		}
-		// We need a second pass (to outdent wrong ones)
-		// To avoid rewwriting all code above over again, call recursivevly only one time
-		if once {
-			return
-		}
-		b.SmartIndent(Loc{0, y}, Loc{0, y}, true)
-		// if c == -2 unbalanced close brace like ....}
-		// check if we really did an indentation on this case
-		if c == -2 && strB == b.Line(y) && b.IsModified && Start.Y == Stop.Y && sMod != b.IsModified {
-			// Not dirty, this is just a consecuence of the algorithm, reverse modified status, undos, cursor
-			b.IsModified = false
-			b.Cursor.GotoLoc(sCursor)
-			for stack < b.UndoStack.Len() {
-				b.UndoStack.Pop()
+			ci--
+		} else if openBlock.MatchString(lc) {
+			// messenger.AddLog("indent")
+			IndRef++
+		} else if closeBlock.MatchString(lc) {
+			// messenger.AddLog("outdent")
+			if y == Ys {
+				// messenger.AddLog("start line")
+				// if reference outdent, is already outdented
+				continue
 			}
+			IndRef--
+			ci--
+		}
+		if ci < 0 {
+			messenger.AddLog("NEGATIVO !!!!!")
+			ci = 0
+		}
+		if GetLineIndentetion(b.Line(y), iChar, iMult) != ci {
+			indentation := strings.Repeat(iChar, ci)
+			li := CountLeadingWhitespace(b.Line(y))
+			b.Replace(Loc{0, y}, Loc{li, y}, indentation)
 		}
 	}
 }
@@ -583,7 +625,7 @@ func (b *Buffer) CheckModTime() {
 // ReOpen reloads the current buffer from disk
 func (b *Buffer) ReOpen() {
 	var txt string
-	data, err := ioutil.ReadFile(b.Path)
+	data, err := os.ReadFile(b.Path)
 	if b.encoding {
 		enc := ioencoder.New()
 		txt = enc.DecodeString(b.encoder, string(data))
@@ -599,6 +641,7 @@ func (b *Buffer) ReOpen() {
 
 	b.ModTime, _ = GetModTime(b.Path)
 	b.IsModified = false
+	git.GitSetStatus()
 	b.Update()
 	b.Cursor.Relocate()
 	if b.encoding {
@@ -1121,7 +1164,7 @@ func (b *Buffer) ChangeIndentation(cfrom, cto string, nfrom, nto int) {
 	b.IsModified = true
 }
 
-// SmartDetections detections or am I creating more problems?
+// Check buffer to confirm current settings are consistent
 func (b *Buffer) SmartDetections() {
 	check := 0
 	end := b.LinesNum()
@@ -1177,4 +1220,25 @@ func (b *Buffer) setIndentationOptions(indent string, n int) {
 		b.Settings["tabmovement"] = true
 	}
 	b.Settings["tabsize"] = float64(n)
+}
+
+// Buffer Utilities
+
+// Check if formmatter is enabled for the current buffer and a formatter exists
+// If formatter exists, run it
+func (b *Buffer) RunFormatter() bool {
+	if !b.Settings["useformatter"].(bool) {
+		return false
+	}
+	formatterPath := configDir + "/formatters/" + b.FileType()
+	info, err := os.Stat(formatterPath)
+	if err != nil {
+		return false
+	}
+	mode := info.Mode()
+	if !strings.Contains(mode.String(), "rwx") {
+		return false
+	}
+	_, err = ExecCommand(formatterPath, b.AbsPath)
+	return err == nil
 }

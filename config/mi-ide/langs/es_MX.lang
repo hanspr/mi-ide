@@ -119,6 +119,7 @@ restart|reiniciar
 Buffer Settings|Configuraciones de archivo
 Save as this file settings only|Guardar como configuración para este archivo
 Save as default settings for all (%s) files|Guardar como configuración para todos los archivos (%s)
+Save as default settings for this project|Guardar como configuración para este proyecto
 Change settings for this session only|Cambiar configuración en esta sesión únicamente
 Mi-ide Cloud Services|Micro Ide servicios de Nube
 Key|Llave

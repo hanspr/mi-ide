@@ -1,8 +1,8 @@
 package main
 
 import (
-	"io/ioutil"
 	"os"
+	"sort"
 	"strings"
 )
 
@@ -17,15 +17,15 @@ func FileComplete(input string) (string, []string) {
 	var sep string = string(os.PathSeparator)
 	dirs := strings.Split(input, sep)
 
-	var files []os.FileInfo
+	var files []os.DirEntry
 	var err error
 	if len(dirs) > 1 {
 		directories := strings.Join(dirs[:len(dirs)-1], sep) + sep
 
 		directories = ReplaceHome(directories)
-		files, err = ioutil.ReadDir(directories)
+		files, err = os.ReadDir(directories)
 	} else {
-		files, err = ioutil.ReadDir(".")
+		files, err = os.ReadDir(".")
 	}
 
 	var suggestions []string
@@ -61,7 +61,12 @@ func FileComplete(input string) (string, []string) {
 // CommandComplete autocompletes commands
 func CommandComplete(input string) (string, []string) {
 	var suggestions []string
-	for cmd := range commands {
+	keys := make([]string, 0, len(commands))
+	for k := range commands {
+		keys = append(keys, k)
+	}
+	sort.Strings(keys)
+	for _, cmd := range keys {
 		if strings.HasPrefix(cmd, input) {
 			suggestions = append(suggestions, cmd)
 		}

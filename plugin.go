@@ -3,7 +3,6 @@ package main
 import (
 	"encoding/json"
 	"errors"
-	"io/ioutil"
 	"os"
 	"reflect"
 	"strings"
@@ -187,7 +186,7 @@ func LoadPlugins() {
 	}
 
 	if _, err := os.Stat(configDir + "/init.lua"); err == nil {
-		data, _ := ioutil.ReadFile(configDir + "/init.lua")
+		data, _ := os.ReadFile(configDir + "/init.lua")
 		if err := LoadFile("init", configDir+"/init.lua", string(data)); err != nil {
 			TermMessage(err)
 		}
@@ -222,7 +221,7 @@ func LoadPluginOptions(pname string) {
 
 	filename := configDir + "/plugins/" + pname + "/settings.json"
 	if _, err := os.Stat(filename); err == nil {
-		input, err := ioutil.ReadFile(filename)
+		input, err := os.ReadFile(filename)
 		if err != nil {
 			return
 		}
@@ -253,7 +252,7 @@ func WritePluginSettings(pname string) error {
 			}
 		}
 		txt, _ := json.MarshalIndent(parsed, "", "    ")
-		err := ioutil.WriteFile(filename, append(txt, '\n'), 0644)
+		err := os.WriteFile(filename, append(txt, '\n'), 0644)
 		return err
 	}
 	return nil

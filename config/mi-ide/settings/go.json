@@ -1,4 +1,6 @@
 {
-	"tabstospaces": false,
-	"smartindent": true
+    "tabstospaces": false,
+    "findfuncregex": "^\\s*func\\s+(?:\\(.+?\\)\\s)?%word%\\(|%word%\s*:?=\s*func[\s\{\(]",
+    "comment": "//",
+    "smartindent": true
 }

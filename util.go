@@ -2,14 +2,15 @@ package main
 
 import (
 	"archive/zip"
+	"bufio"
 	"bytes"
 	"encoding/json"
 
 	//"fmt"
 	"io"
-	"io/ioutil"
 	"net/http"
 	"os"
+	"os/exec"
 	"os/user"
 	"path/filepath"
 	"reflect"
@@ -22,6 +23,7 @@ import (
 
 	"github.com/flynn/json5"
 	"github.com/go-errors/errors"
+	"github.com/hanspr/shellwords"
 	"github.com/hanspr/tcell"
 )
 
@@ -48,23 +50,7 @@ func toRunes(b []byte) []rune {
 	return runes
 }
 
-//func sliceStart(slc []byte, index int) []byte {
-//	len := len(slc)
-//	i := 0
-//	totalSize := 0
-//	for totalSize < len {
-//		if i >= index {
-//			return slc[totalSize:]
-//		}
-//
-//		_, size := utf8.DecodeRune(slc[totalSize:])
-//		totalSize += size
-//		i++
-//	}
-//
-//	return slc[totalSize:]
-//}
-
+// Remove everything to the end starting from index
 func sliceEnd(slc []byte, index int) []byte {
 	len := len(slc)
 	i := 0
@@ -144,6 +130,19 @@ func IsStrWhitespace(str string) bool {
 	return true
 }
 
+func TrimWhiteSpaceBefore(str string) string {
+	nstr := ""
+	done := false
+	for _, c := range str {
+		if done || !IsWhitespace(c) {
+			nstr = nstr + string(c)
+			done = true
+			continue
+		}
+	}
+	return nstr
+}
+
 func noAutoCloseChar(str string) bool {
 	x := IsWordChar(str)
 	if x {
@@ -182,19 +181,15 @@ func MakeRelative(path, base string) (string, error) {
 	return path, nil
 }
 
-// BracePairsAreBalanced check if the expression has ballanced brackets
-// 0 = Line has balanced brace or dirty close brace " text} , text)" treated as balanced line
-// > 0 unbalanced indent
-// == -1 balanced } .. {, but requires indent on next line
-// == -2 unbalanced but is a closing brace and is the first one
-func BracePairsAreBalanced(str string) int {
+// Prepare line to process with smartindent
+func SmartIndentPrepareLine(str string) string {
 	// Make string easy to work on with
 	// Remove quoted strings so they do not fool the algorithm
 	r := regexp.MustCompile(`"(?:[^"\\]|\\.)*"`)
 	str = r.ReplaceAllString(str, "")
 	r = regexp.MustCompile(`'(?:[^'\\]|\\.)*'`)
 	str = r.ReplaceAllString(str, "")
-	// Remove scaped characterd so they do not fool the algorithm
+	// Remove scaped characters so they do not fool the algorithm
 	r = regexp.MustCompile(`\\.`)
 	str = r.ReplaceAllString(str, "")
 	// Reduce string size
@@ -202,45 +197,7 @@ func BracePairsAreBalanced(str string) int {
 	str = r.ReplaceAllString(str, "")
 	// Remove {..} [..] from string so it does not fool the algorithm
 	str = RemoveNestedBrace(str)
-	//messenger.AddLog(str)
-	k := 0
-	b := 0
-	pc := ""
-	bs := false
-	w := false
-	f := false
-	for i := 0; i < len(str); i++ {
-		c := str[i : i+1]
-		if c == "{" || c == "[" || c == "(" {
-			b++
-			if !f {
-				f = true
-				if w {
-					w = false
-				}
-			}
-		} else if c == "}" || c == "]" || c == ")" {
-			if bs && (pc == "}" || pc == "]" || pc == ")") {
-				if b == -1 {
-					b--
-				}
-			} else {
-				b--
-				if k == 0 {
-					f = true
-					bs = true
-					b--
-				} else if w {
-					b++
-				}
-			}
-		} else if k == 0 {
-			w = true
-		}
-		pc = c
-		k++
-	}
-	return b
+	return str
 }
 
 // RemoveNestedBrace Remove nested {..} [..]
@@ -281,15 +238,6 @@ func RemoveNestedBrace(str string) string {
 	return string(stack)
 }
 
-// BalanceBracePairs Find y line has a balanced braces
-func BalanceBracePairs(str string) string {
-	n := BracePairsAreBalanced(str)
-	if n > 0 || n == -1 {
-		return "\t"
-	}
-	return ""
-}
-
 // GetIndentation returns how many leves of indentation in a line depending in the
 // indentation char and quantity of characters that make the indentation
 // 0 if the line is not indented or -1 if or does not match the indentation char or
@@ -311,7 +259,7 @@ func GetLineIndentetion(str, char string, q int) int {
 	return ws / q
 }
 
-// CountLeadingWhitespace returns the ammount of leading whitespace of the given string
+// CountLeadingWhitespace returns the amount of leading whitespace of the given string
 func CountLeadingWhitespace(str string) int {
 	ws := 0
 	for _, c := range str {
@@ -339,6 +287,9 @@ func GetLeadingWhitespace(str string) string {
 
 // IsSpaces checks if a given string is only spaces
 func IsSpaces(str []byte) bool {
+	if len(str) == 0 {
+		return false
+	}
 	for _, c := range str {
 		if c != ' ' {
 			return false
@@ -350,6 +301,9 @@ func IsSpaces(str []byte) bool {
 
 // IsSpacesOrTabs checks if a given string contains only spaces and tabs
 func IsSpacesOrTabs(str string) bool {
+	if len(str) == 0 {
+		return false
+	}
 	for _, c := range str {
 		if c != ' ' && c != '\t' {
 			return false
@@ -542,7 +496,7 @@ func DownLoadExtractZip(url, targetDir string) error {
 		return err
 	}
 	defer resp.Body.Close()
-	data, err := ioutil.ReadAll(resp.Body)
+	data, err := io.ReadAll(resp.Body)
 	if err != nil {
 		return err
 	}
@@ -626,7 +580,7 @@ func ExtractZip(data *[]byte, targetDir string) error {
 // GeTFileListFromPath gets a full file list from a path
 func GeTFileListFromPath(path, extension string) []string {
 	Files := []string{}
-	files, err := ioutil.ReadDir(path)
+	files, err := os.ReadDir(path)
 	if err != nil {
 		return nil
 	}
@@ -692,7 +646,7 @@ func WriteFileJSON(filename string, values map[string]string, parsedValues bool)
 	} else {
 		txt, _ = json.MarshalIndent(values, "", "    ")
 	}
-	err := ioutil.WriteFile(filename, append(txt, '\n'), 0644)
+	err := os.WriteFile(filename, append(txt, '\n'), 0644)
 	if err != nil {
 		return errors.New("Could not write " + filename)
 	}
@@ -704,7 +658,7 @@ func ReadFileJSON(filename string) (map[string]interface{}, error) {
 	var parsed map[string]interface{}
 
 	if _, e := os.Stat(filename); e == nil {
-		input, err := ioutil.ReadFile(filename)
+		input, err := os.ReadFile(filename)
 		if err != nil {
 			return parsed, err
 		}
@@ -811,11 +765,25 @@ func Slurp(path string) string {
 		return ""
 	}
 	defer file.Close()
-	b, err := ioutil.ReadAll(file)
+	b, err := io.ReadAll(file)
 	if err != nil {
 		return ""
 	}
 	return string(b)
+}
+
+func ReadHeaderBytes(path string) []byte {
+	var line []byte
+	file, err := os.Open(path)
+	if err != nil {
+		return line
+	}
+	defer file.Close()
+	scanner := bufio.NewScanner(file)
+	for scanner.Scan() {
+		return scanner.Bytes()
+	}
+	return line
 }
 
 const autocloseOpen = "\"'`({["
@@ -882,4 +850,74 @@ func isAutoCloseOpen(v *View, e *tcell.EventKey) (int, bool) {
 		}
 	}
 	return -1, false
+}
+
+// Shell commands
+
+// ExecCommand executes a command using exec
+// It returns any output/errors
+func ExecCommand(name string, arg ...string) (string, error) {
+	var err error
+	cmd := exec.Command(name, arg...)
+	outputBytes := &bytes.Buffer{}
+	cmd.Stdout = outputBytes
+	cmd.Stderr = outputBytes
+	err = cmd.Start()
+	if err != nil {
+		return "", err
+	}
+	err = cmd.Wait() // wait for command to finish
+	outstring := outputBytes.String()
+	return outstring, err
+}
+
+// RunShellCommand executes a shell command and returns the output/error
+func RunShellCommand(input string) (string, error) {
+	args, err := shellwords.Split(input)
+	if err != nil {
+		return "", err
+	}
+	inputCmd := args[0]
+
+	return ExecCommand(inputCmd, args[1:]...)
+}
+
+// RunBackgroundShell running shell in background
+func RunBackgroundShell(input string) {
+	args, err := shellwords.Split(input)
+	if err != nil {
+		messenger.Alert("error", err)
+		return
+	}
+	inputCmd := args[0]
+	messenger.Message("Running...")
+	go func() {
+		output, err := RunShellCommand(input)
+		totalLines := strings.Split(output, "\n")
+
+		if len(totalLines) < 3 {
+			if err == nil {
+				messenger.Message(inputCmd, " exited without error")
+			} else {
+				messenger.Message(inputCmd, " exited with error: ", err, ": ", output)
+			}
+		} else {
+			messenger.Message(output)
+		}
+		// We have to make sure to redraw
+		RedrawAll(true)
+	}()
+}
+
+// GetProjectDir: tries to find the correct path to the project
+// with respecto to the file directory path
+func GetProjectDir(wkdir, fdir string) string {
+	if wkdir == HomeDir {
+		return fdir
+	}
+	//fix recursively look for .miide dir upwards?
+	if wkdir != fdir && strings.Contains(fdir, wkdir) {
+		return wkdir
+	}
+	return fdir
 }

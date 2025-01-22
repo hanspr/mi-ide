@@ -2,7 +2,10 @@ package main
 
 import (
 	//"fmt"
+	"bufio"
+	"os"
 	"regexp"
+	"strings"
 
 	"github.com/hanspr/tcell"
 )
@@ -66,6 +69,7 @@ func HandleSearchEvent(event tcell.Event, v *View) {
 
 func searchDown(r *regexp.Regexp, v *View, start, end Loc) bool {
 	var startX int
+	newLineSearch := strings.Contains(r.String(), "\\n")
 	if start.Y >= v.Buf.NumLines {
 		start.Y = v.Buf.NumLines - 1
 	}
@@ -80,6 +84,9 @@ func searchDown(r *regexp.Regexp, v *View, start, end Loc) bool {
 		}
 
 		l := string(v.Buf.lines[i].data)
+		if newLineSearch && v.Buf.NumLines > i+1 {
+			l = l + "\n" + string(v.Buf.lines[i+1].data)
+		}
 		match := r.FindAllStringIndex(l, -1)
 
 		if match != nil {
@@ -87,8 +94,16 @@ func searchDown(r *regexp.Regexp, v *View, start, end Loc) bool {
 				X := runePos(match[j][0], l)
 				Y := runePos(match[j][1], l)
 				if X >= startX {
+					nl := i
+					if newLineSearch {
+						nl++
+						Y = Y - len(v.Buf.lines[i].data) - 1
+						if Y < 0 {
+							Y = 0
+						}
+					}
 					v.Cursor.SetSelectionStart(Loc{X, i})
-					v.Cursor.SetSelectionEnd(Loc{Y, i})
+					v.Cursor.SetSelectionEnd(Loc{Y, nl})
 					v.Cursor.OrigSelection[0] = v.Cursor.CurSelection[0]
 					v.Cursor.OrigSelection[1] = v.Cursor.CurSelection[1]
 					v.Cursor.Loc = v.Cursor.CurSelection[0]
@@ -105,6 +120,7 @@ func searchDown(r *regexp.Regexp, v *View, start, end Loc) bool {
 
 func searchUp(r *regexp.Regexp, v *View, start, end Loc) bool {
 	var startX int
+	newLineSearch := strings.Contains(r.String(), "\\n")
 	if start.Y >= v.Buf.NumLines {
 		start.Y = v.Buf.NumLines - 1
 	}
@@ -119,6 +135,9 @@ func searchUp(r *regexp.Regexp, v *View, start, end Loc) bool {
 		}
 
 		l := string(v.Buf.lines[i].data)
+		if newLineSearch && v.Buf.NumLines > i+1 {
+			l = l + "\n" + string(v.Buf.lines[i+1].data)
+		}
 		match := r.FindAllStringIndex(l, -1)
 
 		if match != nil {
@@ -126,8 +145,16 @@ func searchUp(r *regexp.Regexp, v *View, start, end Loc) bool {
 				X := runePos(match[j][0], l)
 				Y := runePos(match[j][1], l)
 				if X < startX {
+					nl := i
+					if newLineSearch {
+						nl++
+						Y = Y - len(v.Buf.lines[i].data) - 1
+						if Y < 0 {
+							Y = 0
+						}
+					}
 					v.Cursor.SetSelectionStart(Loc{X, i})
-					v.Cursor.SetSelectionEnd(Loc{Y, i})
+					v.Cursor.SetSelectionEnd(Loc{Y, nl})
 					v.Cursor.OrigSelection[0] = v.Cursor.CurSelection[0]
 					v.Cursor.OrigSelection[1] = v.Cursor.CurSelection[1]
 					v.Cursor.Loc = v.Cursor.CurSelection[0]
@@ -200,7 +227,122 @@ func DialogSearch(searchStr string) string {
 		if xs[0].X-doff >= 0 {
 			x1 = xs[0].X - doff
 		}
-		return string(line[x1:xs[0].X]) + "{f}" + v.Cursor.GetSelection() + "{/f}" + string(line[xs[1].X:])
+		d1 := 0
+		d2 := 0
+		if xs[0].X > len(line) || xs[1].X > len(line) {
+			d1 = len(line) - xs[0].X
+			d2 = len(line) - xs[1].X
+		}
+		return string(line[x1:xs[0].X+d1]) + "{f}" + v.Cursor.GetSelection() + "{/f}" + string(line[xs[1].X+d2:])
 	}
 	return ""
+}
+
+// Search for function declaration
+
+func FindLineWith(r *regexp.Regexp, v *View, start, end Loc, deep bool) (int, bool) {
+	if start.Y >= v.Buf.NumLines {
+		start.Y = v.Buf.NumLines - 1
+	}
+	if start.Y < 0 {
+		start.Y = 0
+	}
+	for i := start.Y; i <= end.Y; i++ {
+		l := string(v.Buf.lines[i].data)
+		if r.MatchString(l) {
+			return i, true
+		}
+	}
+	if deep || start.Y == 0 {
+		return 0, false
+	}
+	return FindLineWith(r, v, Loc{0, 0}, start, true)
+}
+
+const MAX_FAILS = 20
+
+var findFileDeep = -1
+
+// Recursively test each file to find a matching string on regex
+// If dir fails N times aborts searching to avoid large subdirectories with no code files
+func FindFileWith(r *regexp.Regexp, path, filetype, ext string, depth int, hint bool) (string, int, bool) {
+	var prevLines = make([]string, 5)
+	if findFileDeep < 0 {
+		findFileDeep = depth
+	}
+	abort := MAX_FAILS
+	rtf := FindRuntimeFile(RTSyntax, filetype)
+	files, _ := os.ReadDir(path)
+	for _, f := range files {
+		if f.IsDir() {
+			if depth == 0 {
+				continue
+			}
+			depth--
+			path := path + "/" + f.Name()
+			filename, line, ok := FindFileWith(r, path, filetype, ext, depth, hint)
+			depth++
+			if ok {
+				return filename, line, ok
+			}
+			continue
+		}
+		filepath := path + "/" + f.Name()
+		ftype := TestFileType(filepath, rtf)
+		if strings.Contains(f.Name(), ext) || ftype {
+			abort = MAX_FAILS
+			i := 0
+			pos := -1
+			file, err := os.Open(filepath)
+			if err != nil {
+				continue
+			}
+			defer file.Close()
+			scanner := bufio.NewScanner(file)
+			for scanner.Scan() {
+				l := scanner.Text()
+				if hint {
+					pos++
+					if pos > 4 {
+						for i := 0; i < 4; i++ {
+							prevLines[i] = prevLines[i+1]
+						}
+						pos = 4
+					}
+					prevLines[pos] = l
+				}
+				match := r.FindAllStringIndex(l, -1)
+				if match != nil {
+					if !hint {
+						return filepath, i, true
+					}
+					comment := regexp.MustCompile(`^\s*(?:#|//|(?:<!)?--|/\*)`)
+					data := ""
+					for i := 0; i < 4; i++ {
+						if comment.MatchString(prevLines[i]) {
+							data = data + prevLines[i] + "\n"
+						}
+					}
+					data = data + prevLines[4] + "\n"
+					next4 := 0
+					for scanner.Scan() {
+						if next4 > 5 {
+							break
+						}
+						l := scanner.Text()
+						data = data + l + "\n"
+						next4++
+					}
+					return data, 0, true
+				}
+				i++
+			}
+		} else if findFileDeep != depth {
+			abort--
+			if abort <= 0 {
+				return "", 0, false
+			}
+		}
+	}
+	return "", 0, false
 }

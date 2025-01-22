@@ -4,11 +4,9 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
-	"regexp"
 	"runtime"
-	"strconv"
+	"sort"
 	"strings"
-	"time"
 
 	humanize "github.com/dustin/go-humanize"
 	"github.com/hanspr/shellwords"
@@ -34,32 +32,65 @@ var (
 
 func init() {
 	commandActions = map[string]func([]string){
-		"Set":        Set,
-		"SetLocal":   SetLocal,
-		"Show":       Show,
-		"ShowKey":    ShowKey,
-		"Run":        Run,
-		"Bind":       Bind,
-		"Quit":       Quit,
-		"Save":       Save,
-		"Replace":    Replace,
-		"ReplaceAll": ReplaceAll,
-		"VSplit":     VSplit,
-		"HSplit":     HSplit,
-		"Tab":        NewTab,
-		"Help":       Help,
-		"Eval":       Eval,
-		"ToggleLog":  ToggleLog,
-		"Plugin":     PluginCmd,
-		"Reload":     Reload,
-		"Cd":         Cd,
-		"Pwd":        Pwd,
-		"Open":       Open,
-		"TabSwitch":  TabSwitch,
-		"Term":       Term,
-		"MemUsage":   MemUsage,
-		"Retab":      Retab,
-		"Raw":        Raw,
+		"Bind":          Bind,
+		"Cd":            Cd,
+		"CloudSettings": CloudSettings,
+		"EditSettings":  EditSettings,
+		"EditSnippets":  EditSnippets,
+		"GitDiff":       GitDiff,
+		"GitStatus":     GitStatus,
+		"Help":          Help,
+		"HSplit":        HSplit,
+		"KeyBindings":   KeyBindings,
+		"MemUsage":      MemUsage,
+		"Open":          Open,
+		"PluginManager": PluginManager,
+		"Pwd":           Pwd,
+		"Raw":           Raw,
+		"Reload":        Reload,
+		"Set":           Set,
+		"SetLocal":      SetLocal,
+		"Show":          Show,
+		"ShowKey":       ShowKey,
+		"Save":          Save,
+		"SaveAs":        SaveAs,
+		"Settings":      Settings,
+		"ShowSnippets":  ShowSnippets,
+		"ToggleLog":     ToggleLog,
+		"VSplit":        VSplit,
+	}
+}
+
+// group commands with group:command
+// DefaultCommands returns a map containing mi-ide's default commands
+func DefaultCommands() map[string]StrCommand {
+	return map[string]StrCommand{
+		"cd":       {"Cd", []Completion{FileCompletion}},
+		"help":     {"Help", []Completion{HelpCompletion, NoCompletion}},
+		"log":      {"ToggleLog", []Completion{NoCompletion}},
+		"memusage": {"MemUsage", []Completion{NoCompletion}},
+		"open":     {"Open", []Completion{FileCompletion}},
+		"pwd":      {"Pwd", []Completion{NoCompletion}},
+		"raw":      {"Raw", []Completion{NoCompletion}},
+		"reload":   {"Reload", []Completion{NoCompletion}},
+		"saveas":   {"SaveAs", []Completion{NoCompletion}},
+		// Groups
+		"edit:settings":      {"EditSettings", []Completion{NoCompletion}},
+		"edit:snippets":      {"EditSnippets", []Completion{NoCompletion}},
+		"git:status":         {"GitStatus", []Completion{NoCompletion}},
+		"git:diff":           {"GitDiff", []Completion{NoCompletion}},
+		"keys:bind":          {"Bind", []Completion{NoCompletion}},
+		"keys:showkey":       {"ShowKey", []Completion{NoCompletion}},
+		"menu:settings":      {"Settings", []Completion{NoCompletion}},
+		"menu:cloudsettings": {"CloudSettings", []Completion{NoCompletion}},
+		"menu:plugins":       {"PluginManager", []Completion{NoCompletion}},
+		"menu:keys":          {"KeyBindings", []Completion{NoCompletion}},
+		"option:set":         {"Set", []Completion{OptionCompletion, OptionValueCompletion}},
+		"option:setlocal":    {"SetLocal", []Completion{OptionCompletion, OptionValueCompletion}},
+		"split:vertical":     {"VSplit", []Completion{FileCompletion, NoCompletion}},
+		"split:horizontal":   {"HSplit", []Completion{FileCompletion, NoCompletion}},
+		"show:option":        {"Show", []Completion{OptionCompletion, NoCompletion}},
+		"show:snippets":      {"ShowSnippets", []Completion{OptionCompletion, NoCompletion}},
 	}
 }
 
@@ -90,38 +121,6 @@ func MakeCommand(name, function string, completions ...Completion) {
 	commands[name] = Command{action, completions}
 }
 
-// DefaultCommands returns a map containing mi-ide's default commands
-func DefaultCommands() map[string]StrCommand {
-	return map[string]StrCommand{
-		"set":        {"Set", []Completion{OptionCompletion, OptionValueCompletion}},
-		"setlocal":   {"SetLocal", []Completion{OptionCompletion, OptionValueCompletion}},
-		"show":       {"Show", []Completion{OptionCompletion, NoCompletion}},
-		"showkey":    {"ShowKey", []Completion{NoCompletion}},
-		"bind":       {"Bind", []Completion{NoCompletion}},
-		"run":        {"Run", []Completion{NoCompletion}},
-		"quit":       {"Quit", []Completion{NoCompletion}},
-		"save":       {"Save", []Completion{NoCompletion}},
-		"replace":    {"Replace", []Completion{NoCompletion}},
-		"replaceall": {"ReplaceAll", []Completion{NoCompletion}},
-		"vsplit":     {"VSplit", []Completion{FileCompletion, NoCompletion}},
-		"hsplit":     {"HSplit", []Completion{FileCompletion, NoCompletion}},
-		"tab":        {"Tab", []Completion{FileCompletion, NoCompletion}},
-		"help":       {"Help", []Completion{HelpCompletion, NoCompletion}},
-		"eval":       {"Eval", []Completion{NoCompletion}},
-		"log":        {"ToggleLog", []Completion{NoCompletion}},
-		"plugin":     {"Plugin", []Completion{PluginCmdCompletion, PluginNameCompletion}},
-		"reload":     {"Reload", []Completion{NoCompletion}},
-		"cd":         {"Cd", []Completion{FileCompletion}},
-		"pwd":        {"Pwd", []Completion{NoCompletion}},
-		"open":       {"Open", []Completion{FileCompletion}},
-		"tabswitch":  {"TabSwitch", []Completion{NoCompletion}},
-		"term":       {"Term", []Completion{NoCompletion}},
-		"memusage":   {"MemUsage", []Completion{NoCompletion}},
-		"retab":      {"Retab", []Completion{NoCompletion}},
-		"raw":        {"Raw", []Completion{NoCompletion}},
-	}
-}
-
 // CommandEditAction returns a bindable function that opens a prompt with
 // the given string and executes the command when the user presses
 // enter
@@ -144,93 +143,11 @@ func CommandAction(cmd string) func(*View, bool) bool {
 	}
 }
 
-// PluginCmd installs, removes, updates, lists, or searches for given plugins
-func PluginCmd(args []string) {
-	if len(args) >= 1 {
-		switch args[0] {
-		case "install":
-			installedVersions := GetInstalledVersions(false)
-			for _, plugin := range args[1:] {
-				pp := GetAllPluginPackages().Get(plugin)
-				if pp == nil {
-					messenger.Alert("error", Language.Translate("Unknown plugin:")+plugin)
-				} else if err := pp.IsInstallable(); err != nil {
-					messenger.Alert("error", Language.Translate("Error installing"), " ", plugin, ": ", err)
-				} else {
-					for _, installed := range installedVersions {
-						if pp.Name == installed.pack.Name {
-							if pp.Versions[0].Version.Compare(installed.Version) == 1 {
-								messenger.Alert("error", pp.Name, " "+Language.Translate("is already installed but out-of-date: use 'plugin update"), " ", pp.Name, Language.Translate("' to update"))
-							} else {
-								messenger.Alert("error", pp.Name, " "+Language.Translate("is already installed"))
-							}
-						}
-					}
-					pp.Install()
-				}
-			}
-		case "remove":
-			removed := ""
-			for _, plugin := range args[1:] {
-				// check if the plugin exists.
-				if _, ok := loadedPlugins[plugin]; ok {
-					UninstallPlugin(plugin)
-					removed += plugin + " "
-					continue
-				}
-			}
-			if !IsSpaces([]byte(removed)) {
-				messenger.Message(Language.Translate("Removed"), " ", removed)
-			} else {
-				messenger.Alert("error", Language.Translate("The requested plugins do not exist"))
-			}
-		case "update":
-			UpdatePlugins(args[1:])
-		case "list":
-			plugins := GetInstalledVersions(false)
-			messenger.AddLog("----------------")
-			messenger.AddLog(Language.Translate("The following plugins are currently installed:") + "\n")
-			for _, p := range plugins {
-				messenger.AddLog(fmt.Sprintf("%s (%s)", p.pack.Name, p.Version))
-			}
-			messenger.AddLog("----------------")
-			if len(plugins) > 0 {
-				if CurView().Type != vtLog {
-					ToggleLog([]string{})
-				}
-			}
-		case "search":
-			plugins := SearchPlugin(args[1:])
-			messenger.Message(len(plugins), " "+Language.Translate("plugins found"))
-			for _, p := range plugins {
-				messenger.AddLog("----------------")
-				messenger.AddLog(p.String())
-			}
-			messenger.AddLog("----------------")
-			if len(plugins) > 0 {
-				if CurView().Type != vtLog {
-					ToggleLog([]string{})
-				}
-			}
-		case "available":
-			packages := GetAllPluginPackages()
-			messenger.AddLog(Language.Translate("Available Plugins:"))
-			for _, pkg := range packages {
-				messenger.AddLog(pkg.Name)
-			}
-			if CurView().Type != vtLog {
-				ToggleLog([]string{})
-			}
-		}
-	} else {
-		messenger.Alert("error", Language.Translate("Not enough arguments"))
+// SaveAs saves the buffer with a new name
+func SaveAs(args []string) {
+	if len(args) > 0 {
+		CurView().saveToFile(args[0])
 	}
-}
-
-// Retab changes all spaces to tabs or all tabs to spaces
-// depending on the user's settings
-func Retab(args []string) {
-	CurView().Retab(true)
 }
 
 // Raw opens a new raw view which displays the escape sequences mi-ide
@@ -250,35 +167,6 @@ func Raw(args []string) {
 		for _, t := range tabs {
 			for _, v := range t.Views {
 				v.AddTabbarSpace()
-			}
-		}
-	}
-}
-
-// TabSwitch switches to a given tab either by name or by number
-func TabSwitch(args []string) {
-	if len(args) > 0 {
-		num, err := strconv.Atoi(args[0])
-		if err != nil {
-			// Check for tab with this name
-
-			found := false
-			for _, t := range tabs {
-				v := t.Views[t.CurView]
-				if v.Buf.GetName() == args[0] {
-					curTab = v.TabNum
-					found = true
-				}
-			}
-			if !found {
-				messenger.Alert("error", Language.Translate("Could not find tab:"), " ", err)
-			}
-		} else {
-			num--
-			if num >= 0 && num < len(tabs) {
-				curTab = num
-			} else {
-				messenger.Alert("error", Language.Translate("Invalid tab index"))
 			}
 		}
 	}
@@ -306,6 +194,7 @@ func Cd(args []string) {
 				}
 			}
 		}
+		git.CheckGit()
 	}
 }
 
@@ -349,6 +238,12 @@ func Open(args []string) {
 	} else {
 		messenger.Alert("error", Language.Translate("No filename"))
 	}
+}
+
+// Save saves the buffer in the main view
+func Save(args []string) {
+	// Save the main view
+	CurView().Save(true)
 }
 
 // ToggleLog toggles the log view
@@ -417,43 +312,6 @@ func HSplit(args []string) {
 			return
 		}
 		CurView().HSplit(buf)
-	}
-}
-
-// Eval evaluates a lua expression
-func Eval(args []string) {
-	if len(args) >= 1 {
-		err := L.DoString(args[0])
-		if err != nil {
-			messenger.Alert("error", err)
-		}
-	} else {
-		messenger.Alert("error", Language.Translate("Not enough arguments"))
-	}
-}
-
-// NewTab opens the given file in a new tab
-func NewTab(args []string) {
-	if len(args) == 0 {
-		CurView().AddTab(true)
-	} else {
-		buf, err := NewBufferFromFile(args[0])
-		if err != nil {
-			messenger.Alert("error", err)
-			return
-		}
-
-		tab := NewTabFromView(NewView(buf))
-		tab.SetNum(len(tabs))
-		tabs = append(tabs, tab)
-		curTab = len(tabs) - 1
-		if len(tabs) == 2 {
-			for _, t := range tabs {
-				for _, v := range t.Views {
-					v.AddTabbarSpace()
-				}
-			}
-		}
 	}
 }
 
@@ -526,184 +384,71 @@ func Bind(args []string) {
 	BindKey(args[0], args[1])
 }
 
-// Run runs a shell command in the background
-func Run(args []string) {
-	// Run a shell command in the background (openTerm is false)
-	HandleShellCommand(shellwords.Join(args...), false, true)
-}
+// : Snippets
 
-// Quit closes the main view
-func Quit(args []string) {
-	// Close the main view
-	CurView().Quit(true)
-}
-
-// Save saves the buffer in the main view
-func Save(args []string) {
-	if len(args) == 0 {
-		// Save the main view
-		CurView().Save(true)
-	} else {
-		CurView().Buf.SaveAs(args[0])
+// Show loaded snippets
+func ShowSnippets(args []string) {
+	ftype := CurView().Buf.FileType()
+	snips := ""
+	loadSnippets(ftype)
+	keys := make([]string, 0, len(snippets))
+	for k := range snippets {
+		keys = append(keys, k)
 	}
+	sort.Strings(keys)
+	for _, name := range keys {
+		snips = snips + "snippet " + name + "\n" + snippets[name].code + "\n\n"
+	}
+	CurView().OpenHelperView("v", "git-status", snips)
 }
 
-// Replace runs search and replace
-func Replace(args []string) {
+func EditSettings(args []string) {
+	CurView().AddTab(false)
+	CurView().Open(configDir + "/settings.json")
+}
 
-	if len(args) < 2 || args[0] == args[1] {
-		// We need to find both a search and replace expression
-		messenger.Alert("error", Language.Translate("Invalid replace statement:"), " "+strings.Join(args, " "))
+func EditSnippets(args []string) {
+	ftype := CurView().Buf.FileType()
+	CurView().AddTab(false)
+	CurView().Open(configDir + "/settings/snippets/" + ftype + ".snippets")
+}
+
+// : Git
+
+// Load git status into a window
+func GitStatus(args []string) {
+	if !git.enabled {
+		git.CheckGit()
 		return
 	}
-
-	all := false
-	noRegex := false
-	mods := "(?m)"
-	if len(args) > 2 {
-		for _, arg := range args[2:] {
-			switch arg {
-			case "a":
-				all = true
-			case "i":
-				mods = mods + "(?i)"
-			case "s":
-				mods = mods + "(?s)"
-			case "l":
-				noRegex = true
-			case "":
-			default:
-				messenger.Alert("error", Language.Translate("Invalid flag:"), " ", arg)
-				return
-			}
-		}
-	}
-
-	search := string(args[0])
-
-	if noRegex {
-		search = regexp.QuoteMeta(search)
-	} else {
-		search = mods + search
-	}
-
-	replace := string(args[1])
-	replace = ExpandString(replace)
-	regex, err := regexp.Compile(search)
+	status, err := RunShellCommand("git status")
 	if err != nil {
-		// There was an error with the user's regex
-		messenger.Alert("error", err.Error())
 		return
 	}
-
-	view := CurView()
-	startLine := view.searchSave.Y
-	found := 0
-	view.searchLoops = 0
-
-	for {
-		var choice rune
-		var canceled bool
-		// The 'check' flag was used
-		Search(search, view, true)
-		if !view.Cursor.HasSelection() {
-			break
-		}
-		view.Relocate()
-		RedrawAll(true)
-		if view.searchLoops > 0 && view.Cursor.Y > startLine {
-			view.searchLoops = 0
-			if view.Cursor.HasSelection() {
-				view.Cursor.Loc = view.Cursor.CurSelection[0]
-				view.Cursor.ResetSelection()
-			}
-			messenger.Reset()
-			break
-		}
-		y := []rune(Language.Translate("y"))[0]
-		n := []rune(Language.Translate("n"))[0]
-		q := []rune(Language.Translate("q"))[0]
-		I := []rune(Language.Translate("!"))[0]
-		if all && !freeze {
-			freeze = true
-		} else if !all {
-			choice, canceled = messenger.LetterPrompt(true, Language.Translate("Perform replacement? (y,n,q,!)"), y, n, q, I)
-		}
-		if canceled {
-			if view.Cursor.HasSelection() {
-				view.Cursor.Loc = view.Cursor.CurSelection[0]
-				view.Cursor.ResetSelection()
-			}
-			messenger.Reset()
-			break
-		} else if choice == y || choice == I || all {
-			sel := view.Cursor.GetSelection()
-			rep := regex.ReplaceAllString(sel, replace)
-			if Count(rep) > Count(sel) {
-				searchStart = Loc{view.Cursor.CurSelection[1].X + 1, view.Cursor.Loc.Y}
-			} else {
-				searchStart = Loc{view.Cursor.CurSelection[1].X - 1, view.Cursor.Loc.Y}
-			}
-			if searchStart.X > len(view.Buf.LineBytes(searchStart.Y))-1 {
-				searchStart = Loc{0, searchStart.Y + 1}
-				if searchStart.Y > view.Buf.Len()-1 {
-					searchStart.Y = view.Buf.Len() - 1
-				}
-			}
-			view.Cursor.DeleteSelection()
-			view.Buf.Insert(view.Cursor.Loc, rep)
-			if !all {
-				messenger.Reset()
-			}
-			if choice == I && !all {
-				all = true
-			}
-			found++
-		} else if choice == q {
-			if view.Cursor.HasSelection() {
-				view.Cursor.Loc = view.Cursor.CurSelection[0]
-				view.Cursor.ResetSelection()
-			}
-			messenger.Reset()
-			break
-		} else {
-			searchStart = view.Cursor.CurSelection[1]
-		}
-	}
-	replacing = false
-	freeze = false
-	view.Cursor.Relocate()
-
-	if found > 1 {
-		messenger.Message(Language.Translate("Replaced"), " ", found, " "+Language.Translate("occurrences of"), " ", search)
-	} else if found == 1 {
-		messenger.Message(Language.Translate("Replaced"), " ", found, " "+Language.Translate("occurrence of "), search)
-	} else {
-		messenger.Message(Language.Translate("Nothing matched"), " ", search)
-	}
+	CurView().OpenHelperView("h", "git-status", status)
 }
 
-// ReplaceAll replaces search term all at once
-func ReplaceAll(args []string) {
-	// aliased to Replace command
-	replacing = true
-	replaceTime = time.Now()
-	Replace(append(args, "-a"))
-	replacing = false
-}
-
-// Term opens a terminal in the current view
-func Term(args []string) {
-	var err error
-	if len(args) == 0 {
-		err = CurView().StartTerminal([]string{os.Getenv("SHELL"), "-i"}, true, false, "")
-	} else {
-		err = CurView().StartTerminal(args, true, false, "")
+// Load git status into a window
+func GitDiff(args []string) {
+	if !git.enabled {
+		return
 	}
+	diff, err := RunShellCommand("git diff -w")
 	if err != nil {
-		messenger.Alert("error", err)
+		return
 	}
+	CurView().AddTab(false)
+	CurView().Buf = NewBufferFromString(diff, "")
+	CurView().Buf.Settings["filetype"] = "git-diff"
+	CurView().Type = vtLog
+	CurView().Buf.UpdateRules()
+	CurView().Buf.fname = "git-diff"
+	SetLocalOption("softwrap", "true", CurView())
+	SetLocalOption("ruler", "false", CurView())
+	NavigationMode = true
 }
+
+// : Helper functions
 
 // HandleCommand handles input from the user
 func HandleCommand(input string) {
@@ -733,4 +478,22 @@ func ExpandString(s string) string {
 	s = strings.Replace(s, `{ESCBS}`, `\`, -1)
 
 	return s
+}
+
+// Menu access
+
+func Settings(args []string) {
+	micromenu.GlobalConfigDialog()
+}
+
+func CloudSettings(args []string) {
+	micromenu.MiCloudServices()
+}
+
+func PluginManager(args []string) {
+	micromenu.PluginManagerDialog()
+}
+
+func KeyBindings(args []string) {
+	micromenu.KeyBindingsDialog()
 }

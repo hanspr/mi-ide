@@ -3,7 +3,8 @@ package main
 
 import (
 	"fmt"
-	"io/ioutil"
+	"os"
+	"path/filepath"
 	"reflect"
 	"sort"
 	"strconv"
@@ -61,7 +62,7 @@ func (m *microMenu) Menu() {
 		name := "microide"
 		row := 0
 		f := m.myapp.AddFrame("menu", 1, 0, 1, 1, "fixed")
-		m.AddSubmenu(name, "Micro-ide")
+		m.AddSubmenu(name, "Mi-ide")
 		f.AddWindowMenuLabel(name, fmt.Sprintf("%-"+strconv.Itoa(m.maxwidth+1)+"s", "Mi-ide"), "", 0, row, m.ShowSubmenuItems, "", "")
 		m.AddSubMenuItem("microide", Language.Translate("Global Settings"), m.GlobalConfigDialog)
 		m.AddSubMenuItem("microide", Language.Translate("KeyBindings"), m.KeyBindingsDialog)
@@ -402,7 +403,7 @@ func (m *microMenu) KeyBindingsDialog() {
 				continue
 			}
 			switch k {
-			case "CursorDown", "CursorUp", "CursorLeft", "CursorRight", "FindNext", "FindPrevious", "SelectLeft", "SelectRight", "SelectDown", "SelectUp", "CursorPageDown", "CursorPageUp":
+			case "CursorDown", "CursorUp", "CursorLeft", "CursorRight", "FindNext", "FindPrevious", "SelectLeft", "SelectRight", "SelectDown", "SelectUp", "CursorPageDown", "CursorPageUp", "NotImplemented":
 				continue
 			}
 			keys = append(keys, k)
@@ -414,7 +415,7 @@ func (m *microMenu) KeyBindingsDialog() {
 				continue
 			}
 			switch k {
-			case "Left", "Up", "Down", "Right", "Backspace", "Delete", "CtrlH", "Esc", "Enter", "Backspace2", "ShiftLeft", "ShiftRight", "ShiftUp", "ShiftDown", "PageDown", "PageUp":
+			case "Left", "Up", "Down", "Right", "Backspace", "Delete", "CtrlH", "Esc", "Enter", "Backspace2", "ShiftLeft", "ShiftRight", "ShiftUp", "ShiftDown", "PageDown", "PageUp", "NotImplemented":
 				continue
 			}
 			_, ok := bindings[v]
@@ -507,9 +508,7 @@ func (m *microMenu) SetBinding(name, value, event, when string, x, y int) bool {
 		event = strings.Replace(event, "ShiftAlt", "AltShift", 1)
 	} else if strings.Contains(event, "Ctrl") {
 		event = strings.ReplaceAll(event, "+", "")
-		if strings.Contains(event, "ShiftCtrl") {
-			event = strings.Replace(event, "ShiftCtrl", "CtrlShift", 1)
-		}
+		event = strings.Replace(event, "ShiftCtrl", "CtrlShift", 1)
 	} else if strings.Contains(event, "Shift") {
 		event = strings.ReplaceAll(event, "+", "")
 		event = strings.Replace(event, "PgUp", "PageUp", 1)
@@ -1349,7 +1348,7 @@ func (m *microMenu) SetTabSpace(name, value, event, when string, x, y int) bool 
 // Local Configuration : language or file
 // ---------------------------------------
 
-const mmBufferSettings = "autoclose,autoindent,eofnewline,fileformat,indentchar,keepautoindent,matchbrace,rmtrailingws,smartindent,smartpaste,softwrap,tabindents,tabmovement,tabstospaces,tabsize"
+const mmBufferSettings = "autoclose,autoindent,blockopen,blockclose,blockinter,comment,eofnewline,fileformat,indentchar,keepautoindent,matchbrace,rmtrailingws,smartindent,smartpaste,softwrap,tabindents,tabmovement,tabstospaces,tabsize,useformatter"
 
 func (m *microMenu) SelLocalSettings(b *Buffer) {
 	var f *Frame
@@ -1362,12 +1361,13 @@ func (m *microMenu) SelLocalSettings(b *Buffer) {
 		}
 		m.myapp.Reset()
 		m.myapp.defStyle = StringToStyle("#ffffff,#262626")
-		width := 80
-		height := 16
+		width := 100
+		height := 22
 		f = m.myapp.AddFrame("f", -1, -1, width, height, "relative")
 		f.AddWindowBox("enc", Language.Translate("Buffer Settings"), 0, 0, width, height, true, nil, "", "")
-		f.AddWindowRadio("savefor", Language.Translate("Save as this file settings only"), "file", 2, height-4, false, nil, "", "")
-		f.AddWindowRadio("savefor", fmt.Sprintf(Language.Translate("Save as default settings for all (%s) files"), b.FileType()), "lang", 2, height-3, false, nil, "", "")
+		f.AddWindowRadio("savefor", Language.Translate("Save as this file settings only"), "file", 2, height-5, false, nil, "", "")
+		f.AddWindowRadio("savefor", fmt.Sprintf(Language.Translate("Save as default settings for all (%s) files"), b.FileType()), "lang", 2, height-4, false, nil, "", "")
+		f.AddWindowRadio("savefor", Language.Translate("Save as default settings for this project"), "project", 2, height-3, false, nil, "", "")
 		f.AddWindowRadio("savefor", Language.Translate("Change settings for this session only"), "none", 2, height-2, true, nil, "", "")
 		lbl := Language.Translate("Save")
 		f.AddWindowButton("set", lbl, "ok", width-Count(lbl)-3, height-1, m.SetLocalSettings, "", "")
@@ -1393,12 +1393,14 @@ func (m *microMenu) SelLocalSettings(b *Buffer) {
 				f.AddWindowSelect(k, k+" ", char, "t]Tab|s]Space", col, row, 0, 1, nil, "", "")
 			} else if k == "tabsize" {
 				f.AddWindowSelect(k, k+" ", fmt.Sprintf("%g", b.Settings[k].(float64)), "2|3|4|5|6|7|8|9|10", col, row, 3, 1, nil, "", "")
+			} else if k == "comment" {
+				f.AddWindowTextBox(k, k+" ", b.Settings[k].(string), "string", col, row, 5, 20, nil, "", "")
 			} else {
 				kind := reflect.TypeOf(b.Settings[k]).Kind()
 				if kind == reflect.Bool {
 					f.AddWindowCheckBox(k, k, "true", col, row, b.Settings[k].(bool), nil, "", "")
 				} else if kind == reflect.String {
-					f.AddWindowTextBox(k, k+" ", b.Settings[k].(string), "string", col, row, 10, 20, nil, "", "")
+					f.AddWindowTextBox(k, k+" ", b.Settings[k].(string), "string", col, row, 30, 100, nil, "", "")
 				} else if kind == reflect.Float64 {
 					f.AddWindowTextBox(k, k+" ", fmt.Sprintf("%g", b.Settings[k].(float64)), "integer", col, row, 5, 10, nil, "", "")
 				} else {
@@ -1406,9 +1408,9 @@ func (m *microMenu) SelLocalSettings(b *Buffer) {
 				}
 			}
 			row += 2
-			if row > height-6 {
+			if row > height-7 {
 				row = 2
-				col += 20
+				col += 42
 			}
 		}
 	} else {
@@ -1451,19 +1453,29 @@ func (m *microMenu) SetLocalSettings(name, value, event, when string, x, y int) 
 			SetLocalOption(k, v, CurView())
 		}
 	}
-	// Set destination for this settings, default language
-	fname := configDir + "/settings/" + b.FileType() + ".json"
-	if values["savefor"] == "file" {
-		// Add current filetype selected too
-		values["encoder"] = b.buf.encoder
-		values["filetype"] = b.FileType()
-		// Change destintation to this file only
-		absFilename := ReplaceHome(b.AbsPath)
-		fname = configDir + "/buffers/" + strings.ReplaceAll(absFilename+".settings", "/", "")
-	}
+
 	if values["savefor"] != "none" {
+		// set path to current file directory
+		dir := filepath.Dir(b.AbsPath)
+		// Set destination for this settings, default language
+		fname := configDir + "/settings/" + b.FileType() + ".json"
+		if values["savefor"] == "file" {
+			// Add current filetype selected too
+			values["encoder"] = b.buf.encoder
+			values["filetype"] = b.FileType()
+			// Change destintation to for file only
+			fname = dir + "/.miide/" + b.fname + ".json"
+		} else if values["savefor"] == "project" {
+			// Detect working dir
+			dir = GetProjectDir(dir, WorkingDir)
+			fname = dir + "/.miide/settings.json"
+		}
 		// Remove non buffer settings values
 		delete(values, "savefor")
+		// Init dir if does not exists
+		if _, err := os.Stat(dir + "/.miide/"); os.IsNotExist(err) {
+			os.Mkdir(dir+"/.miide/", os.ModePerm)
+		}
 		// Update JSON file
 		UpdateFileJSON(fname, values)
 	}
@@ -1567,6 +1579,10 @@ func (m *microMenu) DirTreeView() {
 }
 
 func (m *microMenu) TreeViewEvent(name, value, event, when string, x, y int) bool {
+	// Navmode binding
+	if event == "l" {
+		event = "Right"
+	}
 	if event == "mouse-click1" {
 		return true
 	} else if when == "POST" {
@@ -1660,7 +1676,7 @@ func (m *microMenu) getDir() (string, int) {
 	}
 	width := 0
 	dir = "../]{d}📂 ../"
-	files, _ := ioutil.ReadDir(m.LastPath)
+	files, _ := os.ReadDir(m.LastPath)
 	for _, f := range files {
 		if f.IsDir() {
 			s = "/]{d}📂 " + f.Name() + "/"
@@ -1681,6 +1697,7 @@ func (m *microMenu) getDir() (string, int) {
 
 func (m *microMenu) Finish(s string) {
 	apprunning = nil
+	MouseOnOff(false)
 	MicroToolBar.FixTabsIconArea()
 }
 

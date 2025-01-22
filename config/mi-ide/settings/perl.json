@@ -1,6 +1,7 @@
 {
-    "charsopen": "“”",
-    "charsclose": "“”",
+    "charsopen": "“”°·",
+    "charsclose": "“”°·",
+    "comment": "#",
     "smartindent": true,
     "tabstospaces": false
 }

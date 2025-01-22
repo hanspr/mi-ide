@@ -1,0 +1,145 @@
+# make
+snippet make
+	make(${1:[]string}, ${0:0})
+# map
+snippet map
+	map[${1:string}]${0:int}
+# print
+snippet printf
+	fmt.Printf("%${1:s}\n", ${2:var})
+# struct
+snippet struct
+	type ${1:name} struct {
+		${2:name} ${3:type}
+	}
+	${0}
+#slice operations
+snippet sadd
+	${1:a} = append(${1},${2:list})
+snippet ssplice
+	${1:a} = append(${1},{$2:b}...)
+snippet scopy
+	${1:dest} := make([]T,len(${2:origin}))
+	copy(${1},${2})
+snippet scut
+	${1:a} = append(${1}[:${2:i}],${1}[${2}+${3:j}]...)
+snippet sdelete
+	${1:a} = append(${1}[:${2:i}],${1}[${2}+1])
+snippet spush
+	${1:a} = append(${1:a},${2:new})
+snippet spop
+	${1:value},${2:a} = a[len(${2}-1)],a[:len(${2})-1]
+snippet sunshift
+	${1:a} = append([]${2:x},${1}...)
+snippet sinsert
+	${1:a} = append(${1},0)
+	copy(${1}[${2:i}+1:],${2}:)
+	${1}[${2}] = ${3:value}
+snippet sfilter
+	for _,val := range ${1:slice a} {
+		if ${2:test} {
+			${3:slice b} = append(${3},val)
+		}
+	}
+snippet sfind
+	${1:found} := ${2:type}
+	for _,val := range ${3:slice} {
+		if ${4:test} {
+			${1} = val
+			break
+		}
+	}
+# map operations
+snippet msort
+	keys := make([]string,0,len(${1:map}))
+	for k := range (${1}) {
+		keys = append(keys,k)
+	}
+	sort.Strings(keys)
+	for _,k := range keys {
+		 ${0:// do something with} ${1}[k]
+	}
+# file operations
+snippet fslurp
+	// data is a byte array
+	${1:data}, err := os.ReadFile("${2:filename}")
+snippet fburp
+	// data is a byte array
+	err := os.WriteFile("${1:path}",[]bytes(${2:data}),0)
+snippet freadline
+	line := ""
+	file, err := os.Open(${1:path})
+	if err != nil {
+		// handle error
+	}
+	defer file.Close()
+	scanner := bufio.NewScanner(file)
+	scanner.Split(bufio.ScanLines) 
+	for scanner.Scan() {
+		// do something with your line
+		line = scanner.Text()
+		${0}
+	}
+# json read
+snippet jsonread
+	type ${1:name} struct {
+		${2:Var} ${3:type} `json:${4:name}`
+		// finish other values later
+	}
+	decoder := json.NewDecoder("${5:path}")
+	${6:var_json} := ${1}{}
+	err := decoder,Decode(&${6})
+	if err != nil {
+		// handle error
+	}
+	${0}
+
+# read ini file
+snippet iniread
+	// gopkg.in/gcfg.v1
+	type ${1:Section name} struct {
+		${2:Var} ${3:type} `gcfg:${4:name}`
+		// finish other values later
+	}
+	
+	config:= struct {Section}
+	err:=gcfg.ReadFileInto(&config,"${5:path.ini}")
+	if err!=nil {
+		// handle error
+	}
+	// config holds your configuration
+	${0}
+snippet yalmsread
+	// github.com/kylelemons/go-gypsy/yaml
+	config,err := yaml.ReadFile("${1:path.yaml}")
+	if err!=nil {
+		//handle error
+	}
+	config.Get("parametro")
+	config.GetBool("parametro")
+# goroutine named function
+snippet go
+	go ${1:funcName}(${0:parameters})
+# goroutine anonymous function
+snippet goan
+	go func(${1:var} ${2:type}) {
+		${3:/* code */}
+	}(${0})
+# select
+snippet select
+	select {
+	case ${1:v1} := <-${2:chan1}
+		${3}
+	default:
+		${0}
+	}
+# switch
+snippet switch
+	switch ${1:var} {
+	case ${2:value1}:
+		${3}
+	case ${4:value2}:
+		${5}
+	default:
+		${0}
+	}

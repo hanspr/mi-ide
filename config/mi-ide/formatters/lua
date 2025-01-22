@@ -1,0 +1,135 @@
+#!/usr/bin/perl
+
+use utf8;
+binmode STDOUT, 'utf8';
+
+our $FILE = $ARGV[0];
+
+if (!$FILE || !-e $FILE || -d $FILE) {
+    exit 1;
+}
+our $DEBUG = 0;
+
+IndentCode();
+
+exit 0;
+
+sub IndentCode {
+    my ($indent, $lc, @quoted_parts, $ci);
+    my $L  = 0;
+    my $I  = 0;
+    my $ch = " ";
+    my $sp = 4;
+
+    open(F, "<:utf8", $FILE)       or exit 1;
+    open(O, ">:utf8", "$FILE.tmp") or exit 1;
+    while (my $l = <F>) {
+        $L++;
+        if ($DEBUG) {
+            print "line: $L\n$l";
+        }
+        $l =~ s/ +$//;
+        $lc = $l;
+        $lc =~ s/\n|\r//g;
+        if (!$lc || $lc =~ /^--/) {
+            print O $l;
+            next;
+        }
+        # Set indentetion
+        $ci = $I;
+        if ($lc =~ /else/) {
+            print "  reduce indent\n";
+            $ci--;
+        } elsif ($lc =~ /then$|function| do$/) {
+            print "  add indent\n";
+            $I++;
+        } elsif ($lc =~ /end\s*$/) {
+            print "  remove indent\n";
+            $I--;
+            $ci--;
+        }
+        if ($DEBUG) {
+            print "  $I , $ci\n";
+        }
+        $indent = $ch x ($sp * $ci);
+        if ($DEBUG) {
+            print "  indent = '$indent'\n";
+        }
+        $lc =~ /^(\s+)/;
+        if ($DEBUG) {
+            print "  current intent = '$1'\n";
+            print "  ", length($indent), "!=", length($1), "\n";
+        }
+        if (length($indent) != length($1)) {
+            if ($DEBUG) {
+                print "  apply indentation\n";
+            }
+            $l =~ s/^\s*/$indent/;
+        }
+        # Format Text
+        # Remove quoted so we do not touch it
+        @quoted_parts = safesplit($l);
+        for (my $i = 0; $i < scalar(@quoted_parts); $i++) {
+            my $q = quotemeta($quoted_parts[$i]);
+            if ($DEBUG) {
+                print "  quoted string >>> $q\n";
+            }
+            $l =~ s/$q/XXXXXX$i/g;
+        }
+        if ($DEBUG) {
+            print "  No quotes : $l";
+        }
+        $l =~ s/([\w\"\)])(=|==|>|<|>=|<=|~=|\.\.|\*|\/)([-+\w\"])/$1 $2 $3/g;
+        $l =~ s/([\d\w\"])(-|\+)([a-zA-Z\W\"])/$1 $2 $3/g;
+        $l =~ s/\(\s+\)/\(\)/g;
+        $l =~ s/,(\w)/, $1/g;
+        $l =~ s/(\()\s+/$1/g;
+        $l =~ s/\s+(\))/$1/g;
+        for (my $i = 0; $i < scalar(@quoted_parts); $i++) {
+            my $q = $quoted_parts[$i];
+            $l =~ s/XXXXXX$i/$q/g;
+        }
+        if ($DEBUG) {
+            print "  wt quotes : $l\n";
+        }
+        # Print formated line
+        print O $l;
+        if ($DEBUG) {
+            print "$l";
+            my $x = <STDIN>;
+        }
+    }
+    close O;
+    close F;
+    if (!$DEBUG) {
+        system "mv -f $FILE.tmp $FILE";
+    }
+}
+
+sub safesplit {
+    my $string = shift;
+    my @parts  = ();
+    my $part   = '';
+    my $quote  = 0;
+
+    for (my $i = 0; $i < length($string); $i++) {
+        my $c = substr($string, $i, 1);
+        if ($quote && $c eq '\\') {
+            $i++;
+            next;
+        }
+        if ($quote && ($c eq "\"" || $c eq "\'")) {
+            $part .= $c;
+            $quote = 0;
+            push @parts, $part;
+            $part = "";
+        } elsif (!$quote && ($c eq "\"" || $c eq "\'")) {
+            $part .= $c;
+            $quote = 1;
+        } elsif ($quote) {
+            $part .= $c;
+        }
+    }
+    return @parts;
+}
+

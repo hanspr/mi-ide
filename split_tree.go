@@ -66,7 +66,8 @@ func (l *LeafNode) VSplit(buf *Buffer, splitIndex int) {
 	}
 
 	tab := tabs[l.parent.tabNum]
-	if l.parent.kind == VerticalSplit {
+	if !l.parent.kind {
+		// VerticalSplit
 		if splitIndex > len(l.parent.children) {
 			splitIndex = len(l.parent.children)
 		}
@@ -124,7 +125,8 @@ func (l *LeafNode) HSplit(buf *Buffer, splitIndex int) {
 	}
 
 	tab := tabs[l.parent.tabNum]
-	if l.parent.kind == HorizontalSplit {
+	if l.parent.kind {
+		// HorizontalSplit
 		if splitIndex > len(l.parent.children) {
 			splitIndex = len(l.parent.children)
 		}
@@ -224,7 +226,8 @@ func (s *SplitTree) ResizeSplits() {
 	lockedChildren := 0
 	for _, node := range s.children {
 		if n, ok := node.(*LeafNode); ok {
-			if s.kind == VerticalSplit {
+			if !s.kind {
+				// VerticalSplit
 				if n.view.LockWidth {
 					lockedWidth += n.view.Width
 					lockedChildren++
@@ -236,7 +239,8 @@ func (s *SplitTree) ResizeSplits() {
 				}
 			}
 		} else if n, ok := node.(*SplitTree); ok {
-			if s.kind == VerticalSplit {
+			if !s.kind {
+				// VerticalSplit
 				if n.lockWidth {
 					lockedWidth += n.width
 					lockedChildren++
@@ -252,7 +256,8 @@ func (s *SplitTree) ResizeSplits() {
 	x, y := 0, 0
 	for K, node := range s.children {
 		if n, ok := node.(*LeafNode); ok {
-			if s.kind == VerticalSplit {
+			if !s.kind {
+				// VerticalSplit
 				if !n.view.LockWidth {
 					n.view.Width = (s.width - lockedWidth) / (len(s.children) - lockedChildren)
 				}
@@ -283,7 +288,8 @@ func (s *SplitTree) ResizeSplits() {
 			n.view.Height--
 			n.view.AddTabbarSpace()
 		} else if n, ok := node.(*SplitTree); ok {
-			if s.kind == VerticalSplit {
+			if !s.kind {
+				// VerticalSplit
 				if !n.lockWidth {
 					n.width = (s.width - lockedWidth) / (len(s.children) - lockedChildren)
 				}
@@ -403,7 +409,7 @@ func (l *LeafNode) GetNextPrevView(direction int) int {
 	vp := viewPos[strconv.Itoa(curTab)+"-"+strconv.Itoa(x)]
 	// check current position - direction is not negative
 	if vp+direction < 0 {
-		// We are at the begining, do not move. Return same view number
+		// We are at the beginning, do not move. Return same view number
 		return x
 		// check current position + direction is not after last index
 	} else if vp+direction >= viewIndex[curTab] {

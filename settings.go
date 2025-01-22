@@ -5,8 +5,8 @@ import (
 	"encoding/json"
 	"errors"
 	"io"
-	"io/ioutil"
 	"os"
+	"path/filepath"
 	"reflect"
 	"strconv"
 	"strings"
@@ -42,7 +42,7 @@ func InitGlobalSettings() {
 	filename := configDir + "/settings.json"
 	writeSettings := false
 	if _, e := os.Stat(filename); e == nil {
-		input, err := ioutil.ReadFile(filename)
+		input, err := os.ReadFile(filename)
 		if !strings.HasPrefix(string(input), "null") {
 			if err != nil {
 				TermMessage("error reading settings.json file: " + err.Error())
@@ -86,7 +86,8 @@ func InitGlobalSettings() {
 // InitLocalSettings get known local settings for this opened file
 // 1.- scans the congig/settings.json and sets the options
 // 2.- scans language settings for that particular filetype
-// 3.- scans users saved settings for this particular file
+// 3.- scans users saved settings for this particular project
+// 4.- scans users saved settings for this particular file
 func InitLocalSettings(buf *Buffer) {
 	invalidSettings = false
 	var parsed map[string]interface{}
@@ -94,7 +95,7 @@ func InitLocalSettings(buf *Buffer) {
 	// 1.- Load Micro-Ide Settings
 	filename := configDir + "/settings.json"
 	if _, e := os.Stat(filename); e == nil {
-		input, err := ioutil.ReadFile(filename)
+		input, err := os.ReadFile(filename)
 		if err != nil {
 			TermMessage("error reading settings.json file: " + err.Error())
 			invalidSettings = true
@@ -134,16 +135,27 @@ func InitLocalSettings(buf *Buffer) {
 
 	// 2.- Load Settings based on settings/filetype.json
 	filename = configDir + "/settings/" + buf.Settings["filetype"].(string) + ".json"
-	ftypeSettings, err := ReadFileJSON(filename)
+	fSettings, err := ReadFileJSON(filename)
 	if err == nil {
-		for k, v := range ftypeSettings {
+		for k, v := range fSettings {
 			buf.Settings[k] = v
 		}
 	}
 
-	// 3.- Load Settings based on buffer/thisfile.settings
-	filename = configDir + "/buffers/" + strings.ReplaceAll(ReplaceHome(buf.AbsPath)+".settings", "/", "")
-	fSettings, err := ReadFileJSON(filename)
+	// 3.- Load Settings for this project
+	dir := filepath.Dir(buf.AbsPath)
+	pdir := GetProjectDir(WorkingDir, dir)
+	filename = pdir + "/.miide/settings.json"
+	fSettings, err = ReadFileJSON(filename)
+	if err == nil {
+		for k, v := range fSettings {
+			buf.Settings[k] = v
+		}
+	}
+
+	// 4.- Load Settings for this particular file
+	filename = dir + "/.miide/" + buf.fname + ".settings"
+	fSettings, err = ReadFileJSON(filename)
 	if err == nil {
 		// Load previous saved settings for this file
 		for k, v := range fSettings {
@@ -171,7 +183,7 @@ func WriteSettings(filename string) error {
 			parsed[k] = v
 		}
 		if _, e := os.Stat(filename); e == nil {
-			input, err := ioutil.ReadFile(filename)
+			input, err := os.ReadFile(filename)
 			if string(input) != "null" {
 				if err != nil {
 					return err
@@ -194,7 +206,7 @@ func WriteSettings(filename string) error {
 		}
 
 		txt, _ := json.MarshalIndent(parsed, "", "    ")
-		err = ioutil.WriteFile(filename, append(txt, '\n'), 0600)
+		err = os.WriteFile(filename, append(txt, '\n'), 0600)
 		xerr := permbits.Chmod(filename, permbits.PermissionBits(0600))
 		if xerr != nil {
 			messenger.AddLog(xerr)
@@ -239,7 +251,6 @@ func DefaultGlobalSettings() map[string]interface{} {
 		"autoclose":      true,
 		"autoindent":     true,
 		"autoreload":     true,
-		"autosave":       false,
 		"basename":       false,
 		"colorcolumn":    float64(0),
 		"colorscheme":    "default",
@@ -254,11 +265,10 @@ func DefaultGlobalSettings() map[string]interface{} {
 		"lang":           "en_US",
 		"matchbrace":     false,
 		"matchbraceleft": false,
-		"mi-server":      "https://api.mi-ide.com",
+		"mi-server":      "https://clip.microflow.com.mx:8443",
 		"mi-key":         "",
 		"mi-pass":        "",
 		"mi-phrase":      "",
-		"mouse":          true,
 		"pluginchannels": []string{"https://raw.githubusercontent.com/mi-ide/plugin-channel/master/channel.json"},
 		"pluginrepos":    []string{},
 		"rmtrailingws":   false,
@@ -289,9 +299,12 @@ func DefaultLocalSettings() map[string]interface{} {
 		"autoclose":      true,
 		"autoindent":     true,
 		"autoreload":     true,
-		"autosave":       false,
 		"basename":       false,
+		"blockopen":      "",
+		"blockclose":     "",
+		"blockinter":     "",
 		"colorcolumn":    float64(0),
+		"comment":        "",
 		"cursorcolor":    "disabled",
 		"cursorshape":    "disabled",
 		"cursorline":     true,
@@ -299,6 +312,7 @@ func DefaultLocalSettings() map[string]interface{} {
 		"fastdirty":      true,
 		"fileformat":     "unix",
 		"filetype":       "",
+		"findfuncregex":  "",
 		"indentchar":     " ",
 		"keepautoindent": false,
 		"matchbrace":     false,
@@ -318,6 +332,7 @@ func DefaultLocalSettings() map[string]interface{} {
 		"tabsize":        float64(4),
 		"tabstospaces":   false,
 		"tabindents":     false,
+		"useformatter":   true,
 	}
 }
 
@@ -373,14 +388,6 @@ func SetOption(option, value string) error {
 
 	for _, tab := range tabs {
 		tab.Resize()
-	}
-
-	if option == "mouse" {
-		if !nativeValue.(bool) {
-			screen.DisableMouse()
-		} else {
-			screen.EnableMouse()
-		}
 	}
 
 	if len(tabs) != 0 {

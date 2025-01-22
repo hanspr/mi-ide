@@ -1,0 +1,19 @@
+{
+    "autoclose": true,
+    "findfuncregex": "^\\s*function\\s+%word%[\\s\\(]|%word%\\s*=\\s*(?:function|\\(?:.*?\\)\\s*=>)[\\s\\(]",
+    "autoindent": true,
+    "eofnewline": false,
+    "fileformat": "unix",
+    "comment": "//",
+    "indentchar": " ",
+    "keepautoindent": true,
+    "matchbrace": true,
+    "rmtrailingws": true,
+    "smartindent": true,
+    "smartpaste": true,
+    "softwrap": false,
+    "tabindents": false,
+    "tabmovement": true,
+    "tabsize": 4,
+    "tabstospaces": false
+}

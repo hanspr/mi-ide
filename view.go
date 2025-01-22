@@ -21,9 +21,9 @@ var (
 	vtDefault = ViewType{0, false, false}
 	vtHelp    = ViewType{1, true, true}
 	vtLog     = ViewType{2, true, true}
-	vtScratch = ViewType{3, false, true}
-	vtRaw     = ViewType{4, true, true}
-	vtTerm    = ViewType{5, true, true}
+	// vtScratch = ViewType{3, false, true}
+	vtRaw  = ViewType{4, true, true}
+	vtTerm = ViewType{5, true, true}
 )
 
 // LastView to decide if we should trigger a focus event
@@ -111,9 +111,6 @@ type View struct {
 
 	splitNode *LeafNode
 
-	// Virtual terminal
-	term *Terminal
-
 	frozen bool
 }
 
@@ -145,8 +142,6 @@ func NewViewWidthHeight(buf *Buffer, w, h int) *View {
 		hotspot: make(map[string]Loc),
 	}
 
-	v.term = new(Terminal)
-
 	for pl := range loadedPlugins {
 		if GetPluginOption(pl, "ftype") != "*" && (GetPluginOption(pl, "ftype") == nil || GetPluginOption(pl, "ftype").(string) != CurView().Buf.FileType()) {
 			continue
@@ -164,22 +159,51 @@ func NewViewWidthHeight(buf *Buffer, w, h int) *View {
 	return v
 }
 
-// StartTerminal execs a command in this view
-func (v *View) StartTerminal(execCmd []string, wait bool, getOutput bool, luaCallback string) error {
-	err := v.term.Start(execCmd, v, getOutput)
-	v.term.wait = wait
-	v.term.callback = luaCallback
-	if err == nil {
-		v.term.Resize(v.Width, v.Height)
-		v.Type = vtTerm
+var HelperWindow = &View{}
+
+func (v *View) OpenHelperView(dir, filetype string, data string) {
+	if filetype == "" {
+		filetype = "text"
 	}
-	return err
+	h := v.Height
+	if HelperWindow == nil {
+		if dir == "h" {
+			CurView().HSplit(NewBufferFromString(data, ""))
+		} else {
+			CurView().VSplit(NewBufferFromString(data, ""))
+		}
+		HelperWindow = CurView()
+		HelperWindow.Buf.Settings["filetype"] = filetype
+		HelperWindow.Type = vtLog
+		HelperWindow.Buf.UpdateRules()
+		SetLocalOption("softwrap", "true", HelperWindow)
+		SetLocalOption("ruler", "false", HelperWindow)
+		NavigationMode = true
+	} else {
+		HelperWindow.Buf.remove(Loc{0, 0}, HelperWindow.Buf.End())
+		HelperWindow.Buf.insert(Loc{0, 0}, []byte(data))
+		HelperWindow.Cursor.GotoLoc(Loc{0, 0})
+	}
+	if dir == "h" {
+		nh := int(float64(h)*0.25) - 1
+		if nh < 5 {
+			return
+		}
+		v.Height = h - nh - 2
+		HelperWindow.Height = h - v.Height - 1
+		HelperWindow.y = v.Height + 2
+	}
 }
 
-// CloseTerminal shuts down the tty running in this view
-// and returns it to the default view type
-func (v *View) CloseTerminal() {
-	v.term.Stop()
+func (v *View) CloseHelperView() {
+	if HelperWindow == nil {
+		return
+	}
+	HelperWindow.Quit(false)
+}
+
+func (v *View) GetHelperView() *View {
+	return HelperWindow
 }
 
 // AddTabbarSpace creates an extra row for the tabbar if necessary
@@ -221,7 +245,7 @@ func (v *View) paste(clip string) {
 		v.Buf.Insert(v.Cursor.Loc, clip)
 		x := v.Cursor.Loc.X
 		spc := CountLeadingWhitespace(v.Buf.Line(v.Cursor.Y))
-		v.Buf.SmartIndent(Start, v.Cursor.Loc, false)
+		v.Buf.SmartIndent(Start, v.Cursor.Loc)
 		if multiline {
 			v.Cursor.StartOfText()
 		} else {
@@ -282,13 +306,8 @@ func (v *View) CanClose() bool {
 	if v.Type == vtDefault && v.Buf.Modified() {
 		var choice bool
 		var canceled bool
-		if v.Buf.Settings["autosave"].(bool) {
-			choice = true
-		} else {
-			choice, canceled = messenger.YesNoPrompt(Language.Translate("Save changes to") + " " + v.Buf.GetName() + " " + Language.Translate("before closing? (y,n,esc)"))
-		}
+		choice, canceled = messenger.YesNoPrompt(Language.Translate("Save changes to") + " " + v.Buf.GetName() + " " + Language.Translate("before closing? (y,n,esc)"))
 		if !canceled {
-			//if char == 'y' {
 			if choice {
 				v.Save(true)
 			}
@@ -343,11 +362,14 @@ func (v *View) CloseBuffer() {
 }
 
 // ReOpen reloads the current buffer
+// Trigger smart detection, to catch changes
 func (v *View) ReOpen() {
 	if v.CanClose() {
 		screen.Clear()
 		v.Buf.ReOpen()
 		v.Relocate()
+		go v.Buf.SmartDetections()
+		go git.GitSetStatus()
 	}
 }
 
@@ -496,7 +518,7 @@ func (v *View) Relocate() bool {
 	if !v.Buf.Settings["softwrap"].(bool) {
 		// HPR
 		// Force go all the way to the left when visual X in range to fit at the begging
-		// This avoids having shifted lines close to the begining of the window
+		// This avoids having shifted lines close to the beginning of the window
 		cx := v.Cursor.GetVisualX()
 		if cx < v.Width*10/11 {
 			cx = 0
@@ -513,8 +535,8 @@ func (v *View) Relocate() bool {
 	return ret
 }
 
-// GetMouseRelativePositon mouse relative position inside view
-func (v *View) GetMouseRelativePositon(x, y int) (int, int) {
+// GetMouseRelativePosition mouse relative position inside view
+func (v *View) GetMouseRelativePosition(x, y int) (int, int) {
 	x -= v.x - v.leftCol
 	y = y - v.y + 1
 	return x, y
@@ -608,11 +630,6 @@ func (v *View) SetCursor(c *Cursor) bool {
 
 // HandleEvent handles an event passed by the main loop
 func (v *View) HandleEvent(event tcell.Event) {
-	if v.Type == vtTerm {
-		v.term.HandleEvent(event)
-		return
-	}
-
 	if v.Type == vtRaw {
 		v.Buf.Insert(v.Cursor.Loc, reflect.TypeOf(event).String()[7:])
 		v.Buf.Insert(v.Cursor.Loc, fmt.Sprintf(": %q\n", event.EscSeq()))
@@ -634,6 +651,9 @@ func (v *View) HandleEvent(event tcell.Event) {
 
 	switch e := event.(type) {
 	case *tcell.EventRaw:
+		if NavigationMode {
+			return
+		}
 		for key, actions := range bindings {
 			if key.keyCode == -1 {
 				if e.EscSeq() == key.escape {
@@ -654,43 +674,50 @@ func (v *View) HandleEvent(event tcell.Event) {
 	case *tcell.EventKey:
 		// Check first if input is a key binding, if it is we 'eat' the input and don't insert a rune
 		isBinding := false
-		for key, actions := range bindings {
-			if e.Key() == key.keyCode {
-				if e.Key() == tcell.KeyRune {
-					if e.Rune() != key.r {
-						continue
-					}
-				}
-				if e.Modifiers() == key.modifiers {
-					var cursors []*Cursor
-					if len(v.Buf.cursors) > 1 && e.Name() == "Enter" {
-						// Multicursor, newline. Reverse cursor order so it works
-						for i := len(v.Buf.cursors) - 1; i >= 0; i-- {
-							cursors = append(cursors, v.Buf.cursors[i])
+		if NavigationMode && e.Name() == "Esc" {
+			v.NavigationMode(true)
+			return
+		} else {
+			for key, actions := range bindings {
+				if e.Key() == key.keyCode {
+					if e.Key() == tcell.KeyRune {
+						if e.Rune() != key.r {
+							continue
 						}
-					} else {
-						cursors = v.Buf.cursors
 					}
-					for _, c := range cursors {
-						ok := v.SetCursor(c)
-						if !ok {
-							break
+					if e.Modifiers() == key.modifiers || (NavigationMode && e.Key() == tcell.KeyRune) {
+						var cursors []*Cursor
+						if len(v.Buf.cursors) > 1 && e.Name() == "Enter" {
+							// Multicursor, newline. Reverse cursor order so it works
+							for i := len(v.Buf.cursors) - 1; i >= 0; i-- {
+								cursors = append(cursors, v.Buf.cursors[i])
+							}
+						} else {
+							cursors = v.Buf.cursors
 						}
-						relocate = false
-						isBinding = true
-						relocate = v.ExecuteActions(actions) || relocate
+						for _, c := range cursors {
+							ok := v.SetCursor(c)
+							if !ok {
+								break
+							}
+							relocate = false
+							isBinding = true
+							relocate = v.ExecuteActions(actions) || relocate
+						}
+						v.SetCursor(&v.Buf.Cursor)
+						v.Buf.MergeCursors()
+						break
 					}
-					v.SetCursor(&v.Buf.Cursor)
-					v.Buf.MergeCursors()
-					break
 				}
 			}
 		}
-
 		if !isBinding && e.Key() == tcell.KeyRune {
 			// Check viewtype if readonly don't insert a rune (readonly help and log view etc.)
 			if v.Type.Readonly {
 				messenger.Alert("error", Language.Translate("File is readonly"))
+				return
+			} else if NavigationMode || MouseEnabled {
+				return
 			} else {
 				isSelection := false
 				var cursorSelection [2]Loc
@@ -748,6 +775,10 @@ func (v *View) HandleEvent(event tcell.Event) {
 			}
 		}
 	case *tcell.EventPaste:
+		if NavigationMode {
+			// Do not pase on Navigation mode from terminal (fat fingers arrive here too)
+			return
+		}
 		// Check viewtype if readonly don't paste (readonly help and log view etc.)
 		if !v.Type.Readonly {
 			if !PreActionCall("Paste", v) {
@@ -771,10 +802,10 @@ func (v *View) HandleEvent(event tcell.Event) {
 
 		button := e.Buttons()
 
-		// This events are relative to each view dimentions
+		// This events are relative to each view dimensions
 		if e.Buttons() == tcell.Button1 || button == tcell.Button3 || button == tcell.Button2 {
 			x, y := e.Position()
-			rx, ry := v.GetMouseRelativePositon(x, y)
+			rx, ry := v.GetMouseRelativePosition(x, y)
 			//messenger.AddLog(x, ",", y, "?", rx, ",", ry)
 			if v.Type.Kind == 0 {
 				//messenger.Message(ry, "?", v.Height, ": rx", rx, "?", v.lineNumOffset)
@@ -900,6 +931,7 @@ func (v *View) openHelp(helpPage string) {
 			v.HSplit(helpBuffer)
 			CurView().Type = vtHelp
 			v.Relocate()
+			NavigationMode = true
 		}
 	}
 }
@@ -989,7 +1021,7 @@ func (v *View) SetCursorColorShape() {
 	}
 }
 
-// Set LastView used by plugins if they move views and cursor positions arround
+// Set LastView used by plugins if they move views and cursor positions around
 func (v *View) SetLastView() {
 	LastView = v.Num
 }
@@ -999,10 +1031,6 @@ func (v *View) DisplayView() {
 	ActiveView := true
 	if CurView().Num != v.Num {
 		ActiveView = false
-	}
-	if v.Type == vtTerm {
-		v.term.Display()
-		return
 	}
 
 	if v.Buf.Settings["softwrap"].(bool) && v.leftCol != 0 {
@@ -1017,7 +1045,7 @@ func (v *View) DisplayView() {
 	if CurView().Type.Kind == 0 && LastView != CurView().Num && CurView().Cursor.Loc != CurView().savedLoc && !Mouse.Click {
 		// HP : Set de cursor in last known position for this view
 		// It happens when 2+ views point to same buffer
-		// Set into current view boudaries
+		// Set into current view boundaries
 		//messenger.AddLog("Focus event")
 		if CurView().savedLoc.Y > CurView().Buf.End().Y {
 			CurView().savedLoc.Y = CurView().Buf.End().Y
@@ -1028,7 +1056,7 @@ func (v *View) DisplayView() {
 		currLine := SubstringSafe(CurView().Buf.Line(CurView().savedLoc.Y), 0, 20)
 		if LastView > 0 && currLine != CurView().savedLine {
 			var newLoc Loc
-			// Line has moved, find new position using as a reference the last known line beggining
+			// Line has moved, find new position using as a reference the last known line beginning
 			newLoc = CurView().FindCurLine(-1, CurView().savedLine)
 			if newLoc.Y < 0 {
 				newLoc = CurView().FindCurLine(1, CurView().savedLine)
@@ -1107,7 +1135,6 @@ func (v *View) DisplayView() {
 		}
 	}
 
-	screenX := v.x
 	realLineN := top - 1
 	visualLineN := 0
 	var line []*Char
@@ -1135,7 +1162,7 @@ func (v *View) DisplayView() {
 			screen.SetContent(xOffset+colorcolumn-v.leftCol, yOffset+visualLineN, ' ', nil, st)
 		}
 
-		screenX = v.x
+		screenX := v.x
 
 		// If there are gutter messages we need to display the '>>' symbol here
 		if hasGutterMessages {
@@ -1275,7 +1302,7 @@ func (v *View) DisplayView() {
 					v.SetCursor(c)
 					if ActiveView && !v.Cursor.HasSelection() &&
 						v.Cursor.Y == char.realLoc.Y && v.Cursor.X == char.realLoc.X && (!cursorSet || i != 0) {
-						ShowMultiCursor(xOffset+char.visualLoc.X, yOffset+char.visualLoc.Y, i)
+						ShowMultiCursor(xOffset+char.visualLoc.X, yOffset+char.visualLoc.Y, i, v)
 						cursorSet = true
 					}
 				}
@@ -1297,7 +1324,7 @@ func (v *View) DisplayView() {
 				v.SetCursor(c)
 				if ActiveView && !v.Cursor.HasSelection() &&
 					v.Cursor.Y == lastChar.realLoc.Y && v.Cursor.X == lastChar.realLoc.X+1 {
-					ShowMultiCursor(lastX, yOffset+lastChar.visualLoc.Y, i)
+					ShowMultiCursor(lastX, yOffset+lastChar.visualLoc.Y, i, v)
 					cx, cy = lastX, yOffset+lastChar.visualLoc.Y
 				}
 			}
@@ -1309,7 +1336,7 @@ func (v *View) DisplayView() {
 				v.SetCursor(c)
 				if ActiveView && !v.Cursor.HasSelection() &&
 					v.Cursor.Y == realLineN {
-					ShowMultiCursor(xOffset, yOffset+visualLineN, i)
+					ShowMultiCursor(xOffset, yOffset+visualLineN, i, v)
 					cx, cy = xOffset, yOffset+visualLineN
 				}
 			}
@@ -1384,12 +1411,13 @@ func (v *View) DisplayView() {
 // ShowMultiCursor will display a cursor at a location
 // If i == 0 then the terminal cursor will be used
 // Otherwise a fake cursor will be drawn at the position
-func ShowMultiCursor(x, y, i int) {
+func ShowMultiCursor(x, y, i int, v *View) {
+	cursorColor := tcell.GetColor(v.Buf.Settings["cursorcolor"].(string))
 	if i == 0 {
 		screen.ShowCursor(x, y)
 	} else {
 		r, _, _, _ := screen.GetContent(x, y)
-		screen.SetContent(x, y, r, nil, defStyle.Reverse(true))
+		screen.SetContent(x, y, r, nil, defStyle.Background(cursorColor).Foreground(tcell.ColorBlack).Bold(true))
 	}
 }
 

@@ -1,0 +1,22 @@
+{
+    "autoclose": true,
+    "autoindent": true,
+    "blockclose": "",
+    "blockinter": "",
+    "blockopen": "",
+    "comment": "",
+    "eofnewline": false,
+    "fileformat": "unix",
+    "indentchar": "\t",
+    "keepautoindent": true,
+    "matchbrace": true,
+    "rmtrailingws": false,
+    "smartindent": false,
+    "smartpaste": true,
+    "softwrap": false,
+    "tabindents": false,
+    "tabmovement": false,
+    "tabsize": 4,
+    "tabstospaces": false,
+    "useformatter": true
+}

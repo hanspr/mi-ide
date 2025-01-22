@@ -14,7 +14,7 @@ import (
 // Opt option element of a select
 type Opt struct {
 	value string
-	lable string
+	label string
 	style *AppStyle
 }
 
@@ -37,9 +37,9 @@ type AppElement struct {
 	checked     bool                                                // Checkbox, Radio checked. Select is open
 	gname       string                                              // Original name, required for radio buttons
 	offset      int                                                 // Select = indexSelected, Text = offset from the age id box smaller than maxlength
-	visible     bool                                                // Set element vibilility attribute
+	visible     bool                                                // Set element visibility attribute
 	iKey        int                                                 // Used to store temporary integer value
-	opts        []Opt                                               // Hold splited select data
+	opts        []Opt                                               // Hold split select data
 	microapp    *MicroApp
 	frame       *Frame
 	luacallback string
@@ -228,7 +228,7 @@ func (a *MicroApp) AddWindowElement(frame, name, label, form, value, valueType s
 		e.gname = name
 		e.name = name + strconv.Itoa(n)
 	}
-	// Calculate begin and end coordenates for the hotspot for element type
+	// Calculate begin and end coordinates for the hotspot for element type
 	r := []rune(label)
 	lblwidth := len(r)
 	if form == "label" || form == "button" {
@@ -268,7 +268,7 @@ func (a *MicroApp) AddWindowElement(frame, name, label, form, value, valueType s
 				opt[1] = opt[0]
 			}
 			vp.value = opt[0]
-			vp.lable = opt[1]
+			vp.label = opt[1]
 			e.opts = append(e.opts, vp)
 			if opt[0] == e.value {
 				e.offset = i
@@ -395,7 +395,7 @@ func (f *Frame) AddWindowButton(name, label, buttonType string, x, y int, callba
 // Element Methods
 // ------------------------------------------------
 
-//SetIndex set the index layer property of an element (0 - 5 layers)
+// SetIndex set the index layer property of an element (0 - 5 layers)
 func (f *Frame) SetIndex(k string, v int) {
 	e, ok := f.elements[k]
 	if !ok {
@@ -513,10 +513,13 @@ func (f *Frame) SetValue(k, v string) {
 	a.screen.Show()
 }
 
-//InsertStringAt Inserts string in current value at position X
+// InsertStringAt Inserts string in current value at position X
 func (e *AppElement) InsertStringAt(x int, clip string) {
 	a := e.microapp
 	var nr []rune
+	if len(clip)+len(e.value) > e.height {
+		clip = SubstringSafe(clip, 0, e.height-len(e.value)-3)
+	}
 	r := []rune(e.value)
 	cr := []rune(clip)
 	nr = append(nr, r[:e.cursor.X]...)
@@ -581,7 +584,7 @@ func (f *Frame) GetLabel(k string) string {
 	return e.label
 }
 
-// SetLabel set the lable property of an element
+// SetLabel set the label property of an element
 func (f *Frame) SetLabel(k, v string) {
 	e, ok := f.elements[k]
 	if !ok {
@@ -594,7 +597,7 @@ func (f *Frame) SetLabel(k, v string) {
 	lx := re.ReplaceAllString(e.label, "")
 	lx = strings.TrimRight(lx, " ")
 	if Count(vx) < Count(lx) {
-		// First overwrite n spaces to erease current lable
+		// First overwrite n spaces to erease current label
 		e.label = strings.Repeat(" ", Count(lx))
 		e.Draw()
 	}
@@ -932,7 +935,7 @@ func (e *AppElement) DrawSelect() {
 		if Y >= e.height {
 			break
 		}
-		label := []rune(fmt.Sprintf(ft, e.opts[i].lable) + chr)
+		label := []rune(fmt.Sprintf(ft, e.opts[i].label) + chr)
 		for N := 0; N < len(label); N++ {
 			a.screen.SetContent(e.aposb.X+N+f.left, e.aposb.Y+Y+f.top, label[N], nil, style)
 		}
@@ -993,7 +996,7 @@ func WordWrap(str string, w int) string {
 	return str1 + "\\N" + WordWrap(str2, w)
 }
 
-// Get the cursor positon from an absolut cursor position
+// Get the cursor position from an absolute cursor position
 func (e *AppElement) getECursorFromACursor() int {
 	a := e.microapp
 	f := e.frame
@@ -1147,7 +1150,7 @@ func (a *MicroApp) ResetFrames() {
 
 // Print Routines
 
-// Debug works with absolute coordenates
+// Debug works with absolute coordinates
 func (a *MicroApp) Debug(msg string, x, y int) {
 	a.PrintAbsolute(msg, x, y, nil)
 	a.screen.Show()
@@ -1287,7 +1290,7 @@ func (e *AppElement) SelectClickEvent(event string, x, y int) {
 			}
 		}
 
-		// Reset to height=1, hotspot, savew
+		// Reset to height=1, hotspot, save
 		if e.aposb.Y+e.height > f.maxheight {
 			RedrawAll(false)
 		}
@@ -1442,8 +1445,31 @@ func (e *AppElement) ProcessElementMouseWheel(event string, x, y int) {
 // Key Events
 // ------------------------------------------------
 
+func (e *AppElement) SetNavModeBindings(key string) string {
+	// Navmode binding
+	if key == "i" {
+		key = "Up"
+	} else if key == "k" {
+		key = "Down"
+	} else if key == "y" {
+		key = "PgUp"
+	} else if key == "l" {
+		key = "Right"
+	} else if key == "j" {
+		key = "Left"
+	} else if key == "h" {
+		key = "PgDn"
+	} else if key == "u" {
+		key = "Home"
+	} else if key == "o" {
+		key = "End"
+	}
+	return key
+}
+
 // SelectKeyEvent handle key event
 func (e *AppElement) SelectKeyEvent(key string, x, y int) {
+	key = e.SetNavModeBindings(key)
 	a := e.microapp
 	f := e.frame
 	r := []rune(key)
@@ -1511,22 +1537,22 @@ func (e *AppElement) TextAreaKeyEvent(key string, x, y int) {
 			e.cursor.X--
 			b = a.removeCharAt(b, e.cursor.X)
 			e.value = string(b)
-		} else if key == "Delete" {
+		} else if key == "Delete" || key == "Ctrl+U" {
 			b = a.removeCharAt(b, e.cursor.X)
 			e.value = string(b)
-		} else if key == "Left" {
+		} else if key == "Left" || key == "Alt+j" {
 			if e.cursor.X-1 < 0 {
 				return
 			}
 			e.cursor.X--
 			e.setACursorFromECursor()
-		} else if key == "Right" {
+		} else if key == "Right" || key == "Alt+l" {
 			if e.cursor.X+1 > len(b) || (x+1 > e.apose.X && y == e.apose.Y) {
 				return
 			}
 			e.cursor.X++
 			e.setACursorFromECursor()
-		} else if key == "Up" {
+		} else if key == "Up" || key == "Alt+i" {
 			if a.cursor.Y-1 < e.aposb.Y {
 				return
 			}
@@ -1534,7 +1560,7 @@ func (e *AppElement) TextAreaKeyEvent(key string, x, y int) {
 			e.cursor.X = e.getECursorFromACursor()
 			a.screen.Show()
 			return
-		} else if key == "Down" {
+		} else if key == "Down" || key == "Alt+k" {
 			if a.cursor.Y+1 > e.apose.Y {
 				return
 			}
@@ -1542,11 +1568,11 @@ func (e *AppElement) TextAreaKeyEvent(key string, x, y int) {
 			e.cursor.X = e.getECursorFromACursor()
 			a.screen.Show()
 			return
-		} else if key == "Home" {
+		} else if key == "Home" || key == "Alt+u" {
 			a.cursor.X = e.aposb.X
 			e.cursor.X = 0
 			a.cursor.Y = e.aposb.Y
-		} else if key == "End" {
+		} else if key == "End" || key == "Alt+o" {
 			e.cursor.X = len(b)
 		} else if key == "Enter" {
 			return
@@ -1555,7 +1581,7 @@ func (e *AppElement) TextAreaKeyEvent(key string, x, y int) {
 			e.value = e.value + clip
 			e.TextAreaKeyEvent("End", x, y)
 			return
-		} else if key == "Ctrl+R" || key == "Ctrl+K" {
+		} else if key == "Ctrl+R" || key == "Ctrl+J" {
 			e.value = ""
 			a.cursor.X = e.aposb.X
 			e.cursor.X = 0
@@ -1592,10 +1618,10 @@ func (e *AppElement) TextBoxKeyEvent(key string, x, y int) {
 			}
 			b = a.removeCharAt(b, e.cursor.X)
 			e.value = string(b)
-		} else if key == "Delete" {
+		} else if key == "Delete" || key == "Ctrl+U" {
 			b = a.removeCharAt(b, e.cursor.X)
 			e.value = string(b)
-		} else if key == "Left" {
+		} else if key == "Left" || key == "Alt+j" {
 			if e.cursor.X-1 < 0 {
 				return
 			}
@@ -1603,18 +1629,18 @@ func (e *AppElement) TextBoxKeyEvent(key string, x, y int) {
 				a.cursor.X--
 			}
 			e.cursor.X--
-		} else if key == "Right" {
+		} else if key == "Right" || key == "Alt+l" {
 			if e.cursor.X < maxlength-1 && e.cursor.X < len(b) {
 				e.cursor.X++
 				if a.cursor.X+1 <= e.apose.X {
 					a.cursor.X++
 				}
 			}
-		} else if key == "Home" {
+		} else if key == "Home" || key == "Alt+u" {
 			a.cursor.X = e.aposb.X
 			e.cursor.X = 0
 			e.offset = 0
-		} else if key == "End" {
+		} else if key == "End" || key == "Alt+o" {
 			if len(b) == maxlength {
 				e.cursor.X = len(b) - 1
 				a.cursor.X = e.aposb.X + len(b) - 1
@@ -1636,7 +1662,7 @@ func (e *AppElement) TextBoxKeyEvent(key string, x, y int) {
 		} else if key == "Ctrl+V" {
 			clip := Clip.ReadFrom("local", "cip")
 			e.InsertStringAt(e.cursor.X, clip)
-		} else if key == "Ctrl+R" || key == "Ctrl+K" {
+		} else if key == "Ctrl+R" || key == "Ctrl+J" {
 			e.value = ""
 			a.cursor.X = e.aposb.X
 			e.cursor.X = 0
@@ -1696,7 +1722,7 @@ func (e *AppElement) ProcessElementKey(key string, x, y int) {
 }
 
 // Check if event occurs on top of an element hotspot
-// If it does, dispatch the apropiate method
+// If it does, dispatch the appropriate method
 
 // CheckElementsActions find kind of event and pass action to the proper routine
 func (a *MicroApp) CheckElementsActions(event string, x, y int) bool {
@@ -1849,7 +1875,13 @@ func (a *MicroApp) HandleEvents(event tcell.Event) {
 		if ev.Key() == 256 && ev.Modifiers() == 0 {
 			char = string(ev.Rune())
 		} else {
-			char = ev.Name()
+			if ev.Modifiers() == 4 {
+				char = "Alt+" + string(ev.Rune())
+			} else if ev.Modifiers() == 3 {
+				char = "Ctrl+" + string(ev.Rune())
+			} else {
+				char = ev.Name()
+			}
 		}
 		if a.WindowKeyEvent != nil {
 			a.WindowKeyEvent(char, a.cursor.X, a.cursor.Y)
@@ -1973,6 +2005,7 @@ func (a *MicroApp) New(name string) {
 // Start start the application
 func (a *MicroApp) Start() {
 	a.DrawAll()
+	MouseOnOff(true)
 	a.screen.HideCursor()
 	a.screen.Show()
 }

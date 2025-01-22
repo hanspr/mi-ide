@@ -1,0 +1,23 @@
+{
+    "autoclose": true,
+    "findfuncregex": "^\\s*(?:local )?function\\s+%word%|%word%\\s+=\\s+function[\\s\\(]",
+    "autoindent": true,
+    "blockclose": "end\\s*$",
+    "blockinter": "else(?: if)?",
+    "blockopen": "then|function| do$|then|function| do$|then|function| do$",
+    "comment": "--",
+    "eofnewline": false,
+    "fileformat": "unix",
+    "indentchar": " ",
+    "keepautoindent": true,
+    "matchbrace": true,
+    "rmtrailingws": true,
+    "smartindent": true,
+    "smartpaste": true,
+    "softwrap": false,
+    "tabindents": false,
+    "tabmovement": true,
+    "tabsize": 4,
+    "tabstospaces": true,
+    "useformatter": true
+}

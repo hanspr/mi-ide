@@ -5,7 +5,6 @@ import (
 	"bytes"
 	"fmt"
 	"io"
-	"io/ioutil"
 	"net/http"
 	"os"
 	"path/filepath"
@@ -23,7 +22,7 @@ var (
 )
 
 // CorePluginName is a plugin dependency name for the mi-ide core.
-const CorePluginName = "micro"
+const CorePluginName = "miide"
 
 // PluginChannel contains an url to a json list of PluginRepository
 type PluginChannel string
@@ -387,7 +386,7 @@ func (pv *PluginVersion) DownloadAndInstall() error {
 		return err
 	}
 	defer resp.Body.Close()
-	data, err := ioutil.ReadAll(resp.Body)
+	data, err := io.ReadAll(resp.Body)
 	if err != nil {
 		return err
 	}

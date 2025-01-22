@@ -1,9 +1,10 @@
 package main
 
 import (
-	"io/ioutil"
 	"os"
 	"path/filepath"
+
+	"github.com/hanspr/highlight"
 )
 
 // RTColorscheme Color Scheme definitions
@@ -56,7 +57,7 @@ func (rf realFile) Name() string {
 }
 
 func (rf realFile) Data() ([]byte, error) {
-	return ioutil.ReadFile(string(rf))
+	return os.ReadFile(string(rf))
 }
 
 //func (af assetFile) Name() string {
@@ -79,7 +80,7 @@ func AddRuntimeFile(fileType string, file RuntimeFile) {
 // AddRuntimeFilesFromDirectory registers each file from the given directory for
 // the filetype which matches the file-pattern
 func AddRuntimeFilesFromDirectory(fileType, directory, pattern string) {
-	files, _ := ioutil.ReadDir(directory)
+	files, _ := os.ReadDir(directory)
 	for _, f := range files {
 		if ok, _ := filepath.Match(pattern, f.Name()); !f.IsDir() && ok {
 			fullPath := filepath.Join(directory, f.Name())
@@ -118,7 +119,7 @@ func InitRuntimeFiles() {
 	add(RTHelp, "help", "*.md")
 
 	// Search configDir for plugin-scripts
-	files, _ := ioutil.ReadDir(filepath.Join(configDir, "plugins"))
+	files, _ := os.ReadDir(filepath.Join(configDir, "plugins"))
 	for _, f := range files {
 		realpath, _ := filepath.EvalSymlinks(filepath.Join(configDir, "plugins", f.Name()))
 		realpathStat, _ := os.Stat(realpath)
@@ -171,4 +172,24 @@ func PluginAddRuntimeFilesFromDirectory(plugin, filetype, directory, pattern str
 // PluginAddRuntimeFileFromMemory adds a file to the runtime files for a plugin from a given string
 func PluginAddRuntimeFileFromMemory(plugin, filetype, filename, data string) {
 	AddRuntimeFile(filetype, memoryFile{filename, []byte(data)})
+}
+
+func TestFileType(path string, f RuntimeFile) bool {
+	if f == nil {
+		return false
+	}
+	data, err := f.Data()
+	if err != nil {
+		return false
+	}
+	file, err := highlight.ParseFile(data)
+	if err != nil {
+		return false
+	}
+	ftdetect, err := highlight.ParseFtDetect(file)
+	if err != nil {
+		return false
+	}
+	header := ReadHeaderBytes(path)
+	return highlight.MatchFiletype(ftdetect, path, header)
 }

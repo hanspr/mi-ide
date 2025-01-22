@@ -3,7 +3,7 @@ package main
 import (
 	"flag"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"os"
 	"path/filepath"
 	"runtime"
@@ -24,7 +24,6 @@ import (
 const (
 	doubleClickThreshold = 400 // How many milliseconds to wait before a second click is not a double click
 	undoThreshold        = 500 // If two events are less than n milliseconds apart, undo both of them
-	autosaveTime         = 8   // Number of seconds to wait before autosaving
 )
 
 // MouseClick mouse clic structure to follow mouse clics
@@ -69,11 +68,7 @@ var (
 
 	// Version is the version number or commit hash
 	// These variables should be set by the linker when compiling
-	Version = "0.0.0-unknown"
-	// CommitHash is the commit this version was built on
-	CommitHash = "Unknown"
-	// CompileDate is the date this binary was compiled on
-	CompileDate = "Unknown"
+	Version = "1.1.49"
 
 	// The list of views
 	tabs []*Tab
@@ -85,12 +80,7 @@ var (
 	jobs chan JobFunction
 
 	// Event channel
-	events   chan tcell.Event
-	autosave chan bool
-
-	// Channels for the terminal emulator
-	updateterm chan bool
-	closeterm  chan int
+	events chan tcell.Event
 
 	// How many redraws have happened
 	numRedraw uint
@@ -124,7 +114,17 @@ var (
 
 	currEnv appEnv
 
-	cloudPath = "https://api.mi-ide.com:60443" // Cloud service url
+	MouseEnabled = false
+
+	NavigationMode = false
+
+	cloudPath = "https://clip.microflow.com.mx:8443" // Cloud service url
+
+	git = &gitstatus{}
+
+	WorkingDir = ""
+
+	HomeDir = ""
 )
 
 // LoadInput determines which files should be loaded into buffers
@@ -182,7 +182,7 @@ func LoadInput() []*Buffer {
 		// Option 2
 		// The input is not a terminal, so something is being piped in
 		// and we should read from stdin
-		input, err = ioutil.ReadAll(os.Stdin)
+		input, err = io.ReadAll(os.Stdin)
 		if err != nil {
 			TermMessage("Error reading from stdin: ", err)
 			input = []byte{}
@@ -202,12 +202,7 @@ func InitConfigDir() {
 	xdgHome := os.Getenv("XDG_CONFIG_HOME")
 	if xdgHome == "" {
 		// The user has not set $XDG_CONFIG_HOME so we should act like it was set to ~/.config
-		home, err := homedir.Dir()
-		if err != nil {
-			TermMessage("Error finding your home directory\nCan't load config files")
-			return
-		}
-		xdgHome = home + "/.config"
+		xdgHome = HomeDir + "/.config"
 	}
 	configDir = xdgHome + "/mi-ide"
 
@@ -265,18 +260,18 @@ func InitScreen() {
 			err = terminfo.WriteDB(configDir + "/.tcelldb")
 			if err != nil {
 				fmt.Println(err)
-				fmt.Println("Fatal: Micro could not create tcelldb")
+				fmt.Println("Fatal: mi-ide could not create tcelldb")
 				os.Exit(1)
 			}
 			screen, err = tcell.NewScreen()
 			if err != nil {
 				fmt.Println(err)
-				fmt.Println("Fatal: Micro could not initialize a screen.")
+				fmt.Println("Fatal: mi-ide could not initialize a screen.")
 				os.Exit(1)
 			}
 		} else {
 			fmt.Println(err)
-			fmt.Println("Fatal: Micro could not initialize a screen.")
+			fmt.Println("Fatal: mi-ide could not initialize a screen.")
 			os.Exit(1)
 		}
 	}
@@ -290,12 +285,7 @@ func InitScreen() {
 		os.Setenv("TERM", oldTerm)
 	}
 
-	if GetGlobalOption("mouse").(bool) {
-		screen.EnableMouse()
-	}
-
 	os.Setenv("TCELLDB", tcelldb)
-
 }
 
 // RedrawAll redraws everything -- all the views and the messenger
@@ -377,17 +367,22 @@ var flagOptions = flag.Bool("options", false, "Show all option help")
 func MicroAppStop() {
 	apprunning = nil
 	MicroToolBar.FixTabsIconArea()
+	MouseOnOff(false)
 }
 
 func main() {
 	// Create Toolbar object
 	MicroToolBar = NewToolBar()
 	apprunning = nil
+	HelperWindow = nil
 	currEnv.OS = runtime.GOOS
 	currEnv.UID = os.Getuid()
 	currEnv.Gid = os.Getgid()
 	currEnv.Groups, _ = os.Getgroups()
 	currEnv.ClipWhere = "local"
+	WorkingDir, _ = os.Getwd()
+	git = NewGitStatus()
+	HomeDir, _ = homedir.Dir()
 
 	flag.Usage = func() {
 		fmt.Println("Usage: mi-ide [OPTIONS] [FILE]...")
@@ -419,9 +414,7 @@ func main() {
 
 	if *flagVersion {
 		// If -version was passed
-		fmt.Println("Version:", Version)
-		fmt.Println("Commit hash:", CommitHash)
-		fmt.Println("Compiled on", CompileDate)
+		fmt.Println(Version)
 		os.Exit(0)
 	}
 
@@ -466,7 +459,7 @@ func main() {
 	defer func() {
 		if err := recover(); err != nil {
 			screen.Fini()
-			fmt.Println("Micro-ide encountered an error:", err)
+			fmt.Println("mi-ide encountered an error:", err)
 			// Print the stack trace too
 			fmt.Print(errors.Wrap(err, 2).ErrorStack())
 			os.Exit(1)
@@ -532,13 +525,9 @@ func main() {
 	L.SetGlobal("CurView", luar.New(L, CurView))
 	L.SetGlobal("IsWordChar", luar.New(L, IsWordChar))
 	L.SetGlobal("HandleCommand", luar.New(L, HandleCommand))
-	L.SetGlobal("HandleShellCommand", luar.New(L, HandleShellCommand))
 	L.SetGlobal("ExecCommand", luar.New(L, ExecCommand))
 	L.SetGlobal("RunShellCommand", luar.New(L, RunShellCommand))
 	L.SetGlobal("RunBackgroundShell", luar.New(L, RunBackgroundShell))
-	L.SetGlobal("RunInteractiveShell", luar.New(L, RunInteractiveShell))
-	L.SetGlobal("TermEmuSupported", luar.New(L, TermEmuSupported))
-	L.SetGlobal("RunTermEmulator", luar.New(L, RunTermEmulator))
 	L.SetGlobal("GetLeadingWhitespace", luar.New(L, GetLeadingWhitespace))
 	L.SetGlobal("MakeCompletion", luar.New(L, MakeCompletion))
 	L.SetGlobal("NewBuffer", luar.New(L, NewBufferFromString))
@@ -575,9 +564,6 @@ func main() {
 
 	jobs = make(chan JobFunction, 100)
 	events = make(chan tcell.Event, 100)
-	autosave = make(chan bool)
-	updateterm = make(chan bool)
-	closeterm = make(chan int)
 
 	// Loading all plugins
 	LoadPlugins()
@@ -602,15 +588,6 @@ func main() {
 		}
 	}()
 
-	go func() {
-		for {
-			time.Sleep(autosaveTime * time.Second)
-			if globalSettings["autosave"].(bool) {
-				autosave <- true
-			}
-		}
-	}()
-
 	for {
 		// Display everything (if app is not running)
 		if apprunning == nil {
@@ -625,14 +602,6 @@ func main() {
 			// If a new job has finished while running in the background we should execute the callback
 			f.function(f.output, f.args...)
 			continue
-		case <-autosave:
-			if CurView().Buf.Path != "" {
-				CurView().Save(true)
-			}
-		case <-updateterm:
-			continue
-		case vnum := <-closeterm:
-			tabs[curTab].Views[vnum].CloseTerminal()
 		case event = <-events:
 		}
 
@@ -683,43 +652,9 @@ func main() {
 					didAction = true
 				} else if Mouse.Click && Mouse.Button == 1 {
 					// Mouse 1 click events only
-					if searching {
-						// Happened during a search lock, release Search
-						ExitSearch(CurView())
-					} else if y >= h-2 {
-						// Ignore clicks on satus and message area
+					if y >= h-2 {
+						// Ignore clicks on status and message area
 						didAction = true
-					}
-					if !didAction {
-						num := CurView().Num
-						// Set current view
-						// We loop through each view in the current tab and make sure the current view
-						// is the one being clicked in
-						for _, v := range tabs[curTab].Views {
-							if x >= v.x && x < v.x+v.Width && y >= v.y && y < v.y+v.Height {
-								tabs[curTab].CurView = v.Num
-								if num != v.Num {
-									v.moveMousePosition(x, y)
-								}
-							}
-						}
-					}
-				} else if button == tcell.WheelUp || button == tcell.WheelDown {
-					// Scroll event
-					didAction = true
-					// Some terminal send the event twice others not!
-					// Patch for that, don't know in how many it will work
-					if strings.Count(e.EscSeq(), "[") > 1 {
-						break
-					}
-					var view *View
-					for _, v := range tabs[curTab].Views {
-						if x >= v.x && x < v.x+v.Width && y >= v.y && y < v.y+v.Height {
-							view = tabs[curTab].Views[v.Num]
-						}
-					}
-					if view != nil {
-						view.HandleEvent(e)
 					}
 				} else {
 					if y >= h-1 {

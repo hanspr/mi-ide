@@ -1,5 +1,6 @@
 {
 	"smartindent": false,
+    "comment": "#",
     "autoclose": true,
     "autoindent": true,
     "indentchar": " ",

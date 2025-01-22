@@ -29,15 +29,15 @@ type ToolBar struct {
 // NewToolBar create a new toolbar with predefined icons
 func NewToolBar() *ToolBar {
 	t := new(ToolBar)
-	t.AddIcon('⌹', t.DirView, "")
-	t.AddIcon('↴', t.Save, "")
-	t.AddIcon('◨', t.VSplit, "")
-	t.AddIcon('⬓', t.HSplit, "")
-	t.AddIcon('🔎', t.Find, "")
-	t.AddIcon('℁', t.Replace, "")
-	t.AddIcon('↑', t.CloudUpload, "")
-	t.AddIcon('↓', t.CloudDownload, "")
-	t.AddIcon('❎', t.Quit, "")
+	// t.AddIcon('⌹', t.DirView, "")
+	// t.AddIcon('↴', t.Save, "")
+	// t.AddIcon('◨', t.VSplit, "")
+	// t.AddIcon('⬓', t.HSplit, "")
+	// t.AddIcon('🔎', t.Find, "")
+	// t.AddIcon('℁', t.Replace, "")
+	// t.AddIcon('↑', t.CloudUpload, "")
+	// t.AddIcon('↓', t.CloudDownload, "")
+	// t.AddIcon('❎', t.Quit, "")
 	t.active = true
 	return t
 }
@@ -81,53 +81,53 @@ func (t *ToolBar) PluginCallBack() {
 }
 
 // Save Save icon callback
-func (t *ToolBar) Save() {
-	CurView().Buf.Save()
-}
+// func (t *ToolBar) Save() {
+// 	CurView().Buf.Save()
+// }
 
 // VSplit icon callback
-func (t *ToolBar) VSplit() {
-	CurView().VSplitBinding(true)
-}
+// func (t *ToolBar) VSplit() {
+// 	CurView().VSplitBinding(true)
+// }
 
 // HSplit icon callback
-func (t *ToolBar) HSplit() {
-	CurView().HSplitBinding(true)
-}
+// func (t *ToolBar) HSplit() {
+// 	CurView().HSplitBinding(true)
+// }
 
 // Find icon callback
-func (t *ToolBar) Find() {
-	CurView().FindDialog(true)
-}
+// func (t *ToolBar) Find() {
+// 	CurView().FindDialog(true)
+// }
 
 // Replace icon callback
-func (t *ToolBar) Replace() {
-	CurView().SearchDialog(true)
-}
+// func (t *ToolBar) Replace() {
+// 	CurView().SearchDialog(true)
+// }
 
 // DirView icon callback
-func (t *ToolBar) DirView() {
-	micromenu.DirTreeView()
-}
+// func (t *ToolBar) DirView() {
+// 	micromenu.DirTreeView()
+// }
 
 // Void unimplemented
 func (t *ToolBar) Void() {
 }
 
 // Quit icon callback
-func (t *ToolBar) Quit() {
-	CurView().Quit(true)
-}
+// func (t *ToolBar) Quit() {
+// 	CurView().Quit(true)
+// }
 
 // CloudUpload icon callback
-func (t *ToolBar) CloudUpload() {
-	CurView().UploadToCloud(false)
-}
+// func (t *ToolBar) CloudUpload() {
+// 	CurView().UploadToCloud(false)
+// }
 
 // CloudDownload icon callback
-func (t *ToolBar) CloudDownload() {
-	CurView().DownloadFromCloud(false)
-}
+// func (t *ToolBar) CloudDownload() {
+// 	CurView().DownloadFromCloud(false)
+// }
 
 // ToolbarHandleMouseEvent Handle ToolBarClick
 func (t *ToolBar) ToolbarHandleMouseEvent(x int) {
@@ -218,9 +218,6 @@ func (t *Tab) Resize() {
 
 	for i, v := range t.Views {
 		v.Num = i
-		if v.Type == vtTerm {
-			v.term.Resize(v.Width, v.Height)
-		}
 	}
 	MicroToolBar.FixTabsIconArea()
 }
@@ -436,6 +433,31 @@ func DisplayTabs() {
 			screen.SetContent(x+toffset, 0, tabsRunes[x], nil, tStyle)
 		} else {
 			screen.SetContent(x+toffset, 0, ' ', nil, tabBarStyle)
+		}
+	}
+}
+
+// NewTab opens the given file in a new tab
+func NewTab(args []string) {
+	if len(args) == 0 {
+		CurView().AddTab(true)
+	} else {
+		buf, err := NewBufferFromFile(args[0])
+		if err != nil {
+			messenger.Alert("error", err)
+			return
+		}
+
+		tab := NewTabFromView(NewView(buf))
+		tab.SetNum(len(tabs))
+		tabs = append(tabs, tab)
+		curTab = len(tabs) - 1
+		if len(tabs) == 2 {
+			for _, t := range tabs {
+				for _, v := range t.Views {
+					v.AddTabbarSpace()
+				}
+			}
 		}
 	}
 }

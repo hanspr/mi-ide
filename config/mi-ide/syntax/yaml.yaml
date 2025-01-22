@@ -9,7 +9,7 @@ rules:
     - constant:  "\\b(YES|yes|Y|y|ON|on|TRUE|True|true|NO|no|N|n|OFF|off|FALSE|False|false)\\b"
     - statement: "(:[[:space:]]|\\[|\\]|:[[:space:]]+[|>]|^[[:space:]]*- )"
     - identifier: "[[:space:]][\\*&][A-Za-z0-9]+"
-    - type: "[-.\\w]+:"
+    - type: "^.+?:"
     - statement: ":"
     - special:  "(^---|^\\.\\.\\.|^%YAML|^%TAG)"
 

@@ -1,8 +1,6 @@
 package main
 
 import (
-	"fmt"
-	"io/ioutil"
 	"os"
 	"strings"
 	"unicode"
@@ -21,97 +19,104 @@ var mouseBindingActions = map[string]func(*View, bool, *tcell.EventMouse) bool{
 }
 
 var bindingActions = map[string]func(*View, bool) bool{
-	"CursorUp":               (*View).CursorUp,
-	"CursorDown":             (*View).CursorDown,
-	"CursorPageUp":           (*View).CursorPageUp,
-	"CursorPageDown":         (*View).CursorPageDown,
-	"CursorLeft":             (*View).CursorLeft,
-	"CursorRight":            (*View).CursorRight,
-	"CursorStart":            (*View).CursorStart,
-	"CursorEnd":              (*View).CursorEnd,
-	"SelectToStart":          (*View).SelectToStart,
-	"SelectToEnd":            (*View).SelectToEnd,
-	"SelectUp":               (*View).SelectUp,
-	"SelectDown":             (*View).SelectDown,
-	"SelectLeft":             (*View).SelectLeft,
-	"SelectRight":            (*View).SelectRight,
-	"WordRight":              (*View).WordRight,
-	"WordLeft":               (*View).WordLeft,
-	"SkipCloseBrace":         (*View).SkipCloseBrace,
-	"SelectWordRight":        (*View).SelectWordRight,
-	"SelectWordLeft":         (*View).SelectWordLeft,
-	"DeleteWordRight":        (*View).DeleteWordRight,
-	"DeleteWordLeft":         (*View).DeleteWordLeft,
-	"SelectLine":             (*View).SelectLine,
-	"SelectToStartOfLine":    (*View).SelectToStartOfLine,
-	"SelectToEndOfLine":      (*View).SelectToEndOfLine,
-	"ParagraphPrevious":      (*View).ParagraphPrevious,
-	"ParagraphNext":          (*View).ParagraphNext,
-	"InsertNewline":          (*View).InsertNewline,
-	"InsertSpace":            (*View).InsertSpace,
-	"Backspace":              (*View).Backspace,
-	"Delete":                 (*View).Delete,
-	"InsertTab":              (*View).InsertTab,
-	"Save":                   (*View).Save,
-	"SaveAll":                (*View).SaveAll,
-	"SaveAs":                 (*View).SaveAs,
-	"FindNext":               (*View).FindNext,
-	"FindPrevious":           (*View).FindPrevious,
-	"Center":                 (*View).Center,
-	"Undo":                   (*View).Undo,
-	"Redo":                   (*View).Redo,
-	"Copy":                   (*View).Copy,
-	"CopyToCloud":            (*View).CopyToCloud,
-	"Cut":                    (*View).Cut,
-	"CutToCloud":             (*View).CutToCloud,
-	"CutLine":                (*View).CutLine,
-	"DuplicateLine":          (*View).DuplicateLine,
-	"DeleteLine":             (*View).DeleteLine,
-	"MoveLinesUp":            (*View).MoveLinesUp,
-	"MoveLinesDown":          (*View).MoveLinesDown,
-	"IndentSelection":        (*View).IndentSelection,
-	"OutdentSelection":       (*View).OutdentSelection,
-	"OutdentLine":            (*View).OutdentLine,
-	"Paste":                  (*View).Paste,
-	"PasteCloud":             (*View).PasteCloud,
-	"SelectAll":              (*View).SelectAll,
-	"OpenFile":               (*View).OpenFile,
-	"SelectPageUp":           (*View).SelectPageUp,
-	"SelectPageDown":         (*View).SelectPageDown,
-	"StartOfLine":            (*View).StartOfLine,
-	"EndOfLine":              (*View).EndOfLine,
-	"ToggleCase":             (*View).ToggleCase,
-	"ToggleRuler":            (*View).ToggleRuler,
-	"ToggleSoftWrap":         (*View).ToggleSoftWrap,
-	"JumpLine":               (*View).JumpLine,
-	"ClearStatus":            (*View).ClearStatus,
-	"ShellMode":              (*View).ShellMode,
-	"CommandMode":            (*View).CommandMode,
-	"ToggleOverwriteMode":    (*View).ToggleOverwriteMode,
-	"Escape":                 (*View).Escape,
-	"Quit":                   (*View).SafeQuit,
-	"QuitAll":                (*View).QuitAll,
-	"QuitOthers":             (*View).QuitOthers,
-	"AddTab":                 (*View).AddTab,
-	"SearchDialog":           (*View).SearchDialog,
-	"FindDialog":             (*View).FindDialog,
-	"PreviousTab":            (*View).PreviousTab,
-	"NextTab":                (*View).NextTab,
-	"NextSplit":              (*View).NextSplit,
-	"PreviousSplit":          (*View).PreviousSplit,
-	"Unsplit":                (*View).Unsplit,
-	"VSplit":                 (*View).VSplitBinding,
-	"HSplit":                 (*View).HSplitBinding,
-	"Suspend":                (*View).Suspend,
-	"ScrollUp":               (*View).ScrollUpAction,
-	"ScrollDown":             (*View).ScrollDownAction,
-	"SpawnMultiCursor":       (*View).SpawnMultiCursor,
-	"SpawnMultiCursorSelect": (*View).SpawnMultiCursorSelect,
-	"RemoveMultiCursor":      (*View).RemoveMultiCursor,
-	"RemoveAllMultiCursors":  (*View).RemoveAllMultiCursors,
-	"SkipMultiCursor":        (*View).SkipMultiCursor,
-	"JumpToMatchingBrace":    (*View).JumpToMatchingBrace,
-	"OpenDirView":            (*View).OpenDirView,
+	"AddTab":                  (*View).AddTab,
+	"Backspace":               (*View).Backspace,
+	"BufferSettings":          (*View).BufferSettings,
+	"ClearStatus":             (*View).ClearStatus,
+	"Center":                  (*View).Center,
+	"CursorUp":                (*View).CursorUp,
+	"CommandMode":             (*View).CommandMode,
+	"Copy":                    (*View).Copy,
+	"CopyToCloud":             (*View).CopyToCloud,
+	"Cut":                     (*View).Cut,
+	"CutLine":                 (*View).CutLine,
+	"CursorDown":              (*View).CursorDown,
+	"CursorEnd":               (*View).CursorEnd,
+	"CursorLeft":              (*View).CursorLeft,
+	"CursorRight":             (*View).CursorRight,
+	"CursorPageUp":            (*View).CursorPageUp,
+	"CursorPageDown":          (*View).CursorPageDown,
+	"CursorStart":             (*View).CursorStart,
+	"CutToCloud":              (*View).CutToCloud,
+	"Delete":                  (*View).Delete,
+	"DeleteLine":              (*View).DeleteLine,
+	"DeleteWordRight":         (*View).DeleteWordRight,
+	"DeleteWordLeft":          (*View).DeleteWordLeft,
+	"DuplicateLine":           (*View).DuplicateLine,
+	"EndOfLine":               (*View).EndOfLine,
+	"Escape":                  (*View).Escape,
+	"FindNext":                (*View).FindNext,
+	"FindPrevious":            (*View).FindPrevious,
+	"FindDialog":              (*View).FindDialog,
+	"FindFunctionDeclaration": (*View).FindFunctionDeclaration,
+	"HintFunction":            (*View).HintFunction,
+	"HSplit":                  (*View).HSplitBinding,
+	"IndentSelection":         (*View).IndentSelection,
+	"InsertNewline":           (*View).InsertNewline,
+	"InsertSpace":             (*View).InsertSpace,
+	"InsertTab":               (*View).InsertTab,
+	"JumpLine":                (*View).JumpLine,
+	"JumpToMatchingBrace":     (*View).JumpToMatchingBrace,
+	"MoveLinesUp":             (*View).MoveLinesUp,
+	"MoveLinesDown":           (*View).MoveLinesDown,
+	"MultiComment":            (*View).MultiComment,
+	"NavigationMode":          (*View).NavigationMode,
+	"NextTab":                 (*View).NextTab,
+	"NextSplit":               (*View).NextSplit,
+	"OutdentSelection":        (*View).OutdentSelection,
+	"OutdentLine":             (*View).OutdentLine,
+	"OpenFile":                (*View).OpenFile,
+	"OpenDirView":             (*View).OpenDirView,
+	"Paste":                   (*View).Paste,
+	"PasteCloud":              (*View).PasteCloud,
+	"ParagraphPrevious":       (*View).ParagraphPrevious,
+	"ParagraphNext":           (*View).ParagraphNext,
+	"PreviousTab":             (*View).PreviousTab,
+	"PreviousSplit":           (*View).PreviousSplit,
+	"Quit":                    (*View).SafeQuit,
+	"QuitAll":                 (*View).QuitAll,
+	"QuitOthers":              (*View).QuitOthers,
+	"Redo":                    (*View).Redo,
+	"RemoveMultiCursor":       (*View).RemoveMultiCursor,
+	"RemoveAllMultiCursors":   (*View).RemoveAllMultiCursors,
+	"Save":                    (*View).Save,
+	"SaveAll":                 (*View).SaveAll,
+	"SaveAs":                  (*View).SaveAs,
+	"SearchDialog":            (*View).SearchDialog,
+	"ScrollUp":                (*View).ScrollUpAction,
+	"ScrollDown":              (*View).ScrollDownAction,
+	"SkipCloseBrace":          (*View).SkipCloseBrace,
+	"SkipMultiCursor":         (*View).SkipMultiCursor,
+	"SelectAll":               (*View).SelectAll,
+	"SelectToStart":           (*View).SelectToStart,
+	"SelectToEnd":             (*View).SelectToEnd,
+	"SelectUp":                (*View).SelectUp,
+	"SelectDown":              (*View).SelectDown,
+	"SelectLeft":              (*View).SelectLeft,
+	"SelectRight":             (*View).SelectRight,
+	"SelectWordRight":         (*View).SelectWordRight,
+	"SelectWordLeft":          (*View).SelectWordLeft,
+	"SelectLine":              (*View).SelectLine,
+	"SelectToStartOfLine":     (*View).SelectToStartOfLine,
+	"SelectToEndOfLine":       (*View).SelectToEndOfLine,
+	"SelectPageUp":            (*View).SelectPageUp,
+	"SelectPageDown":          (*View).SelectPageDown,
+	"SnippetAccept":           (*View).SnippetAccept,
+	"SnippetCancel":           (*View).SnippetCancel,
+	"SnippetInsert":           (*View).SnippetInsert,
+	"SnippetNext":             (*View).SnippetNext,
+	"StartOfLine":             (*View).StartOfLine,
+	"SpawnMultiCursor":        (*View).SpawnMultiCursor,
+	"SpawnMultiCursorSelect":  (*View).SpawnMultiCursorSelect,
+	"ToggleCase":              (*View).ToggleCase,
+	"ToggleRuler":             (*View).ToggleRuler,
+	"ToggleSoftWrap":          (*View).ToggleSoftWrap,
+	"ToggleOverwriteMode":     (*View).ToggleOverwriteMode,
+	"Undo":                    (*View).Undo,
+	"Unsplit":                 (*View).Unsplit,
+	"VSplit":                  (*View).VSplitBinding,
+	"WordRight":               (*View).WordRight,
+	"WordLeft":                (*View).WordLeft,
 
 	// This was changed to InsertNewline but I don't want to break backwards compatibility
 	"InsertEnter": (*View).InsertNewline,
@@ -120,6 +125,7 @@ var bindingActions = map[string]func(*View, bool) bool{
 	"UploadToCloud":     (*View).UploadToCloud,
 	"DownloadFromCloud": (*View).DownloadFromCloud,
 	"CloudSettings":     (*View).CloudSettings,
+	"ToggleMouse":       (*View).ToggleMouse,
 }
 
 var bindingMouse = map[string]tcell.ButtonMask{
@@ -261,10 +267,6 @@ var bindingKeys = map[string]tcell.Key{
 	"OldBackspace":   tcell.KeyBackspace,
 	"ShiftPageUp":    tcell.KeyShfPgUp,
 	"ShiftPageDown":  tcell.KeyShfPgDn,
-
-	// I renamed these keys to PageUp and PageDown but I don't want to break someone's keybindings
-	//	"PgUp":   tcell.KeyPgUp,
-	//	"PgDown": tcell.KeyPgDn,
 }
 
 // The Key struct holds the data for a keypress (keycode + modifiers)
@@ -287,7 +289,7 @@ func InitBindings() {
 
 	filename := configDir + "/bindings.json"
 	if _, e := os.Stat(filename); e == nil {
-		input, err := ioutil.ReadFile(filename)
+		input, err := os.ReadFile(filename)
 		if err != nil {
 			TermMessage("Error reading bindings.json file: " + err.Error())
 			return
@@ -419,43 +421,6 @@ func findMouseAction(v string) func(*View, bool, *tcell.EventMouse) bool {
 	return action
 }
 
-// TryBindKey tries to bind a key by writing to configDir/bindings.json
-// This function is unused for now
-func TryBindKey(k, v string) {
-	filename := configDir + "/bindings.json"
-	if _, e := os.Stat(filename); e == nil {
-		input, err := ioutil.ReadFile(filename)
-		if err != nil {
-			TermMessage("Error reading bindings.json file: " + err.Error())
-			return
-		}
-
-		conflict := -1
-		lines := strings.Split(string(input), "\n")
-		for i, l := range lines {
-			parts := strings.Split(l, ":")
-			if len(parts) >= 2 {
-				if strings.Contains(parts[0], k) {
-					conflict = i
-					TermMessage("Warning: Keybinding conflict:", k, " has been overwritten")
-				}
-			}
-		}
-
-		binding := fmt.Sprintf("    \"%s\": \"%s\",", k, v)
-		if conflict == -1 {
-			lines = append([]string{lines[0], binding}, lines[conflict:]...)
-		} else {
-			lines = append(append(lines[:conflict], binding), lines[conflict+1:]...)
-		}
-		txt := strings.Join(lines, "\n")
-		err = ioutil.WriteFile(filename, []byte(txt), 0644)
-		if err != nil {
-			TermMessage("Error")
-		}
-	}
-}
-
 // BindKey takes a key and an action and binds the two together
 func BindKey(k, v string) {
 	key, ok := findKey(k)
@@ -516,81 +481,117 @@ func WriteBindings(values map[string]string) {
 // DefaultBindings returns a map containing mi-ide's default keybindings
 func DefaultBindings() map[string]string {
 	return map[string]string{
-		"Up":            "CursorUp",
-		"Down":          "CursorDown",
-		"Right":         "CursorRight",
-		"Left":          "CursorLeft",
-		"ShiftUp":       "SelectUp",
-		"ShiftDown":     "SelectDown",
-		"ShiftLeft":     "SelectLeft",
-		"ShiftRight":    "SelectRight",
-		"AltLeft":       "WordLeft",
-		"AltRight":      "WordRight",
-		"CtrlSpace":     "SkipCloseBrace",
-		"AltUp":         "MoveLinesUp",
-		"AltDown":       "MoveLinesDown",
-		"AltShiftRight": "SelectWordRight",
-		"AltShiftLeft":  "SelectWordLeft",
-		"ShiftHome":     "SelectToStartOfLine",
-		"ShiftEnd":      "SelectToEndOfLine",
-		"CtrlUp":        "CursorStart",
-		"CtrlDown":      "CursorEnd",
-		"ShiftPageUp":   "SelectPageUp",
-		"ShiftPageDown": "SelectPageDown",
-		"CtrlShiftUp":   "SelectToStart",
-		"CtrlShiftDown": "SelectToEnd",
-		"Alt-{":         "ParagraphPrevious",
-		"Alt-}":         "ParagraphNext",
-		"Enter":         "InsertNewline",
-		"CtrlH":         "Backspace",
-		"Backspace":     "Backspace",
-		"Alt-Backspace": "DeleteWordLeft",
-		"Tab":           "IndentSelection,InsertTab",
+		// Navegación
 		"Backtab":       "OutdentSelection,OutdentLine",
-		"CtrlF":         "FindDialog",
-		"CtrlZ":         "Undo",
-		"CtrlY":         "Redo",
-		"CtrlC":         "Copy",
-		"CtrlX":         "Cut",
-		"CtrlK":         "CutLine",
-		"CtrlD":         "DuplicateLine",
-		"CtrlV":         "Paste",
-		"CtrlA":         "SelectAll",
-		"Home":          "StartOfLine",
 		"End":           "EndOfLine",
+		"Enter":         "InsertNewline",
+		"Home":          "StartOfLine",
 		"PageUp":        "CursorPageUp",
 		"PageDown":      "CursorPageDown",
-		"CtrlG":         "JumpLine",
-		"Alt-#":         "ToggleRuler",
-		"Delete":        "Delete",
-		"CtrlB":         "ShellMode",
-		"CtrlQ":         "QuitAll",
-		"CtrlE":         "CommandMode",
-		"CtrlL":         "Center",
-		"CtrlR":         "SearchDialog",
-		"Insert":        "ToggleOverwriteMode",
+		"ShiftHome":     "SelectToStartOfLine",
+		"ShiftEnd":      "SelectToEndOfLine",
+		"ShiftPageUp":   "SelectPageUp",
+		"ShiftPageDown": "SelectPageDown",
+		"Alt-a":         "PreviousTab",
+		"Alt-d":         "MoveLinesDown",
+		"Alt-e":         "MoveLinesUp",
+		"Alt-f":         "OpenDirView",
+		"Alt-g":         "FindFunctionDeclaration",
+		"Alt-h":         "CursorPageDown",
+		"Alt-i":         "CursorUp",
+		"Alt-j":         "CursorLeft",
+		"Alt-k":         "CursorDown",
+		"Alt-l":         "CursorRight",
+		"Alt-o":         "EndOfLine",
+		"Alt-q":         "PreviousSplit",
+		"Alt-r":         "ToggleOverwriteMode",
+		"Alt-t":         "ToggleCase",
+		"Alt-s":         "NextTab",
+		"Alt-u":         "StartOfLine",
+		"Alt-w":         "NextSplit",
+		"Alt-y":         "CursorPageUp",
+		"Alt-A":         "SnippetAccept",
+		"Alt-D":         "SnippetCancel",
+		"Alt-H":         "SelectPageDown",
+		"Alt-I":         "SelectUp",
+		"Alt-J":         "SelectLeft",
+		"Alt-K":         "SelectDown",
+		"Alt-L":         "SelectRight",
+		"Alt-O":         "SelectToEndOfLine",
+		"Alt-S":         "SnippetInsert",
+		"Alt-U":         "SelectToStartOfLine",
+		"Alt-W":         "SnippetNext",
+		"Alt-Y":         "SelectPageUp",
+		"Alt-Backspace": "DeleteWordLeft",
+		"Alt-{":         "CursorStart",
+		"Alt-}":         "CursorEnd",
+		"Alt-[":         "SelectToStart",
+		"Alt-]":         "SelectToEnd",
+		"Alt-:":         "VSplit",
+		"Alt-_":         "HSplit",
+
+		// Multicursor
+		"Alt-n": "SpawnMultiCursor",
+		"Alt-m": "SpawnMultiCursorSelect",
+		"Alt-,": "RemoveMultiCursor",
+		"Alt-.": "RemoveAllMultiCursors",
+		"Alt-;": "SkipMultiCursor",
+
+		// mi-ide services
+		"Alt-x": "CutToCloud",
+		"Alt-c": "CopyToCloud",
+		"Alt-v": "PasteCloud",
+		"Alt-z": "UploadToCloud",
+		"Alt-b": "DownloadFromCloud",
+		"Alt-+": "CloudSettings",
+
+		// Control Keys
+		"CtrlA": "SelectAll",
+		// "CtrlB":          "", // reserved for tmux
+		"CtrlC":          "Copy",
+		"CtrlD":          "DuplicateLine",
+		"CtrlE":          "CommandMode",
+		"CtrlF":          "FindDialog",
+		"CtrlG":          "JumpLine",
+		"CtrlH":          "HintFunction",
+		"Backspace":      "Backspace",
+		"CtrlJ":          "DeleteLine",
+		"CtrlK":          "SelectLine",
+		"CtrlL":          "Center",
+		"CtrlN":          "NavigationMode",
+		"CtrlO":          "OpenFile",
+		"CtrlP":          "ToggleMouse",
+		"CtrlQ":          "QuitAll",
+		"CtrlR":          "SearchDialog",
+		"CtrlS":          "Save",
+		"CtrlT":          "AddTab",
+		"CtrlU":          "Delete",
+		"Delete":         "Delete",
+		"CtrlV":          "Paste",
+		"CtrlW":          "Quit",
+		"CtrlX":          "Cut",
+		"CtrlY":          "Redo",
+		"CtrlZ":          "Undo",
+		"CtrlSpace":      "SkipCloseBrace",
+		"CtrlUnderscore": "MultiComment",
 
 		// mi-ide Defaults
 		"F1":        "OpenFile",
-		"F13":       "OpenDirView",
+		"F13":       "OpenDirView", // Shift F1
 		"F2":        "Save",
+		"F14":       "SaveAll", // Shift F2
 		"F3":        "SaveAs",
 		"F4":        "Quit",
-		"F16":       "QuitOthers",
-		"F5":        "PreviousSplit",
-		"F6":        "NextSplit",
-		"F7":        "PreviousTab",
-		"F8":        "NextTab",
+		"F16":       "QuitOthers", // Shift F4
+		"Alt-*":     "BufferSettings",
 		"Alt-!":     "ToggleSoftWrap",
-		"Esc":       "Escape",
+		"Alt-#":     "ToggleRuler",
+		"Alt-<":     "ClearStatus",
 		"Alt-?":     "command-edit:help ",
-		"Alt-t":     "AddTab",
-		"Alt-k":     "DeleteLine",
-		"Alt-V":     "VSplit",
-		"Alt-H":     "HSplit",
-		"Alt-l":     "ToggleCase",
 		"Alt-Enter": "EndOfLine,InsertNewline",
-		"CtrlJ":     "EndOfLine,InsertNewline",
+		"Esc":       "Escape",
+		"Insert":    "ToggleOverwriteMode",
+		"Tab":       "IndentSelection,InsertTab",
 
 		// Mouse bindings
 		"MouseWheelUp":   "ScrollUp",
@@ -598,18 +599,24 @@ func DefaultBindings() map[string]string {
 		"MouseLeft":      "MousePress",
 		"Ctrl-MouseLeft": "MouseMultiCursor",
 
-		"Alt-n": "SpawnMultiCursor",
-		"Alt-m": "SpawnMultiCursorSelect",
-		"Alt-,": "RemoveMultiCursor",
-		"Alt-.": "RemoveAllMultiCursors",
-		"Alt-;": "SkipMultiCursor",
-
-		// Micro-ide services
-		"Alt-c": "CopyToCloud",
-		"Alt-x": "CutToCloud",
-		"Alt-v": "PasteCloud",
-		"Alt-T": "UploadToCloud",
-		"Alt-D": "DownloadFromCloud",
-		"Alt-+": "CloudSettings",
+		// Arrows
+		"Up":            "CursorUp",
+		"Down":          "CursorDown",
+		"Right":         "CursorRight",
+		"Left":          "CursorLeft",
+		"CtrlUp":        "CursorStart",
+		"CtrlDown":      "CursorEnd",
+		"ShiftUp":       "SelectUp",
+		"ShiftDown":     "SelectDown",
+		"ShiftLeft":     "SelectLeft",
+		"ShiftRight":    "SelectRight",
+		"AltLeft":       "WordLeft",
+		"AltRight":      "WordRight",
+		"AltUp":         "MoveLinesUp",
+		"AltDown":       "MoveLinesDown",
+		"AltShiftRight": "SelectWordRight",
+		"AltShiftLeft":  "SelectWordLeft",
+		"CtrlShiftUp":   "SelectToStart",
+		"CtrlShiftDown": "SelectToEnd",
 	}
 }

@@ -1,0 +1,26 @@
+filetype: git-status
+
+detect:
+    filename: "^(.*[\\/])?(COMMIT_EDITMSG|TAG_EDITMSG)$"
+
+rules:
+    - constant.number: "\".*?\""
+    - default:
+        start: " (?:track|sin seg)\\w+:$"
+        end: "^$"
+        rules:
+            - constant.number: "\".*?\""
+            - symbol.tag: "^\\s+\\w+\\.\\w*"
+    - default:
+        start: " commit:$"
+        end: "^\\w"
+        rules:
+            - constant.number: "\".*?\""
+            - statement: "^\\s+\\w+:\\s+\\w+.*"
+    - default:
+        start: " (?:staged|conf\\w+):$"
+        end: "^\\w+"
+        rules:
+            - constant.number: "\".*?\""
+            - constant.string: "^\\s+\\w+:\\s+\\w+.*"
+

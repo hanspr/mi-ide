@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"os"
 	"strconv"
+	"strings"
 	"time"
 	"unicode"
 
@@ -125,10 +126,13 @@ func (m *Messenger) Alert(kind string, msg ...interface{}) {
 		// if there is no active prompt then style and display the message as normal
 		m.message = buf.String()
 		if kind == "error" {
-			m.style = defStyle.Foreground(tcell.ColorBlack).Background(tcell.ColorMaroon)
+			// m.style = defStyle.Foreground(tcell.ColorWhite).Background(tcell.Color196)
+			m.style = defStyle.Foreground(tcell.Color196).Bold(true)
 			if _, ok := colorscheme["error-message"]; ok {
 				m.style = colorscheme["error-message"]
 			}
+		} else if kind == "warning" {
+			m.style = defStyle.Foreground(tcell.ColorYellow).Normal()
 		} else if kind == "success" {
 			m.style = defStyle.Foreground(tcell.ColorGreen).Normal()
 		} else if kind == "info" {
@@ -140,14 +144,16 @@ func (m *Messenger) Alert(kind string, msg ...interface{}) {
 			}
 		}
 		m.hasMessage = true
+		go func() {
+			time.Sleep(8 * time.Second)
+			if !m.hasPrompt {
+				m.Reset()
+				m.Clear()
+			}
+		}()
 	}
 	// add the message to the log regardless of active prompts
 	m.AddLog(buf.String())
-	go func() {
-		time.Sleep(8 * time.Second)
-		m.Reset()
-		m.Clear()
-	}()
 }
 
 // Success : compatibility for plugins
@@ -158,6 +164,11 @@ func (m *Messenger) Success(msg ...interface{}) {
 // Error : compatibility for plugins
 func (m *Messenger) Error(msg ...interface{}) {
 	m.Alert("error", msg...)
+}
+
+// Warning : compatibility for plugins
+func (m *Messenger) Warning(msg ...interface{}) {
+	m.Alert("warning", msg...)
 }
 
 // Information : compatibility for plugins
@@ -358,6 +369,9 @@ func (m *Messenger) Prompt(prompt, placeholder, historyType string, completionTy
 
 				if len(suggestions) != 0 && chosen != "" {
 					m.response = shellwords.Join(append(args[:len(args)-1], chosen)...)
+					if len(suggestions) == 1 {
+						m.response = m.response + " "
+					}
 					m.cursorx = Count(m.response)
 				}
 			}
@@ -443,11 +457,44 @@ func (m *Messenger) Paste() {
 func (m *Messenger) HandleEvent(event tcell.Event, history []string) {
 	switch e := event.(type) {
 	case *tcell.EventKey:
+		// Check cursor bindings
+		for key := range bindings {
+			if e.Key() == key.keyCode {
+				if e.Key() == tcell.KeyRune {
+					if e.Rune() != key.r {
+						continue
+					}
+				}
+				if e.Modifiers() == key.modifiers && key.modifiers == 4 {
+					xKey := "Alt-" + string(e.Rune())
+					// messenger.AddLog(xKey, "=", bindingsStr[xKey])
+					if strings.Contains(bindingsStr[xKey], "Cursor") || strings.Contains(bindingsStr[xKey], "OfLine") {
+						switch bindingsStr[xKey] {
+						case "CursorLeft":
+							m.CursorLeft()
+							return
+						case "CursorRight":
+							m.CursorRight()
+							return
+						case "StartOfLine":
+							m.Start()
+							return
+						case "EndOfLine":
+							m.End()
+							return
+						case "CursorUp":
+							m.UpHistory(history)
+							return
+						case "CursorDown":
+							m.DownHistory(history)
+							return
+						}
+					}
+					return
+				}
+			}
+		}
 		switch e.Key() {
-		case tcell.KeyCtrlA:
-			m.Start()
-		case tcell.KeyCtrlE:
-			m.End()
 		case tcell.KeyUp:
 			m.UpHistory(history)
 		case tcell.KeyDown:
@@ -470,11 +517,14 @@ func (m *Messenger) HandleEvent(event tcell.Event, history []string) {
 			}
 		case tcell.KeyBackspace2, tcell.KeyBackspace:
 			m.Backspace()
-		case tcell.KeyDelete:
+		case tcell.KeyDelete, tcell.KeyCtrlU:
 			if m.cursorx < Count(m.response) {
 				m.cursorx++
 				m.Backspace()
 			}
+		case tcell.KeyCtrlJ:
+			m.response = ""
+			m.cursorx = m.offsetx
 		case tcell.KeyCtrlV:
 			m.Paste()
 		case tcell.KeyRune:
@@ -538,7 +588,23 @@ func (m *Messenger) DisplaySuggestions(suggestions []string) {
 	}
 
 	x := 0
+	// Add groups to suggestions with group:command
+	prev := ""
+	isGroup := false
+	if strings.Contains(suggestions[0], ":") {
+		isGroup = true
+	}
 	for _, suggestion := range suggestions {
+		if !isGroup {
+			parts := strings.SplitN(suggestion, ":", 2)
+			if len(parts) > 1 {
+				if prev == parts[0] {
+					continue
+				}
+				suggestion = parts[0] + "‥"
+			}
+			prev = parts[0]
+		}
 		for _, c := range suggestion {
 			screen.SetContent(x, y, c, nil, statusLineStyle)
 			x++
