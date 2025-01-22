@@ -320,10 +320,19 @@ func FindFileWith(r *regexp.Regexp, path, filetype, ext string, depth int, hint 
 					data := ""
 					for i := 0; i < 4; i++ {
 						if comment.MatchString(prevLines[i]) {
-							data = data + TrimWhiteSpaceBefore(prevLines[i]) + "\n"
+							data = data + prevLines[i] + "\n"
 						}
 					}
-					data = data + prevLines[4]
+					data = data + prevLines[4] + "\n"
+					next4 := 0
+					for scanner.Scan() {
+						if next4 > 5 {
+							break
+						}
+						l := scanner.Text()
+						data = data + l + "\n"
+						next4++
+					}
 					return data, 0, true
 				}
 				i++
