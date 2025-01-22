@@ -2836,18 +2836,27 @@ func (v *View) SearchFunction(hint bool) (bool, string, string, int) {
 		}
 		comment := regexp.MustCompile(`^\s*(?:#|//|(?:<!)?--|/\*)`)
 		data := ""
-		for l := line - 5; l < line && l > 0; l++ {
-			d := v.Buf.Line(l)
-			if comment.MatchString(d) {
-				data = data + TrimWhiteSpaceBefore(d) + "\n"
+		for l := line - 5; l < line+4; l++ {
+			if l < 0 {
+				continue
+			} else if l > v.Buf.End().Y {
+				break
 			}
+			d := v.Buf.Line(l)
+			if l < line {
+				if comment.MatchString(d) {
+					data = data + d + "\n"
+				}
+				continue
+			}
+			data = data + d + "\n"
 		}
-		data = data + TrimWhiteSpaceBefore(v.Buf.Line(line))
 		return true, data, word, line
 	}
 	// search in files in the current directory
 	messenger.Message("Searching in file system, wait ....")
 	data, line, ok := FindFileWith(r, filepath.Dir(v.Buf.Path), v.Buf.FileType(), path.Ext(v.Buf.fname), 2, hint)
+	messenger.Message("")
 	if ok {
 		return true, data, word, line
 	}
