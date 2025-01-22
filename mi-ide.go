@@ -453,11 +453,6 @@ func main() {
 	// Start the screen
 	InitScreen()
 
-	// Init local project settings
-	if _, err := os.Stat(WorkingDir + "/.miide/"); os.IsNotExist(err) {
-		os.Mkdir(WorkingDir+"/.miide/", os.ModePerm)
-	}
-
 	// This is just so if we have an error, we can exit cleanly and not completely
 	// mess up the terminal being worked in
 	// In other words we need to shut down tcell before the program crashes
@@ -482,11 +477,6 @@ func main() {
 		Finish(1)
 	}
 	for _, buf := range buffers {
-		// Validate filepath base dir to see if there is a configuraton directory
-		pwd := filepath.Dir(buf.AbsPath)
-		if _, err := os.Stat(pwd + "/.miide/"); os.IsNotExist(err) {
-			os.Mkdir(pwd+"/.miide/", os.ModePerm)
-		}
 		// For each buffer we create a new tab and place the view in that tab
 		tab := NewTabFromView(NewView(buf))
 		tab.SetNum(len(tabs))
