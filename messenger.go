@@ -271,10 +271,7 @@ const (
 	FileCompletion
 	CommandCompletion
 	HelpCompletion
-	OptionCompletion
-	PluginCmdCompletion
-	PluginNameCompletion
-	OptionValueCompletion
+	GroupCompletion
 )
 
 // Prompt sends the user a message and waits for a response to be typed in
@@ -345,20 +342,12 @@ func (m *Messenger) Prompt(prompt, placeholder, historyType string, completionTy
 				var chosen string
 				if completionType == FileCompletion {
 					chosen, suggestions = FileComplete(currentArg)
+				} else if completionType == GroupCompletion {
+					chosen, suggestions = GroupComplete(m.response, currentArg)
 				} else if completionType == CommandCompletion {
 					chosen, suggestions = CommandComplete(currentArg)
 				} else if completionType == HelpCompletion {
 					chosen, suggestions = HelpComplete(currentArg)
-				} else if completionType == OptionCompletion {
-					chosen, suggestions = OptionComplete(currentArg)
-				} else if completionType == OptionValueCompletion {
-					if currentArgNum-1 > 0 {
-						chosen, suggestions = OptionValueComplete(args[currentArgNum-1], currentArg)
-					}
-				} else if completionType == PluginCmdCompletion {
-					chosen, suggestions = PluginCmdComplete(currentArg)
-				} else if completionType == PluginNameCompletion {
-					chosen, suggestions = PluginNameComplete(currentArg)
 				} else if completionType < NoCompletion {
 					chosen, suggestions = PluginComplete(completionType, currentArg)
 				}
@@ -390,7 +379,6 @@ func (m *Messenger) Prompt(prompt, placeholder, historyType string, completionTy
 		}
 		screen.Show()
 	}
-
 	m.Clear()
 	m.Reset()
 	return response, canceled
@@ -589,22 +577,8 @@ func (m *Messenger) DisplaySuggestions(suggestions []string) {
 
 	x := 0
 	// Add groups to suggestions with group:command
-	prev := ""
-	isGroup := false
-	if strings.Contains(suggestions[0], ":") {
-		isGroup = true
-	}
 	for _, suggestion := range suggestions {
-		if !isGroup {
-			parts := strings.SplitN(suggestion, ":", 2)
-			if len(parts) > 1 {
-				if prev == parts[0] {
-					continue
-				}
-				suggestion = parts[0] + "‥"
-			}
-			prev = parts[0]
-		}
+		suggestion = strings.Replace(suggestion, ":", "…", 1)
 		for _, c := range suggestion {
 			screen.SetContent(x, y, c, nil, statusLineStyle)
 			x++

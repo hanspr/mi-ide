@@ -32,32 +32,19 @@ var (
 
 func init() {
 	commandActions = map[string]func([]string){
-		"Bind":          Bind,
-		"Cd":            Cd,
-		"CloudSettings": CloudSettings,
-		"EditSettings":  EditSettings,
-		"EditSnippets":  EditSnippets,
-		"GitDiff":       GitDiff,
-		"GitStatus":     GitStatus,
-		"Help":          Help,
-		"HSplit":        HSplit,
-		"KeyBindings":   KeyBindings,
-		"MemUsage":      MemUsage,
-		"Open":          Open,
-		"PluginManager": PluginManager,
-		"Pwd":           Pwd,
-		"Raw":           Raw,
-		"Reload":        Reload,
-		"Set":           Set,
-		"SetLocal":      SetLocal,
-		"Show":          Show,
-		"ShowKey":       ShowKey,
-		"Save":          Save,
-		"SaveAs":        SaveAs,
-		"Settings":      Settings,
-		"ShowSnippets":  ShowSnippets,
-		"ToggleLog":     ToggleLog,
-		"VSplit":        VSplit,
+		"Cd":        Cd,
+		"Help":      Help,
+		"MemUsage":  MemUsage,
+		"Open":      Open,
+		"Pwd":       Pwd,
+		"Raw":       Raw,
+		"Reload":    Reload,
+		"SaveAs":    SaveAs,
+		"ToggleLog": ToggleLog,
+		"GroupEdit": GroupEdit,
+		"GroupGit":  GroupGit,
+		"GroupMenu": GroupMenu,
+		"GroupShow": GroupShow,
 	}
 }
 
@@ -75,22 +62,10 @@ func DefaultCommands() map[string]StrCommand {
 		"reload":   {"Reload", []Completion{NoCompletion}},
 		"saveas":   {"SaveAs", []Completion{NoCompletion}},
 		// Groups
-		"edit:settings":      {"EditSettings", []Completion{NoCompletion}},
-		"edit:snippets":      {"EditSnippets", []Completion{NoCompletion}},
-		"git:status":         {"GitStatus", []Completion{NoCompletion}},
-		"git:diff":           {"GitDiff", []Completion{NoCompletion}},
-		"keys:bind":          {"Bind", []Completion{NoCompletion}},
-		"keys:showkey":       {"ShowKey", []Completion{NoCompletion}},
-		"menu:settings":      {"Settings", []Completion{NoCompletion}},
-		"menu:cloudsettings": {"CloudSettings", []Completion{NoCompletion}},
-		"menu:plugins":       {"PluginManager", []Completion{NoCompletion}},
-		"menu:keys":          {"KeyBindings", []Completion{NoCompletion}},
-		"option:set":         {"Set", []Completion{OptionCompletion, OptionValueCompletion}},
-		"option:setlocal":    {"SetLocal", []Completion{OptionCompletion, OptionValueCompletion}},
-		"split:vertical":     {"VSplit", []Completion{FileCompletion, NoCompletion}},
-		"split:horizontal":   {"HSplit", []Completion{FileCompletion, NoCompletion}},
-		"show:option":        {"Show", []Completion{OptionCompletion, NoCompletion}},
-		"show:snippets":      {"ShowSnippets", []Completion{OptionCompletion, NoCompletion}},
+		"edit:": {"GroupEdit", []Completion{GroupCompletion, NoCompletion}},
+		"git:":  {"GroupGit", []Completion{GroupCompletion, NoCompletion}},
+		"menu:": {"GroupMenu", []Completion{GroupCompletion, NoCompletion}},
+		"show:": {"GroupShow", []Completion{GroupCompletion, NoCompletion}},
 	}
 }
 
@@ -169,6 +144,45 @@ func Raw(args []string) {
 				v.AddTabbarSpace()
 			}
 		}
+	}
+}
+
+// Groups
+
+func GroupEdit(args []string) {
+	if args[0] == "settings" {
+		EditSettings()
+	} else if args[0] == "snippets" {
+		EditSnippets()
+	}
+}
+
+func GroupMenu(args []string) {
+	if args[0] == "cloudsettings" {
+		CloudSettings()
+	} else if args[0] == "keybindings" {
+		KeyBindings()
+	} else if args[0] == "plugins" {
+		PluginManager()
+	} else if args[0] == "settings" {
+		Settings()
+	}
+}
+
+func GroupShow(args []string) {
+	if args[0] == "snippets" {
+		ShowSnippets()
+	}
+}
+
+func GroupGit(args []string) {
+	messenger.AddLog("GroupGit:", args[0], ":")
+	if args[0] == "diff" {
+		GitDiff("")
+	} else if args[0] == "diffstaged" {
+		GitDiff("--staged")
+	} else if args[0] == "status" {
+		GitStatus()
 	}
 }
 
@@ -283,111 +297,10 @@ func Help(args []string) {
 	}
 }
 
-// VSplit opens a vertical split with file given in the first argument
-// If no file is given, it opens an empty buffer in a new split
-func VSplit(args []string) {
-	if len(args) == 0 {
-		CurView().VSplit(NewBufferFromString("", ""))
-	} else {
-		messenger.Message(args[0])
-		buf, err := NewBufferFromFile(args[0])
-		if err != nil {
-			messenger.Alert("error", err)
-			return
-		}
-		CurView().VSplit(buf)
-	}
-}
-
-// HSplit opens a horizontal split with file given in the first argument
-// If no file is given, it opens an empty buffer in a new split
-func HSplit(args []string) {
-	if len(args) == 0 {
-		CurView().HSplit(NewBufferFromString("", ""))
-	} else {
-		messenger.Message(args[0])
-		buf, err := NewBufferFromFile(args[0])
-		if err != nil {
-			messenger.Alert("error", err)
-			return
-		}
-		CurView().HSplit(buf)
-	}
-}
-
-// Set sets an option
-func Set(args []string) {
-	if len(args) < 2 {
-		messenger.Alert("error", Language.Translate("Not enough arguments"))
-		return
-	}
-
-	option := args[0]
-	value := args[1]
-
-	SetOptionAndSettings(option, value)
-}
-
-// SetLocal sets an option local to the buffer
-func SetLocal(args []string) {
-	if len(args) < 2 {
-		messenger.Alert("error", Language.Translate("Not enough arguments"))
-		return
-	}
-
-	option := args[0]
-	value := args[1]
-
-	err := SetLocalOption(option, value, CurView())
-	if err != nil {
-		messenger.Alert("error", err.Error())
-	}
-}
-
-// Show shows the value of the given option
-func Show(args []string) {
-	if len(args) < 1 {
-		messenger.Alert("error", Language.Translate("Please provide an option to show"))
-		return
-	}
-
-	option := GetOption(args[0])
-
-	if option == nil {
-		messenger.Alert("error", args[0], " "+Language.Translate("is not a valid option"))
-		return
-	}
-
-	messenger.Message(option)
-}
-
-// ShowKey displays the action that a key is bound to
-func ShowKey(args []string) {
-	if len(args) < 1 {
-		messenger.Alert("error", Language.Translate("Please provide a key to show"))
-		return
-	}
-
-	if action, ok := bindingsStr[args[0]]; ok {
-		messenger.Message(action)
-	} else {
-		messenger.Message(args[0], " "+Language.Translate("has no binding"))
-	}
-}
-
-// Bind creates a new keybinding
-func Bind(args []string) {
-	if len(args) < 2 {
-		messenger.Alert("error", Language.Translate("Not enough arguments"))
-		return
-	}
-	BindKey(args[0], args[1])
-}
-
 // : Snippets
 
 // Show loaded snippets
-func ShowSnippets(args []string) {
+func ShowSnippets() {
 	ftype := CurView().Buf.FileType()
 	snips := ""
 	loadSnippets(ftype)
@@ -402,12 +315,12 @@ func ShowSnippets(args []string) {
 	CurView().OpenHelperView("v", "git-status", snips)
 }
 
-func EditSettings(args []string) {
+func EditSettings() {
 	CurView().AddTab(false)
 	CurView().Open(configDir + "/settings.json")
 }
 
-func EditSnippets(args []string) {
+func EditSnippets() {
 	ftype := CurView().Buf.FileType()
 	CurView().AddTab(false)
 	CurView().Open(configDir + "/settings/snippets/" + ftype + ".snippets")
@@ -416,7 +329,7 @@ func EditSnippets(args []string) {
 // : Git
 
 // Load git status into a window
-func GitStatus(args []string) {
+func GitStatus() {
 	if !git.enabled {
 		git.CheckGit()
 		return
@@ -429,12 +342,19 @@ func GitStatus(args []string) {
 }
 
 // Load git status into a window
-func GitDiff(args []string) {
+func GitDiff(arg string) {
+	messenger.AddLog("Execute Git ", arg)
 	if !git.enabled {
 		return
 	}
-	diff, err := RunShellCommand("git diff -w")
+	cmd := "git diff"
+	if arg != "" {
+		cmd = cmd + " " + arg
+	}
+	cmd = cmd + " -w"
+	diff, err := RunShellCommand(cmd)
 	if err != nil {
+		messenger.AddLog(err.Error())
 		return
 	}
 	CurView().AddTab(false)
@@ -482,18 +402,18 @@ func ExpandString(s string) string {
 
 // Menu access
 
-func Settings(args []string) {
+func Settings() {
 	micromenu.GlobalConfigDialog()
 }
 
-func CloudSettings(args []string) {
+func CloudSettings() {
 	micromenu.MiCloudServices()
 }
 
-func PluginManager(args []string) {
+func PluginManager() {
 	micromenu.PluginManagerDialog()
 }
 
-func KeyBindings(args []string) {
+func KeyBindings() {
 	micromenu.KeyBindingsDialog()
 }

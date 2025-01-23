@@ -79,6 +79,35 @@ func CommandComplete(input string) (string, []string) {
 	return chosen, suggestions
 }
 
+func GroupComplete(group, input string) (string, []string) {
+	var suggestions []string
+	var options []string
+	var chosen = ""
+	i := strings.Index(group, ":")
+	group = group[0:i]
+	messenger.AddLog(group, ":", input)
+	if group == "edit" {
+		options = []string{"settings", "snippets"}
+	} else if group == "menu" {
+		options = []string{"cloudsettings", "keybindings", "plugins", "settings"}
+	} else if group == "git" {
+		options = []string{"diff", "diffstaged", "status"}
+	} else if group == "show" {
+		options = []string{"snippets"}
+	}
+	messenger.AddLog("options:", options)
+	for _, cmd := range options {
+		if strings.HasPrefix(cmd, input) {
+			suggestions = append(suggestions, cmd)
+		}
+	}
+	messenger.AddLog("suggestions:", suggestions)
+	if len(suggestions) == 1 {
+		chosen = suggestions[0]
+	}
+	return chosen, suggestions
+}
+
 // HelpComplete autocompletes help topics
 func HelpComplete(input string) (string, []string) {
 	var suggestions []string
@@ -87,113 +116,6 @@ func HelpComplete(input string) (string, []string) {
 		topic := file.Name()
 		if strings.HasPrefix(topic, input) {
 			suggestions = append(suggestions, topic)
-		}
-	}
-
-	var chosen string
-	if len(suggestions) == 1 {
-		chosen = suggestions[0]
-	}
-	return chosen, suggestions
-}
-
-// ColorschemeComplete tab-completes names of colorschemes.
-func ColorschemeComplete(input string) (string, []string) {
-	var suggestions []string
-	files := ListRuntimeFiles(RTColorscheme)
-
-	for _, f := range files {
-		if strings.HasPrefix(f.Name(), input) {
-			suggestions = append(suggestions, f.Name())
-		}
-	}
-
-	var chosen string
-	if len(suggestions) == 1 {
-		chosen = suggestions[0]
-	}
-
-	return chosen, suggestions
-}
-
-func contains(s []string, e string) bool {
-	for _, a := range s {
-		if a == e {
-			return true
-		}
-	}
-	return false
-}
-
-// OptionComplete autocompletes options
-func OptionComplete(input string) (string, []string) {
-	var suggestions []string
-	localSettings := DefaultLocalSettings()
-	for option := range globalSettings {
-		if strings.HasPrefix(option, input) {
-			suggestions = append(suggestions, option)
-		}
-	}
-	for option := range localSettings {
-		if strings.HasPrefix(option, input) && !contains(suggestions, option) {
-			suggestions = append(suggestions, option)
-		}
-	}
-
-	var chosen string
-	if len(suggestions) == 1 {
-		chosen = suggestions[0]
-	}
-	return chosen, suggestions
-}
-
-// OptionValueComplete completes values for various options
-func OptionValueComplete(inputOpt, input string) (string, []string) {
-	inputOpt = strings.TrimSpace(inputOpt)
-	var suggestions []string
-	localSettings := DefaultLocalSettings()
-	var optionVal interface{}
-	for k, option := range globalSettings {
-		if k == inputOpt {
-			optionVal = option
-		}
-	}
-	for k, option := range localSettings {
-		if k == inputOpt {
-			optionVal = option
-		}
-	}
-
-	switch optionVal.(type) {
-	case bool:
-		if strings.HasPrefix("on", input) {
-			suggestions = append(suggestions, "on")
-		} else if strings.HasPrefix("true", input) {
-			suggestions = append(suggestions, "true")
-		}
-		if strings.HasPrefix("off", input) {
-			suggestions = append(suggestions, "off")
-		} else if strings.HasPrefix("false", input) {
-			suggestions = append(suggestions, "false")
-		}
-	case string:
-		switch inputOpt {
-		case "colorscheme":
-			_, suggestions = ColorschemeComplete(input)
-		case "fileformat":
-			if strings.HasPrefix("unix", input) {
-				suggestions = append(suggestions, "unix")
-			}
-			if strings.HasPrefix("dos", input) {
-				suggestions = append(suggestions, "dos")
-			}
-		case "sucmd":
-			if strings.HasPrefix("sudo", input) {
-				suggestions = append(suggestions, "sudo")
-			}
-			if strings.HasPrefix("doas", input) {
-				suggestions = append(suggestions, "doas")
-			}
 		}
 	}
 
