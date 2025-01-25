@@ -2300,11 +2300,10 @@ func (v *View) SpawnMultiCursor(usePlugin bool) bool {
 			v.Cursor = c
 			Search(regexp.QuoteMeta(sel), v, true)
 
-			for _, cur := range v.Buf.cursors {
-				if c.Loc == cur.Loc {
-					return false
-				}
+			if v.Cursor.CurSelection == [2]Loc{c.Loc, v.Buf.cursors[0].Loc} {
+				return false
 			}
+			messenger.AddLog("add cursor")
 			v.Buf.cursors = append(v.Buf.cursors, c)
 			v.Buf.UpdateCursors()
 			v.Relocate()
