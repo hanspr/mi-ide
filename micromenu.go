@@ -1467,7 +1467,7 @@ func (m *microMenu) SetLocalSettings(name, value, event, when string, x, y int) 
 			fname = dir + "/.miide/" + b.fname + ".json"
 		} else if values["savefor"] == "project" {
 			// Detect working dir
-			dir = GetProjectDir(dir)
+			dir = GetProjectDir(dir, false)
 			fname = dir + "/.miide/settings.json"
 		}
 		// Init dir if does not exists

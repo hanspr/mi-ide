@@ -911,12 +911,8 @@ func RunBackgroundShell(input string) {
 
 // GetProjectDir: tries to find the correct path to the project
 // with respecto to the file directory path
-func GetProjectDir(fdir string) string {
+func GetProjectDir(fdir string, create bool) string {
 	wkdir := WorkingDir
-	// never usr HomeDir a wkdir
-	if wkdir == HomeDir {
-		return fdir
-	}
 	// Check if we already have a hint about the working dir
 	if _, err := os.Stat(wkdir + "/.miide"); err == nil {
 		return wkdir
@@ -924,9 +920,18 @@ func GetProjectDir(fdir string) string {
 	if _, err := os.Stat(fdir + "/.miide"); err == nil {
 		return fdir
 	}
+	// never use HomeDir
+	if WorkingDir == HomeDir {
+		wkdir = fdir
+	}
 	// search upwards for project ./miide?
 	if wkdir != fdir && strings.Contains(fdir, wkdir) {
-		return wkdir
+		fdir = wkdir
+	}
+	if create {
+		if _, err := os.Stat(fdir + "/.miide"); os.IsNotExist(err) {
+			os.Mkdir(fdir+"/.miide", os.ModePerm)
+		}
 	}
 	return fdir
 }

@@ -39,7 +39,7 @@ type codecomplete struct {
 func AddCodeComplete(buf *Buffer) *codecomplete {
 	ftype := buf.FileType()
 	if p, ok := cc[ftype]; ok {
-		dir := GetProjectDir(filepath.Dir(buf.AbsPath))
+		dir := GetProjectDir(filepath.Dir(buf.AbsPath), true)
 		if dir == p.workdir {
 			// Same language , same project, share words
 			return p
@@ -102,7 +102,7 @@ func (cc *codecomplete) LoadWords() {
 	if cc.ready {
 		return
 	}
-	dir := GetProjectDir(filepath.Dir(cc.b.AbsPath))
+	dir := GetProjectDir(filepath.Dir(cc.b.AbsPath), true)
 	cc.workdir = dir
 	if _, err := os.Stat(dir); os.IsNotExist(err) {
 		os.Mkdir(dir+"/.miide", os.ModePerm)
