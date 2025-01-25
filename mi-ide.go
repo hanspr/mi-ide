@@ -233,6 +233,7 @@ func InitConfigDir() {
 			os.Exit(0)
 		}
 	}
+	codeCompleteInit()
 	Clip = clipboard.New()
 	Clip.SetLocalPath(configDir + "/buffers/clips.txt")
 }
