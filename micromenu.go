@@ -1467,13 +1467,13 @@ func (m *microMenu) SetLocalSettings(name, value, event, when string, x, y int) 
 			fname = dir + "/.miide/" + b.fname + ".json"
 		} else if values["savefor"] == "project" {
 			// Detect working dir
-			dir = GetProjectDir(dir, WorkingDir)
+			dir = GetProjectDir(dir)
 			fname = dir + "/.miide/settings.json"
 		}
 		// Init dir if does not exists
 		if values["savefor"] != "lang" {
-			if _, err := os.Stat(dir + "/.miide/"); os.IsNotExist(err) {
-				os.Mkdir(dir+"/.miide/", os.ModePerm)
+			if _, err := os.Stat(dir + "/.miide"); os.IsNotExist(err) {
+				os.Mkdir(dir+"/.miide", os.ModePerm)
 			}
 		}
 		// Remove non buffer settings values

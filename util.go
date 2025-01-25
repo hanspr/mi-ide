@@ -911,11 +911,20 @@ func RunBackgroundShell(input string) {
 
 // GetProjectDir: tries to find the correct path to the project
 // with respecto to the file directory path
-func GetProjectDir(wkdir, fdir string) string {
+func GetProjectDir(fdir string) string {
+	wkdir := WorkingDir
+	// never usr HomeDir a wkdir
 	if wkdir == HomeDir {
 		return fdir
 	}
-	//fix recursively look for .miide dir upwards?
+	// Check if we already have a hint about the working dir
+	if _, err := os.Stat(wkdir + "/.miide"); err == nil {
+		return wkdir
+	}
+	if _, err := os.Stat(fdir + "/.miide"); err == nil {
+		return fdir
+	}
+	// search upwards for project ./miide?
 	if wkdir != fdir && strings.Contains(fdir, wkdir) {
 		return wkdir
 	}
