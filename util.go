@@ -913,13 +913,6 @@ func RunBackgroundShell(input string) {
 // with respecto to the file directory path
 func GetProjectDir(fdir string, create bool) string {
 	wkdir := WorkingDir
-	// Check if we already have a hint about the working dir
-	if _, err := os.Stat(wkdir + "/.miide"); err == nil {
-		return wkdir
-	}
-	if _, err := os.Stat(fdir + "/.miide"); err == nil {
-		return fdir
-	}
 	// never use HomeDir
 	if WorkingDir == HomeDir {
 		wkdir = fdir
