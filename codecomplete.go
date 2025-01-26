@@ -168,6 +168,7 @@ func (cc *codecomplete) ScanLine(word string) {
 	if !cc.ready {
 		return
 	}
+	// todo: add new words
 }
 
 // FindWord : take tokens, form a searchable word, return matches
@@ -176,9 +177,6 @@ func (cc *codecomplete) FindWord(token string) []string {
 	if !cc.ready {
 		return words
 	}
-	// search for codeline pointer based on : filetype , path
-	// not found return
-	// test cc.ready
-	// todo : find words in current filetype and return array
+	// todo : find words in current filetype and return array of matches
 	return words
 }
