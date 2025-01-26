@@ -911,15 +911,27 @@ func RunBackgroundShell(input string) {
 
 // GetProjectDir: tries to find the correct path to the project
 // with respecto to the file directory path
+// we consider 3 posibilites
+// 1. file directory is a subdirectory of the project directory
+// 2. project directory is the home directory, opened the file from the home directory with a possible long path
+// 3. The file and project directories are the same but we have a .miide dir one level above. User cd to subdirectory in project
 func GetProjectDir(fdir string, create bool) string {
-	wkdir := WorkingDir
+	wkdir := ProjectDir
 	// never use HomeDir
-	if WorkingDir == HomeDir {
+	if ProjectDir == HomeDir {
 		wkdir = fdir
 	}
 	// search upwards for project ./miide?
 	if wkdir != fdir && strings.Contains(fdir, wkdir) {
 		fdir = wkdir
+	}
+	// last check, go up un level and check there is no .miide directory
+	os.Chdir("..")
+	if _, err := os.Stat(fdir + "/.miide"); !os.IsNotExist(err) {
+		d, err := os.Getwd()
+		if err == nil {
+			fdir = d
+		}
 	}
 	if create {
 		if _, err := os.Stat(fdir + "/.miide"); os.IsNotExist(err) {

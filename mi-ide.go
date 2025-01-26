@@ -122,7 +122,7 @@ var (
 
 	git = &gitstatus{}
 
-	WorkingDir = ""
+	ProjectDir = ""
 
 	HomeDir = ""
 )
@@ -383,7 +383,7 @@ func main() {
 	currEnv.ClipWhere = "local"
 	// Start working dir using the current users path
 	// we asume is the project path
-	WorkingDir, _ = os.Getwd()
+	ProjectDir, _ = os.Getwd()
 	git = NewGitStatus()
 	HomeDir, _ = homedir.Dir()
 
