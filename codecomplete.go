@@ -35,19 +35,19 @@ type codecomplete struct {
 	rules         []*regexp.Regexp
 }
 
-// AddCodeComplete: Adds a new codecomplete function if not already loaded
-func AddCodeComplete(buf *Buffer) *codecomplete {
+// GetCodeComplete: Adds a new codecomplete function if is not already loaded
+// if already exists, reuse same process
+// Should be called by at buffer creation and stored in the buffer struct
+// nil: could not create a codecomplete process
+// missing information or setup problems
+func GetCodeCompletePointer(buf *Buffer) *codecomplete {
 	ftype := buf.FileType()
-	if p, ok := cc[ftype]; ok {
-		dir := GetProjectDir(filepath.Dir(buf.AbsPath), true)
-		if dir == p.workdir {
-			// Same language , same project, share words
-			return p
-		}
-		// Same language, different project, different words
+	dir := GetProjectDir(filepath.Dir(buf.AbsPath), true)
+	if p, ok := cc[ftype+":"+dir]; ok {
+		return p
 	}
 	p := NewCodeComplete(buf)
-	cc[ftype] = p
+	cc[ftype+":"+dir] = p
 	return p
 }
 
@@ -62,23 +62,25 @@ func NewCodeComplete(buf *Buffer) *codecomplete {
 		ready:         false,
 		scanning:      false,
 	}
-	// load rules and words if necessary
-	go cc.LoadRules()
-	return cc
+	// load rules
+	if cc.LoadRules() {
+		// We have rules we can scan the buffer
+		go cc.LoadWords()
+		return cc
+	}
+	return nil
 }
 
 // LoadRules: loads rules from current language
-func (cc *codecomplete) LoadRules() {
-	// we have done this
-	if cc.ready {
-		return
-	}
+func (cc *codecomplete) LoadRules() bool {
 	if _, err := os.Stat(cc.rulesFile); os.IsNotExist(err) {
-		return
+		messenger.AddLog("No rules file: ", err.Error())
+		return false
 	}
 	file, err := os.Open(cc.rulesFile)
 	if err != nil {
-		return
+		messenger.AddLog("Rules file inaccessible: ", err.Error())
+		return false
 	}
 
 	defer file.Close()
@@ -89,12 +91,12 @@ func (cc *codecomplete) LoadRules() {
 		if err == nil {
 			cc.rules = append(cc.rules, rule)
 		} else {
-			messenger.AddLog("rule ignored:", scanner.Text())
-			messenger.AddLog("error:", err.Error())
+			messenger.AddLog("rules have errors: ", scanner.Text())
+			messenger.AddLog("error: ", err.Error())
+			return false
 		}
 	}
-	// We have rules we can scan the buffer
-	go cc.LoadWords()
+	return true
 }
 
 // LoadWords: load words from current project
@@ -104,17 +106,11 @@ func (cc *codecomplete) LoadWords() {
 	}
 	dir := GetProjectDir(filepath.Dir(cc.b.AbsPath), true)
 	cc.workdir = dir
-	if _, err := os.Stat(dir); os.IsNotExist(err) {
-		os.Mkdir(dir+"/.miide", os.ModePerm)
-		// no words, scan buffer, create new file for the next time
-		go cc.ScanBuffer(true)
-		// todo: scan full project dir
-		return
-	}
-	// recover previous work, no need to scan de buffer again
 	cc.wordsFile = dir + "/.miide/" + cc.b.FileType() + ".words"
 	file, err := os.Open(cc.wordsFile)
 	if err != nil {
+		// no file exists yet, fill info with current buffer
+		cc.ScanBuffer(true)
 		return
 	}
 
@@ -129,11 +125,11 @@ func (cc *codecomplete) LoadWords() {
 
 // ScanBuffer: scan this buffer
 func (cc *codecomplete) ScanBuffer(write bool) {
-	if cc.bufferScanned {
+	if cc.bufferScanned || !cc.ready {
 		return
 	}
 	cc.bufferScanned = true
-	// todo : scan buffer for words
+	// todo : scan buffer for words to store
 	// test each line for a match, and save in cc.words array
 	if write {
 		// new words array save result
@@ -144,6 +140,9 @@ func (cc *codecomplete) ScanBuffer(write bool) {
 
 // WriteWords : Save all scanned words to file
 func (cc *codecomplete) WriteWords() {
+	if !cc.ready {
+		return
+	}
 	f, err := os.Create(cc.wordsFile)
 	if err != nil {
 		return
@@ -157,15 +156,24 @@ func (cc *codecomplete) WriteWords() {
 	}
 }
 
-// Running process
+// title :Running process
 
 // ScanLine: scan for new words on the current buffer and filetype
-func ScanLine(b *Buffer, char string) {
+func (cc *codecomplete) ScanLine(word string) {
+	if !cc.ready {
+		return
+	}
 }
 
 // FindWord : take tokens, form a searchable word, return matches
-func FindWord(b *Buffer, token string) []string {
+func (cc *codecomplete) FindWord(token string) []string {
 	words := []string{}
+	if !cc.ready {
+		return words
+	}
+	// search for codeline pointer based on : filetype , path
+	// not found return
+	// test cc.ready
 	// todo : find words in current filetype and return array
 	return words
 }
