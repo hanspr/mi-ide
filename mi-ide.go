@@ -381,6 +381,8 @@ func main() {
 	currEnv.Gid = os.Getgid()
 	currEnv.Groups, _ = os.Getgroups()
 	currEnv.ClipWhere = "local"
+	// Start working dir using the current users path
+	// we asume is the project path
 	WorkingDir, _ = os.Getwd()
 	git = NewGitStatus()
 	HomeDir, _ = homedir.Dir()

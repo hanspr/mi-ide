@@ -196,6 +196,7 @@ func Cd(args []string) {
 			return
 		}
 		wd, _ := os.Getwd()
+		WorkingDir = wd
 		for _, tab := range tabs {
 			for _, view := range tab.Views {
 				if len(view.Buf.name) == 0 {
