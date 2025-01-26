@@ -16,7 +16,7 @@ CleanCode();
 IndentCode();
 
 sub IndentCode {
-    my ($indent, $lc, $ci);
+    my ($indent, $lc, $ci, @quoted_parts);
     my $I  = 0;
     my $ch = " ";
     my $sp = 4;
@@ -26,6 +26,14 @@ sub IndentCode {
         my $l = $LINES[$i];
         if ($DEBUG) {
             print "$l\n";
+        }
+        @quoted_parts = safesplit($l);
+        for (my $i = 0; $i < scalar(@quoted_parts); $i++) {
+            my $q = quotemeta($quoted_parts[$i]);
+            if ($DEBUG) {
+                print "  quoted string >>> $q\n";
+            }
+            $l =~ s/$q/XXXXXX$i/g;
         }
         $lc = $l;
         if (!$lc) {
@@ -54,6 +62,11 @@ sub IndentCode {
                 print "apply indentation\n";
             }
             $l =~ s/^\s*/$indent/;
+        }
+        # Formatted line back to array
+        for (my $i = 0; $i < scalar(@quoted_parts); $i++) {
+            my $q = $quoted_parts[$i];
+            $l =~ s/XXXXXX$i/$q/g;
         }
         # Print formated line
         print O "$l\n";
