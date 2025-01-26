@@ -61,7 +61,7 @@ type Char struct {
 	width    int
 }
 
-// CellView strcuture to hold cell lines
+// CellView structure to hold cell lines
 type CellView struct {
 	lines [][]*Char
 }
