@@ -687,8 +687,9 @@ func (v *View) HandleEvent(event tcell.Event) {
 					}
 					if e.Modifiers() == key.modifiers || (NavigationMode && e.Key() == tcell.KeyRune) {
 						var cursors []*Cursor
-						if len(v.Buf.cursors) > 1 && e.Name() == "Enter" {
+						if len(v.Buf.cursors) > 1 && (e.Name() == "Enter" || ShortFuncName(actions[0]) == "Delete") {
 							// Multicursor, newline. Reverse cursor order so it works
+							// fix: delete the end of the line in multicursor
 							for i := len(v.Buf.cursors) - 1; i >= 0; i-- {
 								cursors = append(cursors, v.Buf.cursors[i])
 							}
