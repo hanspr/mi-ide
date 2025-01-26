@@ -43,6 +43,11 @@ type codecomplete struct {
 func GetCodeCompletePointer(buf *Buffer) *codecomplete {
 	ftype := buf.FileType()
 	dir := GetProjectDir(filepath.Dir(buf.AbsPath), true)
+	// hard coded ignored dirs
+	test, err := regexp.MatchString(`^\.|test|config`, dir)
+	if err != nil || test {
+		return nil
+	}
 	if p, ok := cc[ftype+":"+dir]; ok {
 		return p
 	}
