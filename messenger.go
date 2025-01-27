@@ -8,7 +8,6 @@ import (
 	"os"
 	"strconv"
 	"strings"
-	"time"
 	"unicode"
 
 	"github.com/hanspr/shellwords"
@@ -144,13 +143,6 @@ func (m *Messenger) Alert(kind string, msg ...interface{}) {
 			}
 		}
 		m.hasMessage = true
-		go func() {
-			time.Sleep(8 * time.Second)
-			if !m.hasPrompt {
-				m.Reset()
-				m.Clear()
-			}
-		}()
 	}
 	// add the message to the log regardless of active prompts
 	m.AddLog(buf.String())
