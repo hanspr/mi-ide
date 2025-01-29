@@ -687,11 +687,14 @@ func (v *View) HandleEvent(event tcell.Event) {
 					}
 					if e.Modifiers() == key.modifiers || (NavigationMode && e.Key() == tcell.KeyRune) {
 						var cursors []*Cursor
+						deleol := false
 						if len(v.Buf.cursors) > 1 && (e.Name() == "Enter" || ShortFuncName(actions[0]) == "Delete") {
-							// Multicursor, newline. Reverse cursor order so it works
-							// fix: delete the end of the line in multicursor
+							// Multicursor, newline & delete. Reverse cursor order so it works
 							for i := len(v.Buf.cursors) - 1; i >= 0; i-- {
 								cursors = append(cursors, v.Buf.cursors[i])
+							}
+							if v.Cursor.X == len(v.Buf.Line(v.Cursor.Y)) && !v.Cursor.HasSelection() {
+								deleol = true
 							}
 						} else {
 							cursors = v.Buf.cursors
@@ -706,6 +709,15 @@ func (v *View) HandleEvent(event tcell.Event) {
 							relocate = v.ExecuteActions(actions) || relocate
 						}
 						v.SetCursor(&v.Buf.Cursor)
+						if deleol {
+							x := 0
+							for _, c := range v.Buf.cursors {
+								cx := c.Loc.X
+								c.Loc.X = c.Loc.X + x
+								c.X = c.Loc.X
+								x += cx
+							}
+						}
 						v.Buf.MergeCursors()
 						break
 					}
