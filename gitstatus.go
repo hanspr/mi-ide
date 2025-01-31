@@ -1,6 +1,9 @@
 package main
 
-import "strings"
+import (
+	"regexp"
+	"strings"
+)
 
 type gitstatus struct {
 	enabled bool
@@ -39,8 +42,23 @@ func (g *gitstatus) GitSetStatus() {
 		g.status = " "
 		return
 	}
-	branch, _ := RunShellCommand("git branch --show-current")
-	branch = branch[:len(branch)-1]
+	// git 2.22+
+	branch, err := RunShellCommand("git branch --show-current")
+	if err != nil {
+		// git -2.22
+		text, err := RunShellCommand("git branch")
+		if err != nil {
+			TermMessage(text)
+			g.enabled = false
+			g.status = " "
+			return
+		}
+		re := regexp.MustCompile(`\* (\w+)`)
+		matches := re.FindStringSubmatch(text)
+		branch = matches[1]
+	} else {
+		branch = branch[:len(branch)-1]
+	}
 	g.status = "[ " + branch + "{"
 	g.enabled = true
 	lines := strings.Split(status, "\n")
