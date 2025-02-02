@@ -2301,6 +2301,7 @@ func (v *View) SpawnMultiCursor(usePlugin bool) bool {
 			Search(regexp.QuoteMeta(sel), v, true)
 
 			if v.Cursor.CurSelection == [2]Loc{c.Loc, v.Buf.cursors[0].Loc} {
+				messenger.Information("done")
 				return false
 			}
 			v.Buf.cursors = append(v.Buf.cursors, c)

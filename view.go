@@ -687,7 +687,9 @@ func (v *View) HandleEvent(event tcell.Event) {
 					}
 					if e.Modifiers() == key.modifiers || (NavigationMode && e.Key() == tcell.KeyRune) {
 						var cursors []*Cursor
+						isBinding = true
 						deleol := false
+						messenger.Message("")
 						if len(v.Buf.cursors) > 1 && (e.Name() == "Enter" || ShortFuncName(actions[0]) == "Delete") {
 							// Multicursor, newline & delete. Reverse cursor order so it works
 							for i := len(v.Buf.cursors) - 1; i >= 0; i-- {
@@ -705,11 +707,11 @@ func (v *View) HandleEvent(event tcell.Event) {
 								break
 							}
 							relocate = false
-							isBinding = true
 							relocate = v.ExecuteActions(actions) || relocate
 						}
 						v.SetCursor(&v.Buf.Cursor)
 						if deleol {
+							// delete eol edge case, reposition cursors
 							x := 0
 							for _, c := range v.Buf.cursors {
 								cx := c.Loc.X
