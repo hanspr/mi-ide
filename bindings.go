@@ -26,6 +26,7 @@ var bindingActions = map[string]func(*View, bool) bool{
 	"Center":                  (*View).Center,
 	"CursorUp":                (*View).CursorUp,
 	"CommandMode":             (*View).CommandMode,
+	"ComboKey":                (*View).ComboKey,
 	"Copy":                    (*View).Copy,
 	"CopyToCloud":             (*View).CopyToCloud,
 	"Cut":                     (*View).Cut,
@@ -303,6 +304,7 @@ func InitBindings() {
 
 	parseBindings(defaults)
 	parseBindings(parsed)
+	ComboKeyBindings()
 }
 
 func parseBindings(userBindings map[string]string) {
@@ -495,40 +497,37 @@ func DefaultBindings() map[string]string {
 		"Alt-a":         "PreviousTab",
 		"Alt-d":         "MoveLinesDown",
 		"Alt-e":         "MoveLinesUp",
-		"Alt-f":         "OpenDirView",
-		"Alt-g":         "FindFunctionDeclaration",
-		"Alt-h":         "CursorPageDown",
-		"Alt-i":         "CursorUp",
-		"Alt-j":         "CursorLeft",
-		"Alt-k":         "CursorDown",
-		"Alt-l":         "CursorRight",
-		"Alt-o":         "EndOfLine",
-		"Alt-q":         "PreviousSplit",
-		"Alt-r":         "ToggleOverwriteMode",
-		"Alt-t":         "ToggleCase",
-		"Alt-s":         "NextTab",
-		"Alt-u":         "StartOfLine",
-		"Alt-w":         "NextSplit",
-		"Alt-y":         "CursorPageUp",
-		"Alt-A":         "SnippetAccept",
-		"Alt-D":         "SnippetCancel",
-		"Alt-H":         "SelectPageDown",
-		"Alt-I":         "SelectUp",
-		"Alt-J":         "SelectLeft",
-		"Alt-K":         "SelectDown",
-		"Alt-L":         "SelectRight",
-		"Alt-O":         "SelectToEndOfLine",
-		"Alt-S":         "SnippetInsert",
-		"Alt-U":         "SelectToStartOfLine",
-		"Alt-W":         "SnippetNext",
-		"Alt-Y":         "SelectPageUp",
-		"Alt-Backspace": "DeleteWordLeft",
-		"Alt-{":         "CursorStart",
-		"Alt-}":         "CursorEnd",
-		"Alt-[":         "SelectToStart",
-		"Alt-]":         "SelectToEnd",
-		"Alt-:":         "VSplit",
-		"Alt-_":         "HSplit",
+		// "Alt-f":         "",
+		// "Alt-g": "",
+		"Alt-h": "CursorPageDown",
+		"Alt-i": "CursorUp",
+		"Alt-j": "CursorLeft",
+		"Alt-k": "CursorDown",
+		"Alt-l": "CursorRight",
+		"Alt-o": "EndOfLine",
+		"Alt-q": "PreviousSplit",
+		"Alt-r": "ToggleOverwriteMode",
+		"Alt-t": "ToggleCase",
+		"Alt-s": "NextTab",
+		"Alt-u": "StartOfLine",
+		"Alt-w": "NextSplit",
+		"Alt-y": "CursorPageUp",
+		"Alt-A": "SnippetAccept",
+		"Alt-D": "SnippetCancel",
+		"Alt-H": "SelectPageDown",
+		"Alt-I": "SelectUp",
+		"Alt-J": "SelectLeft",
+		"Alt-K": "SelectDown",
+		"Alt-L": "SelectRight",
+		"Alt-O": "SelectToEndOfLine",
+		"Alt-S": "SnippetInsert",
+		"Alt-U": "SelectToStartOfLine",
+		"Alt-W": "SnippetNext",
+		"Alt-Y": "SelectPageUp",
+		"Alt-{": "CursorStart",
+		"Alt-}": "CursorEnd",
+		"Alt-[": "SelectToStart",
+		"Alt-]": "SelectToEnd",
 
 		// Multicursor
 		"Alt-n": "SpawnMultiCursor",
@@ -537,26 +536,17 @@ func DefaultBindings() map[string]string {
 		"Alt-.": "RemoveAllMultiCursors",
 		"Alt-;": "SkipMultiCursor",
 
-		// mi-ide services
-		"Alt-x": "CutToCloud",
-		"Alt-c": "CopyToCloud",
-		"Alt-v": "PasteCloud",
-		"Alt-z": "UploadToCloud",
-		"Alt-b": "DownloadFromCloud",
-		"Alt-+": "CloudSettings",
-
 		// Control Keys
-		"CtrlA": "SelectAll",
+		// "CtrlA": "",
 		// "CtrlB":          "", // reserved for tmux
-		"CtrlC":          "Copy",
-		"CtrlD":          "DuplicateLine",
-		"CtrlE":          "CommandMode",
-		"CtrlF":          "FindDialog",
-		"CtrlG":          "JumpLine",
-		"CtrlH":          "HintFunction",
-		"Backspace":      "Backspace",
+		"CtrlC": "Copy",
+		"CtrlD": "DuplicateLine",
+		"CtrlE": "CommandMode",
+		"CtrlF": "FindDialog",
+		"CtrlG": "JumpLine",
+		// "CtrlH":          "",
 		"CtrlJ":          "DeleteLine",
-		"CtrlK":          "SelectLine",
+		"CtrlK":          "ComboKey",
 		"CtrlL":          "Center",
 		"CtrlN":          "NavigationMode",
 		"CtrlO":          "OpenFile",
@@ -576,6 +566,7 @@ func DefaultBindings() map[string]string {
 		"CtrlUnderscore": "MultiComment",
 
 		// mi-ide Defaults
+		"Backspace": "Backspace",
 		"F1":        "OpenFile",
 		"F13":       "OpenDirView", // Shift F1
 		"F2":        "Save",
@@ -583,7 +574,6 @@ func DefaultBindings() map[string]string {
 		"F3":        "SaveAs",
 		"F4":        "Quit",
 		"F16":       "QuitOthers", // Shift F4
-		"Alt-*":     "BufferSettings",
 		"Alt-!":     "ToggleSoftWrap",
 		"Alt-#":     "ToggleRuler",
 		"Alt-<":     "ClearStatus",
@@ -618,5 +608,33 @@ func DefaultBindings() map[string]string {
 		"AltShiftLeft":  "SelectWordLeft",
 		"CtrlShiftUp":   "SelectToStart",
 		"CtrlShiftDown": "SelectToEnd",
+	}
+}
+
+var combobindings map[rune][]func(*View, bool) bool
+
+// ComboKeyBindings: defined combination key bindings Ctrl-K by default
+func ComboKeyBindings() {
+	combobindings = map[rune][]func(*View, bool) bool{
+		'a': {(*View).SelectAll},
+		'b': {(*View).DownloadFromCloud},
+		'c': {(*View).CopyToCloud},
+		'd': {(*View).SelectWordRight},
+		'f': {(*View).OpenDirView},
+		'g': {(*View).FindFunctionDeclaration},
+		'h': {(*View).HintFunction},
+		'l': {(*View).SelectLine},
+		's': {(*View).SelectWordLeft},
+		'S': {(*View).SaveAll},
+		'u': {(*View).DeleteWord},
+		'v': {(*View).PasteCloud},
+		'w': {(*View).SelectWord},
+		'x': {(*View).CutToCloud},
+		'z': {(*View).UploadToCloud},
+		'+': {(*View).CloudSettings},
+		'|': {(*View).VSplitBinding},
+		'_': {(*View).HSplitBinding},
+		'/': {(*View).MultiComment},
+		'*': {(*View).BufferSettings},
 	}
 }

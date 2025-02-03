@@ -454,6 +454,23 @@ func (v *View) SelectRight(usePlugin bool) bool {
 }
 
 // SelectWordRight selects the word to the right of the cursor
+func (v *View) SelectWord(usePlugin bool) bool {
+	if usePlugin && !PreActionCall("SelectWord", v) {
+		return false
+	}
+
+	if !v.Cursor.HasSelection() {
+		v.Cursor.OrigSelection[0] = v.Cursor.Loc
+	}
+	v.Cursor.SelectWord(false)
+
+	if usePlugin {
+		return PostActionCall("SelectWord", v)
+	}
+	return true
+}
+
+// SelectWordRight selects the word to the right of the cursor
 func (v *View) SelectWordRight(usePlugin bool) bool {
 	if usePlugin && !PreActionCall("SelectWordRight", v) {
 		return false
@@ -811,6 +828,25 @@ func (v *View) InsertNewline(usePlugin bool) bool {
 
 	if usePlugin {
 		return PostActionCall("InsertNewline", v)
+	}
+	return true
+}
+
+// DeleteWord deletes the word under the cursor
+func (v *View) DeleteWord(usePlugin bool) bool {
+	if usePlugin && !PreActionCall("DeleteWord", v) {
+		return false
+	}
+
+	v.SelectWord(false)
+	if v.Cursor.HasSelection() {
+		v.Cursor.DeleteSelection()
+		v.Cursor.ResetSelection()
+	}
+	v.savedLoc = v.Cursor.Loc
+
+	if usePlugin {
+		return PostActionCall("DeleteWord", v)
 	}
 	return true
 }
@@ -2860,4 +2896,12 @@ func (v *View) SearchFunction(hint bool) (bool, string, string, int) {
 		return true, data, word, line
 	}
 	return false, "", word, 0
+}
+
+var ComboKeyActive = false
+
+// ComboKey Concatenates special key combinations
+func (v *View) ComboKey(usePlugin bool) bool {
+	ComboKeyActive = !ComboKeyActive
+	return true
 }

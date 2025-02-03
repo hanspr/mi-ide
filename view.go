@@ -672,12 +672,34 @@ func (v *View) HandleEvent(event tcell.Event) {
 			}
 		}
 	case *tcell.EventKey:
-		// Check first if input is a key binding, if it is we 'eat' the input and don't insert a rune
 		isBinding := false
 		if NavigationMode && e.Name() == "Esc" {
+			// Exist navigation mode
 			v.NavigationMode(true)
 			return
+		} else if ComboKeyActive {
+			isBinding = true
+			for key, actions := range combobindings {
+				if e.Rune() == key {
+					var cursors []*Cursor
+					messenger.Message("")
+					cursors = v.Buf.cursors
+					for _, c := range cursors {
+						ok := v.SetCursor(c)
+						if !ok {
+							break
+						}
+						relocate = false
+						relocate = v.ExecuteActions(actions) || relocate
+					}
+					v.SetCursor(&v.Buf.Cursor)
+					v.Buf.MergeCursors()
+					break
+				}
+			}
+			v.ComboKey(false)
 		} else {
+			// Check first if input is a key binding, if it is we 'eat' the input and don't insert a rune
 			for key, actions := range bindings {
 				if e.Key() == key.keyCode {
 					if e.Key() == tcell.KeyRune {
