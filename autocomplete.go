@@ -85,7 +85,6 @@ func GroupComplete(group, input string) (string, []string) {
 	var chosen = ""
 	i := strings.Index(group, ":")
 	group = group[0:i]
-	messenger.AddLog(group, ":", input)
 	if group == "edit" {
 		options = []string{"settings", "snippets"}
 	} else if group == "menu" {
@@ -95,13 +94,11 @@ func GroupComplete(group, input string) (string, []string) {
 	} else if group == "show" {
 		options = []string{"snippets"}
 	}
-	messenger.AddLog("options:", options)
 	for _, cmd := range options {
 		if strings.HasPrefix(cmd, input) {
 			suggestions = append(suggestions, cmd)
 		}
 	}
-	messenger.AddLog("suggestions:", suggestions)
 	if len(suggestions) == 1 {
 		chosen = suggestions[0]
 	}
