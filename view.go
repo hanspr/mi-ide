@@ -179,19 +179,19 @@ func (v *View) OpenHelperView(dir, filetype string, data string) {
 		SetLocalOption("softwrap", "true", HelperWindow)
 		SetLocalOption("ruler", "false", HelperWindow)
 		NavigationMode = true
+		if dir == "h" {
+			nh := int(float64(h)*0.25) - 1
+			if nh < 5 {
+				return
+			}
+			v.Height = h - nh - 2
+			HelperWindow.Height = h - v.Height - 1
+			HelperWindow.y = v.Height + 2
+		}
 	} else {
 		HelperWindow.Buf.remove(Loc{0, 0}, HelperWindow.Buf.End())
 		HelperWindow.Buf.insert(Loc{0, 0}, []byte(data))
 		HelperWindow.Cursor.GotoLoc(Loc{0, 0})
-	}
-	if dir == "h" {
-		nh := int(float64(h)*0.25) - 1
-		if nh < 5 {
-			return
-		}
-		v.Height = h - nh - 2
-		HelperWindow.Height = h - v.Height - 1
-		HelperWindow.y = v.Height + 2
 	}
 }
 
