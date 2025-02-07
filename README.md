@@ -22,15 +22,15 @@ What is this editor philosophy:
   * Syntax highlight
 * My particular setup is : tmux, gitui and miide. With this combination I have a very usefull development environment on my remote servers.
 
-The original motivation came from the usual experience of searching for an editor when began coding. Vim was to hard for me, nano way to simple.
+The original motivation came from the usual experience of searching for an editor when began coding. Vim was too hard for me, nano way too simple.
 
-I eventually landed with jed editor. It had the basic features that I liked, but again to limited and very difficult to enhance it. I did learn slang and did some hacking to it, but the framework had to many limitations to grow it.
+I eventually landed with jed editor. It had the basic features that I liked, but again too limited and very difficult to enhance it. I did learn slang and did some hacking to it, but the framework had many limitations to grow it.
 
 And one day I discover micro. Written in go. I was very interested in learning go. So I downloaded, installed, and run it. And at that time it was very promissing but it was full of bugs that made it impractical (have to say that since then have not followed the project so I'm sure many issues were resolved).
 
-But took this opportunity to grab a book and begin learning go. Jumped into the code, and after 3 long months managed to remove most of the bugs, and began using it daily and little by little grow it to fit my needs. Which drove me very far away from the original project.
+But took this opportunity to grab a book and begin learning go. Jumped into the code, and after 3 months, I managed to remove most of the bugs, and began using it daily and little by little grow it to fit my needs. Which drove me very far away from the original project.
 
-So this is the result of it, check the manual and see if it would fill your requirements.
+So this is the result of it, check the manual and see if it would fill your requirements. And if not, grab it, change it and customize it to your needs.
 
 ## Table of Contents
 
