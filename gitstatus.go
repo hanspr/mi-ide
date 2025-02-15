@@ -46,6 +46,7 @@ func (g *gitstatus) GitSetStatus() {
 	branch, err := RunShellCommand("git branch --show-current")
 	if err != nil {
 		// git -2.22
+		branch = ""
 		text, err := RunShellCommand("git branch")
 		if err != nil {
 			TermMessage(text)
@@ -55,7 +56,9 @@ func (g *gitstatus) GitSetStatus() {
 		}
 		re := regexp.MustCompile(`\* (\w+)`)
 		matches := re.FindStringSubmatch(text)
-		branch = matches[1]
+		if matches != nil {
+			branch = matches[1]
+		}
 	} else {
 		branch = branch[:len(branch)-1]
 	}
