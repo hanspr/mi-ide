@@ -555,11 +555,11 @@ func (b *Buffer) SmartIndent(Start, Stop Loc) {
 			skipBlock = true
 			continue
 		}
-		if comment.MatchString(lc) {
-			// ignore commented lines
-			// messenger.AddLog("comentario")
-			continue
-		}
+		// if comment.MatchString(lc) {
+		// 	// ignore commented lines
+		// 	// messenger.AddLog("comentario")
+		// 	continue
+		// }
 		// messenger.AddLog("ci + IndRef:", ci, "+", IndRef)
 		ci = I + IndRef
 		if interBlock.MatchString(lc) {
