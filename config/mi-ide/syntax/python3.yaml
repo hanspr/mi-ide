@@ -1,11 +1,14 @@
-filetype: python3
+filetype: python
 
 detect:
-    filename: "\\.py3$"
-    header: "#!.+?python3"
+    filename: "\\.py(?:\\d+)?$"
+    header: "^#!.*/(env +)?python"
 
 rules:
-    # built-in objects
+      # function definitions
+    - function: "def [a-zA-Z_0-9]+"
+    - function: "[a-zA-Z_0-9]+\\("
+      # built-in objects
     - constant: "\\b(None|self|True|False)\\b"
       # built-in attributes
     - constant: "\\b(__bases__|__builtin__|__class__|__debug__|__dict__|__doc__|__file__|__members__|__methods__|__name__|__self__)\\b"
@@ -15,8 +18,9 @@ rules:
     - identifier: "\\b(__abs__|__add__|__and__|__call__|__cmp__|__coerce__|__complex__|__concat__|__contains__|__del__|__delattr__|__delitem__|__delslice__|__div__|__divmod__|__float__|__getattr__|__getitem__|__getslice__|__hash__|__hex__|__init__|__int__|__inv__|__invert__|__len__|__dict__|__long__|__lshift__|__mod__|__mul__|__neg__|__next__|__nonzero__|__oct__|__or__|__pos__|__pow__|__radd__|__rand__|__rcmp__|__rdiv__|__rdivmod__|__repeat__|__repr__|__rlshift__|__rmod__|__rmul__|__ror__|__rpow__|__rrshift__|__rshift__|__rsub__|__rxor__|__setattr__|__setitem__|__setslice__|__str__|__sub__|__xor__)\\b"
       # types
     - type: "\\b(bool|bytearray|bytes|classmethod|complex|dict|enumerate|filter|float|frozenset|int|list|map|memoryview|object|property|range|reversed|set|slice|staticmethod|str|super|tuple|type|zip)\\b"
-      # definitions
-    - identifier: "def [a-zA-Z_0-9]+"
+      # methods
+    - method.other: "(?:\\w+\\.)+\\w+\\("
+    - method.other: "]\\.\\w+\\("
       # keywords
     - statement: "\\b(and|as|assert|break|class|continue|def|del|elif|else|except|finally|for|from|global|if|import|in|is|lambda|nonlocal|not|or|pass|raise|return|try|while|with|yield)\\b"
       # decorators
@@ -27,6 +31,7 @@ rules:
     - symbol.brackets: "([(){}]|\\[|\\])"
       # numbers
     - constant.number: "\\b[0-9]+\\b"
+    - include: "comments"
 
     - constant.string:
         start: "\"\"\""
@@ -51,9 +56,4 @@ rules:
         skip: "\\\\."
         rules:
             - constant.specialChar: "\\\\."
-
-    - comment:
-        start: "#"
-        end: "$"
-        rules: []
 

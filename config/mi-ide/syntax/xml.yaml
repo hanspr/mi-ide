@@ -1,7 +1,7 @@
 filetype: xml
 
 detect:
-    filename: "\\.xml$"
+    filename: "\\.(xml|urdf)$"
 
 rules:
     - type: " [A-Za-z]+ *="
