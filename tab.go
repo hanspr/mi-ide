@@ -5,7 +5,7 @@ import (
 )
 
 const (
-	bufDirty      string = "✶"
+	bufDirty      string = "✸"
 	tabOpen       string = "|"
 	tabClose      string = "|"
 	tabMenuSymbol string = "ɱ  "
@@ -211,8 +211,6 @@ func (t *Tab) Resize() {
 	w, h := screen.Size()
 	t.tree.width = w
 	t.tree.height = h - 1
-
-	//t.tree.height--
 
 	t.tree.ResizeSplits()
 
