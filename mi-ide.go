@@ -563,7 +563,7 @@ func main() {
 	L.SetGlobal("import", luar.New(L, Import))
 
 	jobs = make(chan JobFunction, 100)
-	events = make(chan tcell.Event, 100)
+	events = make(chan tcell.Event, 1000)
 
 	// Loading all plugins
 	LoadPlugins()
