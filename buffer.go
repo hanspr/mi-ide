@@ -501,7 +501,8 @@ func (b *Buffer) SmartIndent(Start, Stop Loc) {
 	restart:
 		for y := Ys; y >= 0; y-- {
 			l := b.Line(y)
-			if len(l) > 0 && !comment.MatchString(l) {
+			isComment := comment.MatchString(l)
+			if len(l) > 0 && !isComment {
 				I = GetLineIndentetion(b.Line(y), iChar, iMult)
 				if I < 0 && !indentChangeDone {
 					indentChangeDone = true
@@ -514,7 +515,7 @@ func (b *Buffer) SmartIndent(Start, Stop Loc) {
 					goto restart
 				}
 				break
-			} else if comment.MatchString(l) {
+			} else if isComment {
 				Ys--
 			}
 		}

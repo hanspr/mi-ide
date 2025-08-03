@@ -657,7 +657,7 @@ func (v *View) Retab(usePlugin bool) bool {
 	tabsize := int(v.Buf.Settings["tabsize"].(float64))
 	dirty := false
 
-	for i := 0; i < v.Buf.NumLines; i++ {
+	for i := range v.Buf.NumLines {
 		l := v.Buf.Line(i)
 
 		ws := GetLeadingWhitespace(l)

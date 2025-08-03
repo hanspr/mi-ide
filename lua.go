@@ -289,7 +289,7 @@ func importMathRand() *lua.LTable {
 	L.SetField(pkg, "Intn", luar.New(L, rand.Intn))
 	L.SetField(pkg, "NormFloat64", luar.New(L, rand.NormFloat64))
 	L.SetField(pkg, "Perm", luar.New(L, rand.Perm))
-	L.SetField(pkg, "Seed", luar.New(L, rand.Seed))
+	//L.SetField(pkg, "Seed", luar.New(L, rand.Seed))
 	L.SetField(pkg, "Uint32", luar.New(L, rand.Uint32))
 
 	return pkg
@@ -369,9 +369,9 @@ func importOs() *lua.LTable {
 	L.SetField(pkg, "Remove", luar.New(L, os.Remove))
 	L.SetField(pkg, "RemoveAll", luar.New(L, os.RemoveAll))
 	L.SetField(pkg, "Rename", luar.New(L, os.Rename))
-	L.SetField(pkg, "SEEK_CUR", luar.New(L, os.SEEK_CUR))
-	L.SetField(pkg, "SEEK_END", luar.New(L, os.SEEK_END))
-	L.SetField(pkg, "SEEK_SET", luar.New(L, os.SEEK_SET))
+	L.SetField(pkg, "SEEK_CUR", luar.New(L, io.SeekCurrent))
+	L.SetField(pkg, "SEEK_END", luar.New(L, io.SeekEnd))
+	L.SetField(pkg, "SEEK_SET", luar.New(L, io.SeekStart))
 	L.SetField(pkg, "SameFile", luar.New(L, os.SameFile))
 	L.SetField(pkg, "Setenv", luar.New(L, os.Setenv))
 	L.SetField(pkg, "StartProcess", luar.New(L, os.StartProcess))
@@ -393,7 +393,7 @@ func importRuntime() *lua.LTable {
 	L.SetField(pkg, "GOARCH", luar.New(L, runtime.GOARCH))
 	L.SetField(pkg, "GOMAXPROCS", luar.New(L, runtime.GOMAXPROCS))
 	L.SetField(pkg, "GOOS", luar.New(L, runtime.GOOS))
-	L.SetField(pkg, "GOROOT", luar.New(L, runtime.GOROOT))
+	//L.SetField(pkg, "GOROOT", luar.New(L, runtime.GOROOT))
 
 	return pkg
 }
