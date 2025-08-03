@@ -806,7 +806,7 @@ func (m *microMenu) InstallPlugin(name, value, event, when string, x, y int) boo
 			break
 		}
 	}
-	if plugin == nil || len(plugin) < 2 {
+	if len(plugin) < 2 {
 		f.SetLabel("msg", Language.Translate("No selection made"))
 		f.SetVisible("install", true)
 		f.SetVisible("remove", true)
@@ -883,7 +883,7 @@ func (m *microMenu) RemovePlugin(name, value, event, when string, x, y int) bool
 			break
 		}
 	}
-	if plugin == nil || len(plugin) < 2 {
+	if len(plugin) < 2 {
 		f.SetLabel("msg", "No selection made")
 		f.SetVisible("install", true)
 		f.SetVisible("remove", true)

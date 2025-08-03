@@ -1,16 +1,13 @@
 package main
 
 import (
-	"crypto/md5"
 	"encoding/json"
 	"errors"
-	"io"
 	"os"
 	"path/filepath"
 	"reflect"
 	"strconv"
 	"strings"
-	"sync"
 
 	"github.com/flynn/json5"
 	"github.com/hanspr/glob"
@@ -258,7 +255,6 @@ func DefaultGlobalSettings() map[string]interface{} {
 		"cursorline":     true,
 		"cursorshape":    "disabled",
 		"eofnewline":     false,
-		"fastdirty":      true,
 		"fileformat":     "unix",
 		"indentchar":     " ",
 		"keepautoindent": false,
@@ -309,7 +305,6 @@ func DefaultLocalSettings() map[string]interface{} {
 		"cursorshape":    "disabled",
 		"cursorline":     true,
 		"eofnewline":     false,
-		"fastdirty":      true,
 		"fileformat":     "unix",
 		"filetype":       "",
 		"findfuncregex":  "",
@@ -433,40 +428,6 @@ func SetLocalOption(option, value string, view *View) error {
 
 	if err := optionIsValid(option, nativeValue); err != nil {
 		return err
-	}
-
-	if option == "fastdirty" {
-		// If it is being turned off, we have to hash every open buffer
-		var empty [md5.Size]byte
-		var wg sync.WaitGroup
-
-		for _, tab := range tabs {
-			for _, v := range tab.Views {
-				if !nativeValue.(bool) {
-					if v.Buf.origHash == empty {
-						wg.Add(1)
-
-						go func(b *Buffer) { // calculate md5 hash of the file
-							defer wg.Done()
-
-							if file, e := os.Open(b.AbsPath); e == nil {
-								defer file.Close()
-
-								h := md5.New()
-
-								if _, e = io.Copy(h, file); e == nil {
-									h.Sum(b.origHash[:0])
-								}
-							}
-						}(v.Buf)
-					}
-				} else {
-					v.Buf.IsModified = v.Buf.Modified()
-				}
-			}
-		}
-
-		wg.Wait()
 	}
 
 	buf.Settings[option] = nativeValue

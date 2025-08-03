@@ -3,7 +3,6 @@ package main
 import (
 	"bufio"
 	"bytes"
-	"crypto/md5"
 	"encoding/gob"
 	"errors"
 	"io"
@@ -75,9 +74,6 @@ type Buffer struct {
 
 	syntaxDef   *highlight.Def
 	highlighter *highlight.Highlighter
-
-	// Hash of the original buffer -- empty if fastdirty is on
-	origHash [md5.Size]byte
 
 	// Buffer local settings
 	Settings map[string]interface{}
@@ -281,15 +277,6 @@ func NewBuffer(reader io.Reader, size int64, path string, cursorPosition []strin
 			}
 		}
 		defer file.Close()
-	}
-
-	if !b.Settings["fastdirty"].(bool) {
-		if size > LargeFileThreshold {
-			// If the file is larger than a megabyte fastdirty needs to be on
-			b.Settings["fastdirty"] = true
-		} else {
-			calcHash(b, &b.origHash)
-		}
 	}
 
 	b.cursors = []*Cursor{&b.Cursor}
@@ -641,8 +628,8 @@ func (b *Buffer) ReOpen() {
 
 	b.ModTime, _ = GetModTime(b.Path)
 	b.IsModified = false
-	git.GitSetStatus()
 	b.Update()
+	go git.GitSetStatus()
 	b.Cursor.Relocate()
 	if b.encoding {
 		screen.Sync()
@@ -828,15 +815,6 @@ func (b *Buffer) SaveAs(filename string) error {
 		}
 	}
 
-	if !b.Settings["fastdirty"].(bool) {
-		if fileSize > LargeFileThreshold {
-			// For large files 'fastdirty' needs to be on
-			b.Settings["fastdirty"] = true
-		} else {
-			calcHash(b, &b.origHash)
-		}
-	}
-
 	b.Path = filename
 	b.IsModified = false
 	if b.encoder != "UTF8" {
@@ -894,33 +872,10 @@ func overwriteFile(name string, fn func(io.Writer) error) (err error) {
 	return
 }
 
-// calcHash calculates md5 hash of all lines in the buffer
-func calcHash(b *Buffer, out *[md5.Size]byte) {
-	h := md5.New()
-
-	if len(b.lines) > 0 {
-		h.Write(b.lines[0].data)
-
-		for _, l := range b.lines[1:] {
-			h.Write([]byte{'\n'})
-			h.Write(l.data)
-		}
-	}
-
-	h.Sum((*out)[:0])
-}
-
 // Modified returns if this buffer has been modified since
 // being opened
 func (b *Buffer) Modified() bool {
-	if b.Settings["fastdirty"].(bool) {
-		return b.IsModified
-	}
-
-	var buff [md5.Size]byte
-
-	calcHash(b, &buff)
-	return buff != b.origHash
+	return b.IsModified
 }
 
 func (b *Buffer) insert(pos Loc, value []byte) {
