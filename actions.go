@@ -675,7 +675,6 @@ func (v *View) Retab(usePlugin bool) bool {
 	}
 
 	v.Buf.IsModified = dirty
-	git.GitSetStatus()
 	if usePlugin {
 		return PostActionCall("Retab", v)
 	}
@@ -1155,7 +1154,6 @@ func (v *View) Save(usePlugin bool) bool {
 // This function saves the buffer to `filename` and changes the buffer's path and name
 // to `filename` if the save is successful
 func (v *View) saveToFile(filename string) {
-	git.GitSetStatus()
 	err := v.Buf.SaveAs(filename)
 	if err != nil {
 		messenger.Alert("error", err.Error())
@@ -1165,6 +1163,7 @@ func (v *View) saveToFile(filename string) {
 		v.Buf.AbsPath, _ = filepath.Abs(filename)
 		v.Buf.fname = filepath.Base(filename)
 		messenger.Message(Language.Translate("Saved") + " " + filename)
+		go git.GitSetStatus()
 	}
 }
 
@@ -1184,13 +1183,13 @@ func (v *View) SaveAsAnswer(values map[string]string) {
 
 // SaveAs saves the buffer to disk with the given name
 func (v *View) SaveAs(usePlugin bool) bool {
-	git.GitSetStatus()
 	if v.mainCursor() {
 		if usePlugin && !PreActionCall("SaveAs", v) {
 			return false
 		}
 		micromenu.SaveAs(v.Buf, usePlugin, v.SaveAsAnswer)
 	}
+	go git.GitSetStatus()
 	return true
 }
 
@@ -1618,7 +1617,6 @@ func (v *View) OpenDirView(usePlugin bool) bool {
 
 // OpenFile opens a new file in the buffer
 func (v *View) OpenFile(usePlugin bool) bool {
-	git.GitSetStatus()
 	if v.mainCursor() {
 		if usePlugin && !PreActionCall("OpenFile", v) {
 			return false
@@ -1634,6 +1632,7 @@ func (v *View) OpenFile(usePlugin bool) bool {
 			}
 		}
 	}
+	go git.GitSetStatus()
 	return false
 }
 
@@ -2032,7 +2031,6 @@ func (v *View) QuitOthers(usePlugin bool) bool {
 
 // Quit this will close the current tab or view that is open
 func (v *View) Quit(usePlugin bool) bool {
-	git.GitSetStatus()
 	if v == HelperWindow {
 		HelperWindow = nil
 	}
