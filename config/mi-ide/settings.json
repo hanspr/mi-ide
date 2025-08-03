@@ -9,7 +9,6 @@
     "cursorline": true,
     "cursorshape": "block",
     "eofnewline": false,
-    "fastdirty": true,
     "fileformat": "unix",
     "indentchar": " ",
     "keepautoindent": true,
