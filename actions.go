@@ -1129,6 +1129,7 @@ func (v *View) Save(usePlugin bool) bool {
 			return false
 		}
 
+		messenger.Alert("info", Language.Translate("Saving, please wait ...."))
 		if v.Type.Scratch {
 			// We can't save any view type with scratch set. eg help and log text
 			return false
