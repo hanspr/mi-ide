@@ -3,6 +3,7 @@ package main
 import (
 	"encoding/json"
 	"errors"
+	"maps"
 	"os"
 	"path/filepath"
 	"reflect"
@@ -81,7 +82,7 @@ func InitGlobalSettings() {
 }
 
 // InitLocalSettings get known local settings for this opened file
-// 1.- scans the congig/settings.json and sets the options
+// 1.- scans the config/settings.json and sets the options
 // 2.- scans language settings for that particular filetype
 // 3.- scans users saved settings for this particular project
 // 4.- scans users saved settings for this particular file
@@ -110,9 +111,7 @@ func InitLocalSettings(buf *Buffer) {
 		if strings.HasPrefix(reflect.TypeOf(v).String(), "map") {
 			if strings.HasPrefix(k, "ft:") {
 				if buf.Settings["filetype"].(string) == k[3:] {
-					for k1, v1 := range v.(map[string]interface{}) {
-						buf.Settings[k1] = v1
-					}
+					maps.Copy(buf.Settings, v.(map[string]any))
 				}
 			} else {
 				g, err := glob.Compile(k)
@@ -122,9 +121,7 @@ func InitLocalSettings(buf *Buffer) {
 				}
 
 				if g.MatchString(buf.Path) {
-					for k1, v1 := range v.(map[string]interface{}) {
-						buf.Settings[k1] = v1
-					}
+					maps.Copy(buf.Settings, v.(map[string]any))
 				}
 			}
 		}
@@ -134,9 +131,9 @@ func InitLocalSettings(buf *Buffer) {
 	filename = configDir + "/settings/" + buf.Settings["filetype"].(string) + ".json"
 	fSettings, err := ReadFileJSON(filename)
 	if err == nil {
-		for k, v := range fSettings {
-			buf.Settings[k] = v
-		}
+		maps.Copy(buf.Settings, fSettings)
+	} else {
+		TermMessage("Error in JSON:", filename, "(", err.Error(), ")")
 	}
 
 	// 3.- Load Settings for this project
@@ -145,9 +142,7 @@ func InitLocalSettings(buf *Buffer) {
 	filename = pdir + "/.miide/settings.json"
 	fSettings, err = ReadFileJSON(filename)
 	if err == nil {
-		for k, v := range fSettings {
-			buf.Settings[k] = v
-		}
+		maps.Copy(buf.Settings, fSettings)
 	}
 
 	// 4.- Load Settings for this particular file
@@ -155,9 +150,7 @@ func InitLocalSettings(buf *Buffer) {
 	fSettings, err = ReadFileJSON(filename)
 	if err == nil {
 		// Load previous saved settings for this file
-		for k, v := range fSettings {
-			buf.Settings[k] = v
-		}
+		maps.Copy(buf.Settings, fSettings)
 	} else {
 		// No previous saved knowledge of this file
 		// Try to get some useful parameters from scanning file
