@@ -510,7 +510,7 @@ func (b *Buffer) SmartIndent(Start, Stop Loc) {
 					if b.Settings["indentchar"].(string) == "\t" {
 						cfrom = " "
 					}
-					messenger.AddLog("smartindent, mixed: from >", cfrom, "< to >", b.Settings["indentchar"].(string), "< size:", b.Settings["tabsize"].(float64))
+					//messenger.AddLog("smartindent, mixed: from >", cfrom, "< to >", b.Settings["indentchar"].(string), "< size:", b.Settings["tabsize"].(float64))
 					b.ChangeIndentation(cfrom, b.Settings["indentchar"].(string), int(b.Settings["tabsize"].(float64)), int(b.Settings["tabsize"].(float64)))
 					goto restart
 				}
@@ -568,7 +568,7 @@ func (b *Buffer) SmartIndent(Start, Stop Loc) {
 			ci--
 		}
 		if ci < 0 {
-			messenger.AddLog("NEGATIVO !!!!!")
+			//messenger.AddLog("NEGATIVO !!!!!")
 			ci = 0
 		}
 		if GetLineIndentetion(b.Line(y), iChar, iMult) != ci {
@@ -799,7 +799,7 @@ func (b *Buffer) SaveAs(filename string) error {
 	})
 
 	if err != nil {
-		messenger.AddLog(err.Error())
+		//messenger.AddLog(err.Error())
 		if b.encoding {
 			newerr := b.RetryOnceSaveAs(filename)
 			if newerr != nil {

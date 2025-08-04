@@ -380,7 +380,7 @@ func GetInstalledPluginVersion(name string) string {
 
 // DownloadAndInstall downloads and installs the given plugin and version
 func (pv *PluginVersion) DownloadAndInstall() error {
-	messenger.AddLog(fmt.Sprintf("Downloading %q (%s) from %q", pv.pack.Name, pv.Version, pv.URL))
+	//messenger.AddLog(fmt.Sprintf("Downloading %q (%s) from %q", pv.pack.Name, pv.Version, pv.URL))
 	resp, err := http.Get(pv.URL)
 	if err != nil {
 		return err
@@ -544,7 +544,7 @@ func (pv PluginVersions) install() {
 			shouldInstall := true
 			if pv := currentlyInstalled.find(sel.pack.Name); pv != nil {
 				if pv.Version.NE(sel.Version) {
-					messenger.AddLog("Uninstalling", sel.pack.Name)
+					//messenger.AddLog("Uninstalling", sel.pack.Name)
 					UninstallPlugin(sel.pack.Name)
 				} else {
 					shouldInstall = false
@@ -562,8 +562,6 @@ func (pv PluginVersions) install() {
 	}
 	if anyInstalled {
 		messenger.Message("One or more plugins installed. Please restart mi-ide.")
-	} else {
-		messenger.AddLog("Nothing to install / update")
 	}
 }
 
@@ -599,7 +597,7 @@ func UpdatePlugins(plugins []string) {
 		}
 	}
 
-	messenger.AddLog("Checking for plugin updates")
+	//messenger.AddLog("Checking for plugin updates")
 	microVersion := PluginVersions{
 		newStaticPluginVersion(CorePluginName, Version),
 	}

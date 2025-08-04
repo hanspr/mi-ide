@@ -176,7 +176,7 @@ func GroupShow(args []string) {
 }
 
 func GroupGit(args []string) {
-	messenger.AddLog("GroupGit:", args[0], ":")
+	//messenger.AddLog("GroupGit:", args[0], ":")
 	if args[0] == "diff" {
 		GitDiff("")
 	} else if args[0] == "diffstaged" {
@@ -343,7 +343,7 @@ func GitStatus() {
 
 // Load git status into a window
 func GitDiff(arg string) {
-	messenger.AddLog("Execute Git ", arg)
+	//messenger.AddLog("Execute Git ", arg)
 	if !git.enabled {
 		return
 	}
@@ -354,7 +354,7 @@ func GitDiff(arg string) {
 	cmd = cmd + " -w"
 	diff, err := RunShellCommand(cmd)
 	if err != nil {
-		messenger.AddLog(err.Error())
+		//messenger.AddLog(err.Error())
 		return
 	}
 	CurView().AddTab(false)
