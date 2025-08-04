@@ -168,9 +168,9 @@ snippet perle
 # HTML
 
 snippet text
-	<input type="text" name="${1:name}" value="$in{'${1:name}'}" class="${2:form}" size="${3:10}" onfocus="${4:this.value=delCommas(this.value);}" onkeypress="return validate(this,'${5:type}','${6:options}',event);" onblur="validate2(this,'${5:type}','${6:options}');" />
+	<input type="text" name="${1:name}" value="$in{'${1:name}'}" class="${2:form}" size="${3:10}" onfocus="${4:this.value=delCommas(this.value);}" oninput="validate(this,'${5:type}','${6:options}',event);" onblur="validate2(this,'${5:type}','${6:options}');" />
 snippet textid
-	<input id="${1:id}" type="text" name="${2:name}" value="$in{'${2:name}'}" class="${3:form}" size="${4:10}" onfocus="${5:this.value=delCommas(this.value);}" onkeypress="return validate(this,'${6:type}','${7:options}',event);" onblur="validate2(this,'${6:type}','${7:options}');" />
+	<input id="${1:id}" type="text" name="${2:name}" value="$in{'${2:name}'}" class="${3:form}" size="${4:10}" onfocus="${5:this.value=delCommas(this.value);}" oninput="validate(this,'${6:type}','${7:options}',event);" onblur="validate2(this,'${6:type}','${7:options}');" />
 snippet submit
 	<input id="${1:sx}" type="submit" name="${2:x}" value="${3:Guardar}" class="${4:form}" onclick="return valida_forma();" />
 snippet table
