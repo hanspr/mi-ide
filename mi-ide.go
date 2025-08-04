@@ -82,9 +82,6 @@ var (
 	// Event channel
 	events chan tcell.Event
 
-	// How many redraws have happened
-	numRedraw uint
-
 	// Pointer Flag to check if App is running
 	apprunning *MicroApp
 
@@ -297,8 +294,8 @@ func RedrawAll(show bool) {
 	messenger.Clear()
 
 	w, h := screen.Size()
-	for x := 0; x < w; x++ {
-		for y := 0; y < h; y++ {
+	for x := range w {
+		for y := range h {
 			screen.SetContent(x, y, ' ', nil, defStyle)
 		}
 	}
@@ -312,11 +309,6 @@ func RedrawAll(show bool) {
 	if show {
 		screen.Show()
 	}
-
-	if numRedraw%50 == 0 {
-		runtime.GC()
-	}
-	numRedraw++
 }
 
 func loadAll() {
