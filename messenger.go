@@ -143,6 +143,7 @@ func (m *Messenger) Alert(kind string, msg ...interface{}) {
 			}
 		}
 		m.hasMessage = true
+		RedrawAll(true)
 	}
 	// add the message to the log regardless of active prompts
 	m.AddLog(buf.String())
