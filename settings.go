@@ -133,7 +133,9 @@ func InitLocalSettings(buf *Buffer) {
 	if err == nil {
 		maps.Copy(buf.Settings, fSettings)
 	} else {
-		TermMessage("Error in JSON:", filename, "(", err.Error(), ")")
+		if err.Error() != "missing" {
+			TermMessage("Error in JSON:", filename, "(", err.Error(), ")")
+		}
 	}
 
 	// 3.- Load Settings for this project

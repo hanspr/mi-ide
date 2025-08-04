@@ -667,7 +667,7 @@ func ReadFileJSON(filename string) (map[string]any, error) {
 			return parsed, err
 		}
 	} else {
-		return parsed, errors.New("File does not exists")
+		return parsed, errors.New("missing")
 	}
 	return parsed, nil
 }
