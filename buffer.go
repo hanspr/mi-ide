@@ -471,7 +471,7 @@ func (b *Buffer) AddMultiComment(Start, Stop Loc) {
 func (b *Buffer) SmartIndent(Start, Stop Loc) {
 	bopen := `[\{\[\\(]$`
 	bclose := `^[\}\]\)]`
-	binter := `^[\}\]\)].+?[\{\[\\(]$`
+	binter := `^[\}\]\)].+?[\{\[\\(]$|:$`
 	if b.Settings["blockopen"].(string) != "" && b.Settings["blockclose"].(string) != "" && b.Settings["blockinter"].(string) != "" {
 		bopen = b.Settings["blockopen"].(string)
 		bclose = b.Settings["blockclose"].(string)
@@ -543,11 +543,6 @@ func (b *Buffer) SmartIndent(Start, Stop Loc) {
 			skipBlock = true
 			continue
 		}
-		// if comment.MatchString(lc) {
-		// 	// ignore commented lines
-		// 	// messenger.AddLog("comentario")
-		// 	continue
-		// }
 		// messenger.AddLog("ci + IndRef:", ci, "+", IndRef)
 		ci = I + IndRef
 		if interBlock.MatchString(lc) {
