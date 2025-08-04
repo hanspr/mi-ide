@@ -21,6 +21,7 @@ File can not be saved with selected encoding|Archivo no se puede salvar con la c
 File is readonly|Archivo de solo lectura
 Saved|Guardado
 Buffer has no changes to save|No hay cambios que guardar
+Saving, please wait ....|Guardando, espere por favor ....
 Selection is too big, can not copy. You may move (up/down) or delete only.|Selección es demasiado grande, no puedo copiar. Puede mover la línea hacia (abajo/arriba) o eliminar únicamente.
 Line is too big, can not cut. You may move (up/down) or delete only.|Línea es muy grande, no puedo cortar. Puede mover la línea hacia (arriba/abajo) o eliminar únicamente.
 Line is too big to cut|Línea demasiado grande para cortar
