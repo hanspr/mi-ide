@@ -15,13 +15,13 @@ import (
 )
 
 // PreActionCall executes the lua pre callback if possible
-func PreActionCall(funcName string, view *View, args ...interface{}) bool {
+func PreActionCall(funcName string, view *View, args ...any) bool {
 	executeAction := true
 	for pl := range loadedPlugins {
 		if GetPluginOption(pl, "ftype") != "*" && (GetPluginOption(pl, "ftype") == nil || GetPluginOption(pl, "ftype").(string) != CurView().Buf.FileType()) {
 			continue
 		}
-		ret, err := Call(pl+".pre"+funcName, append([]interface{}{view}, args...)...)
+		ret, err := Call(pl+".pre"+funcName, append([]any{view}, args...)...)
 		if err != nil && !strings.HasPrefix(err.Error(), "function does not exist") {
 			TermMessage(err)
 			continue
@@ -34,13 +34,13 @@ func PreActionCall(funcName string, view *View, args ...interface{}) bool {
 }
 
 // PostActionCall executes the lua plugin callback if possible
-func PostActionCall(funcName string, view *View, args ...interface{}) bool {
+func PostActionCall(funcName string, view *View, args ...any) bool {
 	relocate := true
 	for pl := range loadedPlugins {
 		if GetPluginOption(pl, "ftype") != "*" && (GetPluginOption(pl, "ftype") == nil || GetPluginOption(pl, "ftype").(string) != CurView().Buf.FileType()) {
 			continue
 		}
-		ret, err := Call(pl+".on"+funcName, append([]interface{}{view}, args...)...)
+		ret, err := Call(pl+".on"+funcName, append([]any{view}, args...)...)
 		if err != nil && !strings.HasPrefix(err.Error(), "function does not exist") {
 			TermMessage(err)
 			continue

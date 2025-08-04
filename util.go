@@ -392,12 +392,12 @@ func Abs(n int) int {
 }
 
 // FuncName returns the full name of a given function object
-func FuncName(i interface{}) string {
+func FuncName(i any) string {
 	return runtime.FuncForPC(reflect.ValueOf(i).Pointer()).Name()
 }
 
 // ShortFuncName returns the name only of a given function object
-func ShortFuncName(i interface{}) string {
+func ShortFuncName(i any) string {
 	return strings.TrimPrefix(runtime.FuncForPC(reflect.ValueOf(i).Pointer()).Name(), "main.(*View).")
 }
 
@@ -626,7 +626,7 @@ func WriteFileJSON(filename string, values map[string]string, parsedValues bool)
 	var txt []byte
 
 	if parsedValues {
-		parsed := make(map[string]interface{})
+		parsed := make(map[string]any)
 		for k, v := range values {
 			if v == "true" || v == "false" || v == "on" || v == "off" {
 				vb, err := strconv.ParseBool(v)
@@ -654,8 +654,8 @@ func WriteFileJSON(filename string, values map[string]string, parsedValues bool)
 }
 
 // ReadFileJSON read a JSON file into a map
-func ReadFileJSON(filename string) (map[string]interface{}, error) {
-	var parsed map[string]interface{}
+func ReadFileJSON(filename string) (map[string]any, error) {
+	var parsed map[string]any
 
 	if _, e := os.Stat(filename); e == nil {
 		input, err := os.ReadFile(filename)

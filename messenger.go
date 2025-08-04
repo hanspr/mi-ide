@@ -21,7 +21,7 @@ import (
 // The function must be called when the screen is not initialized
 // This will write the message, and wait for the user
 // to press and key to continue
-func TermMessage(msg ...interface{}) {
+func TermMessage(msg ...any) {
 	screenWasNil := screen == nil
 	if !screenWasNil {
 		screen.Fini()
@@ -77,7 +77,7 @@ type Messenger struct {
 }
 
 // AddLog sends a message to the log view
-func (m *Messenger) AddLog(msg ...interface{}) {
+func (m *Messenger) AddLog(msg ...any) {
 	logMessage := fmt.Sprint(msg...)
 	buffer := m.getBuffer()
 	buffer.insert(buffer.End(), []byte(logMessage+"\n"))
@@ -94,7 +94,7 @@ func (m *Messenger) getBuffer() *Buffer {
 }
 
 // Message sends a message to the user
-func (m *Messenger) Message(msg ...interface{}) {
+func (m *Messenger) Message(msg ...any) {
 	displayMessage := fmt.Sprint(msg...)
 	// only display a new message if there isn't an active prompt
 	// this is to prevent overwriting an existing prompt to the user
@@ -115,7 +115,7 @@ func (m *Messenger) Message(msg ...interface{}) {
 }
 
 // Alert sends an error message to the user
-func (m *Messenger) Alert(kind string, msg ...interface{}) {
+func (m *Messenger) Alert(kind string, msg ...any) {
 	buf := new(bytes.Buffer)
 	fmt.Fprint(buf, msg...)
 
@@ -150,27 +150,27 @@ func (m *Messenger) Alert(kind string, msg ...interface{}) {
 }
 
 // Success : compatibility for plugins
-func (m *Messenger) Success(msg ...interface{}) {
+func (m *Messenger) Success(msg ...any) {
 	m.Alert("success", msg...)
 }
 
 // Error : compatibility for plugins
-func (m *Messenger) Error(msg ...interface{}) {
+func (m *Messenger) Error(msg ...any) {
 	m.Alert("error", msg...)
 }
 
 // Warning : compatibility for plugins
-func (m *Messenger) Warning(msg ...interface{}) {
+func (m *Messenger) Warning(msg ...any) {
 	m.Alert("warning", msg...)
 }
 
 // Information : compatibility for plugins
-func (m *Messenger) Information(msg ...interface{}) {
+func (m *Messenger) Information(msg ...any) {
 	m.Alert("info", msg...)
 }
 
 // PromptText show a message to the user
-func (m *Messenger) PromptText(msg ...interface{}) {
+func (m *Messenger) PromptText(msg ...any) {
 	displayMessage := fmt.Sprint(msg...)
 	// if there is no active prompt then style and display the message as normal
 	m.message = displayMessage

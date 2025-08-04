@@ -76,7 +76,7 @@ type Buffer struct {
 	highlighter *highlight.Highlighter
 
 	// Buffer local settings
-	Settings map[string]interface{}
+	Settings map[string]any
 
 	pasteLoc Loc
 	//pasteTime time

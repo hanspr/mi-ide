@@ -18,7 +18,7 @@ var loadedPlugins map[string]string
 // Call calls the lua function 'function'
 // If it does not exist nothing happens, if there is an error,
 // the error is returned
-func Call(function string, args ...interface{}) (lua.LValue, error) {
+func Call(function string, args ...any) (lua.LValue, error) {
 	var luaFunc lua.LValue
 	if strings.Contains(function, ".") {
 		plugin := L.GetGlobal(strings.Split(function, ".")[0])
@@ -50,7 +50,7 @@ func Call(function string, args ...interface{}) (lua.LValue, error) {
 }
 
 // CallP function call to plugins
-func CallP(luaFunc lua.LValue, args ...interface{}) (lua.LValue, error) {
+func CallP(luaFunc lua.LValue, args ...any) (lua.LValue, error) {
 	var luaArgs []lua.LValue
 	for _, v := range args {
 		luaArgs = append(luaArgs, luar.New(L, v))
@@ -95,8 +95,8 @@ func LuaFunctionMouseBinding(function string) func(*View, bool, *tcell.EventMous
 	}
 }
 
-func unpack(old []string) []interface{} {
-	new := make([]interface{}, len(old))
+func unpack(old []string) []any {
+	new := make([]any, len(old))
 	for i, v := range old {
 		new[i] = v
 	}
@@ -158,7 +158,7 @@ func luaPluginName(name string) string {
 // LoadPlugins loads the plugins located in ~/.config/mi-ide/plugins
 func LoadPlugins() {
 	loadedPlugins = make(map[string]string)
-	pluginOption = make(map[string]interface{})
+	pluginOption = make(map[string]any)
 
 	for _, plugin := range ListRuntimeFiles(RTPlugin) {
 		pluginName := plugin.Name()
@@ -196,7 +196,7 @@ func LoadPlugins() {
 
 // GlobalPluginCall makes a call to a function in every plugin that is currently
 // loaded
-func GlobalPluginCall(function string, args ...interface{}) {
+func GlobalPluginCall(function string, args ...any) {
 	for pl := range loadedPlugins {
 		if GetPluginOption(pl, "ftype") != "*" && (GetPluginOption(pl, "ftype") == nil || GetPluginOption(pl, "ftype").(string) != CurView().Buf.FileType()) {
 			continue
@@ -213,11 +213,11 @@ func GlobalPluginCall(function string, args ...interface{}) {
 
 // Each plugin has its own plugin settings file, these are the functions to add, get or set options
 
-var pluginOption map[string]interface{}
+var pluginOption map[string]any
 
 // LoadPluginOptions load options for the plugin
 func LoadPluginOptions(pname string) {
-	var parsed map[string]interface{}
+	var parsed map[string]any
 
 	filename := configDir + "/plugins/" + pname + "/settings.json"
 	if _, err := os.Stat(filename); err == nil {
@@ -244,7 +244,7 @@ func WritePluginSettings(pname string) error {
 	}
 	if _, e := os.Stat(configDir + "/plugins/" + pname); e == nil {
 		filename := configDir + "/plugins/" + pname + "/settings.json"
-		parsed := make(map[string]interface{})
+		parsed := make(map[string]any)
 		for k, v := range pluginOption {
 			if strings.Contains(k, pname+"-") {
 				kp := strings.Split(k, "-")
@@ -259,7 +259,7 @@ func WritePluginSettings(pname string) error {
 }
 
 // AddPluginOption add an option to the file
-func AddPluginOption(pname, option string, value interface{}) error {
+func AddPluginOption(pname, option string, value any) error {
 	opt := pname + "-" + option
 	_, ok := pluginOption[opt]
 	if ok {
@@ -270,13 +270,13 @@ func AddPluginOption(pname, option string, value interface{}) error {
 }
 
 // SetPluginOption set a plugin option
-func SetPluginOption(pname, option string, value interface{}) {
+func SetPluginOption(pname, option string, value any) {
 	opt := pname + "-" + option
 	pluginOption[opt] = value
 }
 
 // GetPluginOption get value of an option
-func GetPluginOption(pname, option string) interface{} {
+func GetPluginOption(pname, option string) any {
 	value, ok := pluginOption[pname+"-"+option]
 	if !ok {
 		return nil

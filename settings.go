@@ -15,10 +15,10 @@ import (
 	"github.com/phayes/permbits"
 )
 
-type optionValidator func(string, interface{}) error
+type optionValidator func(string, any) error
 
 // The options that the user can set
-var globalSettings map[string]interface{}
+var globalSettings map[string]any
 
 var invalidSettings bool
 
@@ -35,7 +35,7 @@ var optionValidators = map[string]optionValidator{
 func InitGlobalSettings() {
 	invalidSettings = false
 	defaults := DefaultGlobalSettings()
-	var parsed map[string]interface{}
+	var parsed map[string]any
 
 	filename := configDir + "/settings.json"
 	writeSettings := false
@@ -58,7 +58,7 @@ func InitGlobalSettings() {
 		}
 	}
 
-	globalSettings = make(map[string]interface{})
+	globalSettings = make(map[string]any)
 	for k, v := range defaults {
 		globalSettings[k] = v
 	}
@@ -88,7 +88,7 @@ func InitGlobalSettings() {
 // 4.- scans users saved settings for this particular file
 func InitLocalSettings(buf *Buffer) {
 	invalidSettings = false
-	var parsed map[string]interface{}
+	var parsed map[string]any
 
 	// 1.- Load Micro-Ide Settings
 	filename := configDir + "/settings.json"
@@ -168,7 +168,7 @@ func WriteSettings(filename string) error {
 	var err error
 	if _, e := os.Stat(configDir); e == nil {
 		filename := configDir + "/settings.json"
-		parsed := make(map[string]interface{})
+		parsed := make(map[string]any)
 		for k, v := range globalSettings {
 			parsed[k] = v
 		}
@@ -206,7 +206,7 @@ func WriteSettings(filename string) error {
 }
 
 // AddOption creates a new option. This is meant to be called by plugins to add options.
-func AddOption(name string, value interface{}) {
+func AddOption(name string, value any) {
 	globalSettings[name] = value
 	err := WriteSettings(configDir + "/settings.json")
 	if err != nil {
@@ -215,19 +215,19 @@ func AddOption(name string, value interface{}) {
 }
 
 // GetGlobalOption returns the global value of the given option
-func GetGlobalOption(name string) interface{} {
+func GetGlobalOption(name string) any {
 	return globalSettings[name]
 }
 
 // GetLocalOption returns the local value of the given option
-func GetLocalOption(name string, buf *Buffer) interface{} {
+func GetLocalOption(name string, buf *Buffer) any {
 	return buf.Settings[name]
 }
 
 // GetOption returns the value of the given option
 // If there is a local version of the option, it returns that
 // otherwise it will return the global version
-func GetOption(name string) interface{} {
+func GetOption(name string) any {
 	if GetLocalOption(name, CurView().Buf) != nil {
 		return GetLocalOption(name, CurView().Buf)
 	}
@@ -236,8 +236,8 @@ func GetOption(name string) interface{} {
 
 // DefaultGlobalSettings returns the default global settings for mi-ide
 // Note that colorscheme is a global only option
-func DefaultGlobalSettings() map[string]interface{} {
-	return map[string]interface{}{
+func DefaultGlobalSettings() map[string]any {
+	return map[string]any{
 		"autoclose":      true,
 		"autoindent":     true,
 		"autoreload":     true,
@@ -283,8 +283,8 @@ func DefaultGlobalSettings() map[string]interface{} {
 
 // DefaultLocalSettings returns the default local settings
 // Note that filetype is a local only option
-func DefaultLocalSettings() map[string]interface{} {
-	return map[string]interface{}{
+func DefaultLocalSettings() map[string]any {
+	return map[string]any{
 		"autoclose":      true,
 		"autoindent":     true,
 		"autoreload":     true,
@@ -337,7 +337,7 @@ func SetOption(option, value string) error {
 		return nil
 	}
 
-	var nativeValue interface{}
+	var nativeValue any
 
 	kind := reflect.TypeOf(globalSettings[option]).Kind()
 	if kind == reflect.Bool {
@@ -398,7 +398,7 @@ func SetLocalOption(option, value string, view *View) error {
 		return errors.New("invalid option")
 	}
 
-	var nativeValue interface{}
+	var nativeValue any
 
 	kind := reflect.TypeOf(buf.Settings[option]).Kind()
 	if kind == reflect.Bool {
@@ -466,7 +466,7 @@ func SetOptionAndSettings(option, value string) {
 	}
 }
 
-func optionIsValid(option string, value interface{}) error {
+func optionIsValid(option string, value any) error {
 	if validator, ok := optionValidators[option]; ok {
 		return validator(option, value)
 	}
@@ -476,7 +476,7 @@ func optionIsValid(option string, value interface{}) error {
 
 // Option validators
 
-func validatePositiveValue(option string, value interface{}) error {
+func validatePositiveValue(option string, value any) error {
 	tabsize, ok := value.(float64)
 
 	if !ok {
@@ -490,7 +490,7 @@ func validatePositiveValue(option string, value interface{}) error {
 	return nil
 }
 
-func validateNonNegativeValue(option string, value interface{}) error {
+func validateNonNegativeValue(option string, value any) error {
 	nativeValue, ok := value.(float64)
 
 	if !ok {
@@ -504,7 +504,7 @@ func validateNonNegativeValue(option string, value interface{}) error {
 	return nil
 }
 
-func validateColorscheme(option string, value interface{}) error {
+func validateColorscheme(option string, value any) error {
 	colorscheme, ok := value.(string)
 
 	if !ok {
@@ -518,7 +518,7 @@ func validateColorscheme(option string, value interface{}) error {
 	return nil
 }
 
-func validateLineEnding(option string, value interface{}) error {
+func validateLineEnding(option string, value any) error {
 	endingType, ok := value.(string)
 
 	if !ok {
