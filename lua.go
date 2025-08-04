@@ -389,11 +389,9 @@ func importOs() *lua.LTable {
 func importRuntime() *lua.LTable {
 	pkg := L.NewTable()
 
-	L.SetField(pkg, "GC", luar.New(L, runtime.GC))
 	L.SetField(pkg, "GOARCH", luar.New(L, runtime.GOARCH))
 	L.SetField(pkg, "GOMAXPROCS", luar.New(L, runtime.GOMAXPROCS))
 	L.SetField(pkg, "GOOS", luar.New(L, runtime.GOOS))
-	//L.SetField(pkg, "GOROOT", luar.New(L, runtime.GOROOT))
 
 	return pkg
 }
