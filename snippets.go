@@ -127,7 +127,7 @@ func (sl *SnippetLocation) handleInput(ev *TextEvent) bool {
 		sl.snippet.remove()
 		l := ev.Deltas[0].End.X - ev.Deltas[0].Start.X
 		if offset == 1 {
-			sl.ph.value = sl.ph.value[:offset+l-1]
+			sl.ph.value = sl.ph.value[offset+l-1:]
 		} else {
 			sl.ph.value = sl.ph.value[0:offset-1] + sl.ph.value[offset:]
 		}
@@ -279,7 +279,6 @@ func ReadSnippets(filetype string) map[string]*snippet {
 	filename := configDir + "/settings/snippets/" + filetype + ".snippets"
 	file, err := os.Open(filename)
 	if err != nil {
-		messenger.AddLog("No snippets for file ", filetype)
 		messenger.Error("No snippets file for ", filetype)
 		return snippets
 	}
