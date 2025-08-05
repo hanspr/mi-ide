@@ -239,7 +239,7 @@ func (sline *Statusline) Display() {
 				if fileRunes[x] == '}' {
 					gstart = 99
 					fileRunes[x] = ' '
-					tStyle = StringToStyle("#000000," + "#000000")
+					tStyle = StringToStyle(gitfg + "," + gitbg)
 				} else if gstart == 1 {
 					if fileRunes[x] == '{' {
 						gstart = 2
