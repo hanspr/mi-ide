@@ -214,6 +214,8 @@ func (sline *Statusline) Display() {
 		viewX++
 	}
 	gstart := 0
+	gitbg := "#000000"
+	gitfg := "#ffffff"
 	for x := 0; x < w; x++ {
 		tStyle := statusLineStyle
 		if NavigationMode {
@@ -242,17 +244,23 @@ func (sline *Statusline) Display() {
 					if fileRunes[x] == '{' {
 						gstart = 2
 						fileRunes[x] = ' '
+						gitbg = git.bgcolor
+						gitfg = "#ffffff"
 					}
-					tStyle = StringToStyle("#ffffff," + git.bgcolor)
+					tStyle = StringToStyle(gitfg + "," + gitbg)
 				} else if fileRunes[x] != ' ' {
 					tStyle = StringToStyle("bold " + git.fgcolor[string(fileRunes[x])] + "," + git.bgcolor)
 				} else {
-					tStyle = StringToStyle("#ffffff," + git.bgcolor)
+					tStyle = StringToStyle(gitfg + "," + gitbg)
 				}
-			} else if fileRunes[x] == '[' {
+			} else if fileRunes[x] == '[' || fileRunes[x] == ']' {
 				gstart = 1
+				if fileRunes[x] == ']' {
+					gitfg = "#000000"
+					gitbg = "gold"
+				}
 				fileRunes[x] = '↳'
-				tStyle = StringToStyle("#ffffff," + git.bgcolor)
+				tStyle = StringToStyle(gitfg + "," + gitbg)
 			}
 			screen.SetContent(viewX+x, y, fileRunes[x], nil, tStyle)
 		} else if x >= w-len(rightText) && x < len(rightText)+w-len(rightText) {

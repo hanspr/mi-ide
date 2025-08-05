@@ -62,7 +62,7 @@ func (g *gitstatus) GitSetStatus() {
 	} else {
 		branch = branch[:len(branch)-1]
 	}
-	g.status = "[ " + branch + "{"
+	g.status = ""
 	g.enabled = true
 	lines := strings.Split(status, "\n")
 	m := false
@@ -91,5 +91,9 @@ func (g *gitstatus) GitSetStatus() {
 			break
 		}
 	}
-	g.status = g.status + "}"
+	if m || s || u {
+		g.status = "] " + branch + "{" + g.status + "}"
+	} else {
+		g.status = "[ " + branch + "{" + g.status + "}"
+	}
 }
