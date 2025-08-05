@@ -94,6 +94,6 @@ func (g *gitstatus) GitSetStatus() {
 	if m || s || u {
 		g.status = "] " + branch + "{" + g.status + "}"
 	} else {
-		g.status = "[ " + branch + "{" + g.status + "}"
+		g.status = "[ " + branch + "}"
 	}
 }
