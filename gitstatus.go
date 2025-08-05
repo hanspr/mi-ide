@@ -17,7 +17,7 @@ func NewGitStatus() *gitstatus {
 	g.enabled = false
 	g.status = " "
 	g.fgcolor = make(map[string]string)
-	g.bgcolor = "#000000"
+	g.bgcolor = "#437e0c"
 	g.CheckGit()
 	return g
 }
