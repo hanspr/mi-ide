@@ -909,7 +909,7 @@ func RunBackgroundShell(input string) {
 	}()
 }
 
-// GetProjectDir: tries to find the correct path to the project
+// GetProjectDir tries to find the correct path to the project
 // with respecto to the file directory path
 func GetProjectDir(wkdir, fdir string) string {
 	if wkdir == HomeDir {
