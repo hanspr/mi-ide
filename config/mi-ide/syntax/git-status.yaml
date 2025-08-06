@@ -5,6 +5,9 @@ detect:
 
 rules:
     - constant.number: "\".*?\""
+    - info: "\'.*?\'"
+    - constant.number: "(?:En la rama|On branch) .+"
+    - default: "(?:En la rama|On branch) "
     - default:
         start: " (?:track|sin seg)\\w+:$"
         end: "^$"
