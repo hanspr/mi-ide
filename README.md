@@ -12,12 +12,12 @@ What is this editor philosophy:
   * No space for language servers, not enough cpu to support a heavy load
 * I do want to have as many amenities from well developed ides, like
   * Syntax error checking inside the editor
-  * Check git status and git diff
+  * Check git status on the status bar, and access to git status and git diff within the editor
   * Search for functions within the project
   * Snippets
   * Good set of commands and key actions to help writing code fluently
   * A new approach to keybindins to maintain the hands on the keyboard as much as possible
-  * A clipboard that works across editors in diferente terminals and servers
+  * A clipboard that works across editors in diferente terminals and servers (cloud clipboard)
   * A plugin system to enhance the experience of developing in a particular language
   * Syntax highlight
 * My particular setup is : tmux, gitui and miide. With this combination I have a very usefull development environment on my remote servers.
@@ -48,11 +48,11 @@ So this is the result of it, check the manual and see if it would fill your requ
     - Unzip the release
         - `unzip release##.zip`
     - Place the binary in any location on your home directory, for example
-        - `mv mi-ide ~/.local`
+        - `mv mi-ide ~/.local/bin`
     - Create an alias in your `.bashrc` or `.bash_aliases` to the location of your executable
         - Change to your home directory : `cd`
         - Edit : `nano .bashrc` or `nano .bash_aliases`
-        - Add : `alias mi-ide='~/.local/mi-ide'`
+        - Add : `alias mi-ide='~/.local/bin/mi-ide'`
         - Reload changes: `. .bashrc` or `. .bash_aliases`
     - Execute mi-ide.
         - The first time you run the editor will download the configurations from github.
