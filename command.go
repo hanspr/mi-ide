@@ -312,7 +312,7 @@ func ShowSnippets() {
 	for _, name := range keys {
 		snips = snips + "snippet " + name + "\n" + snippets[name].code + "\n\n"
 	}
-	CurView().OpenHelperView("v", "git-status", snips)
+	CurView().OpenHelperView("v", "snippet", snips)
 }
 
 func EditSettings() {
