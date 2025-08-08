@@ -117,7 +117,7 @@ var (
 
 	cloudPath = "https://clip.microflow.com.mx:8443" // Cloud service url
 
-	git = &gitstatus{}
+	git *gitstatus
 
 	WorkingDir = ""
 
@@ -156,7 +156,7 @@ func LoadInput() []*Buffer {
 	if len(args) > 0 {
 		// Option 1
 		// We go through each file and load it
-		for i := 0; i < len(args); i++ {
+		for i := range args {
 			if strings.HasPrefix(args[i], "+") {
 				if strings.Contains(args[i], ":") {
 					split := strings.Split(args[i], ":")
@@ -383,7 +383,7 @@ func main() {
 		fmt.Println("-startpos LINE,COL")
 		fmt.Println("+LINE:COL")
 		fmt.Println("    \tSpecify a line and column to start the cursor at when opening a buffer")
-		fmt.Println("    \tThis can also be done by opening file:LINE:COL")
+		fmt.Println("    \tThis can also be done by opening file+LINE:COL")
 		fmt.Println("-options")
 		fmt.Println("    \tShow all option help")
 		fmt.Println("-version")
@@ -480,6 +480,9 @@ func main() {
 			t.Resize()
 		}
 	}
+
+	// release the references we created, they are no longer needed
+	buffers = nil
 
 	for k, v := range optionFlags {
 		if *v != "" {

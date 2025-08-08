@@ -2053,6 +2053,8 @@ func (v *View) Quit(usePlugin bool) bool {
 				tabs[curTab].CurView = v.splitNode.GetPositionViewNum(pos)
 			} else if len(tabs) > 1 {
 				if len(tabs[v.TabNum].Views) == 1 {
+					// Make sure we release this pointer
+					tabs[curTab] = nil
 					tabs = tabs[:v.TabNum+copy(tabs[v.TabNum:], tabs[v.TabNum+1:])]
 					for i, t := range tabs {
 						t.SetNum(i)
