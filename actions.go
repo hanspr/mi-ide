@@ -2158,8 +2158,6 @@ func (v *View) PreviousTab(usePlugin bool) bool {
 
 		if CurView().Type.Readonly {
 			NavigationMode = true
-		} else {
-			NavigationMode = false
 		}
 
 		if usePlugin {
@@ -2182,8 +2180,6 @@ func (v *View) NextTab(usePlugin bool) bool {
 
 		if CurView().Type.Readonly {
 			NavigationMode = true
-		} else {
-			NavigationMode = false
 		}
 
 		if usePlugin {
@@ -2278,8 +2274,6 @@ func (v *View) NextSplit(usePlugin bool) bool {
 		tab.CurView = v.splitNode.GetNextPrevView(1)
 		if CurView().Type.Readonly {
 			NavigationMode = true
-		} else {
-			NavigationMode = false
 		}
 		if usePlugin {
 			return PostActionCall("NextSplit", v)
@@ -2303,8 +2297,6 @@ func (v *View) PreviousSplit(usePlugin bool) bool {
 		tab.CurView = v.splitNode.GetNextPrevView(-1)
 		if CurView().Type.Readonly {
 			NavigationMode = true
-		} else {
-			NavigationMode = false
 		}
 		if usePlugin {
 			return PostActionCall("PreviousSplit", v)
