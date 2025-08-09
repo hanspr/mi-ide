@@ -181,24 +181,21 @@ func (l *LeafNode) HSplit(buf *Buffer, splitIndex int) {
 func (l *LeafNode) Delete() {
 	i := search(l.parent.children, l)
 
+	l.parent.children[i] = nil
 	copy(l.parent.children[i:], l.parent.children[i+1:])
-	l.parent.children[len(l.parent.children)-1] = nil
 	l.parent.children = l.parent.children[:len(l.parent.children)-1]
 
 	// Changed to use curTab, instead of l.parent.tabNum.
 	// curTab guaranties that the Tab that is viewed is the one that we are working on
 	tab := tabs[curTab]
 	j := findView(tab.Views, l.view)
+	tab.Views[j] = nil
 	copy(tab.Views[j:], tab.Views[j+1:])
-	tab.Views[len(tab.Views)-1] = nil // or the zero value of T
 	tab.Views = tab.Views[:len(tab.Views)-1]
 
 	for i, v := range tab.Views {
 		v.Num = i
 	}
-	//	if tab.CurView > 0 {
-	//		tab.CurView--
-	//	}
 }
 
 // Cleanup rearranges all the parents after a split has been deleted
