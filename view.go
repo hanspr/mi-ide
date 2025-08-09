@@ -681,9 +681,7 @@ func (v *View) HandleEvent(event tcell.Event) {
 			isBinding = true
 			for key, actions := range combobindings {
 				if e.Rune() == key {
-					var cursors []*Cursor
-					messenger.Message("")
-					cursors = v.Buf.cursors
+					cursors := v.Buf.cursors
 					for _, c := range cursors {
 						ok := v.SetCursor(c)
 						if !ok {
@@ -711,7 +709,6 @@ func (v *View) HandleEvent(event tcell.Event) {
 						var cursors []*Cursor
 						isBinding = true
 						deleol := false
-						messenger.Message("")
 						if len(v.Buf.cursors) > 1 && (e.Name() == "Enter" || ShortFuncName(actions[0]) == "Delete") {
 							// Multicursor, newline & delete. Reverse cursor order so it works
 							for i := len(v.Buf.cursors) - 1; i >= 0; i-- {
