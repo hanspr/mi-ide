@@ -8,6 +8,7 @@ import (
 	"os"
 	"strconv"
 	"strings"
+	"time"
 	"unicode"
 
 	"github.com/hanspr/shellwords"
@@ -110,14 +111,13 @@ func (m *Messenger) Message(msg ...any) {
 
 		m.hasMessage = true
 	}
-	// add the message to the log regardless of active prompts
-	m.AddLog(displayMessage)
 }
 
 // Alert sends an error message to the user
 func (m *Messenger) Alert(kind string, msg ...any) {
 	buf := new(bytes.Buffer)
 	fmt.Fprint(buf, msg...)
+	clearTime := 0
 
 	// only display a new message if there isn't an active prompt
 	// this is to prevent overwriting an existing prompt to the user
@@ -125,14 +125,16 @@ func (m *Messenger) Alert(kind string, msg ...any) {
 		// if there is no active prompt then style and display the message as normal
 		m.message = buf.String()
 		if kind == "error" {
-			// m.style = defStyle.Foreground(tcell.ColorWhite).Background(tcell.Color196)
+			clearTime = 5
 			m.style = defStyle.Foreground(tcell.Color196).Bold(true)
 			if _, ok := colorscheme["error-message"]; ok {
 				m.style = colorscheme["error-message"]
 			}
 		} else if kind == "warning" {
+			clearTime = 5
 			m.style = defStyle.Foreground(tcell.ColorYellow).Normal()
 		} else if kind == "success" {
+			clearTime = 3
 			m.style = defStyle.Foreground(tcell.ColorGreen).Normal()
 		} else if kind == "info" {
 			m.style = defStyle.Foreground(tcell.ColorBlue).Bold(true)
@@ -144,9 +146,14 @@ func (m *Messenger) Alert(kind string, msg ...any) {
 		}
 		m.hasMessage = true
 		RedrawAll(true)
+		if clearTime > 0 {
+			go func() {
+				time.Sleep(time.Duration(clearTime) * time.Second)
+				m.ClearMessage()
+				RedrawAll(true)
+			}()
+		}
 	}
-	// add the message to the log regardless of active prompts
-	m.AddLog(buf.String())
 }
 
 // Success : compatibility for plugins
@@ -172,7 +179,6 @@ func (m *Messenger) Information(msg ...any) {
 // PromptText show a message to the user
 func (m *Messenger) PromptText(msg ...any) {
 	displayMessage := fmt.Sprint(msg...)
-	// if there is no active prompt then style and display the message as normal
 	m.message = displayMessage
 
 	m.style = defStyle
@@ -182,8 +188,6 @@ func (m *Messenger) PromptText(msg ...any) {
 	}
 
 	m.hasMessage = true
-	// add the message to the log regardless of active prompts
-	//m.AddLog(displayMessage)
 }
 
 // YesNoPrompt asks the user a yes or no question (waits for y or n) and returns the result
@@ -548,9 +552,14 @@ func (m *Messenger) Reset() {
 // Clear clears the line at the bottom of the editor
 func (m *Messenger) Clear() {
 	w, h := screen.Size()
-	for x := 0; x < w; x++ {
+	for x := range w {
 		screen.SetContent(x, h-1, ' ', nil, defStyle)
 	}
+}
+
+// Clear clears the line at the bottom of the editor
+func (m *Messenger) ClearMessage() {
+	m.message = ""
 }
 
 // DisplaySuggestions show possible completion values
@@ -564,7 +573,7 @@ func (m *Messenger) DisplaySuggestions(suggestions []string) {
 		statusLineStyle = style
 	}
 
-	for x := 0; x < w; x++ {
+	for x := range w {
 		screen.SetContent(x, y, ' ', nil, statusLineStyle)
 	}
 
@@ -587,7 +596,7 @@ func (m *Messenger) Display() {
 	if m.hasMessage {
 		runes := []rune(m.message + m.response)
 		posx := 0
-		for x := 0; x < len(runes); x++ {
+		for x := range runes {
 			screen.SetContent(posx, h-1, runes[x], nil, m.style)
 			posx += runewidth.RuneWidth(runes[x])
 		}
