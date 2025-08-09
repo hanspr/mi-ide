@@ -2152,6 +2152,8 @@ func (v *View) PreviousTab(usePlugin bool) bool {
 	if v.mainCursor() {
 		if usePlugin && !PreActionCall("PreviousTab", v) {
 			return false
+		} else if usePlugin {
+			PostActionCall("DisplayBlur", v)
 		}
 
 		if curTab > 0 {
@@ -2174,6 +2176,8 @@ func (v *View) NextTab(usePlugin bool) bool {
 	if v.mainCursor() {
 		if usePlugin && !PreActionCall("NextTab", v) {
 			return false
+		} else if usePlugin {
+			PostActionCall("DisplayBlur", v)
 		}
 
 		if curTab < len(tabs)-1 {
@@ -2267,6 +2271,8 @@ func (v *View) NextSplit(usePlugin bool) bool {
 	if v.mainCursor() {
 		if usePlugin && !PreActionCall("NextSplit", v) {
 			return false
+		} else if usePlugin {
+			PostActionCall("DisplayBlur", v)
 		}
 		tab := tabs[curTab]
 		pType := CurView().Type
@@ -2292,6 +2298,8 @@ func (v *View) PreviousSplit(usePlugin bool) bool {
 	if v.mainCursor() {
 		if usePlugin && !PreActionCall("PreviousSplit", v) {
 			return false
+		} else if usePlugin {
+			PostActionCall("DisplayBlur", v)
 		}
 
 		tab := tabs[curTab]
