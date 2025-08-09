@@ -174,7 +174,7 @@ func (v *View) OpenHelperView(dir, filetype string, data string) {
 		}
 		HelperWindow = CurView()
 		HelperWindow.Buf.Settings["filetype"] = filetype
-		HelperWindow.Type = vtLog
+		HelperWindow.Type = vtHelp
 		HelperWindow.Buf.UpdateRules()
 		SetLocalOption("softwrap", "true", HelperWindow)
 		SetLocalOption("ruler", "false", HelperWindow)
