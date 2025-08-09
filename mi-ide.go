@@ -461,6 +461,7 @@ func main() {
 	// Create a new messenger
 	// This is used for sending the user messages in the bottom of the editor
 	messenger = new(Messenger)
+	messenger.timerOn = false
 	messenger.LoadHistory()
 
 	// Now we load the input

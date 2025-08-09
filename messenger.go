@@ -75,6 +75,9 @@ type Messenger struct {
 
 	// Is the current message a message from the gutter
 	gutterMessage bool
+
+	timer   *time.Timer
+	timerOn bool
 }
 
 // AddLog sends a message to the log view
@@ -117,7 +120,7 @@ func (m *Messenger) Message(msg ...any) {
 func (m *Messenger) Alert(kind string, msg ...any) {
 	buf := new(bytes.Buffer)
 	fmt.Fprint(buf, msg...)
-	clearTime := 0
+	clearTime := 5
 
 	// only display a new message if there isn't an active prompt
 	// this is to prevent overwriting an existing prompt to the user
@@ -125,20 +128,19 @@ func (m *Messenger) Alert(kind string, msg ...any) {
 		// if there is no active prompt then style and display the message as normal
 		m.message = buf.String()
 		if kind == "error" {
-			clearTime = 5
 			m.style = defStyle.Foreground(tcell.Color196).Bold(true)
 			if _, ok := colorscheme["error-message"]; ok {
 				m.style = colorscheme["error-message"]
 			}
 		} else if kind == "warning" {
-			clearTime = 5
 			m.style = defStyle.Foreground(tcell.ColorYellow).Normal()
 		} else if kind == "success" {
-			clearTime = 3
 			m.style = defStyle.Foreground(tcell.ColorGreen).Normal()
 		} else if kind == "info" {
+			clearTime = 0
 			m.style = defStyle.Foreground(tcell.ColorBlue).Bold(true)
 		} else {
+			clearTime = 0
 			m.style = defStyle
 			if _, ok := colorscheme["message"]; ok {
 				m.style = colorscheme["message"]
@@ -147,11 +149,17 @@ func (m *Messenger) Alert(kind string, msg ...any) {
 		m.hasMessage = true
 		RedrawAll(true)
 		if clearTime > 0 {
-			go func() {
-				time.Sleep(time.Duration(clearTime) * time.Second)
+			if m.timer != nil && m.timerOn {
+				m.timer.Stop()
+			}
+			m.timer = time.AfterFunc(time.Duration(clearTime)*time.Second, func() {
 				m.ClearMessage()
 				RedrawAll(true)
-			}()
+				m.timerOn = false
+			})
+			m.timerOn = true
+		} else if m.timerOn {
+			m.timer.Stop()
 		}
 	}
 }
