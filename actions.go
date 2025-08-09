@@ -2269,6 +2269,7 @@ func (v *View) NextSplit(usePlugin bool) bool {
 			return false
 		}
 		tab := tabs[curTab]
+		pType := CurView().Type
 		// Save cursor location and line reference
 		v.savedLoc = v.Cursor.Loc
 		v.savedLine = SubstringSafe(v.Buf.Line(v.Cursor.Loc.Y), 0, 20)
@@ -2276,6 +2277,8 @@ func (v *View) NextSplit(usePlugin bool) bool {
 		tab.CurView = v.splitNode.GetNextPrevView(1)
 		if CurView().Type.Readonly {
 			NavigationMode = true
+		} else if pType.Readonly {
+			NavigationMode = false
 		}
 		if usePlugin {
 			return PostActionCall("NextSplit", v)
@@ -2292,6 +2295,7 @@ func (v *View) PreviousSplit(usePlugin bool) bool {
 		}
 
 		tab := tabs[curTab]
+		pType := CurView().Type
 		// Save cursor location and line reference
 		v.savedLoc = v.Cursor.Loc
 		v.savedLine = SubstringSafe(v.Buf.Line(v.Cursor.Loc.Y), 0, 20)
@@ -2299,6 +2303,8 @@ func (v *View) PreviousSplit(usePlugin bool) bool {
 		tab.CurView = v.splitNode.GetNextPrevView(-1)
 		if CurView().Type.Readonly {
 			NavigationMode = true
+		} else if pType.Readonly {
+			NavigationMode = false
 		}
 		if usePlugin {
 			return PostActionCall("PreviousSplit", v)
