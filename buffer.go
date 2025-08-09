@@ -641,7 +641,7 @@ func (b *Buffer) Update() {
 // into one cursor
 func (b *Buffer) MergeCursors() {
 	var cursors []*Cursor
-	for i := 0; i < len(b.cursors); i++ {
+	for i := range b.cursors {
 		c1 := b.cursors[i]
 		if c1 != nil {
 			for j := 0; j < len(b.cursors); j++ {
