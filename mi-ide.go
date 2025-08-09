@@ -518,6 +518,7 @@ func main() {
 	L.SetGlobal("SetLocalOption", luar.New(L, SetLocalOption))
 	L.SetGlobal("BindKey", luar.New(L, BindKey))
 	L.SetGlobal("MakeCommand", luar.New(L, MakeCommand))
+	L.SetGlobal("RemoveCommand", luar.New(L, RemoveCommand))
 	L.SetGlobal("CurView", luar.New(L, CurView))
 	L.SetGlobal("IsWordChar", luar.New(L, IsWordChar))
 	L.SetGlobal("HandleCommand", luar.New(L, HandleCommand))
