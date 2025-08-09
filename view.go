@@ -1416,7 +1416,7 @@ func (v *View) DisplayView() {
 		if style, ok := colorscheme["divider"]; ok {
 			dividerStyle = style
 		}
-		for i := 0; i < v.Height; i++ {
+		for i := range v.Height {
 			screen.SetContent(v.x, yOffset+i, tcell.RuneVLine, nil, dividerStyle.Reverse(true))
 		}
 	}
