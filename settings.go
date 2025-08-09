@@ -201,7 +201,7 @@ func WriteSettings(filename string) error {
 		err = os.WriteFile(filename, append(txt, '\n'), 0600)
 		xerr := permbits.Chmod(filename, permbits.PermissionBits(0600))
 		if xerr != nil {
-			messenger.AddLog(xerr)
+			messenger.AddLog("settings write:", xerr)
 		}
 	}
 	return err
