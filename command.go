@@ -96,6 +96,12 @@ func MakeCommand(name, function string, completions ...Completion) {
 	commands[name] = Command{action, completions}
 }
 
+// MakeCommand is a function to easily create new commands
+// This can be called by plugins in Lua so that plugins can define their own commands
+func RemoveCommand(name string) {
+	delete(commands, name)
+}
+
 // CommandEditAction returns a bindable function that opens a prompt with
 // the given string and executes the command when the user presses
 // enter
@@ -176,7 +182,6 @@ func GroupShow(args []string) {
 }
 
 func GroupGit(args []string) {
-	//messenger.AddLog("GroupGit:", args[0], ":")
 	if args[0] == "diff" {
 		GitDiff("")
 	} else if args[0] == "diffstaged" {
@@ -343,7 +348,6 @@ func GitStatus() {
 
 // Load git status into a window
 func GitDiff(arg string) {
-	//messenger.AddLog("Execute Git ", arg)
 	if !git.enabled {
 		return
 	}
@@ -354,7 +358,6 @@ func GitDiff(arg string) {
 	cmd = cmd + " -w"
 	diff, err := RunShellCommand(cmd)
 	if err != nil {
-		//messenger.AddLog(err.Error())
 		return
 	}
 	CurView().AddTab(false)
