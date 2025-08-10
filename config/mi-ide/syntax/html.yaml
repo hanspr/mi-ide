@@ -41,3 +41,7 @@ rules:
         rules:
             - include: "css"
 
+    - comment:
+        start: "<!--$"
+        end: "-->$"
+        rules: []
