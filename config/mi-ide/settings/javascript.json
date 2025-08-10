@@ -1,4 +1,7 @@
 {
+    "blockopen": "[{[\\(]$",
+    "blockclose": "^[}\\])]",
+    "blockinter": "^[}\\])].+?[{[(]$|:$",
     "autoclose": true,
     "findfuncregex": "^\\s*function\\s+%word%[\\s\\(]|%word%\\s*=\\s*(?:function|\\(?:.*?\\)\\s*=>)[\\s\\(]",
     "autoindent": true,
