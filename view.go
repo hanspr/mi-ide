@@ -1421,23 +1421,9 @@ func (v *View) DisplayView() {
 		}
 	}
 
-	// ---------------------------------------------------
-	// onDisplayFocus Event
-	// ---------------------------------------------------
-	if (CurView().Type.Kind == 0 && LastView != CurView().Num) || (LastTab != curTab) {
+	if LastView != CurView().Num || LastTab != curTab {
 		LastView = CurView().Num
 		LastTab = curTab
-
-		for pl := range loadedPlugins {
-			if GetPluginOption(pl, "ftype") != "*" && (GetPluginOption(pl, "ftype") == nil || GetPluginOption(pl, "ftype").(string) != CurView().Buf.FileType()) {
-				continue
-			}
-			_, err := Call(pl+".onDisplayFocus", CurView())
-			if err != nil && !strings.HasPrefix(err.Error(), "function does not exist") {
-				TermMessage(err)
-				continue
-			}
-		}
 	}
 }
 

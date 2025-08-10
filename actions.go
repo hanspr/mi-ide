@@ -2127,6 +2127,8 @@ func (v *View) AddTab(usePlugin bool) bool {
 	if v.mainCursor() {
 		if usePlugin && !PreActionCall("AddTab", v) {
 			return false
+		} else if usePlugin {
+			PostActionCall("DisplayBlur", v)
 		}
 		tab := NewTabFromView(NewView(NewBufferFromString("", "")))
 		tab.SetNum(len(tabs))
@@ -2149,6 +2151,9 @@ func (v *View) AddTab(usePlugin bool) bool {
 
 // PreviousTab switches to the previous tab in the tab list
 func (v *View) PreviousTab(usePlugin bool) bool {
+	if curTab == 0 {
+		return false
+	}
 	if v.mainCursor() {
 		if usePlugin && !PreActionCall("PreviousTab", v) {
 			return false
@@ -2165,6 +2170,9 @@ func (v *View) PreviousTab(usePlugin bool) bool {
 		}
 
 		if usePlugin {
+			if CurView().Type.Kind == 0 {
+				PostActionCall("DisplayFocus", CurView())
+			}
 			return PostActionCall("PreviousTab", v)
 		}
 	}
@@ -2173,6 +2181,9 @@ func (v *View) PreviousTab(usePlugin bool) bool {
 
 // NextTab switches to the next tab in the tab list
 func (v *View) NextTab(usePlugin bool) bool {
+	if curTab == len(tabs)-1 {
+		return false
+	}
 	if v.mainCursor() {
 		if usePlugin && !PreActionCall("NextTab", v) {
 			return false
@@ -2189,6 +2200,9 @@ func (v *View) NextTab(usePlugin bool) bool {
 		}
 
 		if usePlugin {
+			if CurView().Type.Kind == 0 {
+				PostActionCall("DisplayFocus", CurView())
+			}
 			return PostActionCall("NextTab", v)
 		}
 	}
@@ -2287,6 +2301,9 @@ func (v *View) NextSplit(usePlugin bool) bool {
 			NavigationMode = false
 		}
 		if usePlugin {
+			if CurView().Type.Kind == 0 {
+				PostActionCall("DisplayFocus", CurView())
+			}
 			return PostActionCall("NextSplit", v)
 		}
 	}
@@ -2315,6 +2332,9 @@ func (v *View) PreviousSplit(usePlugin bool) bool {
 			NavigationMode = false
 		}
 		if usePlugin {
+			if CurView().Type.Kind == 0 {
+				PostActionCall("DisplayFocus", CurView())
+			}
 			return PostActionCall("PreviousSplit", v)
 		}
 	}
