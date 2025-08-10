@@ -154,7 +154,6 @@ func (m *Messenger) Alert(kind string, msg ...any) {
 			}
 			m.timer = time.AfterFunc(time.Duration(clearTime)*time.Second, func() {
 				m.ClearMessage()
-				RedrawAll(true)
 				m.timerOn = false
 			})
 			m.timerOn = true
