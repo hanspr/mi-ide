@@ -177,7 +177,7 @@ func LoadPlugins() {
 		LoadPluginOptions(pluginName)
 
 		if err := LoadFile(pluginLuaName, pluginLuaName, string(data)); err != nil {
-			TermMessage(err)
+			TermMessage("Error compiling plugin:", pluginName, "\n", err)
 			continue
 		}
 
