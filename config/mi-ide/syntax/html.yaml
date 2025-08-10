@@ -22,9 +22,9 @@ rules:
     - constant.tag: "&[\\w]{2,5};"
     - constant.string.url: "(ftp(s)?|http(s)?|git|chrome)://[^ 	]+"
     - comment: "<!--.+?-->"
-    - info: "<!--\\w+: .+?-->"
-    - todo: "<!--(?:todo|TODO): .+?-->"
-    - error: "<!--(?:fix|FIX): .+?-->"
+    - info: "<!-- ?\\w+: .+?-->"
+    - todo: "<!-- ?(?:todo|TODO): .+?-->"
+    - error: "<!-- ?(?:fix|FIX): .+?-->"
     - preproc: "<!DOCTYPE.+?>"
 
     - default:
