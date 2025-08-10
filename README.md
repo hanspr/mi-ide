@@ -1,6 +1,6 @@
 # ![mi-ide](./assets/logo.png)
 
-mi-ide (_**mee ide**_ in spanish, _**my ide**_ in English. As in: this is _**my** editor_) is a spin-off version of micro editor project at https://github.com/zyedidia/micro.
+mi-ide (_**mee ide**_ in Spanish, _**my ide**_ in English. As in: this is _**my** editor_) is a spin-off version of micro editor project at https://github.com/zyedidia/micro.
 
 This has become a personal project, but if you are still looking for something different you may try this editor.
 
@@ -31,6 +31,8 @@ And one day I discover micro. Written in go. I was very interested in learning g
 But took this opportunity to grab a book and begin learning go. Jumped into the code, and after 3 months, I managed to remove most of the bugs, and began using it daily and little by little grow it to fit my needs. Which drove me very far away from the original project.
 
 So this is the result of it, check the manual and see if it would fill your requirements. And if not, grab it, change it and customize it to your needs.
+
+![mi ide view](assets/mi-ide.gif)
 
 ## Table of Contents
 
