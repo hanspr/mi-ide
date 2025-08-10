@@ -469,9 +469,9 @@ func (b *Buffer) AddMultiComment(Start, Stop Loc) {
 
 // SmartIndent indent the line
 func (b *Buffer) SmartIndent(Start, Stop Loc) {
-	bopen := `[\{\[\\(]$`
-	bclose := `^[\}\]\)]`
-	binter := `^[\}\]\)].+?[\{\[\\(]$|:$`
+	bopen := `[{[(]$`
+	bclose := `^[}\])]`
+	binter := `^[}\])].+?[{[(]$`
 	if b.Settings["blockopen"].(string) != "" && b.Settings["blockclose"].(string) != "" && b.Settings["blockinter"].(string) != "" {
 		bopen = b.Settings["blockopen"].(string)
 		bclose = b.Settings["blockclose"].(string)
