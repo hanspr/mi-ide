@@ -137,10 +137,10 @@ func (m *Messenger) Alert(kind string, msg ...any) {
 		} else if kind == "success" {
 			m.style = defStyle.Foreground(tcell.ColorGreen).Normal()
 		} else if kind == "info" {
-			clearTime = 0
+			clearTime = 60
 			m.style = defStyle.Foreground(tcell.ColorBlue).Bold(true)
 		} else {
-			clearTime = 0
+			clearTime = 60
 			m.style = defStyle
 			if _, ok := colorscheme["message"]; ok {
 				m.style = colorscheme["message"]
