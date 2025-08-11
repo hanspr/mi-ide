@@ -6,7 +6,6 @@ mi-ide is a terminal-based text editor that aims to be easy to use and intuitive
 while also taking advantage of the full capabilities of modern terminals.
 
 For a list of the default keybindings press CtrlE and type `help defaultkeys`.
-For more information on keybindings see `> help keybindings`.
 
 See the next section for more information about documentation and help.
 
@@ -17,17 +16,26 @@ you can see which commands are available by pressing tab, or by viewing the help
 topic `> help commands`. When I write `> ...` I mean press CtrlE and then type
 whatever is there.
 
-Move the cursor around with the mouse or the arrow keys. Type
-`> help defaultkeys` to  get a quick, easy overview of the default hotkeys and
-what they do. For more info on rebinding keys, see type `> help keybindings`.
+Move the cursor around with the mouse or the arrow keys, or the predefiened alternate
+keys : Alt-(jkli) [left,down,right,up]. Type `> help defaultkeys` to  get a quick,
+easy overview of the default hotkeys and what they do.
 
-If the colorscheme doesn't look good, you can change it with
+`In Navigation` mode the window has a red frame, and you can use the navigation keys
+without pressing Alt, in this case just use :
+* jkli (left,down,right,up)
+* up (page up, page down)
+
+All read buffers are set to Navigation mode, to change from Navitation Mode to normal
+mode, type : Ctrl-N
+
+If the color theme doesn't look good, you can change it with
 `> set colorscheme ...`. You can press tab to see the available colorschemes, or
 see more information with `> help colors`.
 
-Press CtrlW to move between splits, and type `> vsplit filename` or
+Press Alt-Shift-(qw) to move between splits, and type `> vsplit filename` or
 `> hsplit filename` to open a new split.
 
+Press Alt-Shift-(as) to move between tabs.
 
 ## Accessing more help
 
@@ -47,4 +55,3 @@ Here are the possible help topics that you can read:
 
 For example, to open the help page on plugins you would press CtrlE and type
 `help plugins`.
-
