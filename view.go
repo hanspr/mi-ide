@@ -966,6 +966,7 @@ func (v *View) openHelp(helpPage string) {
 			CurView().Type = vtHelp
 			v.Relocate()
 		}
+		NavigationMode = true
 	}
 }
 
