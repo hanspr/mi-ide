@@ -10,13 +10,15 @@ rules:
     - symbol.tag: "</?[A-Za-z0-9:]+/?[ >]"
 
 
-    - statement: "(?i)<[/]?(a|a(bbr|ddress|rea|rticle|side|udio)|b|b(ase|d(i|o)|lockquote|r|utton)|ca(nvas|ption)|center|cite|co(de|l|lgroup)|d(ata|atalist|d|el|etails|fn|ialog|l|t)|em|embed|fieldset|fig(caption|ure)|form|iframe|h[1-6]|hr|i|img|in(put|s)|kbd|keygen|label|legend|li|link|ma(in|p|rk)|menu|menuitem|met(a|er)|nav|noscript|o(bject|l|pt(group|ion)|utput)|p|param|picture|pre|progress|q|r(p|t|uby)|s|samp|se(ction|lect)|small|source|span|strong|su(b|p|mmary)|textarea|time|track|u|ul|var|video|wbr)( .*)*?>"
-    - type: "(?i)<[/]?(body|div|html|head(er)?|footer|title|table|t(body|d|h(ead)?|r|foot))( .*)*?>"
+    - type: "(?i)<[/]?(body|div|html|head(er)?|footer|title|table|t(body|d|h(ead)?|r|foot)).*?>"
+    - statement: "(?i)<(?:a|a(bbr|ddress|rea|rticle|side|udio)|b|b(ase|d(i|o)|lockquote|r|utton)|ca(nvas|ption)|center|cite|co(de|l|lgroup)|d(ata|atalist|d|el|etails|fn|ialog|l|t)|em|embed|fieldset|fig(caption|ure)|form|iframe|h[1-6]|hr|in(put|s)|kbd|keygen|label|legend|li|link|ma(in|p|rk)|menu|menuitem|met(a|er)|nav|noscript|o(bject|l|pt(group|ion)|utput)|p|param|picture|pre|progress|q|r(p|t|uby)|s|samp|se(ction|lect)|small|source|su(b|p|mmary)|textarea|time|track|u|ul|var|video|wbr) .*?>"
+    - statement: "(?i)</(?:a|a(bbr|ddress|rea|rticle|side|udio)|b|b(ase|d(i|o)|lockquote|r|utton)|ca(nvas|ption)|center|cite|co(de|l|lgroup)|d(ata|atalist|d|el|etails|fn|ialog|l|t)|em|embed|fieldset|fig(caption|ure)|form|iframe|h[1-6]|hr|in(put|s)|kbd|keygen|label|legend|li|link|ma(in|p|rk)|menu|menuitem|met(a|er)|nav|noscript|o(bject|l|pt(group|ion)|utput)|p|param|picture|pre|progress|q|r(p|t|uby)|s|samp|se(ction|lect)|small|source|su(b|p|mmary)|textarea|time|track|u|ul|var|video|wbr) *>"
     - constant.string: "\".*?\""
     - constant.string: "'.*?'"
     - special: "&[^;[[:space:]]]*;"
     - symbol: "[:=]"
-    - identifier: "(alt|bgcolor|height|href|id|label|longdesc|name|on(click|focus|load|mouseover)|size|span|src|target|type|value|width|class)="
+    - identifier: " \\w+="
+    - method.other: "on\\w+="
     - identifier: "data\\-.+?="
     - constant.number: "(?i)#[0-9A-F]{6,6}"
     - constant.tag: "&[\\w]{2,5};"
@@ -26,6 +28,7 @@ rules:
     - todo: "<!-- ?(?:todo|TODO): .+?-->"
     - error: "<!-- ?(?:fix|FIX): .+?-->"
     - preproc: "<!DOCTYPE.+?>"
+    - identifier.var: "[\\$@%]\\$*[\\p{L}\\p{N}_]+"
 
     - default:
         start: "<script.*?>"
