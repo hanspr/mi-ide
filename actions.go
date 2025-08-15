@@ -10,7 +10,7 @@ import (
 	"time"
 	"unicode/utf8"
 
-	"github.com/hanspr/tcell"
+	"github.com/micro-editor/tcell/v2"
 	lua "github.com/yuin/gopher-lua"
 )
 

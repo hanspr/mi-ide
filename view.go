@@ -1,13 +1,12 @@
 package main
 
 import (
-	"fmt"
 	"reflect"
 	"strconv"
 	"strings"
 	"time"
 
-	"github.com/hanspr/tcell"
+	"github.com/micro-editor/tcell/v2"
 )
 
 // The ViewType defines what kind of view this is
@@ -632,7 +631,6 @@ func (v *View) SetCursor(c *Cursor) bool {
 func (v *View) HandleEvent(event tcell.Event) {
 	if v.Type == vtRaw {
 		v.Buf.Insert(v.Cursor.Loc, reflect.TypeOf(event).String()[7:])
-		v.Buf.Insert(v.Cursor.Loc, fmt.Sprintf(": %q\n", event.EscSeq()))
 
 		switch e := event.(type) {
 		case *tcell.EventKey:
@@ -650,27 +648,27 @@ func (v *View) HandleEvent(event tcell.Event) {
 	v.Buf.CheckModTime()
 
 	switch e := event.(type) {
-	case *tcell.EventRaw:
-		if NavigationMode {
-			return
-		}
-		for key, actions := range bindings {
-			if key.keyCode == -1 {
-				if e.EscSeq() == key.escape {
-					for _, c := range v.Buf.cursors {
-						ok := v.SetCursor(c)
-						if !ok {
-							break
-						}
-						relocate = false
-						relocate = v.ExecuteActions(actions) || relocate
-					}
-					v.SetCursor(&v.Buf.Cursor)
-					v.Buf.MergeCursors()
-					break
-				}
-			}
-		}
+	//	case *tcell.EventRaw:
+	//		if NavigationMode {
+	//			return
+	//		}
+	//		for key, actions := range bindings {
+	//			if key.keyCode == -1 {
+	//				if e.EscSeq() == key.escape {
+	//					for _, c := range v.Buf.cursors {
+	//						ok := v.SetCursor(c)
+	//						if !ok {
+	//							break
+	//						}
+	//						relocate = false
+	//						relocate = v.ExecuteActions(actions) || relocate
+	//					}
+	//					v.SetCursor(&v.Buf.Cursor)
+	//					v.Buf.MergeCursors()
+	//					break
+	//				}
+	//			}
+	//		}
 	case *tcell.EventKey:
 		isBinding := false
 		if NavigationMode && e.Name() == "Esc" {
@@ -1444,7 +1442,7 @@ func ShowMultiCursor(x, y, i int, v *View) {
 // Display renders the view, the cursor, and statusline
 func (v *View) Display() {
 	if globalSettings["termtitle"].(bool) {
-		screen.SetTitle("micro: " + v.Buf.GetName())
+		//screen.SetTitle("micro: " + v.Buf.GetName())
 	}
 	v.DisplayView()
 	// Don't draw the cursor if it is out of the viewport or if it has a selection

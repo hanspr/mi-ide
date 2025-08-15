@@ -7,7 +7,7 @@ import (
 	"regexp"
 	"strings"
 
-	"github.com/hanspr/tcell"
+	"github.com/micro-editor/tcell/v2"
 )
 
 var (

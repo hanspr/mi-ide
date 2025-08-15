@@ -5,7 +5,7 @@ import (
 	"path"
 	"strconv"
 
-	"github.com/hanspr/tcell"
+	"github.com/micro-editor/tcell/v2"
 )
 
 // Statusline represents the information line at the bottom
@@ -33,7 +33,7 @@ func (sline *Statusline) EncodingSelected(values map[string]string) {
 
 // MouseEvent handle mouse events on the status line
 func (sline *Statusline) MouseEvent(e *tcell.EventMouse, rx, ry int) {
-	if e.Buttons() != tcell.Button1 || e.HasMotion() {
+	if e.Buttons() != tcell.Button1 {
 		return
 	}
 	for action, hs := range sline.hotspot {

@@ -24,7 +24,7 @@ import (
 	"github.com/flynn/json5"
 	"github.com/go-errors/errors"
 	"github.com/hanspr/shellwords"
-	"github.com/hanspr/tcell"
+	"github.com/micro-editor/tcell/v2"
 )
 
 // Util.go is a collection of utility functions that are used throughout

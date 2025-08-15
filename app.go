@@ -8,7 +8,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/hanspr/tcell"
+	"github.com/micro-editor/tcell/v2"
 )
 
 // Opt option element of a select
@@ -1930,14 +1930,9 @@ func (a *MicroApp) HandleEvents(event tcell.Event) {
 			} else {
 				action = "mousemove"
 			}
-		} else if ev.HasMotion() {
-			action = "mousemove-drag" + a.lastbutton
-		} else if !ev.HasMotion() {
+		} else {
 			a.mousedown = true
 
-			if strings.Count(ev.EscSeq(), "[") > 1 {
-				return
-			}
 			if button == tcell.Button1 {
 				action = "mouse-button1"
 				a.lastbutton = "1"
@@ -1961,8 +1956,6 @@ func (a *MicroApp) HandleEvents(event tcell.Event) {
 				a.mousedown = false
 			}
 			a.lastloc = Loc{x, y}
-		} else {
-			action = "mousemove"
 		}
 		if a.WindowMouseEvent != nil {
 			a.WindowMouseEvent(action, x, y)

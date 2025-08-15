@@ -12,7 +12,7 @@ import (
 	"unicode"
 
 	"github.com/hanspr/shellwords"
-	"github.com/hanspr/tcell"
+	"github.com/micro-editor/tcell/v2"
 	"github.com/mattn/go-runewidth"
 )
 

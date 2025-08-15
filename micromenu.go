@@ -14,7 +14,7 @@ import (
 	"github.com/blang/semver"
 	"github.com/hanspr/highlight"
 	"github.com/hanspr/ioencoder"
-	"github.com/hanspr/tcell"
+	"github.com/micro-editor/tcell/v2"
 )
 
 type menuElements struct {

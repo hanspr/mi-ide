@@ -13,9 +13,10 @@ import (
 	"github.com/go-errors/errors"
 	"github.com/hanspr/clipboard"
 	"github.com/hanspr/lang"
-	"github.com/hanspr/tcell"
 	"github.com/hanspr/terminfo"
+
 	"github.com/mattn/go-isatty"
+	"github.com/micro-editor/tcell/v2"
 	"github.com/mitchellh/go-homedir"
 	lua "github.com/yuin/gopher-lua"
 	luar "layeh.com/gopher-luar"

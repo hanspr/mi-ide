@@ -13,10 +13,10 @@ require (
 	github.com/hanspr/ioencoder v0.0.0-20190927223910-112aaa3e7dca
 	github.com/hanspr/lang v0.0.0-20190927223733-9af21a7298b1
 	github.com/hanspr/shellwords v0.0.0-20190824230231-432d02ac431a
-	github.com/hanspr/tcell v0.0.0-20200408034724-6d213337e4cd
 	github.com/hanspr/terminfo v0.0.0-20190824230337-a52f7edce2f4
 	github.com/mattn/go-isatty v0.0.12
-	github.com/mattn/go-runewidth v0.0.12
+	github.com/mattn/go-runewidth v0.0.16
+	github.com/micro-editor/tcell/v2 v2.0.5
 	github.com/mitchellh/go-homedir v1.1.0
 	github.com/phayes/permbits v0.0.0-20190612203442-39d7c581d2ee
 	github.com/sergi/go-diff v1.2.0
@@ -25,16 +25,17 @@ require (
 )
 
 require (
-	github.com/gdamore/encoding v1.0.0 // indirect
+	github.com/gdamore/encoding v1.0.1 // indirect
 	github.com/kylelemons/godebug v1.1.0 // indirect
 	github.com/lucasb-eyer/go-colorful v1.2.0 // indirect
-	github.com/npat-efault/poller v2.0.0+incompatible // indirect
-	github.com/rivo/uniseg v0.1.0 // indirect
+	github.com/rivo/uniseg v0.4.3 // indirect
 	github.com/robertkrimen/otto v0.5.1 // indirect
 	github.com/smartystreets/goconvey v1.8.1 // indirect
 	github.com/stretchr/testify v1.8.1 // indirect
-	github.com/zyedidia/poller v2.0.0+incompatible // indirect
-	golang.org/x/sys v0.29.0 // indirect
-	golang.org/x/text v0.21.0 // indirect
+	golang.org/x/sys v0.34.0 // indirect
+	golang.org/x/term v0.33.0 // indirect
+	golang.org/x/text v0.27.0 // indirect
 	gopkg.in/yaml.v2 v2.4.0 // indirect
 )
+
+replace github.com/micro-editor/tcell/v2 => /home/hans/Proyectos/hanspr/tcell

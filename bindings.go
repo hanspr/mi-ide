@@ -6,7 +6,7 @@ import (
 	"unicode"
 
 	"github.com/flynn/json5"
-	"github.com/hanspr/tcell"
+	"github.com/micro-editor/tcell/v2"
 )
 
 var bindingsStr map[string]string
@@ -258,16 +258,16 @@ var bindingKeys = map[string]tcell.Key{
 	"CtrlRightSq":    tcell.KeyCtrlRightSq,
 	"CtrlCarat":      tcell.KeyCtrlCarat,
 	"CtrlUnderscore": tcell.KeyCtrlUnderscore,
-	"CtrlPageUp":     tcell.KeyCtrlPgUp,
-	"CtrlPageDown":   tcell.KeyCtrlPgDn,
 	"Tab":            tcell.KeyTab,
 	"Esc":            tcell.KeyEsc,
 	"Escape":         tcell.KeyEscape,
 	"Enter":          tcell.KeyEnter,
 	"Backspace":      tcell.KeyBackspace2,
 	"OldBackspace":   tcell.KeyBackspace,
-	"ShiftPageUp":    tcell.KeyShfPgUp,
-	"ShiftPageDown":  tcell.KeyShfPgDn,
+	// "CtrlPageUp":     tcell.KeyCtrlPgUp,
+	// "CtrlPageDown":   tcell.KeyCtrlPgDn,
+	// "ShiftPageUp":    tcell.KeyShfPgUp,
+	// "ShiftPageDown":  tcell.KeyShfPgDn,
 }
 
 // The Key struct holds the data for a keypress (keycode + modifiers)
