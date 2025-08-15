@@ -237,11 +237,16 @@ snippet radiol
 snippet date
 	<input type="text" name="${1:fi}" value="$in{'${1:fi}'}" class="form wdate" maxlength="10" size="10" readonly><a href="javascript: void(0);" onclick="displayCalendar(document.Forma.${1:fi});"><img src="/images/cal.png" class="vam"></a>
 snippet select
-	<select name="${1:name}" class="form">${2:}</select>
+	<select name="${1:name}" class="form">
+	${2:}
+	</select>
 snippet selectid
-	<select id="${1:id}" name="${2:name}" class="form" onchange="${3:jsfunc}">${4:}</select>
+	<select id="${1:id}" name="${2:name}" class="form" onchange="${3:jsfunc}">
+	${4:}
+	</select>
 snippet opt
-	<option value="${1:}">${2:label}</option>${3:}
+	<option value="${1:}">${2:label}</option>
+	${3:}
 snippet br
 	<br>
 
