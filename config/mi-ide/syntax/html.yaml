@@ -1,7 +1,7 @@
 filetype: html
 
 detect:
-    filename: "\\.(htm[l]?[45]?|tt|tmpl)$"
+    filename: "\\.(html?[45]?|tt|tmpl)$"
     header: "<!DOCTYPE html[45]?>"
 
 rules:

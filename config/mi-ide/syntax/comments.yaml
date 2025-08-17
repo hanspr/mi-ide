@@ -1,7 +1,7 @@
 filetype: comments
 
 detect:
-    filename: " "
+    filename: "\\.comments$"
 
 rules:
     # Operators
