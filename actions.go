@@ -2043,7 +2043,7 @@ func (v *View) Quit(usePlugin bool) bool {
 
 		// Make sure not to quit if there are unsaved changes
 		if v.CanClose() {
-			v.CloseBuffer()
+			// v.CloseBuffer()
 			LastView = -1
 			if len(tabs[curTab].Views) > 1 {
 				pos := v.splitNode.GetViewNumPosition(v.Num)
@@ -2105,11 +2105,11 @@ func (v *View) QuitAll(usePlugin bool) bool {
 			// The application needs an action to exit completly without confirmations
 			// Option could be usefull, not necessary. F4 Can bind to Quit. Ctrl-Q to Quit All
 
-			for _, tab := range tabs {
-				for _, v := range tab.Views {
-					v.CloseBuffer()
-				}
-			}
+			// for _, tab := range tabs {
+			// 	for _, v := range tab.Views {
+			// 		v.CloseBuffer()
+			// 	}
+			// }
 
 			if usePlugin {
 				PostActionCall("QuitAll", v)

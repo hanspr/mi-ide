@@ -84,11 +84,11 @@ type Buffer struct {
 
 // The SerializedBuffer holds the types that get serialized when a buffer is saved
 // These are used for the savecursor and saveundo options
-type SerializedBuffer struct {
-	EventHandler *EventHandler
-	Cursor       Cursor
-	ModTime      time.Time
-}
+// type SerializedBuffer struct {
+// 	EventHandler *EventHandler
+// 	Cursor       Cursor
+// 	ModTime      time.Time
+// }
 
 // GetFileSettings define basic preconfigured settings from a file, guessed or previously saved
 func (b *Buffer) GetFileSettings(filename string) {
@@ -255,9 +255,9 @@ func NewBuffer(reader io.Reader, size int64, path string, cursorPosition []strin
 		// from ~/.config/mi-ide/buffers
 		file, err := os.Open(configDir + "/buffers/" + EscapePath(b.AbsPath))
 		if err == nil {
-			var buffer SerializedBuffer
+			var buffer Buffer
 			decoder := gob.NewDecoder(file)
-			gob.Register(TextEvent{})
+			// gob.Register(TextEvent{})
 			err = decoder.Decode(&buffer)
 			if err != nil {
 				TermMessage(err.Error(), "\n", Language.Translate("You may want to remove the files in")+" ~/.config/mi-ide/buffers "+Language.Translate("(these files store the information for the 'saveundo' and 'savecursor' options) if this problem persists."))
@@ -678,25 +678,25 @@ func (b *Buffer) Save() error {
 }
 
 // Serialize serializes the buffer to configDir/buffers
-func (b *Buffer) Serialize() error {
-	if !b.Settings["savecursor"].(bool) && !b.Settings["saveundo"].(bool) {
-		return nil
-	}
+// func (b *Buffer) Serialize() error {
+// 	if !b.Settings["savecursor"].(bool) && !b.Settings["saveundo"].(bool) {
+// 		return nil
+// 	}
 
-	name := configDir + "/buffers/" + EscapePath(b.AbsPath)
+// 	name := configDir + "/buffers/" + EscapePath(b.AbsPath)
 
-	return overwriteFile(name, func(file io.Writer) error {
-		return gob.NewEncoder(file).Encode(SerializedBuffer{
-			b.EventHandler,
-			b.Cursor,
-			b.ModTime,
-		})
-	})
-}
+// 	return overwriteFile(name, func(file io.Writer) error {
+// 		return gob.NewEncoder(file).Encode(SerializedBuffer{
+// 			b.EventHandler,
+// 			b.Cursor,
+// 			b.ModTime,
+// 		})
+// 	})
+// }
 
 func init() {
-	gob.Register(TextEvent{})
-	gob.Register(SerializedBuffer{})
+	// gob.Register(TextEvent{})
+	// gob.Register(SerializedBuffer{})
 }
 
 // SaveAs saves the buffer to a specified path (filename), creating the file if it does not exist
@@ -825,7 +825,7 @@ func (b *Buffer) SaveAs(filename string) error {
 	}
 	// Save current Undo Stack Len to later check Modified status in Actions
 	b.UndoStackRef = b.EventHandler.UndoStack.Len()
-	return b.Serialize()
+	return nil
 }
 
 // RetryOnceSaveAs retray saving file as UTF8 in case of error
