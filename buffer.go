@@ -359,7 +359,7 @@ func (b *Buffer) IndentString() string {
 
 func (b *Buffer) AddMultiComment(Start, Stop Loc) {
 	cstring := b.Settings["comment"].(string)
-	comment := regexp.MustCompile(`^` + cstring)
+	comment := regexp.MustCompile(`^\s*` + cstring)
 	start := Start.Y
 	end := Stop.Y
 	if Start.Y == Stop.Y || Stop.X > 0 {
@@ -372,7 +372,9 @@ func (b *Buffer) AddMultiComment(Start, Stop Loc) {
 			str = strings.Replace(str, cstring, "", 1)
 		} else {
 			// Add comment to line
-			str = cstring + str
+			wsp := GetLeadingWhitespace(str)
+			str = strings.Replace(str, wsp, "", 1)
+			str = wsp + cstring + str
 		}
 		x := Count(b.Line(y))
 		b.Replace(Loc{0, y}, Loc{x, y}, str)
