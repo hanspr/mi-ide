@@ -306,8 +306,6 @@ func DefaultLocalSettings() map[string]any {
 		"matchbraceleft": false,
 		"rmtrailingws":   false,
 		"ruler":          true,
-		"savecursor":     false,
-		"saveundo":       false,
 		"scrollmargin":   float64(3),
 		"softwrap":       false,
 		"smartindent":    true,
