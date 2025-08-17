@@ -3,14 +3,12 @@ package main
 import (
 	"bufio"
 	"bytes"
-	"encoding/gob"
 	"errors"
 	"io"
 	"os"
 	"path/filepath"
 	"reflect"
 	"regexp"
-	"strconv"
 	"strings"
 	"syscall"
 	"time"
@@ -82,14 +80,6 @@ type Buffer struct {
 	//pasteTime time
 }
 
-// The SerializedBuffer holds the types that get serialized when a buffer is saved
-// These are used for the savecursor and saveundo options
-// type SerializedBuffer struct {
-// 	EventHandler *EventHandler
-// 	Cursor       Cursor
-// 	ModTime      time.Time
-// }
-
 // GetFileSettings define basic preconfigured settings from a file, guessed or previously saved
 func (b *Buffer) GetFileSettings(filename string) {
 	filename, _ = filepath.Abs(filename)
@@ -142,7 +132,7 @@ func (b *Buffer) GetFileSettings(filename string) {
 // It will return an empty buffer if the path does not exist
 // and an error if the file is a directory
 func NewBufferFromFile(path string) (*Buffer, error) {
-	filename, cursorPosition := GetPathAndCursorPosition(path)
+	filename := path
 	filename = ReplaceHome(filename)
 	file, err := os.Open(filename)
 	fileInfo, _ := os.Stat(filename)
@@ -158,7 +148,7 @@ func NewBufferFromFile(path string) (*Buffer, error) {
 		// File does not exist -- create an empty buffer with that name
 		buf = NewBufferFromString("", filename)
 	} else {
-		buf = NewBuffer(file, FSize(file), filename, cursorPosition)
+		buf = NewBuffer(file, FSize(file), filename)
 	}
 
 	return buf, nil
@@ -166,11 +156,11 @@ func NewBufferFromFile(path string) (*Buffer, error) {
 
 // NewBufferFromString creates a new buffer containing the given string
 func NewBufferFromString(text, path string) *Buffer {
-	return NewBuffer(strings.NewReader(text), int64(len(text)), path, nil)
+	return NewBuffer(strings.NewReader(text), int64(len(text)), path)
 }
 
 // NewBuffer creates a new buffer from a given reader with a given path
-func NewBuffer(reader io.Reader, size int64, path string, cursorPosition []string) *Buffer {
+func NewBuffer(reader io.Reader, size int64, path string) *Buffer {
 	var utf8reader io.Reader
 
 	// check if the file is already open in a tab. If it's open return the buffer to that tab
@@ -242,93 +232,15 @@ func NewBuffer(reader io.Reader, size int64, path string, cursorPosition []strin
 		os.Mkdir(configDir+"/buffers/", os.ModePerm)
 	}
 
-	cursorLocation, cursorLocationError := GetBufferCursorLocation(cursorPosition, b)
 	b.Cursor = Cursor{
-		Loc: cursorLocation,
+		Loc: Loc{0, 0},
 		buf: b,
 	}
-
 	InitLocalSettings(b)
-
-	if cursorLocationError != nil && len(*flagStartPos) == 0 && (b.Settings["savecursor"].(bool) || b.Settings["saveundo"].(bool)) {
-		// If either savecursor or saveundo is turned on, we need to load the serialized information
-		// from ~/.config/mi-ide/buffers
-		file, err := os.Open(configDir + "/buffers/" + EscapePath(b.AbsPath))
-		if err == nil {
-			var buffer Buffer
-			decoder := gob.NewDecoder(file)
-			// gob.Register(TextEvent{})
-			err = decoder.Decode(&buffer)
-			if err != nil {
-				TermMessage(err.Error(), "\n", Language.Translate("You may want to remove the files in")+" ~/.config/mi-ide/buffers "+Language.Translate("(these files store the information for the 'saveundo' and 'savecursor' options) if this problem persists."))
-			}
-			if b.Settings["savecursor"].(bool) {
-				b.Cursor = buffer.Cursor
-				b.Cursor.buf = b
-				b.Cursor.Relocate()
-			}
-
-			if b.Settings["saveundo"].(bool) {
-				// We should only use last time's eventhandler if the file wasn't modified by someone else in the meantime
-				if b.ModTime == buffer.ModTime {
-					b.EventHandler = buffer.EventHandler
-					b.EventHandler.buf = b
-				}
-			}
-		}
-		defer file.Close()
-	}
 
 	b.cursors = []*Cursor{&b.Cursor}
 	b.pasteLoc.X = -1
 	return b
-}
-
-// GetBufferCursorLocation get cursor
-func GetBufferCursorLocation(cursorPosition []string, b *Buffer) (Loc, error) {
-	// parse the cursor position. The cursor location is ALWAYS initialized to 0, 0 even when
-	// an error occurs due to lack of arguments or because the arguments are not numbers
-	cursorLocation, cursorLocationError := ParseCursorLocation(cursorPosition)
-
-	// Put the cursor at the first spot. In the logic for cursor position the -startpos
-	// flag is processed first and will overwrite any line/col parameters with colons after the filename
-	if len(*flagStartPos) > 0 || cursorLocationError == nil {
-		var lineNum, colNum int
-		var errPos1, errPos2 error
-
-		positions := strings.Split(*flagStartPos, ",")
-
-		// if the -startpos flag contains enough args use them for the cursor location.
-		// In this case args passed at the end of the filename will be ignored
-		if len(positions) == 2 {
-			lineNum, errPos1 = strconv.Atoi(positions[0])
-			colNum, errPos2 = strconv.Atoi(positions[1])
-		}
-		// if -startpos has invalid arguments, use the arguments from filename.
-		// This will have a default value (0, 0) even when the filename arguments are invalid
-		if errPos1 != nil || errPos2 != nil || len(*flagStartPos) == 0 {
-			// otherwise check if there are any arguments after the filename and use them
-			lineNum = cursorLocation.Y
-			colNum = cursorLocation.X
-		}
-
-		// if some arguments were found make sure they don't go outside the file and cause overflows
-		cursorLocation.Y = lineNum - 1
-		cursorLocation.X = colNum
-		// Check to avoid line overflow
-		if cursorLocation.Y > b.NumLines-1 {
-			cursorLocation.Y = b.NumLines - 1
-		} else if cursorLocation.Y < 0 {
-			cursorLocation.Y = 0
-		}
-		// Check to avoid column overflow
-		if cursorLocation.X > len(b.Line(cursorLocation.Y)) {
-			cursorLocation.X = len(b.Line(cursorLocation.Y))
-		} else if cursorLocation.X < 0 {
-			cursorLocation.X = 0
-		}
-	}
-	return cursorLocation, cursorLocationError
 }
 
 // GetName returns the name that should be displayed in the statusline
@@ -675,28 +587,6 @@ func (b *Buffer) UpdateCursors() {
 // Save saves the buffer to its default path
 func (b *Buffer) Save() error {
 	return b.SaveAs(b.Path)
-}
-
-// Serialize serializes the buffer to configDir/buffers
-// func (b *Buffer) Serialize() error {
-// 	if !b.Settings["savecursor"].(bool) && !b.Settings["saveundo"].(bool) {
-// 		return nil
-// 	}
-
-// 	name := configDir + "/buffers/" + EscapePath(b.AbsPath)
-
-// 	return overwriteFile(name, func(file io.Writer) error {
-// 		return gob.NewEncoder(file).Encode(SerializedBuffer{
-// 			b.EventHandler,
-// 			b.Cursor,
-// 			b.ModTime,
-// 		})
-// 	})
-// }
-
-func init() {
-	// gob.Register(TextEvent{})
-	// gob.Register(SerializedBuffer{})
 }
 
 // SaveAs saves the buffer to a specified path (filename), creating the file if it does not exist

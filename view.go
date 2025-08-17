@@ -321,7 +321,6 @@ func (v *View) CanClose() bool {
 // This resets the topline, event handler and cursor.
 func (v *View) OpenBuffer(buf *Buffer) {
 	screen.Clear()
-	// v.CloseBuffer()
 	v.Buf = buf
 	v.Cursor = &buf.Cursor
 	v.Topline = 0
@@ -352,13 +351,6 @@ func (v *View) Open(path string) {
 	}
 	v.OpenBuffer(buf)
 }
-
-// CloseBuffer performs any closing functions on the buffer
-// func (v *View) CloseBuffer() {
-// 	if v.Buf != nil {
-// 		v.Buf.Serialize()
-// 	}
-// }
 
 // ReOpen reloads the current buffer
 // Trigger smart detection, to catch changes

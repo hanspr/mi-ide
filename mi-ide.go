@@ -158,16 +158,6 @@ func LoadInput() []*Buffer {
 		// Option 1
 		// We go through each file and load it
 		for i := range args {
-			if strings.HasPrefix(args[i], "+") {
-				if strings.Contains(args[i], ":") {
-					split := strings.Split(args[i], ":")
-					*flagStartPos = split[0][1:] + "," + split[1]
-				} else {
-					*flagStartPos = args[i][1:] + ",0"
-				}
-				continue
-			}
-
 			buf, err = NewBufferFromFile(args[i])
 			if err != nil {
 				TermMessage(err)
@@ -352,7 +342,6 @@ func Finish(status int) {
 
 // Command line flags
 var flagVersion = flag.Bool("version", false, "Show the version number and information")
-var flagStartPos = flag.String("startpos", "", "LINE,COL to start the cursor at when opening a buffer.")
 var flagConfigDir = flag.String("config-dir", "", "Specify a custom location for the configuration directory")
 var flagOptions = flag.Bool("options", false, "Show all option help")
 
@@ -381,10 +370,6 @@ func main() {
 		fmt.Println("Usage: mi-ide [OPTIONS] [FILE]...")
 		fmt.Println("-config-dir dir")
 		fmt.Println("    \tSpecify a custom location for the configuration directory")
-		fmt.Println("-startpos LINE,COL")
-		fmt.Println("+LINE:COL")
-		fmt.Println("    \tSpecify a line and column to start the cursor at when opening a buffer")
-		fmt.Println("    \tThis can also be done by opening file+LINE:COL")
 		fmt.Println("-options")
 		fmt.Println("    \tShow all option help")
 		fmt.Println("-version")
@@ -480,6 +465,7 @@ func main() {
 				v.Center(false)
 			}
 			t.Resize()
+
 		}
 	}
 
