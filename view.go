@@ -1433,9 +1433,6 @@ func ShowMultiCursor(x, y, i int, v *View) {
 
 // Display renders the view, the cursor, and statusline
 func (v *View) Display() {
-	if globalSettings["termtitle"].(bool) {
-		//screen.SetTitle("micro: " + v.Buf.GetName())
-	}
 	v.DisplayView()
 	// Don't draw the cursor if it is out of the viewport or if it has a selection
 	if v.Num == tabs[curTab].CurView && (v.Cursor.Y-v.Topline < 0 || v.Cursor.Y-v.Topline > v.Height-1 || v.Cursor.HasSelection()) {

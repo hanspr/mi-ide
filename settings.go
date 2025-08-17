@@ -264,9 +264,7 @@ func DefaultGlobalSettings() map[string]any {
 		"pluginrepos":    []string{},
 		"rmtrailingws":   false,
 		"ruler":          true,
-		"savecursor":     false,
 		"savehistory":    true,
-		"saveundo":       false,
 		"scrollmargin":   float64(3),
 		"softwrap":       false,
 		"smartindent":    false,
@@ -279,7 +277,6 @@ func DefaultGlobalSettings() map[string]any {
 		"tabsize":        float64(4),
 		"tabstospaces":   false,
 		"tabindents":     false,
-		"termtitle":      false,
 	}
 }
 
