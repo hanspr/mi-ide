@@ -1,0 +1,46 @@
+
+comment							#comment
+type.keyword					input
+type.other						output
+identifier						class
+identifier.var					var
+constant						FILE
+constant.number					0134
+constant.string.char			$char
+constant.var					$VAR
+constant.string					"string in cuotes"
+constant.string.url				"http://dominio.com.mx"
+statement						for then else
+symbol							#$
+symbol.operator					+ - /
+symbol.brackets					{}
+symbol.tag						//tag <html>
+preproc							use xyz; compile
+type							int , boolean
+function						call(a,b,c)
+method							.method(a,b,c)
+method.other					.othermethods(a,b,c)
+special							whatever
+underlined						markup
+label							label
+info							my info
+error							my error
+todo							todo
+statusline						status line
+unfocused						unfocused
+tabbar							tabbar values
+invisible-char					indentetion char
+line-number						1300
+current-line-number				33
+gutter-error					an error at the bottom
+gutter-warning					warning at the bottom
+cursor-line						curor line
+color-column					cursor column
+selection						selection
+matchbrace						{}
+markup-head						# Header
+markup-bold						__bold__
+markup-table					|head|head|
+markup-url						link
+markup-underlined				<ins>under</ins>
+markup-italic					italic text
