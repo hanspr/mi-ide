@@ -1,6 +1,8 @@
 package main
 
 import (
+	"strings"
+
 	"github.com/micro-editor/tcell/v2"
 )
 
@@ -364,7 +366,7 @@ func TabbarString(toffset int) (string, map[int]int) {
 		}
 		indicies[i] = Count(str)
 	}
-	return str, indicies
+	return strings.Clone(str), indicies
 }
 
 // DisplayTabs Display a Menu, Icons ToolBar, and Tabs
