@@ -35,6 +35,7 @@ rules:
     - constant.tag: "&[\\w]{2,5};"
     - constant.string: "\'.*?\'"
     - comment: "[;,][ \\t]+#.*"
+    - constant.string.url: "(ftp(s)?|http(s)?|git|chrome)://[^ \\t\\'\"]+"
     - comment: "^[ \\t]*#.*$"
     - include: "comments"
     - label: "^[\\t ]*\\w+:$"
