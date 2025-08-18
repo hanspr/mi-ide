@@ -40,7 +40,7 @@ rules:
     - constant.string: "\".*?\""
     - type.keyword: "(alt|bgcolor|(margin)?height|href|id|label|longdesc|name|on(click|focus|load|mouse(over|out)|key(press|up|down)|blur|change|submit|(un)?load)|size|(col|row)?span|src|target|type|value|(margin)?width|cell(spacing|padding)|border|class|method|(enc)?type|maxlength|style|language|action1rel)="
     - constant.number: "(?i)#[0-9A-F]{6,6}"
-    - constant.string.url: "(ftp(s)?|http(s)?|git|chrome)://[^ 	]+"
+    - constant.string.url: "(ftp(s)?|http(s)?|git|chrome)://[^ \\t\\'\"]+"
     - function: "function \\w+"
     - statement: "\\b(for|function|extends|get|if|import|of|instanceof|let|new|return|set)\\b"
     - identifier.var: "([\\$@%]|\\$\\#)\\$*[a-zA-Z_][a-zA-Z0-9_]*"

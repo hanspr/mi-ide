@@ -15,6 +15,7 @@ rules:
     - constant.string: "constant\\.string *.*"
     - constant.var: "constant\\.var *.*"
     - constant.string.char: "constant\\.string\\.char *.*"
+    - constant.string.url: "constant\\.string\\.url *.*"
     - statement: "statement *.*"
     - symbol: "symbol *.*"
     - symbol.operator: "symbol\\.operator *.*"
