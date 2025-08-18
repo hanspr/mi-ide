@@ -10,9 +10,9 @@ rules:
     - symbol.tag: "</?[A-Za-z0-9:]+/?[ >]"
 
 
-    - type: "(?i)<[/]?(body|div|html|head(er)?|footer|title|table|t(body|d|h(ead)?|r|foot)).*?>"
-    - statement: "(?i)<(?:a|a(bbr|ddress|rea|rticle|side|udio)|b|b(ase|d(i|o)|lockquote|r|utton)|ca(nvas|ption)|center|cite|co(de|l|lgroup)|d(ata|atalist|d|el|etails|fn|ialog|l|t)|em|embed|fieldset|fig(caption|ure)|form|iframe|h[1-6]|in(put|s)|kbd|keygen|legend|link|ma(in|p|rk)|menu|menuitem|met(a|er)|nav|noscript|o(bject|l|pt(group|ion)|utput)|p|param|picture|progress|q|r(p|t|uby)|s|samp|se(ction|lect)|small|source|su(b|p|mmary)|textarea|time|track|var|video|wbr) .*?>"
-    - statement: "(?i)</(?:a|a(bbr|ddress|rea|rticle|side|udio)|b|b(ase|d(i|o)|lockquote|r|utton)|ca(nvas|ption)|center|cite|co(de|l|lgroup)|d(ata|atalist|d|el|etails|fn|ialog|l|t)|em|embed|fieldset|fig(caption|ure)|form|iframe|h[1-6]|in(put|s)|kbd|keygen|legend|link|ma(in|p|rk)|menu|menuitem|met(a|er)|nav|noscript|o(bject|l|pt(group|ion)|utput)|p|param|picture|progress|q|r(p|t|uby)|s|samp|se(ction|lect)|small|source|su(b|p|mmary)|textarea|time|track|var|video|wbr) *>"
+    - method: "(?i)<[/]?(body|div|html|head(er)?|footer|title|table|t(body|d|h(ead)?|r|foot)).*?>"
+    - statement: "(?i)<(?:a|button||embed|form|iframe|in(put|s)|link|ma(in|p|rk)|met(a|er)|nav|noscript|o(bject|pt(group|ion)|utput)|se(ction|lect)|textarea|time|var|video|wbr) .*?>"
+    - statement: "(?i)</(?:a|button||embed|form|iframe|in(put|s)|link|ma(in|p|rk)|met(a|er)|nav|noscript|o(bject|pt(group|ion)|utput)|se(ction|lect)|textarea|time|var|video|wbr) *>"
     - constant.string: "\".*?\""
     - constant.string: "'.*?'"
     - special: "&[^;[[:space:]]]*;"
