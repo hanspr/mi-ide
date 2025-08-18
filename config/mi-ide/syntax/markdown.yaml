@@ -6,15 +6,12 @@ detect:
 rules:
     # Tables (Github extension)
     - normal: ".*\\|.*"
-    - markup-table: "\\|.*:\\| .*\\|"
-    - markup-table: "\\|-+\\|-+\\|"
-    - markup-table: "^\\| | \\| ?"
 
     # quotes
     - statement:  "^>.*"
 
-      # Emphasis
-    - method: "(^|[[:space:]])(_[^ ][^_]*_|\\*[^ ][^*]*\\*)"
+      # italic
+    - markup-italic: "(^|[[:space:]])_.*?_[^_]"
 
       # Strong emphasis
     - markup-bold: "(^|[[:space:]])(__[^ ][^_]*__|\\*\\*[^ ][^*]*\\*\\*)"
@@ -23,7 +20,8 @@ rules:
     - type: "(^|[[:space:]])~~[^ ][^~]*~~"
 
       # horizontal rules
-    - markup-table: "(---+|===+|___+|\\*\\*\\*+)\\s*$"
+    - special: "(---+|===+|___+|\\*\\*\\*+)\\s*$"
+    - markup-table: "(?:\\|.*?\\|)+$"
 
       # headlines
     - markup-head:  "^#{1,6}.*"
@@ -42,9 +40,15 @@ rules:
     - underlined: "!\\[[^][]*\\](\\([^)]+\\)|\\[[^]]+\\])"
 
       # urls
-    - markup-url: "https?://[^ )>]+"
+    - constant.string.url: "https?://[^ )>]+"
+
+      # mdkdocs
+    - info: "!!! info .*"
+    - error: "!!! danger .*"
+    - todo: "!!! warning.*"
+    - constant.string: "^ {3,}.*"
 
     - special: "^```$"
 
-    - special: "`.+?`"
+    - constant: "`.+?`"
 
