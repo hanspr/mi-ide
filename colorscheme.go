@@ -154,6 +154,9 @@ func StringToStyle(str string) tcell.Style {
 	if strings.Contains(str, "underline") {
 		style = style.Underline(true)
 	}
+	if strings.Contains(str, "italic") {
+		style = style.Italic(true)
+	}
 	return style
 }
 
