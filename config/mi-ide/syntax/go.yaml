@@ -5,9 +5,11 @@ detect:
 
 rules:
     # Conditionals and control flow
+    - identifier.var: "\\b\\w+\\b"
+    - default: "\\b(package|import|const|var|type|struct|func|go|defer|iota)\\b.+"
     - function: "func \\w+"
     - function: "\\w+\\(.*?\\)"
-    - default: "\\(.*?\\)"
+    - identifier.var: "\\(.*?\\)"
     - function: ", \\w+\\("
     - label: "goto \\w+"
     - statement: "goto "
@@ -19,8 +21,7 @@ rules:
       # Types
     - symbol: "(,|\\.)"
     - type.keyword: "\\b(u?int(8|16|32|64)?|float(32|64)|complex(64|128))\\b"
-    - type.keyword: "\\b(uintptr|byte|rune|string|interface|bool|map|chan|error)\\b"
-    - type.keyword: "\\b(struct)\\b"
+    - type.keyword: "\\b(uintptr|byte|rune|string|interface|bool|map|chan|error|struct)\\b"
     - constant.bool: "\\b(true|false|nil)\\b"
 
       # Methods
@@ -46,3 +47,10 @@ rules:
         end: "\\*/"
         rules:
             - todo: "(TODO|XXX|FIXME):?"
+
+    - type.keyword:
+        start: "struct {"
+        end: "}"
+        rules:
+            - default: "^\\s+\\w+\\b"
+            - comment: " //.+$"
