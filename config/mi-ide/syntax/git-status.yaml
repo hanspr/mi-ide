@@ -21,8 +21,8 @@ rules:
             - constant.number: "\".*?\""
             - statement: "^\\s+\\w+:\\s+\\w+.*"
     - default:
-        start: " (?:staged|conf\\w+):$"
-        end: "^\\w+"
+        start: " (?:staged|conf\\w+|committed):$"
+        end: "^\\w|^\\b$"
         rules:
             - constant.number: "\".*?\""
             - constant.string: "^\\s+\\w+:\\s+\\w+.*"
