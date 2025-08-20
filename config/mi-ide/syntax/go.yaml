@@ -5,11 +5,9 @@ detect:
 
 rules:
     # Conditionals and control flow
-    - identifier.var: "\\b\\w+\\b"
-    - default: "\\b(package|import|const|var|type|struct|func|go|defer|iota)\\b.+"
     - function: "func \\w+"
     - function: "\\w+\\(.*?\\)"
-    - identifier.var: "\\(.*?\\)"
+    - default: "\\(.*?\\)"
     - function: ", \\w+\\("
     - label: "goto \\w+"
     - statement: "goto "
