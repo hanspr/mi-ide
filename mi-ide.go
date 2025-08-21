@@ -267,7 +267,7 @@ func InitScreen() {
 		fmt.Println(err)
 		os.Exit(1)
 	}
-
+	screen.EnablePaste()
 	// Now we can put the TERM back to what it was before
 	if truecolor {
 		os.Setenv("TERM", oldTerm)

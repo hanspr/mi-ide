@@ -638,29 +638,7 @@ func (v *View) HandleEvent(event tcell.Event) {
 	// By default it's true because most events should cause a relocate
 	relocate := true
 	v.Buf.CheckModTime()
-
 	switch e := event.(type) {
-	//	case *tcell.EventRaw:
-	//		if NavigationMode {
-	//			return
-	//		}
-	//		for key, actions := range bindings {
-	//			if key.keyCode == -1 {
-	//				if e.EscSeq() == key.escape {
-	//					for _, c := range v.Buf.cursors {
-	//						ok := v.SetCursor(c)
-	//						if !ok {
-	//							break
-	//						}
-	//						relocate = false
-	//						relocate = v.ExecuteActions(actions) || relocate
-	//					}
-	//					v.SetCursor(&v.Buf.Cursor)
-	//					v.Buf.MergeCursors()
-	//					break
-	//				}
-	//			}
-	//		}
 	case *tcell.EventKey:
 		isBinding := false
 		if NavigationMode && e.Name() == "Esc" {
