@@ -1699,7 +1699,7 @@ func (m *microMenu) getDir() (string, int) {
 
 func (m *microMenu) Finish(s string) {
 	apprunning = nil
-	MouseOnOff(false)
+	//MouseOnOff(false)
 	MicroToolBar.FixTabsIconArea()
 }
 

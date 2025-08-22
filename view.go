@@ -718,7 +718,7 @@ func (v *View) HandleEvent(event tcell.Event) {
 			if v.Type.Readonly {
 				messenger.Alert("error", Language.Translate("File is readonly"))
 				return
-			} else if NavigationMode || MouseEnabled {
+			} else if NavigationMode {
 				return
 			} else {
 				isSelection := false
