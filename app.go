@@ -1445,6 +1445,7 @@ func (e *AppElement) ProcessElementMouseWheel(event string, x, y int) {
 // Key Events
 // ------------------------------------------------
 
+// SetNavModeBindings predefined navigation bindings
 func (e *AppElement) SetNavModeBindings(key string) string {
 	// Navmode binding
 	if key == "i" {
