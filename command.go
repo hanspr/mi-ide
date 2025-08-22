@@ -365,10 +365,10 @@ func GitDiff(arg string) {
 	CurView().Buf.Settings["filetype"] = "git-diff"
 	CurView().Type = vtLog
 	CurView().Buf.UpdateRules()
-	CurView().Buf.fname = "git-diff"
+	CurView().Buf.Fname = "git-diff"
 	SetLocalOption("softwrap", "true", CurView())
 	SetLocalOption("ruler", "false", CurView())
-	NavigationMode = true
+	navigationMode = true
 }
 
 // : Helper functions

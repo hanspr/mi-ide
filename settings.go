@@ -140,7 +140,7 @@ func InitLocalSettings(buf *Buffer) {
 
 	// 3.- Load Settings for this project
 	dir := filepath.Dir(buf.AbsPath)
-	pdir := GetProjectDir(WorkingDir, dir)
+	pdir := GetProjectDir(workingDir, dir)
 	filename = pdir + "/.miide/settings.json"
 	fSettings, err = ReadFileJSON(filename)
 	if err == nil {
@@ -148,7 +148,7 @@ func InitLocalSettings(buf *Buffer) {
 	}
 
 	// 4.- Load Settings for this particular file
-	filename = dir + "/.miide/" + buf.fname + ".settings"
+	filename = dir + "/.miide/" + buf.Fname + ".settings"
 	fSettings, err = ReadFileJSON(filename)
 	if err == nil {
 		// Load previous saved settings for this file

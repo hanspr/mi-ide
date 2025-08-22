@@ -50,7 +50,7 @@ type Buffer struct {
 	// Name of the buffer on the status line
 	name string
 	// Name with no path to use on Tabs
-	fname string
+	Fname string
 
 	//Encoding
 	encoder  string // encoder currently being used
@@ -218,7 +218,7 @@ func NewBuffer(reader io.Reader, size int64, path string) *Buffer {
 
 	b.Path = path
 	b.AbsPath = absPath
-	b.fname = filepath.Base(path)
+	b.Fname = filepath.Base(path)
 
 	// The last time this file was modified
 	b.ModTime, _ = GetModTime(b.Path)

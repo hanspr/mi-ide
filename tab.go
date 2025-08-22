@@ -314,7 +314,7 @@ func TabbarString(toffset int) (string, map[int]int) {
 
 	for i, t := range tabs {
 		buf := t.Views[t.CurView].Buf
-		name := buf.fname
+		name := buf.Fname
 		if Count(str)+Count(name)+toffset+10 > w {
 			// Tabbar is longer than screen width
 			if middle == 0 {
@@ -353,7 +353,7 @@ func TabbarString(toffset int) (string, map[int]int) {
 		} else {
 			str += "  "
 		}
-		str += buf.fname
+		str += buf.Fname
 		if t.Views[cv].Type.Kind == 0 && buf.Modified() {
 			str += bufDirty
 		} else {

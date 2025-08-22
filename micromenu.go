@@ -1464,10 +1464,10 @@ func (m *microMenu) SetLocalSettings(name, value, event, when string, x, y int) 
 			values["encoder"] = b.buf.encoder
 			values["filetype"] = b.FileType()
 			// Change destintation to for file only
-			fname = dir + "/.miide/" + b.fname + ".json"
+			fname = dir + "/.miide/" + b.Fname + ".json"
 		} else if values["savefor"] == "project" {
 			// Detect working dir
-			dir = GetProjectDir(dir, WorkingDir)
+			dir = GetProjectDir(dir, workingDir)
 			fname = dir + "/.miide/settings.json"
 		}
 		// Init dir if does not exists

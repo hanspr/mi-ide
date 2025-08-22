@@ -1162,7 +1162,7 @@ func (v *View) saveToFile(filename string) {
 		v.Buf.Path = filename
 		v.Buf.name = filename
 		v.Buf.AbsPath, _ = filepath.Abs(filename)
-		v.Buf.fname = filepath.Base(filename)
+		v.Buf.Fname = filepath.Base(filename)
 		messenger.Message(Language.Translate("Saved") + " " + filename)
 		go git.GitSetStatus()
 	}
@@ -1994,8 +1994,8 @@ func (v *View) SafeQuit(usePlugin bool) bool {
 	for _, vo := range tabs[curTab].Views {
 		if vo.Type == vtLog || vo.Type == vtTerm || vo.Type == vtHelp {
 			vo.Quit(false)
-			if CurView().Type.Kind == 0 && NavigationMode {
-				NavigationMode = false
+			if CurView().Type.Kind == 0 && navigationMode {
+				navigationMode = false
 			}
 			return false
 		}
@@ -2166,7 +2166,7 @@ func (v *View) PreviousTab(usePlugin bool) bool {
 		}
 
 		if CurView().Type.Readonly {
-			NavigationMode = true
+			navigationMode = true
 		}
 
 		if usePlugin {
@@ -2196,7 +2196,7 @@ func (v *View) NextTab(usePlugin bool) bool {
 		}
 
 		if CurView().Type.Readonly {
-			NavigationMode = true
+			navigationMode = true
 		}
 
 		if usePlugin {
@@ -2296,9 +2296,9 @@ func (v *View) NextSplit(usePlugin bool) bool {
 		// Find next View parsing tree_split downward
 		tab.CurView = v.splitNode.GetNextPrevView(1)
 		if CurView().Type.Readonly {
-			NavigationMode = true
+			navigationMode = true
 		} else if pType.Readonly {
-			NavigationMode = false
+			navigationMode = false
 		}
 		if usePlugin {
 			if CurView().Type.Kind == 0 {
@@ -2327,9 +2327,9 @@ func (v *View) PreviousSplit(usePlugin bool) bool {
 		// Find next View parsing tree_split upward
 		tab.CurView = v.splitNode.GetNextPrevView(-1)
 		if CurView().Type.Readonly {
-			NavigationMode = true
+			navigationMode = true
 		} else if pType.Readonly {
-			NavigationMode = false
+			navigationMode = false
 		}
 		if usePlugin {
 			if CurView().Type.Kind == 0 {
@@ -2780,12 +2780,12 @@ func (v *View) CloudSettings(plugin bool) bool {
 
 // Mouse Toggle
 func (v *View) ToggleMouse(usePlugin bool) bool {
-	if MouseEnabled {
+	if mouseEnabled {
 		screen.DisableMouse()
 	} else {
 		screen.EnableMouse()
 	}
-	MouseEnabled = !MouseEnabled
+	mouseEnabled = !mouseEnabled
 	return true
 }
 
@@ -2795,7 +2795,7 @@ func MouseOnOff(b bool) {
 	} else {
 		screen.DisableMouse()
 	}
-	MouseEnabled = b
+	mouseEnabled = b
 }
 
 // Show Buffersettings
@@ -2807,7 +2807,7 @@ func (v *View) BufferSettings(usePlugin bool) bool {
 // Toggle Navigation Mode
 func (v *View) NavigationMode(usePlugin bool) bool {
 	MouseOnOff(false)
-	NavigationMode = !NavigationMode
+	navigationMode = !navigationMode
 	return true
 }
 
@@ -2917,7 +2917,7 @@ func (v *View) SearchFunction(hint bool) (bool, string, string, int) {
 	}
 	// search in files in the current directory
 	messenger.Message("Searching in file system, wait ....")
-	data, line, ok := FindFileWith(r, filepath.Dir(v.Buf.Path), v.Buf.FileType(), path.Ext(v.Buf.fname), 2, hint)
+	data, line, ok := FindFileWith(r, filepath.Dir(v.Buf.Path), v.Buf.FileType(), path.Ext(v.Buf.Fname), 2, hint)
 	messenger.Message("")
 	if ok {
 		return true, data, word, line

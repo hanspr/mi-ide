@@ -177,7 +177,7 @@ func (v *View) OpenHelperView(dir, filetype string, data string) {
 		HelperWindow.Buf.UpdateRules()
 		SetLocalOption("softwrap", "true", HelperWindow)
 		SetLocalOption("ruler", "false", HelperWindow)
-		NavigationMode = true
+		navigationMode = true
 		if dir == "h" {
 			nh := int(float64(h)*0.25) - 1
 			if nh < 5 {
@@ -641,7 +641,7 @@ func (v *View) HandleEvent(event tcell.Event) {
 	switch e := event.(type) {
 	case *tcell.EventKey:
 		isBinding := false
-		if NavigationMode && e.Name() == "Esc" {
+		if navigationMode && e.Name() == "Esc" {
 			// Exist navigation mode
 			v.NavigationMode(true)
 			return
@@ -673,7 +673,7 @@ func (v *View) HandleEvent(event tcell.Event) {
 							continue
 						}
 					}
-					if e.Modifiers() == key.modifiers || (NavigationMode && e.Key() == tcell.KeyRune) {
+					if e.Modifiers() == key.modifiers || (navigationMode && e.Key() == tcell.KeyRune) {
 						var cursors []*Cursor
 						isBinding = true
 						deleol := false
@@ -718,7 +718,7 @@ func (v *View) HandleEvent(event tcell.Event) {
 			if v.Type.Readonly {
 				messenger.Alert("error", Language.Translate("File is readonly"))
 				return
-			} else if NavigationMode {
+			} else if navigationMode {
 				return
 			} else {
 				isSelection := false
@@ -777,7 +777,7 @@ func (v *View) HandleEvent(event tcell.Event) {
 			}
 		}
 	case *tcell.EventPaste:
-		if NavigationMode {
+		if navigationMode {
 			// Do not pase on Navigation mode from terminal (fat fingers arrive here too)
 			return
 		}
@@ -934,7 +934,7 @@ func (v *View) openHelp(helpPage string) {
 			CurView().Type = vtHelp
 			v.Relocate()
 		}
-		NavigationMode = true
+		navigationMode = true
 	}
 }
 

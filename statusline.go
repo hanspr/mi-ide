@@ -129,7 +129,7 @@ func (sline *Statusline) Display() {
 	file += fmt.Sprintf(" %6s/%s,%-4s ", lineNum, totColumn, columnNum)
 
 	// bellow 69 columns begin hidding information
-	if w > 69 && MouseEnabled {
+	if w > 69 && mouseEnabled {
 		var ff string
 
 		sline.hotspot["BUFFERSET"] = Loc{Count(file) + offset, Count(file) + offset + 2}
@@ -154,7 +154,7 @@ func (sline *Statusline) Display() {
 
 		sline.hotspot["ENCODER"] = Loc{Count(file) + offset - 2, Count(file) + offset + 1 + Count(sline.view.Buf.encoder)}
 		file += sline.view.Buf.encoder + " ▴"
-	} else if !MouseEnabled {
+	} else if !mouseEnabled {
 		var ff string
 
 		file += " ⎈ "
@@ -218,7 +218,7 @@ func (sline *Statusline) Display() {
 	gitfg := "#000000"
 	for x := 0; x < w; x++ {
 		tStyle := statusLineStyle
-		if NavigationMode {
+		if navigationMode {
 			tStyle = StringToStyle("#ffffff,#A90000")
 		}
 		if showbuttons {

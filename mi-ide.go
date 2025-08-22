@@ -112,17 +112,17 @@ var (
 
 	currEnv appEnv
 
-	MouseEnabled = false
+	mouseEnabled = false
 
-	NavigationMode = false
+	navigationMode = false
 
 	cloudPath = "https://clip.microflow.com.mx:8443" // Cloud service url
 
 	git *gitstatus
 
-	WorkingDir = ""
+	workingDir = ""
 
-	HomeDir = ""
+	homeDir = ""
 )
 
 // LoadInput determines which files should be loaded into buffers
@@ -190,7 +190,7 @@ func InitConfigDir() {
 	xdgHome := os.Getenv("XDG_CONFIG_HOME")
 	if xdgHome == "" {
 		// The user has not set $XDG_CONFIG_HOME so we should act like it was set to ~/.config
-		xdgHome = HomeDir + "/.config"
+		xdgHome = homeDir + "/.config"
 	}
 	configDir = xdgHome + "/mi-ide"
 
@@ -362,9 +362,9 @@ func main() {
 	currEnv.Gid = os.Getgid()
 	currEnv.Groups, _ = os.Getgroups()
 	currEnv.ClipWhere = "local"
-	WorkingDir, _ = os.Getwd()
+	workingDir, _ = os.Getwd()
 	git = NewGitStatus()
-	HomeDir, _ = homedir.Dir()
+	homeDir, _ = homedir.Dir()
 
 	flag.Usage = func() {
 		fmt.Println("Usage: mi-ide [OPTIONS] [FILE]...")
