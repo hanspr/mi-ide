@@ -8,11 +8,28 @@ import (
 	"strings"
 )
 
+// Snippet
+
+type snippet struct {
+	code         string
+	locations    []*SnippetLocation
+	placeholders []*ph
+	startPos     Loc
+	modText      bool
+	view         *View
+	focused      int
+}
+
+type ph struct {
+	num   int64
+	value string
+}
+
 var (
 	snipFileType   = ""
 	snippets       = map[string]*snippet{}
 	snAutoclose    = false
-	currentSnippet = &snippet{}
+	currentSnippet *snippet
 )
 
 // Location
@@ -137,23 +154,6 @@ func (sl *SnippetLocation) handleInput(ev *TextEvent) bool {
 	return false
 }
 
-// Snippet
-
-type snippet struct {
-	code         string
-	locations    []*SnippetLocation
-	placeholders []*ph
-	startPos     Loc
-	modText      bool
-	view         *View
-	focused      int
-}
-
-type ph struct {
-	num   int64
-	value string
-}
-
 func NewSnippet() *snippet {
 	s := &snippet{}
 	s.code = ""
@@ -249,6 +249,9 @@ func (s *snippet) insert() {
 }
 
 func (s *snippet) focusNext() {
+	if currentSnippet == nil {
+		return
+	}
 	if s.focused == -1 {
 		s.focused = 0
 	} else {
@@ -301,8 +304,6 @@ func ReadSnippets(filetype string) map[string]*snippet {
 			// snippet code
 			cline := strings.Replace(string(line), "\t", "", 1)
 			curSnip.addCodeLine(cline)
-		} else {
-			messenger.AddLog("ReadSnippets error ", lineNum, " : ", string(line))
 		}
 	}
 	return snippets
