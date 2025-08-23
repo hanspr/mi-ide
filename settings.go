@@ -292,7 +292,7 @@ func DefaultLocalSettings() map[string]any {
 		"blockclose":     "",
 		"blockinter":     "",
 		"colorcolumn":    float64(0),
-		"comment":        "",
+		"comment":        "#",
 		"cursorcolor":    "disabled",
 		"cursorshape":    "disabled",
 		"cursorline":     true,
