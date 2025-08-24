@@ -365,9 +365,28 @@ func (b *Buffer) AddMultiComment(Start, Stop Loc) {
 	if Start.Y == Stop.Y || Stop.X > 0 {
 		end++
 	}
+	// Scan to decide if we add o remove comments
+	action := ""
 	for y := start; y < end; y++ {
 		str := b.Line(y)
 		if comment.MatchString(str) {
+			if action == "add" {
+				break
+			} else if action == "" {
+				action = "del"
+			}
+		} else {
+			if action == "del" {
+				action = "add"
+				break
+			} else if action == "" {
+				action = "add"
+			}
+		}
+	}
+	for y := start; y < end; y++ {
+		str := b.Line(y)
+		if action == "del" {
 			// Remove comment from line
 			str = strings.Replace(str, cstring, "", 1)
 		} else {
