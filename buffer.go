@@ -369,6 +369,9 @@ func (b *Buffer) AddMultiComment(Start, Stop Loc) {
 	action := ""
 	for y := start; y < end; y++ {
 		str := b.Line(y)
+		if str == "" || IsSpacesOrTabs(str) {
+			continue
+		}
 		if comment.MatchString(str) {
 			if action == "add" {
 				break
@@ -386,6 +389,9 @@ func (b *Buffer) AddMultiComment(Start, Stop Loc) {
 	}
 	for y := start; y < end; y++ {
 		str := b.Line(y)
+		if str == "" || IsSpacesOrTabs(str) {
+			continue
+		}
 		if action == "del" {
 			// Remove comment from line
 			str = strings.Replace(str, cstring, "", 1)
