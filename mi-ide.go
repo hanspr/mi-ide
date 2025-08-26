@@ -69,7 +69,7 @@ var (
 
 	// Version is the version number or commit hash
 	// These variables should be set by the linker when compiling
-	Version = "1.1.100"
+	Version = "1.2.0"
 
 	// The list of views
 	tabs []*Tab
