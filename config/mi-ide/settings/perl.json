@@ -1,7 +1,24 @@
 {
-    "charsopen": "“”°·•",
+    "autoclose": true,
+    "autoindent": true,
+    "blockclose": "",
+    "blockinter": "",
+    "blockopen": "",
     "charsclose": "“”°·•",
+    "charsopen": "“”°·•",
     "comment": "#",
+    "eofnewline": false,
+    "fileformat": "unix",
+    "indentchar": " ",
+    "keepautoindent": true,
+    "matchbrace": true,
+    "rmtrailingws": true,
     "smartindent": true,
-    "tabstospaces": false
+    "smartpaste": true,
+    "softwrap": false,
+    "tabindents": false,
+    "tabmovement": true,
+    "tabsize": 4,
+    "tabstospaces": true,
+    "useformatter": false
 }
