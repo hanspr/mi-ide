@@ -1149,6 +1149,7 @@ func (v *View) Save(usePlugin bool) bool {
 			return PostActionCall("Save", v)
 		}
 	}
+	go git.GitSetStatus()
 	return false
 }
 
