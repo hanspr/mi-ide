@@ -2786,6 +2786,7 @@ func (v *View) ToggleMouse(usePlugin bool) bool {
 		screen.EnableMouse()
 	}
 	mouseEnabled = !mouseEnabled
+	previousMouseStatus = mouseEnabled
 	return true
 }
 

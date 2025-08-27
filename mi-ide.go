@@ -112,7 +112,8 @@ var (
 
 	currEnv appEnv
 
-	mouseEnabled = false
+	mouseEnabled        = false
+	previousMouseStatus = false
 
 	navigationMode = false
 
@@ -349,7 +350,7 @@ var flagOptions = flag.Bool("options", false, "Show all option help")
 func MicroAppStop() {
 	apprunning = nil
 	MicroToolBar.FixTabsIconArea()
-	//MouseOnOff(false)
+	MouseOnOff(previousMouseStatus)
 }
 
 func main() {
