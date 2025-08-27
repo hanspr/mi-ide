@@ -1143,6 +1143,7 @@ func (v *View) Save(usePlugin bool) bool {
 
 		if v.Buf.RunFormatter() {
 			v.ReOpen()
+			//v.Buf.SmartDetections()
 		}
 
 		if usePlugin {
