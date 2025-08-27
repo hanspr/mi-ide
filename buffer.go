@@ -569,6 +569,7 @@ func (b *Buffer) ReOpen() {
 	b.IsModified = false
 	b.Update()
 	go git.GitSetStatus()
+	go b.SmartDetections()
 	b.Cursor.Relocate()
 	if b.encoding {
 		screen.Sync()

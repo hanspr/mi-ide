@@ -96,4 +96,7 @@ func (g *gitstatus) GitSetStatus() {
 	} else {
 		g.status = "[ " + branch + "}"
 	}
+	if CurView() != nil {
+		CurView().sline.Display()
+	}
 }

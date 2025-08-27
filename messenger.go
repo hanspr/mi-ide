@@ -146,7 +146,7 @@ func (m *Messenger) Alert(kind string, msg ...any) {
 			}
 		}
 		m.hasMessage = true
-		RedrawAll(true)
+		messenger.Display()
 		if clearTime > 0 {
 			if m.timerOn {
 				m.timer.Stop()
@@ -311,7 +311,7 @@ func (m *Messenger) Prompt(prompt, placeholder, historyType string, completionTy
 	m.cursorx = Count(placeholder)
 	m.cursorx = Count(placeholder)
 	m.offsetx = m.cursorx
-	RedrawAll(true)
+	messenger.Display()
 	for m.hasPrompt {
 		var suggestions []string
 		m.Clear()
@@ -323,7 +323,7 @@ func (m *Messenger) Prompt(prompt, placeholder, historyType string, completionTy
 			for _, t := range tabs {
 				t.Resize()
 			}
-			RedrawAll(true)
+			messenger.Display()
 		case *tcell.EventKey:
 			switch e.Key() {
 			case tcell.KeyEscape, tcell.KeyCtrlQ, tcell.KeyCtrlG:
@@ -574,6 +574,9 @@ func (m *Messenger) Reset() {
 
 // Clear clears the line at the bottom of the editor
 func (m *Messenger) Clear() {
+	if m.timerOn {
+		m.timer.Stop()
+	}
 	w, h := screen.Size()
 	for x := range w {
 		screen.SetContent(x, h-1, ' ', nil, defStyle)
@@ -616,6 +619,7 @@ func (m *Messenger) DisplaySuggestions(suggestions []string) {
 // Display displays messages or prompts
 func (m *Messenger) Display() {
 	_, h := screen.Size()
+	m.Clear()
 	if m.hasMessage {
 		runes := []rune(m.message + m.response)
 		posx := 0
