@@ -358,6 +358,10 @@ func (m *microMenu) SaveSettings(name, value, event, when string, x, y int) bool
 		if err != nil {
 			messenger.Alert("error", Language.Translate("Error writing settings.json file"), ": ", err.Error())
 		}
+		if globalSettings["usemouse"].(bool) != previousMouseStatus {
+			previousMouseStatus = globalSettings["usemouse"].(bool)
+			MouseOnOff(previousMouseStatus)
+		}
 	}
 	CurView().SetCursorEscapeString()
 	return true

@@ -78,6 +78,10 @@ func InitGlobalSettings() {
 	if globalSettings["mi-server"].(string) != "" {
 		cloudPath = globalSettings["mi-server"].(string)
 	}
+	if globalSettings["usemouse"].(bool) {
+		mouseEnabled = true
+		previousMouseStatus = true
+	}
 	Clip.SetCloudPath(cloudPath, globalSettings["mi-key"].(string), globalSettings["mi-pass"].(string), globalSettings["mi-phrase"].(string))
 }
 
@@ -318,6 +322,7 @@ func DefaultLocalSettings() map[string]any {
 		"tabstospaces":   false,
 		"tabindents":     false,
 		"useformatter":   true,
+		"usemouse":       false,
 	}
 }
 
