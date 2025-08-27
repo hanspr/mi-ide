@@ -469,42 +469,46 @@ func (b *Buffer) SmartIndent(Start, Stop Loc) {
 	for y := Ys; y <= Ye; y++ {
 		// messenger.AddLog("Linea:", string(b.Line(y)))
 		lc := SmartIndentPrepareLine(b.Line(y))
-		// messenger.AddLog("linea:", lc)
-		if skipBlock {
-			// messenger.AddLog("skipblock")
-			if skipBlockEnd.MatchString(lc) {
-				skipBlock = false
+		if comment.MatchString(lc) {
+			ci = I + IndRef
+		} else {
+			// messenger.AddLog("linea:", lc)
+			if skipBlock {
+				// messenger.AddLog("skipblock")
+				if skipBlockEnd.MatchString(lc) {
+					skipBlock = false
+				}
+				continue
 			}
-			continue
-		}
-		if skipBlockStart.MatchString(lc) {
-			// messenger.AddLog("start block")
-			skipBlock = true
-			continue
-		}
-		// messenger.AddLog("ci + IndRef:", ci, "+", IndRef)
-		ci = I + IndRef
-		if interBlock.MatchString(lc) {
-			// messenger.AddLog("interblock")
-			if y == Ys {
-				// if reference is an interblock, the reference already is correct, treat as indenting
-				// messenger.AddLog("startline")
+			if skipBlockStart.MatchString(lc) {
+				// messenger.AddLog("start block")
+				skipBlock = true
+				continue
+			}
+			// messenger.AddLog("ci + IndRef:", ci, "+", IndRef)
+			ci = I + IndRef
+			if interBlock.MatchString(lc) {
+				// messenger.AddLog("interblock")
+				if y == Ys {
+					// if reference is an interblock, the reference already is correct, treat as indenting
+					// messenger.AddLog("startline")
+					IndRef++
+					continue
+				}
+				ci--
+			} else if openBlock.MatchString(lc) {
+				// messenger.AddLog("indent")
 				IndRef++
-				continue
+			} else if closeBlock.MatchString(lc) {
+				// messenger.AddLog("outdent")
+				if y == Ys {
+					// messenger.AddLog("start line")
+					// if reference outdent, is already outdented
+					continue
+				}
+				IndRef--
+				ci--
 			}
-			ci--
-		} else if openBlock.MatchString(lc) {
-			// messenger.AddLog("indent")
-			IndRef++
-		} else if closeBlock.MatchString(lc) {
-			// messenger.AddLog("outdent")
-			if y == Ys {
-				// messenger.AddLog("start line")
-				// if reference outdent, is already outdented
-				continue
-			}
-			IndRef--
-			ci--
 		}
 		if ci < 0 {
 			//messenger.AddLog("NEGATIVO !!!!!")
