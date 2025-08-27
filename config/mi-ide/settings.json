@@ -38,5 +38,6 @@
     "tabmovement": true,
     "tabsize": 4,
     "tabstospaces": false,
-    "termtitle": false
+    "termtitle": false,
+    "usemouse": false
 }
