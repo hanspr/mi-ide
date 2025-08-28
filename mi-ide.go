@@ -369,18 +369,19 @@ func main() {
 
 	flag.Usage = func() {
 		fmt.Println("Usage: mi-ide [OPTIONS] [FILE]...")
+		fmt.Println("Available options")
 		fmt.Println("-config-dir dir")
-		fmt.Println("    \tSpecify a custom location for the configuration directory")
-		fmt.Println("-options")
-		fmt.Println("    \tShow all option help")
+		fmt.Println("    Specify a custom location for the configuration directory")
 		fmt.Println("-version")
-		fmt.Println("    \tShow the version number and information")
-
-		fmt.Print("\nMicro's options can also be set via command line arguments for quick\nadjustments. For real configuration, please use the settings.json\nfile (see 'help options').\n\n")
-		fmt.Println("-option value")
-		fmt.Println("    \tSet `option` to `value` for this session")
-		fmt.Println("    \tFor example: `mi-ide -syntax off file.c`")
-		fmt.Println("\nUse `mi-ide -options` to see the full list of configuration options")
+		fmt.Println("    Show the version number and information")
+		fmt.Println("\nQuick intro")
+		fmt.Println("    Ctrl-o     : Open file")
+		fmt.Println("    Ctrl-s     : Save")
+		fmt.Println("    Ctrl-t     : Create new tab")
+		fmt.Println("    Ctrl-w     : Close current tab, helper window")
+		fmt.Println("    Ctrl-q     : Exit")
+		fmt.Println("    Arrows     : Move cursor around")
+		fmt.Println("    Ctrl-e     : Enter command mode, tab to see list of commands")
 	}
 
 	optionFlags := make(map[string]*string)
@@ -394,15 +395,6 @@ func main() {
 	if *flagVersion {
 		// If -version was passed
 		fmt.Println(Version)
-		os.Exit(0)
-	}
-
-	if *flagOptions {
-		// If -options was passed
-		for k, v := range DefaultGlobalSettings() {
-			fmt.Printf("-%s value\n", k)
-			fmt.Printf("    \tThe %s option. Default value: '%v'\n", k, v)
-		}
 		os.Exit(0)
 	}
 
