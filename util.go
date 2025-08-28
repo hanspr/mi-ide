@@ -870,10 +870,24 @@ func RunBackgroundShell(input string) {
 // GetProjectDir tries to find the correct path to the project
 // with respecto to the file directory path
 func GetProjectDir(wkdir, fdir string) string {
+	// search for existing settings on dir or above
+	for _, path := range []string{wkdir, fdir} {
+		dirPath := path + "/.miide"
+		_, err := os.Stat(dirPath)
+		if err == nil {
+			return path
+		}
+		dirPath = filepath.Dir(path)
+		_, err = os.Stat(dirPath)
+		if err == nil {
+			return dirPath
+		}
+
+	}
+	// could not find local settings, set the best option
 	if wkdir == homeDir {
 		return fdir
 	}
-	//fix recursively look for .miide dir upwards?
 	if wkdir != fdir && strings.Contains(fdir, wkdir) {
 		return wkdir
 	}

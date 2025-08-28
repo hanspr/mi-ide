@@ -147,11 +147,6 @@ func InitLocalSettings(buf *Buffer) {
 	pdir := GetProjectDir(workingDir, dir)
 	filename = pdir + "/.miide/settings.json"
 	fSettings, err = ReadFileJSON(filename)
-	if err != nil {
-		// Check one level up, no more
-		filename = pdir + "../.miide/settings.json"
-		fSettings, err = ReadFileJSON(filename)
-	}
 	if err == nil {
 		maps.Copy(buf.Settings, fSettings)
 	}
@@ -159,11 +154,6 @@ func InitLocalSettings(buf *Buffer) {
 	// 4.- Load Settings for this particular file
 	filename = dir + "/.miide/" + buf.Fname + ".settings"
 	fSettings, err = ReadFileJSON(filename)
-	if err != nil {
-		// check one level up, no more
-		filename = dir + "../.miide/" + buf.Fname + ".settings"
-		fSettings, err = ReadFileJSON(filename)
-	}
 	if err == nil {
 		// Load previous saved settings for this file
 		maps.Copy(buf.Settings, fSettings)
