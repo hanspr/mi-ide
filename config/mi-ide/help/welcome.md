@@ -6,16 +6,14 @@ If you are new to mi-ide, We will take a very quick review to ease your start
 
 * __Basic Keys__
 
-----------------------------------------
-| Keys          :| Action              |                      -------------------------------------------------------
-|----------------|---------------------|                      | `Help`                                              |
-| F1             | Open file           |                      |                                                     |
-| F2             | Save                |                      | `Alt-?` Then type the section, available sections:  |
-| F3             | Save as             |                      | * defaultkeys : Full list of all keybindings        |
-| F4             | Exit                |                      | * options     : Full list of options                |
-| Shift F1       | Open file viewer    |                      | * help        : How to use help                     |
-| Shift F2       | Save all            |                      -------------------------------------------------------
-| Ctrl-X         | Cut                 |                            Support & Services
+----------------------------------------                      -------------------------------------------------------
+| Keys          :| Action              |                      | `Help`                                              |
+|----------------|---------------------|                      |                                                     |
+| F1             | Open file           |                      | `Alt-?` Then type the section, available sections:  |
+| F2             | Save                |                      | * defaultkeys : Full list of all keybindings        |
+| F3             | Save as             |                      | * options     : Full list of options                |
+| F4             | Exit                |                      | * help        : How to use help                     |
+| Ctrl-X         | Cut                 |                      -------------------------------------------------------
 | Ctrl-C         | Copy                |
 | Ctrl-V         | Paste               |
 | Ctrl-Q         | Quit All            |
@@ -25,6 +23,7 @@ If you are new to mi-ide, We will take a very quick review to ease your start
 | Ctrl-R         | Search / Replace    |
 | Ctrl-G         | Goto Line           |
 | Ctrl-L         | Center on screen    |
+| Ctrl-P         | Activate mouse      |
 ----------------------------------------
 
-                                              Enjoy your coding !!
+                                              Enjoy coding !!

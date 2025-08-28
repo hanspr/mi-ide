@@ -22,8 +22,9 @@ rules:
 
       # horizontal rules
     - special: "(---+|===+|___+|\\*\\*\\*+)\\s*$"
-    - markup-table: "(?:\\|.*?\\|)+$"
-    - statusline: "(?:\\|\\!.+?)\\|$"
+    - markup-table: "(?:\\|.+?)+\\|"
+    - statusline: "\\|"
+    - statusline: "(?:\\|-+)+\\|"
 
       # headlines
     - markup-head:  "^#{1,6}.*"
@@ -45,7 +46,6 @@ rules:
     - constant.string.url: "https?://[^ )>]+"
 
       # mdkdocs,github
-    - statusline: "(?:\\|[:]?-+:?)+\\|$"
     - info: "!!! info .*"
     - info: "> \\[!NOTE\\]"
     - error: "!!! danger .*"
