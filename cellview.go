@@ -1,8 +1,8 @@
 package main
 
 import (
-	"github.com/micro-editor/tcell/v2"
 	"github.com/mattn/go-runewidth"
+	"github.com/micro-editor/tcell/v2"
 )
 
 func min(a, b int) int {
@@ -131,11 +131,11 @@ func (c *CellView) Draw(buf *Buffer, top, height, left, width int, ActiveView bo
 
 	viewLine := 0
 	lineN := top
-
+	bufEnd := len(buf.lines)
 	curStyle := defStyle
 
 	for viewLine < height {
-		if lineN >= len(buf.lines) {
+		if lineN >= bufEnd {
 			break
 		}
 
