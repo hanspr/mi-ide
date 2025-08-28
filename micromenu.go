@@ -1459,20 +1459,16 @@ func (m *microMenu) SetLocalSettings(name, value, event, when string, x, y int) 
 	}
 
 	if values["savefor"] != "none" {
-		// set path to current file directory
-		dir := filepath.Dir(b.AbsPath)
-		// Set destination for this settings, default language
 		fname := configDir + "/settings/" + b.FileType() + ".json"
+		dir := GetProjectDir(filepath.Dir(b.AbsPath), workingDir)
 		if values["savefor"] == "file" {
 			// Add current filetype selected too
 			values["encoder"] = b.buf.encoder
 			values["filetype"] = b.FileType()
-			// Change destintation to for file only
+			// Change destintation for file only
 			fname = dir + "/.miide/" + b.Fname + ".json"
 		} else if values["savefor"] == "project" {
-			// Detect working dir
-			dir = GetProjectDir(dir, workingDir)
-			fname = dir + "/.miide/settings.json"
+			fname = dir + "/.miide/" + b.FileType() + ".json"
 		}
 		// Init dir if does not exists
 		if values["savefor"] != "lang" {
