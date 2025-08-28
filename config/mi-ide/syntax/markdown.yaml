@@ -8,7 +8,8 @@ rules:
     - normal: ".*\\|.*"
 
     # quotes
-    - statement:  "^>.*"
+    - method: "^[:>].+"
+    - identifier.var: "^;.+"
 
       # italic
     - markup-italic: "(^|[[:space:]])_.*?_[^_]"
@@ -22,6 +23,7 @@ rules:
       # horizontal rules
     - special: "(---+|===+|___+|\\*\\*\\*+)\\s*$"
     - markup-table: "(?:\\|.*?\\|)+$"
+    - statusline: "(?:\\|\\!.+?)\\|$"
 
       # headlines
     - markup-head:  "^#{1,6}.*"
@@ -42,10 +44,14 @@ rules:
       # urls
     - constant.string.url: "https?://[^ )>]+"
 
-      # mdkdocs
+      # mdkdocs,github
+    - statusline: "(?:\\|[:]?-+:?)+\\|$"
     - info: "!!! info .*"
+    - info: "> \\[!NOTE\\]"
     - error: "!!! danger .*"
+    - error: "> \\[!CAUTION\\]"
     - todo: "!!! warning.*"
+    - todo: "> \\[!WARNING\\]"
     - constant.string: "^ {3,}.*"
 
     - special: "^```$"
