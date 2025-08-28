@@ -548,9 +548,18 @@ func (b *Buffer) CheckModTime() {
 	}
 }
 
+var reopen = false
+
 // ReOpen reloads the current buffer from disk
 func (b *Buffer) ReOpen() {
+	if reopen {
+		return
+	}
 	var txt string
+	reopen = true
+	defer func() {
+		reopen = false
+	}()
 	data, err := os.ReadFile(b.Path)
 	if b.encoding {
 		enc := ioencoder.New()
@@ -571,9 +580,6 @@ func (b *Buffer) ReOpen() {
 	go git.GitSetStatus()
 	go b.SmartDetections()
 	b.Cursor.Relocate()
-	if b.encoding {
-		screen.Sync()
-	}
 }
 
 // Update fetches the string from the rope and updates the `text` and `lines` in the buffer
