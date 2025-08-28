@@ -146,7 +146,7 @@ func (m *Messenger) Alert(kind string, msg ...any) {
 			}
 		}
 		m.hasMessage = true
-		messenger.Display()
+		RedrawAll(true)
 		if clearTime > 0 {
 			if m.timerOn {
 				m.timer.Stop()
@@ -574,9 +574,6 @@ func (m *Messenger) Reset() {
 
 // Clear clears the line at the bottom of the editor
 func (m *Messenger) Clear() {
-	if m.timerOn {
-		m.timer.Stop()
-	}
 	w, h := screen.Size()
 	for x := range w {
 		screen.SetContent(x, h-1, ' ', nil, defStyle)
@@ -586,6 +583,7 @@ func (m *Messenger) Clear() {
 // Clear clears the line at the bottom of the editor
 func (m *Messenger) ClearMessage() {
 	m.message = ""
+	RedrawAll(true)
 }
 
 // DisplaySuggestions show possible completion values
