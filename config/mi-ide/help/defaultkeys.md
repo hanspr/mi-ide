@@ -1,15 +1,6 @@
 # Default Keys
 
-Below are simple charts of the default hotkeys and their functions. For more
-information about binding custom hotkeys or changing default bindings, please
-run `> help keybindings`
-
-Please remember that *all* keys here are rebindable! If you don't like it, you
-can change it!
-
-Be aware that Alt-A and Alt-a are considered different key combinations, but
-Ctrl-A and Ctrl-a are the same key combination, the terminal looks at it as
-Ctrl-A
+For a detailed layout visit: https://github.com/hanspr/mi-ide/wiki/defaultkeys
 
 ## Function keys, and alternatives
 
@@ -19,12 +10,10 @@ Ctrl-A
 | F2         | Save                                     |
 | F3         | Save As ...                              |
 | F4         | Close focused window (Tab if empty)      |
-| Shift F1   | Open file viewer                         |
-| Shift F2   | Save All                                 |
-| Shift F4   | Close other windows                      |
 | F9-F12     | Keys reserved for plug-ins               |
 | Alt-[1-0]  | Keys reserved for plug-ins               |
-| Ctrl+P     | Toggle Mouse mode enabled,disabled       |
+| Ctrl+k     | Double combination command               |
+| Ctrl+k p   | Toggle Mouse mode enabled,disabled       |
 
 ## Navigation
 
@@ -42,9 +31,8 @@ Ctrl-A
 | PageDown                  | Move cursor down one page                            |
 | CtrlHome or CtrlUpArrow   | Move cursor to start of document                     |
 | CtrlEnd or CtrlDownArrow  | Move cursor to end of document                       |
-| Ctrl+G                    | Jump to a line in the file (prompts with line #)     |
+| Ctrl+g                    | Jump to a line in the file (prompts with line #)     |
 | Alt+g                     | Find function from word under cursor                 |
-| Ctrl+L                    | Center current line vertically in view               |
 | Alt+j                     | Move cursor left                                     |
 | Alt+k                     | Move cursor down                                     |
 | Alt+i                     | Move cursor up                                       |
@@ -54,18 +42,29 @@ Ctrl-A
 | Alt+y                     | Move cursor page up                                  |
 | Alt+h                     | Move cursor page down                                |
 | Shift-Alt-[ilouyh]        | Select text in corresponding direction               |
-| Ctrl-K                    | Select line                                          |
-| Ctrl-J                    | Delete line                                          |
+| Ctrl+l                    | Center current line vertically in view               |
+| Ctrl-u                    | Delete char under cursor (same as Del)               |
+| Ctrl-j                    | Delete line                                          |
+| Ctrl-n                    | Enter / Exit Navigation mode (see below)             |
+
+## Navigation mode
+
+Allows you to navigate the buffer in readonly mode, using the same alt keys but without
+the need to hold the Alt key.
+
+This is you can navigate the text with the keys : `j k l i`
+Using `Shift` with the navigation keys will select text.
+All Ctrl keys are availabe for : copy, paste, cut, add line, remove lines, etc.
 
 ## Tabs
 
 | Key   :| Description of function   |
 |--------|---------------------------|
-| Ctr-T  | Open a new tab            |
+| Ctr-t  | Open a new tab            |
 | Alt-a  | Previous tab              |
 | Alt-s  | Next tab                  |
 
-## Windows (Views)
+## Views (split windos)
 
 | Key     :| Description of function             |
 |----------|-------------------------------------|
@@ -78,22 +77,22 @@ Ctrl-A
 
 | Key             :| Description of function                   |
 |------------------|-------------------------------------------|
-| Ctrl+F           | Find (open Search Dialog)                 |
-| Ctrl+R           | Replace (open Search / Replace Dialog)    |
+| Ctrl+f           | Find (open Search Dialog)                 |
+| Ctrl+r           | Replace (open Search / Replace Dialog)    |
 | Backspace        | Find previous instance of current search  |
 | Enter            | Find next instance of current search      |
 
 ## File Operations
 
-| Key   :| Description of function                                               |
-|--------|-----------------------------------------------------------------------|
-| Ctrl+Q | Close All Windows, Tabs, and Exit (asks to save if a buffer is dirty) |
-| F1     | Open a file (prompts for filename)                                    |
-| F2     | Save current file                                                     |
-| F3     | Save As .. current file                                               |
-| Ctrl+S | Save current file                                                     |
-| Ctrl+W | Close current tab or window                                           |
-| Alt-F  | Open file viewer                                                      |
+| Key     :| Description of function                                               |
+|----------|-----------------------------------------------------------------------|
+| Ctrl+q   | Close All Windows, Tabs, and Exit (asks to save if a buffer is dirty) |
+| F1       | Open a file (prompts for filename)                                    |
+| F2       | Save current file                                                     |
+| F3       | Save As .. current file                                               |
+| Ctrl+s   | Save current file                                                     |
+| Ctrl+w   | Close current tab or window                                           |
+| Ctrl+b f | Open file viewer                                                      |
 
 ## Text operations
 
@@ -106,19 +105,18 @@ Ctrl-A
 | ShiftEnd ,  CtrlShiftRightArrow   | Select to end of current line             |
 | AltShiftUpArrow                   | Select one Page Up                        |
 | AltShiftDownArrow                 | Select one Page Down                      |
-| AltUpArrow or Alt+Y               | Move current line or selected lines up    |
-| AltDownArrow or Alt+H             | Move current line or selected lines down  |
-| AltBackspace or AltCtrl+H         | Delete word left                          |
-| Ctrl+A                            | Select all                                |
-| Ctrl+K                            | Cut selected line and append to clipboard |
-| Ctrl+X                            | Cut selected text                         |
-| Ctrl+C                            | Copy selected text                        |
-| Ctrl+V                            | Paste                                     |
-| Ctrl+D                            | Duplicate current line                    |
-| Ctrl+Z                            | Undo                                      |
-| Ctrl+Y                            | Redo                                      |
-| Ctrl+J                            | Delete line                               |
-| Ctrl+T                            | Toggle selection case                     |
+| AltUpArrow   or Alt+e             | Move current line or selected lines up    |
+| AltDownArrow or Alt+d             | Move current line or selected lines down  |
+| Ctrl+b a                          | Select all                                |
+| Ctrl+k                            | Cut selected line and append to clipboard |
+| Ctrl+x                            | Cut selected text                         |
+| Ctrl+c                            | Copy selected text                        |
+| Ctrl+v                            | Paste                                     |
+| Ctrl+d                            | Duplicate current line                    |
+| Ctrl+z                            | Undo                                      |
+| Alt+z                             | Redo                                      |
+| Ctrl+j                            | Delete line                               |
+| Ctrl+c                            | Toggle selection case                     |
 
 ## Multiple cursors
 
@@ -135,9 +133,8 @@ Ctrl-A
 
 | Key   :| Description of function                                                   |
 |--------|---------------------------------------------------------------------------|
-| Ctrl+E | Open a command prompt for running commands                                |
+| Ctrl+e | Open a command prompt for running commands                                |
 | Tab    | In command prompt, it will auto complete if available                     |
-| Ctrl+B | Run a shell command (this will hide micro-ide while your command executes)|
 
 ## Other
 
@@ -150,11 +147,13 @@ Ctrl-A
 
 ## Cloud Services
 
-| Key   :| Description of function                   |
-|--------|-------------------------------------------|
-| Alt-x  | Cut selected text to the cloud            |
-| Alt-c  | Copy selected text to the cloud           |
-| Alt-v  | Paste from the cloud                      |
-| Alt-z  | Transfer current buffer to the cloud      |
-| Alt-b  | Download last uploaded buffer from cloud  |
-| Alt-+  | Upload or download my saved settings      |
+| Key     :| Description of function                   |
+|----------|-------------------------------------------|
+| Ctrl+k x | Cut selected text to the cloud            |
+| Ctrl+k c | Copy selected text to the cloud           |
+| Ctrl+k v | Paste from the cloud                      |
+| Ctrl+k z | Transfer current buffer to the cloud      |
+| Ctrl+k b | Download last uploaded buffer from cloud  |
+| Ctrl+k + | Upload or download settings               |
+
+
