@@ -20,5 +20,5 @@
     "tabmovement": true,
     "tabsize": 4,
     "tabstospaces": true,
-    "useformatter": false
+    "useformatter": true
 }
