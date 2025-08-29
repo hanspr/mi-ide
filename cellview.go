@@ -127,6 +127,7 @@ func (c *CellView) Draw(buf *Buffer, top, height, left, width int, ActiveView bo
 		buf.highlighter.HighlightMatches(buf, top, top+height)
 	}
 
+	c.lines = nil
 	c.lines = make([][]*Char, 0)
 
 	viewLine := 0

@@ -1377,7 +1377,6 @@ func (v *View) DisplayView() {
 			}
 		}
 	}
-	v.cellview.lines = nil
 	if divider != 0 {
 		dividerStyle := defStyle
 		if style, ok := colorscheme["divider"]; ok {
