@@ -152,7 +152,9 @@ func (m *Messenger) Alert(kind string, msg ...any) {
 				m.timer.Stop()
 			}
 			m.timer = time.AfterFunc(time.Duration(clearTime)*time.Second, func() {
-				m.ClearMessage()
+				if !m.hasPrompt {
+					m.ClearMessage()
+				}
 				m.timerOn = false
 			})
 			m.timerOn = true
@@ -185,10 +187,6 @@ func (m *Messenger) Information(msg ...any) {
 
 // PromptText show a message to the user
 func (m *Messenger) PromptText(msg ...any) {
-	if m.timerOn {
-		m.timer.Stop()
-	}
-
 	displayMessage := fmt.Sprint(msg...)
 	m.message = displayMessage
 
@@ -203,10 +201,6 @@ func (m *Messenger) PromptText(msg ...any) {
 
 // YesNoPrompt asks the user a yes or no question (waits for y or n) and returns the result
 func (m *Messenger) YesNoPrompt(prompt string) (bool, bool) {
-	if m.timerOn {
-		m.timer.Stop()
-	}
-
 	m.hasPrompt = true
 	m.PromptText(prompt)
 
@@ -241,10 +235,6 @@ func (m *Messenger) YesNoPrompt(prompt string) (bool, bool) {
 
 // LetterPrompt gives the user a prompt and waits for a one letter response
 func (m *Messenger) LetterPrompt(nocase bool, prompt string, responses ...rune) (rune, bool) {
-	if m.timerOn {
-		m.timer.Stop()
-	}
-
 	m.hasPrompt = true
 	m.PromptText(prompt)
 
@@ -293,10 +283,6 @@ const (
 // Prompt sends the user a message and waits for a response to be typed in
 // This function blocks the main loop while waiting for input
 func (m *Messenger) Prompt(prompt, placeholder, historyType string, completionTypes ...Completion) (string, bool) {
-	if m.timerOn {
-		m.timer.Stop()
-	}
-
 	m.hasPrompt = true
 	m.PromptText(prompt)
 	if _, ok := m.history[historyType]; !ok {
@@ -583,7 +569,9 @@ func (m *Messenger) Clear() {
 // Clear clears the line at the bottom of the editor
 func (m *Messenger) ClearMessage() {
 	m.message = ""
-	RedrawAll(true)
+	if apprunning == nil {
+		RedrawAll(true)
+	}
 }
 
 // DisplaySuggestions show possible completion values
