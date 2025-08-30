@@ -24,7 +24,7 @@ rules:
     - special: "(---+|===+|___+|\\*\\*\\*+)\\s*$"
     - markup-table: "(?:\\|.+?)+\\|"
     - statusline: "\\|"
-    - statusline: "(?:\\|-+)+\\|"
+    - statusline: "(?:\\|[-:]+)+\\|"
 
       # headlines
     - markup-head:  "^#{1,6}.*"
