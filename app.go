@@ -8,7 +8,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/micro-editor/tcell/v2"
+	"github.com/hanspr/tcell/v2"
 )
 
 // Opt option element of a select

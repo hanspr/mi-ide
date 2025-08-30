@@ -6,7 +6,7 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/micro-editor/tcell/v2"
+	"github.com/hanspr/tcell/v2"
 )
 
 // Colorscheme is a map from string to style -- it represents a colorscheme

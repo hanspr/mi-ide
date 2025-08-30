@@ -5,7 +5,7 @@ import (
 	"path"
 	"strconv"
 
-	"github.com/micro-editor/tcell/v2"
+	"github.com/hanspr/tcell/v2"
 )
 
 // Statusline represents the information line at the bottom

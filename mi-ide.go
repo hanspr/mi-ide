@@ -15,8 +15,8 @@ import (
 	"github.com/hanspr/lang"
 	"github.com/hanspr/terminfo"
 
+	"github.com/hanspr/tcell/v2"
 	"github.com/mattn/go-isatty"
-	"github.com/micro-editor/tcell/v2"
 	"github.com/mitchellh/go-homedir"
 	lua "github.com/yuin/gopher-lua"
 	luar "layeh.com/gopher-luar"
@@ -26,6 +26,8 @@ const (
 	doubleClickThreshold = 400 // How many milliseconds to wait before a second click is not a double click
 	undoThreshold        = 500 // If two events are less than n milliseconds apart, undo both of them
 )
+
+// Force build, one time
 
 // MouseClick mouse clic structure to follow mouse clics
 type MouseClick struct {

@@ -13,7 +13,7 @@ import (
 
 	"github.com/hanspr/shellwords"
 	"github.com/mattn/go-runewidth"
-	"github.com/micro-editor/tcell/v2"
+	"github.com/hanspr/tcell/v2"
 )
 
 // TermMessage sends a message to the user in the terminal. This usually occurs before

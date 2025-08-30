@@ -6,7 +6,7 @@ import (
 	"unicode"
 
 	"github.com/flynn/json5"
-	"github.com/micro-editor/tcell/v2"
+	"github.com/hanspr/tcell/v2"
 )
 
 var bindingsStr map[string]string

@@ -8,7 +8,7 @@ import (
 	"strings"
 
 	"github.com/flynn/json5"
-	"github.com/micro-editor/tcell/v2"
+	"github.com/hanspr/tcell/v2"
 	lua "github.com/yuin/gopher-lua"
 	luar "layeh.com/gopher-luar"
 )

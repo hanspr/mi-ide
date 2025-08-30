@@ -2,7 +2,7 @@ package main
 
 import (
 	"github.com/mattn/go-runewidth"
-	"github.com/micro-editor/tcell/v2"
+	"github.com/hanspr/tcell/v2"
 )
 
 func min(a, b int) int {

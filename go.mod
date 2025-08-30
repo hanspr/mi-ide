@@ -13,10 +13,10 @@ require (
 	github.com/hanspr/ioencoder v0.0.0-20190927223910-112aaa3e7dca
 	github.com/hanspr/lang v0.0.0-20190927223733-9af21a7298b1
 	github.com/hanspr/shellwords v0.0.0-20190824230231-432d02ac431a
+	github.com/hanspr/tcell/v2 v2.0.7
 	github.com/hanspr/terminfo v0.0.0-20190824230337-a52f7edce2f4
 	github.com/mattn/go-isatty v0.0.12
 	github.com/mattn/go-runewidth v0.0.16
-	github.com/micro-editor/tcell/v2 v2.0.5
 	github.com/mitchellh/go-homedir v1.1.0
 	github.com/phayes/permbits v0.0.0-20190612203442-39d7c581d2ee
 	github.com/sergi/go-diff v1.2.0
@@ -37,5 +37,3 @@ require (
 	golang.org/x/text v0.27.0 // indirect
 	gopkg.in/yaml.v2 v2.4.0 // indirect
 )
-
-replace github.com/micro-editor/tcell/v2 => /home/hans/Proyectos/hanspr/tcell

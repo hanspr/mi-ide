@@ -6,7 +6,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/micro-editor/tcell/v2"
+	"github.com/hanspr/tcell/v2"
 )
 
 // The ViewType defines what kind of view this is
