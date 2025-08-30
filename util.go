@@ -880,7 +880,7 @@ func GetProjectDir(wkdir, fdir string) string {
 		dirPath = filepath.Dir(path) + "/.miide"
 		_, err = os.Stat(dirPath)
 		if err == nil {
-			return dirPath
+			return filepath.Dir(path)
 		}
 
 	}
