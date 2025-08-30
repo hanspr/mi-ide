@@ -227,8 +227,8 @@ func CurView() *View {
 	if len(tabs) == 0 {
 		return nil
 	}
-	curTab := tabs[curTab]
-	return curTab.Views[curTab.CurView]
+	curtab := tabs[curTab]
+	return curtab.Views[curtab.CurView]
 }
 
 // TabbarHandleMouseEvent checks the given mouse event if it is clicking on the tabbar

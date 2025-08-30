@@ -172,6 +172,8 @@ func GroupMenu(args []string) {
 		PluginManager()
 	} else if args[0] == "settings" {
 		Settings()
+	} else if args[0] == "buffersettings" {
+		BufferSettings()
 	}
 }
 
@@ -419,4 +421,8 @@ func PluginManager() {
 
 func KeyBindings() {
 	micromenu.KeyBindingsDialog()
+}
+
+func BufferSettings() {
+	micromenu.SelLocalSettings(CurView().Buf)
 }

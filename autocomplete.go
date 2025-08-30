@@ -88,7 +88,7 @@ func GroupComplete(group, input string) (string, []string) {
 	if group == "edit" {
 		options = []string{"settings", "snippets"}
 	} else if group == "menu" {
-		options = []string{"cloudsettings", "keybindings", "plugins", "settings"}
+		options = []string{"buffersettings", "cloudsettings", "keybindings", "plugins", "settings"}
 	} else if group == "git" {
 		options = []string{"diff", "diffstaged", "status"}
 	} else if group == "show" {

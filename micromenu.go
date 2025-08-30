@@ -1356,12 +1356,12 @@ const mmBufferSettings = "autoclose,autoindent,blockopen,blockclose,blockinter,c
 
 func (m *microMenu) SelLocalSettings(b *Buffer) {
 	var f *Frame
-	if m.myapp == nil || m.myapp.name != "mi-localsettings-"+b.name {
+	if m.myapp == nil || m.myapp.name != "mi-localsettings-"+b.Fname {
 		if m.myapp == nil {
 			m.myapp = new(MicroApp)
-			m.myapp.New("mi-localsettings-" + b.name)
+			m.myapp.New("mi-localsettings-" + b.Fname)
 		} else {
-			m.myapp.name = "mi-localsettings" + b.name
+			m.myapp.name = "mi-localsettings" + b.Fname
 		}
 		m.myapp.Reset()
 		m.myapp.defStyle = StringToStyle("#ffffff,#262626")
