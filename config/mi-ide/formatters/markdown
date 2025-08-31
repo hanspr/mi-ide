@@ -1,0 +1,125 @@
+#!/usr/bin/perl
+
+use utf8;
+binmode STDOUT, 'utf8';
+
+our $FILE = $ARGV[0];
+
+if (!$FILE || !-e $FILE || -d $FILE) {
+    exit 1;
+}
+our $DEBUG = 0;
+
+Format();
+
+sub Format {
+    my ($indent, $lc, @quoted_parts, $ci);
+    my $L  = 0;
+    my $I  = 0;
+    my $ch = " ";
+    my $sp = 4;
+
+    open(F, "<:utf8", $FILE)       or exit 1;
+    open(O, ">:utf8", "$FILE.tmp") or exit 1;
+    while (my $l = <F>) {
+        $L++;
+        if ($DEBUG) {
+            print "line: $L\n$l";
+        }
+        if ($l =~ m/\|/) {
+            $l =~ s/\n|\r//g;
+            my $n      = 0;
+            my @rows   = ();
+            my @max    = ();
+            my @parts  = split /\|/, $l;
+            my @length = getLengths(\@parts);
+            getMax(\@length, \@max);
+            addRow(\@rows, \@parts, $n);
+
+            while (my $t = <F>) {
+                $L++;
+                $n++;
+                if ($DEBUG) {
+                    print "line: $L\n$t";
+                }
+                if ($t !~ /\|/) {
+                    $rows[$n] = $t;
+                    last;
+                }
+                $t =~ s/\n|\r//g;
+                my @parts  = split /\|/, $t;
+                my @length = getLengths(\@parts);
+                getMax(\@length, \@max);
+                addRow(\@rows, \@parts, $n);
+            }
+            # reformat table
+            for (my $i = 0; $i < $n; $i++) {
+                my $l = "";
+                for (my $j = 0; $j < scalar(@parts); $j++) {
+                    if (!$rows[$i][$j]) {
+                        $l .= "|";
+                        next;
+                    }
+                    if ($rows[$i][$j] =~ /--+/) {
+                        $rows[$i][$j] = '-' x ($max[$j] + 1);
+                        $l .= "$rows[$i][$j]|";
+                    } else {
+                        $rows[$i][$j] = sprintf("%-$max[$j]s", $rows[$i][$j]);
+                        $l .= "$rows[$i][$j] |";
+                    }
+                }
+                if ($l !~ /^\|/) {
+                    $l = "|$l";
+                }
+                saveLine("$l\n");
+            }
+            saveLine($rows[$n]);
+            next;
+        }
+        # Print formated line
+        saveLine($l);
+    }
+    close O;
+    close F;
+    if (!$DEBUG) {
+        system "mv -f $FILE.tmp $FILE";
+    }
+}
+
+sub saveLine {
+    my $l = shift;
+
+    print O $l;
+    if ($DEBUG) {
+        print "$l";
+        my $x = <STDIN>;
+    }
+}
+
+sub addRow {
+    my ($r, $p, $n) = @_;
+    for (my $i = 0; $i < scalar(@$p); $i++) {
+        $$r[$n][$i] = $$p[$i];
+    }
+}
+
+sub getMax {
+    my $length = shift;
+    my $max    = shift;
+
+    for (my $i = 0; $i < scalar(@$length); $i++) {
+        if ($$length[$i] > $$max[$i]) {
+            $$max[$i] = $$length[$i];
+        }
+    }
+}
+
+sub getLengths {
+    my $parts = shift;
+    my @length;
+
+    for (my $i = 0; $i < scalar(@$parts); $i++) {
+        $length[$i] = length($$parts[$i]);
+    }
+    return @length;
+}
