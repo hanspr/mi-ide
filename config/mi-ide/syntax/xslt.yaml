@@ -16,7 +16,7 @@ rules:
     - type.keyword: "(current|match|select|test) ?="
     - type.keyword: "</?xsl:[A-Za-z\\-]+[ >]"
     - comment: "<!.*-[ \t]*>"
-    - default:
+    - type:
         start: "<style>"
         end: "</style>"
         rules:
