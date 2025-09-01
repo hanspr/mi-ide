@@ -69,7 +69,7 @@ func HandleSearchEvent(event tcell.Event, v *View) {
 
 func searchDown(r *regexp.Regexp, v *View, start, end Loc) bool {
 	var startX int
-	newLineSearch := strings.Contains(r.String(), "\\n")
+	newLineSearch := strings.Contains(r.String(), `\n`) && !strings.Contains(r.String(), `\\n`)
 	if start.Y >= v.Buf.NumLines {
 		start.Y = v.Buf.NumLines - 1
 	}
