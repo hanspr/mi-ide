@@ -25,10 +25,14 @@ snippet scut
 	${1:a} = append(${1}[:${2:i}],${1}[${2}+${3:j}]...)
 snippet sdelete
 	${1:a} = append(${1}[:${2:i}],${1}[${2}+1])
+snippet sdeletepointer
+	copy(${1:a}[${2:position}:],${1}[${2}+1:])
+	${1}[len(${1}-1)] = nil
+	${1} = ${1}[:len(${1})-1]
 snippet spush
 	${1:a} = append(${1:a},${2:new})
 snippet spop
-	${1:value},${2:a} = a[len(${2}-1)],a[:len(${2})-1]
+	${1:pop_value},${2:a} = ${2}[len(${2})-1],${2}[:len(${2})-1]
 snippet sunshift
 	${1:a} = append([]${2:x},${1}...)
 snippet sinsert
