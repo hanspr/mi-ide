@@ -183,6 +183,7 @@ func (l *LeafNode) Delete() {
 
 	l.parent.children[i] = nil
 	copy(l.parent.children[i:], l.parent.children[i+1:])
+	l.parent.children[len(l.parent.children)-1] = nil
 	l.parent.children = l.parent.children[:len(l.parent.children)-1]
 
 	// Changed to use curTab, instead of l.parent.tabNum.
@@ -191,6 +192,7 @@ func (l *LeafNode) Delete() {
 	j := findView(tab.Views, l.view)
 	tab.Views[j] = nil
 	copy(tab.Views[j:], tab.Views[j+1:])
+	tab.Views[len(tab.Views)-1] = nil
 	tab.Views = tab.Views[:len(tab.Views)-1]
 
 	for i, v := range tab.Views {
