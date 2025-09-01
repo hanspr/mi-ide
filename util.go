@@ -130,6 +130,7 @@ func IsStrWhitespace(str string) bool {
 	return true
 }
 
+// TrimWhiteSpaceBefore remove white spaces
 func TrimWhiteSpaceBefore(str string) string {
 	nstr := ""
 	done := false
@@ -181,7 +182,7 @@ func MakeRelative(path, base string) (string, error) {
 	return path, nil
 }
 
-// Prepare line to process with smartindent
+// SmartIndentPrepareLine Prepare line to process with smartindent
 func SmartIndentPrepareLine(str string) string {
 	// Make string easy to work on with
 	// Remove quoted strings so they do not fool the algorithm
@@ -238,7 +239,7 @@ func RemoveNestedBrace(str string) string {
 	return string(stack)
 }
 
-// GetIndentation returns how many leves of indentation in a line depending in the
+// GetLineIndentetion returns how many leves of indentation in a line depending in the
 // indentation char and quantity of characters that make the indentation
 // 0 if the line is not indented or -1 if or does not match the indentation char or
 // the line has mixed white spaces
@@ -730,6 +731,7 @@ func Slurp(path string) string {
 	return string(b)
 }
 
+// ReadHeaderBytes read first bytes from header magic bytes
 func ReadHeaderBytes(path string) []byte {
 	var line []byte
 	file, err := os.Open(path)
@@ -748,7 +750,7 @@ const autocloseOpen = "\"'`({["
 const autocloseClose = "\"'`)}]"
 const autocloseNewLine = ")}]"
 
-// AutoClose
+// AutoClose will add, remove the open and close symbols
 func AutoClose(v *View, e *tcell.EventKey, isSelection bool, cursorSelection [2]Loc) {
 	n, f := isAutoCloseOpen(v, e)
 	if !f {
@@ -871,18 +873,27 @@ func RunBackgroundShell(input string) {
 // with respecto to the file directory path
 func GetProjectDir(wkdir, fdir string) string {
 	// search for existing settings on dir or above
-	for _, path := range []string{wkdir, fdir} {
-		dirPath := path + "/.miide"
-		_, err := os.Stat(dirPath)
-		if err == nil {
-			return path
+	dirs := []string{wkdir, fdir}
+	if wkdir == fdir {
+		// remove dup directory, so we test only one
+		_, dirs = dirs[len(dirs)-1], dirs[:len(dirs)-1]
+	}
+	// try to find an existing local project directory
+	for _, path := range dirs {
+		testPath := path
+		dirPath := testPath + "/.miide"
+		// go up at the most 3 levels
+		for range 3 {
+			_, err := os.Stat(dirPath)
+			if err == nil {
+				return testPath
+			}
+			testPath = filepath.Dir(testPath)
+			if testPath == homeDir {
+				break
+			}
+			dirPath = testPath + "/.miide"
 		}
-		dirPath = filepath.Dir(path) + "/.miide"
-		_, err = os.Stat(dirPath)
-		if err == nil {
-			return filepath.Dir(path)
-		}
-
 	}
 	// could not find local settings, set the best option
 	if wkdir == homeDir {
