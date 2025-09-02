@@ -1,6 +1,6 @@
 {
     "autoindent": true,
-    "blockclose": "pass #$",
+    "blockclose": "pass#$",
     "blockinter": "el(?:se|if)",
     "blockopen": ":$",
     "smartindent": true,

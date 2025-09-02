@@ -4,9 +4,9 @@ detect:
     filename: "\\.(text|txt)$"
 
 rules:
-    - constant.tag: "^[[:space:]]*[\\*\\-][[:space:]]"
-    - constant.tag: "^[[:space:]]*([\\dA-Za-z]+([\\.\\-\\)])+\\w*)+[[:space:]]"
+    - constant.tag: "^[[:space:]]*[\\*\\-][[:space:]](?:[\\p{L}\\p{N}\\s]+)?$"
+    - underlined: "[_\\-:=\\*]{3,}"
     - constant.string: "\".*?\""
     - constant.string: "'.*?'"
-    - statement: "^[[:space:]]*[A-Z ]{3,}"
+    - function: "^\\s*[\\p{L}\\p{N}\\s]+:"
 
