@@ -1,4 +1,9 @@
 {
-    "smartindent": false,
+    "autoindent": true,
+    "blockclose": "pass #$",
+    "blockinter": "el(?:se|if)",
+    "blockopen": ":$",
+    "smartindent": true,
+    "rmtrailingws": false,
     "tabstospaces": true
 }
