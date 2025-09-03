@@ -1,6 +1,6 @@
 # ![mi-ide](./assets/logo.png)
 
-mi-ide (_**mee ide**_ in Spanish, _**my ide**_ in English. As in: this is _**my** editor_) is a spin-off version of micro editor project at https://github.com/zyedidia/micro.
+mi-ide (_**mi ide**_ in Spanish, _**my ide**_ in English. As in: this is _**my** editor_) is a spin-off version of micro editor project at https://github.com/zyedidia/micro.
 
 This has become a personal project, but if you are still looking for something different you may try this editor.
 
@@ -20,15 +20,16 @@ What is this editor philosophy:
   * A clipboard that works across editors in diferente terminals and servers (cloud clipboard)
   * A plugin system to enhance the experience of developing in a particular language
   * Syntax highlight
-* My particular setup is : tmux, gitui and miide. With this combination I have a very usefull development environment on my remote servers.
+  * A beautiful interface (why not)
+* My particular setup is : tmux, lazygit and miide. With this combination I have a very usefull development environment on my remote servers.
 
-The original motivation came from the usual experience of searching for an editor when began coding. Vim was too hard for me, nano way too simple.
+The original motivation came from the usual experience of searching for an editor when I began coding. Vim was too hard for me, nano way too simple.
 
 I eventually landed with jed editor. It had the basic features that I liked, but again too limited and very difficult to enhance it. I did learn slang and did some hacking to it, but the framework had many limitations to grow it.
 
-And one day I discover micro. Written in go. I was very interested in learning go. So I downloaded, installed, and run it. And at that time it was very promissing but it was full of bugs that made it impractical (have to say that since then have not followed the project so I'm sure many issues were resolved).
+And one day I discover micro. Written in go. I was very interested in learning go. So I downloaded, installed, and run it. And at that time it was very promissing, but it was full of bugs that made it impractical (have to say that since, I then have not followed the project so I'm sure many issues were resolved).
 
-But took this opportunity to grab a book and begin learning go. Jumped into the code, and after 3 months, I managed to remove most of the bugs, and began using it daily and little by little grow it to fit my needs. Which drove me very far away from the original project.
+But I took this opportunity to grab a book and started learning go. Jumped into the code, and after 3 months, I managed to remove most of the bugs, and began using it daily and little by little grow it to fit my needs. Which drove me very far away from the original project.
 
 So this is the result of it, check the manual and see if it would fill your requirements. And if not, grab it, change it and customize it to your needs.
 
@@ -46,11 +47,14 @@ So this is the result of it, check the manual and see if it would fill your requ
 
 ## Installation
 
+* mi-ide comes on a single binary, there are no installation scripts.
+* Place it anywhere you want.
 * Download a [prebuilt binary](https://github.com/hanspr/mi-ide/releases).
     - Unzip the release
         - `unzip release##.zip`
     - Place the binary in any location on your home directory, for example
         - `mv mi-ide ~/.local/bin`
+        - `chmod 770 ~/.local/bin/mi-ide`
     - Create an alias in your `.bashrc` or `.bash_aliases` to the location of your executable
         - Change to your home directory : `cd`
         - Edit : `nano .bashrc` or `nano .bash_aliases`
@@ -60,42 +64,11 @@ So this is the result of it, check the manual and see if it would fill your requ
         - The first time you run the editor will download the configurations from github.
         - And place them in `~/.config/mi-ide/`
 
-* You can also build mi-ide from source, by cloning this repo and install all dependencies.
+* You can also build mi-ide from source. Clone the repo.
 
 ```bash
-go get "github.com/blang/semver"
-go get "github.com/dustin/go-humanize"
-go get "github.com/flynn/json5"
-go get "github.com/go-errors/errors"
-go get "github.com/hanspr/clipboard"
-go get "github.com/hanspr/glob"
-go get "github.com/hanspr/highlight"
-go get "github.com/hanspr/ioencoder"
-go get "github.com/hanspr/lang"
-go get "github.com/hanspr/shellwords"
-go get "github.com/hanspr/tcell"
-go get "github.com/hanspr/terminal"
-go get "github.com/hanspr/terminfo"
-go get "github.com/mattn/go-isatty"
-go get "github.com/mattn/go-runewidth"
-go get "github.com/mitchellh/go-homedir"
-go get "github.com/phayes/permbits"
-go get "github.com/sergi/go-diff/diffmatchpatch"
-go get "github.com/yuin/gopher-lua"
-go get "layeh.com/gopher-luar"
-```
-
-### Colors and syntax highlighting
-
-If your terminal does not support 256 color. Try changing the colorscheme to `default16`, by going to Menu > System Settings : Select "colorscheme".
-
-If your terminal supports 256 colors but you do not see the full colors available you may try these commands:
-
-```bash
-export TERM=xterm-256color
-
-#Add this line to your .bashrc
-export TERM=xterm-256color
+go get
+go build .
 ```
 
 ## Usage
@@ -108,7 +81,7 @@ You can move the cursor around with the arrow keys and mouse.
 
 You can also use the mouse to select text, double click to enable a word, and triple click to enable line selection.
 
-[For a full introduction you may watch this video](https://youtu.be/grHzfIvC6_I) (22 minutes)
+Mouse is disabled by default, you can enable on the general settings or toggle by typing : Ctrl-k p
 
 ## Documentation and Help
 
