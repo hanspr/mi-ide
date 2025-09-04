@@ -56,11 +56,11 @@ sub Format {
             for (my $i = 0; $i < $n; $i++) {
                 my $l = "";
                 for (my $j = 0; $j < scalar(@parts); $j++) {
-                    if (!$rows[$i][$j]) {
+                    if ($j == 0) {
                         $l .= "|";
                         next;
                     }
-                    if ($rows[$i][$j] =~ /--+/) {
+                    if ($rows[$i][$j] =~ /^-+/) {
                         $rows[$i][$j] = '-' x ($max[$j] + 1);
                         $l .= "$rows[$i][$j]|";
                     } else {
@@ -119,6 +119,11 @@ sub getLengths {
     my @length;
 
     for (my $i = 0; $i < scalar(@$parts); $i++) {
+        $$parts[$i] =~ s/ +$//;
+        if ($$parts[$i] =~ /^-+/) {
+            $length[$i] = 1;
+            next;
+        }
         $length[$i] = length($$parts[$i]);
     }
     return @length;
