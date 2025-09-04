@@ -240,6 +240,7 @@ func DialogSearch(searchStr string) string {
 
 // Search for function declaration
 
+// FindLineWith will search in the view buffer for a line that contains the regex
 func FindLineWith(r *regexp.Regexp, v *View, start, end Loc, deep bool) (int, bool) {
 	if start.Y >= v.Buf.NumLines {
 		start.Y = v.Buf.NumLines - 1
@@ -259,18 +260,19 @@ func FindLineWith(r *regexp.Regexp, v *View, start, end Loc, deep bool) (int, bo
 	return FindLineWith(r, v, Loc{0, 0}, start, true)
 }
 
-const MAX_FAILS = 20
+const maxFails = 20
+const maxLines = 6
 
 var findFileDeep = -1
 
-// Recursively test each file to find a matching string on regex
+// FindFileWith Recursively test each file to find a matching string on regex
 // If dir fails N times aborts searching to avoid large subdirectories with no code files
 func FindFileWith(r *regexp.Regexp, path, filetype, ext string, depth int, hint bool) (string, int, bool) {
-	var prevLines = make([]string, 5)
+	var prevLines = make([]string, maxLines+1)
 	if findFileDeep < 0 {
 		findFileDeep = depth
 	}
-	abort := MAX_FAILS
+	abort := maxFails
 	rtf := FindRuntimeFile(RTSyntax, filetype)
 	files, _ := os.ReadDir(path)
 	for _, f := range files {
@@ -290,7 +292,7 @@ func FindFileWith(r *regexp.Regexp, path, filetype, ext string, depth int, hint 
 		filepath := path + "/" + f.Name()
 		ftype := TestFileType(filepath, rtf)
 		if strings.Contains(f.Name(), ext) || ftype {
-			abort = MAX_FAILS
+			abort = maxFails
 			i := 0
 			pos := -1
 			file, err := os.Open(filepath)
@@ -303,11 +305,11 @@ func FindFileWith(r *regexp.Regexp, path, filetype, ext string, depth int, hint 
 				l := scanner.Text()
 				if hint {
 					pos++
-					if pos > 4 {
-						for i := 0; i < 4; i++ {
+					if pos > maxLines {
+						for i := 0; i < maxLines; i++ {
 							prevLines[i] = prevLines[i+1]
 						}
-						pos = 4
+						pos = maxLines
 					}
 					prevLines[pos] = l
 				}
@@ -318,12 +320,12 @@ func FindFileWith(r *regexp.Regexp, path, filetype, ext string, depth int, hint 
 					}
 					comment := regexp.MustCompile(`^\s*(?:#|//|(?:<!)?--|/\*)`)
 					data := ""
-					for i := 0; i < 4; i++ {
+					for i := 0; i < maxLines; i++ {
 						if comment.MatchString(prevLines[i]) {
 							data = data + prevLines[i] + "\n"
 						}
 					}
-					data = data + prevLines[4] + "\n"
+					data = data + prevLines[maxLines] + "\n"
 					next4 := 0
 					for scanner.Scan() {
 						if next4 > 5 {
