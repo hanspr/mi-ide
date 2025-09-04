@@ -95,10 +95,6 @@ sub Format {
 sub saveLine {
     my $l = shift;
 
-    if (ref($l) eq 'ARRAY') {
-        print "Array?\n";
-        $l = $$l[0] . $$l[1] . "\n";
-    }
     if ($DEBUG) {
         print "$l";
         my $x = <STDIN>;
