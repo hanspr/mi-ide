@@ -32,19 +32,19 @@ var (
 
 func init() {
 	commandActions = map[string]func([]string){
-		"Cd":        Cd,
-		"Help":      Help,
-		"MemUsage":  MemUsage,
-		"Open":      Open,
-		"Pwd":       Pwd,
-		"Raw":       Raw,
-		"Reload":    Reload,
-		"SaveAs":    SaveAs,
-		"ToggleLog": ToggleLog,
-		"GroupEdit": GroupEdit,
-		"GroupGit":  GroupGit,
-		"GroupMenu": GroupMenu,
-		"GroupShow": GroupShow,
+		"Cd":          Cd,
+		"Help":        Help,
+		"MemUsage":    MemUsage,
+		"Open":        Open,
+		"Pwd":         Pwd,
+		"Raw":         Raw,
+		"Reload":      Reload,
+		"SaveAs":      SaveAs,
+		"ToggleLog":   ToggleLog,
+		"GroupEdit":   GroupEdit,
+		"GroupGit":    GroupGit,
+		"GroupConfig": GroupConfig,
+		"GroupShow":   GroupShow,
 	}
 }
 
@@ -62,10 +62,10 @@ func DefaultCommands() map[string]StrCommand {
 		"reload":   {"Reload", []Completion{NoCompletion}},
 		"saveas":   {"SaveAs", []Completion{NoCompletion}},
 		// Groups
-		"edit:": {"GroupEdit", []Completion{GroupCompletion, NoCompletion}},
-		"git:":  {"GroupGit", []Completion{GroupCompletion, NoCompletion}},
-		"menu:": {"GroupMenu", []Completion{GroupCompletion, NoCompletion}},
-		"show:": {"GroupShow", []Completion{GroupCompletion, NoCompletion}},
+		"config:": {"GroupConfig", []Completion{GroupCompletion, NoCompletion}},
+		"edit:":   {"GroupEdit", []Completion{GroupCompletion, NoCompletion}},
+		"git:":    {"GroupGit", []Completion{GroupCompletion, NoCompletion}},
+		"show:":   {"GroupShow", []Completion{GroupCompletion, NoCompletion}},
 	}
 }
 
@@ -163,7 +163,7 @@ func GroupEdit(args []string) {
 	}
 }
 
-func GroupMenu(args []string) {
+func GroupConfig(args []string) {
 	if args[0] == "cloudsettings" {
 		CloudSettings()
 	} else if args[0] == "keybindings" {
