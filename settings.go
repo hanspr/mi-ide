@@ -27,7 +27,6 @@ var optionValidators = map[string]optionValidator{
 	"tabsize":      validatePositiveValue,
 	"scrollmargin": validateNonNegativeValue,
 	"colorscheme":  validateColorscheme,
-	"colorcolumn":  validateNonNegativeValue,
 	"fileformat":   validateLineEnding,
 }
 
@@ -248,7 +247,6 @@ func DefaultGlobalSettings() map[string]any {
 		"autoindent":     true,
 		"autoreload":     true,
 		"basename":       false,
-		"colorcolumn":    float64(0),
 		"colorscheme":    "default",
 		"cursorcolor":    "disabled",
 		"cursorline":     true,
@@ -295,7 +293,6 @@ func DefaultLocalSettings() map[string]any {
 		"blockopen":      "",
 		"blockclose":     "",
 		"blockinter":     "",
-		"colorcolumn":    float64(0),
 		"comment":        "#",
 		"cursorcolor":    "disabled",
 		"cursorshape":    "disabled",

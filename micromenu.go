@@ -263,8 +263,6 @@ func (m *microMenu) GlobalConfigDialog() {
 		for _, k := range keys {
 			if k == "fileformat" {
 				f.AddWindowSelect(k, k+" ", globalSettings[k].(string), "unix|dos", col, row, 0, 1, nil, "", "")
-			} else if k == "colorcolumn" {
-				f.AddWindowTextBox(k, k+" ", fmt.Sprintf("%g", globalSettings[k].(float64)), "string", col, row, 4, 3, m.ValidateInteger, "", "")
 			} else if k == "indentchar" {
 				char := "s"
 				if globalSettings[k].(string) != " " {

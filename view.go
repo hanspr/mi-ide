@@ -1154,14 +1154,6 @@ func (v *View) DisplayView() {
 			realLineN++
 		}
 
-		colorcolumn := int(v.Buf.Settings["colorcolumn"].(float64))
-		if colorcolumn != 0 && xOffset+colorcolumn-v.leftCol < v.Width {
-			style := GetColor("color-column")
-			fg, _, _ := style.Decompose()
-			st := defStyle.Background(fg)
-			screen.SetContent(xOffset+colorcolumn-v.leftCol, yOffset+visualLineN, ' ', nil, st)
-		}
-
 		screenX := v.x
 
 		// If there are gutter messages we need to display the '>>' symbol here
@@ -1261,13 +1253,6 @@ func (v *View) DisplayView() {
 		for _, char := range line {
 			if char != nil {
 				lineStyle := char.style
-
-				colorcolumn := int(v.Buf.Settings["colorcolumn"].(float64))
-				if colorcolumn != 0 && char.visualLoc.X == colorcolumn {
-					style := GetColor("color-column")
-					fg, _, _ := style.Decompose()
-					lineStyle = lineStyle.Background(fg)
-				}
 
 				charLoc := char.realLoc
 				for _, c := range v.Buf.cursors {
