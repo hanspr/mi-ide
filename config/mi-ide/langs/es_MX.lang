@@ -2,6 +2,40 @@ File|Archivo
 Open|Abrir
 open|abrir
 Find|Encontrar
+Save|Guardar
+Saved|Guardado
+Exit|Salir
+y|s
+n|n
+Y|S
+N|N
+q|f
+!|!
+all|todos
+Replaced|Reemplazados
+Removed|Eliminado
+Available|Disponible
+Search|Buscar
+Search regex:|Buscar regex:
+Cancel|Cancelar
+Encoding:|Codificación:
+Taken|Tomada
+Free|Libre
+Language|Idioma
+Languages|Idiomas
+Plugins|Complementos
+Install|Instalar
+Installed|Instalado
+Installing|Instalando
+Remove|Eliminar
+Name|Nombre
+Author|Autor
+Description|Descripción
+Actual|Actual
+restart|reiniciar
+Key|Llave
+Password|Contraseña
+Passphrase|Frase privada
 F5,Backspace (Previous)  F6,Enter (Next)|F5,Tecla borrar (Anterior)  F6,Enter (Siguiente)
 is a directory|es un directorio
 You may want to remove the files in|Probablemente desee eliminar los archivos en
@@ -9,10 +43,6 @@ You may want to remove the files in|Probablemente desee eliminar los archivos en
 Error loading syntax file|Error cargagando archivo de sintaxis
 Buffer reloaded|Búfer recargado
 The file has changed since it was last read. Reload file? (y,n)|El archivo ha cambiado desde la última vez que se leyó. Desea recargarlo nuevamente? (s,n)
-y|s
-n|n
-Y|S
-N|N
 Error loading history:|Error cargando historia:
 Error saving history:|Error guardando historia:
 Parent folders|Directorios padre
@@ -21,7 +51,6 @@ Save aborted|Guardar abortado
 File saved as UTF-8|Archivo guardado como UTF-8
 File can not be saved with selected encoding|Archivo no se puede salvar con la codificación seleccionada
 File is readonly|Archivo de solo lectura
-Saved|Guardado
 Buffer has no changes to save|No hay cambios que guardar
 Saving, please wait ....|Guardando, espere por favor ....
 Selection is too big, can not copy. You may move (up/down) or delete only.|Selección es demasiado grande, no puedo copiar. Puede mover la línea hacia (abajo/arriba) o eliminar únicamente.
@@ -37,7 +66,6 @@ Error installing|Error instalando
 is already installed but out-of-date: use 'plugin update|está instalado pero desactualizado: use 'plugin update
 ' to update|' para actualizar
 is already installed|se encuentra ya instalado
-Removed|Eliminado
 The requested plugins do not exist|La extensión solicitada no existe
 The following plugins are currently installed:|Las siguientes extensiones se encuentran instalados
 plugins found|extensiones encontradas
@@ -59,9 +87,6 @@ has no binding|no tiene tecla asociada
 Invalid replace statement:|Expresión de reemplazo inválida:
 Invalid flag:|Modificadores inválidos:
 Perform replacement? (y,n,q,!)|Reemplazar? (s,n,f,!)
-q|f
-!|!
-Replaced|Reemplazados
 occurrences of|ocurrencias de
 Nothing matched|Sin cambios
 Unknown command|Comando desconocido
@@ -70,22 +95,15 @@ before closing? (y,n,esc)|antes de cerrar? (s,n,esc)
 You need to save view first|Necesita salvar vista primero
 opened in new Tab|abierto en nueva pestaña
 opened in View|abierto en vista
-Search|Buscar
-Search regex:|Buscar regex:
-Cancel|Cancelar
 Search / Replace|Buscar / Reemplazar
 Search regex:|Buscar regex:
 Replace regex:|Regex reemplazo:
 ignore case|ignora may.
-all|todos
 No regexp|No regexp
-Save|Guardar
 Save all|Guardar todo
 Save As ...|Guardar como ...
 File name :|Nombre archivo :
-Encoding:|Codificación:
 Use this encoding:|Usar esta codificación:
-Save|Guardar
 Select Encoding|Seleccionar codificación
 Set encoding|Codificar
 Global Settings|Configuración Global
@@ -95,42 +113,23 @@ Cloud Services|Servicios en la Nube
 Sync Settings|Sincronizar Configuraciones
 Error writing settings.json file|Error al salvar archivo de configuraciones
 Key check|Probar tecla
-Taken|Tomada
-Free|Libre
 Could not save settings|No puse salvar configuración
-Language|Idioma
-Languages|Idiomas
-Plugins|Complementos
-Exit|Salir
 Set file type|Seleccione tipo de archivo
 Downloading list of|Descargando lista de
 Coding Plugins|Complementos de código
 Application Plugins|Aplicaciones
-Available|Disponible
-Install|Instalar
-Installed|Instalado
-Installing|Instalando
-Remove|Eliminar
 please wait|porfavor espere
-Name|Nombre
-Author|Autor
-Description|Descripción
-Actual|Actual
 No plugins found|No se localizaron extensiones
 Plugin installed|Complemento instalada
 No selection made|No hizo ninguna selección
 Plugin uninstalled|Complemento desinstalado
-restart|reiniciar
 Buffer Settings|Configuraciones de archivo
 Save as this file settings only|Guardar como configuración para este archivo
 Save as default settings for all (%s) files|Guardar como configuración para todos los archivos (%s)
 Save as default settings for this project|Guardar como configuración para este proyecto
 Change settings for this session only|Cambiar configuración en esta sesión únicamente
 Mi-ide Cloud Services|Micro Ide servicios de Nube
-Key|Llave
-Password|Contraseña
 New Password|Nueva contraseña
-Passphrase|Frase privada
 File uploaded to cloud|Archivo se subió a la nube
 No files to download|Sin archivos que descargar
 Clipboard uploaded to cloud|Copiado a la nube

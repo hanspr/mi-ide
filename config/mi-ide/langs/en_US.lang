@@ -2,6 +2,38 @@ File|
 Open|
 open|
 Find|
+y|
+n|
+Y|
+N|
+q|
+!|
+Save|
+Saved|
+Recording|
+Removed|
+Available|
+Install|
+Installed|
+Installing|
+Search|
+Cancel|
+all|
+Taken|
+Free|
+Language|
+Languages|
+Plugins|
+Exit|
+Remove|
+Name|
+Author|
+Description|
+Actual|
+restart|
+Key|
+Password|
+Passphrase|
 F5,Backspace (Previous)  F6,Enter (Next)|
 is a directory|
 You may want to remove the files in|
@@ -9,10 +41,6 @@ You may want to remove the files in|
 Error loading syntax file|
 Buffer reloaded|
 The file has changed since it was last read. Reload file? (y,n)|
-y|
-n|
-Y|
-N|
 Error loading history:|
 Error saving history:|
 Parent folders|
@@ -21,7 +49,6 @@ Save aborted|
 File saved as UTF-8|
 File can not be saved with selected encoding|
 File is readonly|
-Saved|
 Buffer has no changes to save|
 Saving, please wait ....|
 Selection is too big, can not copy. You may move (up/down) or delete only.|
@@ -30,14 +57,12 @@ Line is too big to cut|
 Line is too big, can not duplicate. You may move (up/down) or delete only.|
 Jump to line: (1 - %v) :|
 Invalid line number|
-Recording|
 Stopped recording|
 Unknown plugin:|
 Error installing|
 is already installed but out-of-date: use 'plugin update|
 ' to update|
 is already installed|
-Removed|
 The requested plugins do not exist|
 The following plugins are currently installed:|
 plugins found|
@@ -59,8 +84,6 @@ has no binding|
 Invalid replace statement:|
 Invalid flag:|
 Perform replacement? (y,n,q,!)|
-q|
-!|
 Replaced|
 occurrences of|
 Nothing matched|
@@ -70,22 +93,17 @@ before closing? (y,n,esc)|
 You need to save view first|
 opened in new Tab|
 opened in View|
-Search|
 Search regex:|
-Cancel|
 Search / Replace|
 Search regex:|
 Replace regex:|
 ignore case|
-all|
 No regexp|
-Save|
 Save all|
 Save As ...|
 File name :|
 Encoding:|
 Use this encoding:|
-Save|
 Select Encoding|
 Set encoding|
 Global Settings|
@@ -95,41 +113,22 @@ Cloud Services|
 Sync Settings|
 Error writing settings.json file|
 Key check|
-Taken|
-Free|
 Could not save settings|
-Language|
-Languages|
-Plugins|
-Exit|
 Set file type|
 Downloading list of available|
 Coding Plugins|
 Application Plugins|
-Available|
-Install|
-Installed|
-Installing|
-Remove|
 please wait|
-Name|
-Author|
-Description|
-Actual|
 No plugins found|
 Plugin installed|
 No selection made|
 Plugin uninstalled|
-restart|
 Buffer Settings|
 Save as this file settings only|
 Save as default settings for all (%s) files|
 Change settings for this session only|
 Mi-ide Cloud Services|
-Key|
-Password|
 New Password|
-Passphrase|
 File uploaded to cloud|
 No files to download|
 Clipboard uploaded to cloud|
