@@ -298,24 +298,16 @@ func (f *Frame) AddWindowLabel(name, label string, x, y int, callback func(strin
 }
 
 // AddWindowMenuLabel add a label for menu drawing
-func (f *Frame) AddWindowMenuLabel(name, label, kind string, x, y int, callback func(string, string, string, string, int, int) bool, style, luacallback string) {
+func (f *Frame) AddWindowMenuLabel(name, label string, x, y int, callback func(string, string, string, string, int, int) bool, style, luacallback string) {
 	a := f.microapp
-	if kind == "r" {
-		a.AddWindowElement(f.name, name, " "+label+string(tcell.RuneVLine), "label", "", "", x, y, 0, 0, false, callback, style, luacallback)
-	} else if kind == "l" {
-		a.AddWindowElement(f.name, name, string(tcell.RuneVLine)+label+" ", "label", "", "", x, y, 0, 0, false, callback, style, luacallback)
-	} else if kind == "cl" {
-		a.AddWindowElement(f.name, name, string('┐')+label+string(tcell.RuneVLine), "label", "", "", x, y, 0, 0, false, callback, style, luacallback)
-	} else {
-		a.AddWindowElement(f.name, name, string(tcell.RuneVLine)+label+string(tcell.RuneVLine), "label", "", "", x, y, 0, 0, false, callback, style, luacallback)
-	}
+	a.AddWindowElement(f.name, name, string(tcell.RuneVLine)+label+string(tcell.RuneVLine), "label", "", "", x, y, 0, 0, false, callback, style, luacallback)
 }
 
 // AddWindowMenuTop add top of menu label with border
 func (f *Frame) AddWindowMenuTop(name, label string, x, y int, callback func(string, string, string, string, int, int) bool, style, luacallback string) {
 	a := f.microapp
 	label = strings.ReplaceAll(label, " ", string(tcell.RuneHLine))
-	a.AddWindowElement(f.name, name, string(tcell.RuneLLCorner)+label+string(tcell.RuneURCorner), "label", "", "", x, y, 0, 0, false, callback, style, luacallback)
+	a.AddWindowElement(f.name, name, string(tcell.RuneLTee)+label+string(tcell.RuneURCorner), "label", "", "", x, y, 0, 0, false, callback, style, luacallback)
 }
 
 // AddWindowMenuBottom add bottom menu label with border

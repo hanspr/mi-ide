@@ -54,29 +54,31 @@ func (m *microMenu) Menu() {
 		style := StringToStyle("#ffffff,#222222")
 		m.myapp.defStyle = style
 		keys := make([]string, 0, len(m.submenu))
-		m.maxwidth = 0
+		m.maxwidth = 9
 		for k := range m.submenu {
 			keys = append(keys, k)
 		}
 		sort.Strings(keys)
-		name := "microide"
+		name := "file"
 		row := 0
 		f := m.myapp.AddFrame("menu", 1, 0, 1, 1, "fixed")
-		m.AddSubmenu(name, "Mi-ide")
-		f.AddWindowMenuLabel(name, fmt.Sprintf("%-"+strconv.Itoa(m.maxwidth+1)+"s", "Mi-ide"), "", 0, row, m.ShowSubmenuItems, "", "")
-		m.AddSubMenuItem("microide", Language.Translate("Global Settings"), m.GlobalConfigDialog)
-		m.AddSubMenuItem("microide", Language.Translate("KeyBindings"), m.KeyBindingsDialog)
-		m.AddSubMenuItem("microide", Language.Translate("Plugin Manager"), m.PluginManagerDialog)
-		m.AddSubMenuItem("microide", Language.Translate("Cloud Services"), m.MiCloudServices)
-		m.AddSubMenuItem("microide", Language.Translate("Sync Settings"), m.MiCloudSync)
+		m.AddSubmenu(name, Language.Translate("File"))
+		f.AddWindowMenuLabel(name, fmt.Sprintf("%-"+strconv.Itoa(m.maxwidth+1)+"s", "File"), 0, row, m.ShowSubmenuItems, "", "")
+		m.AddSubMenuItem(name, Language.Translate("Open"), m.FileOpen)
+		m.AddSubMenuItem(name, Language.Translate("Save"), m.FileSave)
+		m.AddSubMenuItem(name, Language.Translate("Save As ..."), m.FileSaveAs)
+		m.AddSubMenuItem(name, Language.Translate("Save all"), m.FileSaveAll)
+		m.AddSubMenuItem(name, Language.Translate("Exit"), m.FileQuit)
 		row++
-		for _, name := range keys {
-			if name != "microide" {
-				label := fmt.Sprintf("%-"+strconv.Itoa(m.maxwidth+1)+"s", m.submenu[name])
-				f.AddWindowMenuLabel(name, label, "", 0, row, m.ShowSubmenuItems, "", "")
-			}
-			row++
-		}
+		name = "microide"
+		m.AddSubmenu(name, "Mi-ide")
+		f.AddWindowMenuLabel(name, fmt.Sprintf("%-"+strconv.Itoa(m.maxwidth+1)+"s", "Mi-ide"), 0, row, m.ShowSubmenuItems, "", "")
+		m.AddSubMenuItem(name, Language.Translate("Global Settings"), m.GlobalConfigDialog)
+		m.AddSubMenuItem(name, Language.Translate("KeyBindings"), m.KeyBindingsDialog)
+		m.AddSubMenuItem(name, Language.Translate("Plugin Manager"), m.PluginManagerDialog)
+		m.AddSubMenuItem(name, Language.Translate("Cloud Services"), m.MiCloudServices)
+		m.AddSubMenuItem(name, Language.Translate("Sync Settings"), m.MiCloudSync)
+		row++
 		f.AddWindowMenuBottom("menubottom", fmt.Sprintf("%-"+strconv.Itoa(m.maxwidth+1)+"s", " "), 0, row, nil, "", "")
 		row++
 		f.ChangeFrame(1, 0, m.maxwidth, row-1, "fixed")
@@ -130,36 +132,23 @@ func (m *microMenu) ShowSubmenuItems(name, value, event, when string, x, y int) 
 	m.myapp.frames["menu"].elements[name] = e
 	width := m.submenuWidth[name]
 	f := m.myapp.frames["menu"]
-	if y > 1 {
-		f.AddWindowMenuTop("smenubottom", fmt.Sprintf("%-"+strconv.Itoa(width+1)+"s", " "), m.maxwidth+2, y, nil, "", "")
+	if y > 0 {
+		f.AddWindowMenuTop("submenutop", fmt.Sprintf("%-"+strconv.Itoa(width+1)+"s", " "), m.maxwidth+2, y-1, nil, "", "")
+		f.SetgName("submenutop", m.activemenu)
 	}
 	// Show new submenu
 	items := m.submenuElements[name]
 	for i, s := range items {
 		name := "submenu" + strconv.Itoa(i)
-		if i == 0 {
-			f.AddWindowMenuLabel(name, fmt.Sprintf("%-"+strconv.Itoa(width+1)+"s", s.label), "r", m.maxwidth+2, y, m.MenuItemClick, "", "")
-		} else if i == 1 {
-			f.AddWindowMenuLabel(name, fmt.Sprintf("%-"+strconv.Itoa(width+1)+"s", s.label), "cl", m.maxwidth+2, y, m.MenuItemClick, "", "")
-		} else {
-			f.AddWindowMenuLabel(name, fmt.Sprintf("%-"+strconv.Itoa(width+1)+"s", s.label), "", m.maxwidth+2, y, m.MenuItemClick, "", "")
-		}
-		f.SetIndex(name, 3)
-		f.SetgName(name, "submenu")
-		f.SetiKey(name, i)
+		f.AddWindowMenuLabel(name, fmt.Sprintf("%-"+strconv.Itoa(width+1)+"s", s.label), m.maxwidth+2, y, m.MenuItemClick, "", "")
 		y++
+		f.SetIndex(name, 3)
+		f.SetgName(name, m.activemenu)
+		f.SetiKey(name, i)
 	}
 	f.AddWindowMenuBottom("smenubottom", fmt.Sprintf("%-"+strconv.Itoa(width+1)+"s", " "), m.maxwidth+2, y, nil, "", "")
-	f.SetgName("smenubottom", "submenu")
+	f.SetgName("smenubottom", m.activemenu)
 	m.myapp.DrawAll()
-	// Release memory from unused menus?
-	//for k, e := range f.elements {
-	//if e.gname == "submenu" {
-	//if f.elements[k].visible == false {
-	//delete(f.elements, k)
-	//}
-	//}
-	//}
 	return true
 }
 
@@ -170,12 +159,11 @@ func (m *microMenu) closeSubmenus() {
 	// Remove all submenu elements from last active menu
 	f := m.myapp.frames["menu"]
 	for k, e := range f.elements {
-		if e.gname == "submenu" {
+		if e.gname == m.activemenu {
 			f.elements[k].visible = false
 		}
 	}
 	m.myapp.ResetFrames()
-	m.myapp.DrawAll()
 	m.activemenu = ""
 }
 
@@ -210,6 +198,38 @@ func (m *microMenu) MenuItemClick(name, value, event, when string, x, y int) boo
 func (m *microMenu) MenuFinish(s string) {
 	m.closeSubmenus()
 	m.Finish("")
+}
+
+// ---------------------------------------
+// File Menu Actions
+// ---------------------------------------
+
+func (m *microMenu) FileOpen() {
+	CurView().OpenFile(false)
+	m.Finish("")
+	m.myapp = nil
+}
+
+func (m *microMenu) FileSave() {
+	CurView().Save(true)
+	m.Finish("")
+	m.myapp = nil
+}
+
+func (m *microMenu) FileSaveAs() {
+	CurView().SaveAs(true)
+}
+
+func (m *microMenu) FileSaveAll() {
+	CurView().SaveAll(true)
+	m.Finish("")
+	m.myapp = nil
+}
+
+func (m *microMenu) FileQuit() {
+	CurView().QuitAll(true)
+	m.Finish("")
+	m.myapp = nil
 }
 
 // ---------------------------------------

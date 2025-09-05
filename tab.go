@@ -10,7 +10,7 @@ const (
 	bufDirty      string = "✸"
 	tabOpen       string = "|"
 	tabClose      string = "|"
-	tabMenuSymbol string = "ɱ  "
+	tabMenuSymbol string = "☰  "
 )
 
 var tabBarOffset int
