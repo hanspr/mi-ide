@@ -62,8 +62,8 @@ func (m *microMenu) Menu() {
 		name := "file"
 		row := 0
 		f := m.myapp.AddFrame("menu", 1, 0, 1, 1, "fixed")
-		m.AddSubmenu(name, Language.Translate("File"))
-		f.AddWindowMenuLabel(name, fmt.Sprintf("%-"+strconv.Itoa(m.maxwidth+1)+"s", "File"), 0, row, m.ShowSubmenuItems, "", "")
+		m.AddSubmenu(name, "File")
+		f.AddWindowMenuLabel(name, fmt.Sprintf("%-"+strconv.Itoa(m.maxwidth+1)+"s", Language.Translate("File")), 0, row, m.ShowSubmenuItems, "", "")
 		m.AddSubMenuItem(name, Language.Translate("Open"), m.FileOpen)
 		m.AddSubMenuItem(name, Language.Translate("Save"), m.FileSave)
 		m.AddSubMenuItem(name, Language.Translate("Save As ..."), m.FileSaveAs)
@@ -71,8 +71,8 @@ func (m *microMenu) Menu() {
 		m.AddSubMenuItem(name, Language.Translate("Exit"), m.FileQuit)
 		row++
 		name = "microide"
-		m.AddSubmenu(name, "Mi-ide")
-		f.AddWindowMenuLabel(name, fmt.Sprintf("%-"+strconv.Itoa(m.maxwidth+1)+"s", "Mi-ide"), 0, row, m.ShowSubmenuItems, "", "")
+		m.AddSubmenu(name, "mi-ide")
+		f.AddWindowMenuLabel(name, fmt.Sprintf("%-"+strconv.Itoa(m.maxwidth+1)+"s", "mi-ide"), 0, row, m.ShowSubmenuItems, "", "")
 		m.AddSubMenuItem(name, Language.Translate("Global Settings"), m.GlobalConfigDialog)
 		m.AddSubMenuItem(name, Language.Translate("KeyBindings"), m.KeyBindingsDialog)
 		m.AddSubMenuItem(name, Language.Translate("Plugin Manager"), m.PluginManagerDialog)
@@ -111,11 +111,12 @@ func (m *microMenu) AddSubMenuItem(submenu, label string, callback func()) {
 
 func (m *microMenu) ShowSubmenuItems(name, value, event, when string, x, y int) bool {
 	if event == "mouseout" {
+		e := m.myapp.frames["menu"].elements[name]
+		e.style = e.style.Bold(false).Foreground(tcell.ColorWhite)
+		e.style = e.style.Bold(false).Background(tcell.ColorBlack)
 		if y == m.myapp.frames["menu"].elements[name].aposb.Y {
 			return true
 		}
-		e := m.myapp.frames["menu"].elements[name]
-		e.style = e.style.Bold(false).Foreground(tcell.ColorWhite)
 		m.myapp.frames["menu"].elements[name] = e
 		m.closeSubmenus()
 		m.activemenu = ""
@@ -128,7 +129,8 @@ func (m *microMenu) ShowSubmenuItems(name, value, event, when string, x, y int) 
 	}
 	m.activemenu = name
 	e := m.myapp.frames["menu"].elements[name]
-	e.style = e.style.Bold(true).Foreground(tcell.ColorYellow)
+	e.style = e.style.Bold(true).Foreground(tcell.ColorBlack)
+	e.style = e.style.Bold(false).Background(tcell.ColorYellow)
 	m.myapp.frames["menu"].elements[name] = e
 	width := m.submenuWidth[name]
 	f := m.myapp.frames["menu"]
@@ -176,12 +178,14 @@ func (m *microMenu) MenuItemClick(name, value, event, when string, x, y int) boo
 	if event == "mouseout" {
 		e := f.elements[name]
 		e.style = e.style.Bold(false).Foreground(tcell.ColorWhite)
+		e.style = e.style.Bold(false).Background(tcell.ColorBlack)
 		f.elements[name] = e
 		e.Draw()
 		return false
 	} else if event == "mousein" {
 		e := f.elements[name]
-		e.style = e.style.Bold(true).Foreground(tcell.ColorYellow)
+		e.style = e.style.Bold(true).Foreground(tcell.ColorBlack)
+		e.style = e.style.Bold(false).Background(tcell.ColorYellow)
 		f.elements[name] = e
 		e.Draw()
 		return false
