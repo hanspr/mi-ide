@@ -1,3 +1,5 @@
+File|
+Open|
 open|
 Find|
 F5,Backspace (Previous)  F6,Enter (Next)|
@@ -77,6 +79,8 @@ Replace regex:|
 ignore case|
 all|
 No regexp|
+Save|
+Save all|
 Save As ...|
 File name :|
 Encoding:|

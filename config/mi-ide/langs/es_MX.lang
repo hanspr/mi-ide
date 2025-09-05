@@ -1,3 +1,5 @@
+File|Archivo
+Open|Abrir
 open|abrir
 Find|Encontrar
 F5,Backspace (Previous)  F6,Enter (Next)|F5,Tecla borrar (Anterior)  F6,Enter (Siguiente)
@@ -77,6 +79,8 @@ Replace regex:|Regex reemplazo:
 ignore case|ignora may.
 all|todos
 No regexp|No regexp
+Save|Guardar
+Save all|Guardar todo
 Save As ...|Guardar como ...
 File name :|Nombre archivo :
 Encoding:|Codificación:
