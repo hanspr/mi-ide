@@ -52,7 +52,7 @@ For a detailed layout visit: https://github.com/hanspr/mi-ide/wiki/defaultkeys
 Allows you to navigate the buffer in readonly mode, using the same alt keys but without
 the need to hold the Alt key.
 
-This is you can navigate the text with the keys : `j k l i`
+This is, you can navigate the buffer with the keys : `j k l i`
 Using `Shift` with the navigation keys will select text.
 All Ctrl keys are availabe for : copy, paste, cut, add line, remove lines, etc.
 
@@ -68,8 +68,8 @@ All Ctrl keys are availabe for : copy, paste, cut, add line, remove lines, etc.
 
 | Key     : | Description of function           |
 |-----------|-----------------------------------|
-| Alt-:     | Split current window vertically   |
-| Alt-_     | Split current window horizontally |
+| Alt-k ⏽   | Split current window vertically   |
+| Alt-k _   | Split current window horizontally |
 | Alt-q     | Move cursor to previous view      |
 | Alt-w     | Move cursor to next view          |
 
@@ -92,31 +92,30 @@ All Ctrl keys are availabe for : copy, paste, cut, add line, remove lines, etc.
 | F3        | Save As .. current file                                               |
 | Ctrl+s    | Save current file                                                     |
 | Ctrl+w    | Close current tab or window                                           |
-| Ctrl+b f  | Open file viewer                                                      |
+| Ctrl+k f  | Open file viewer                                                      |
 
 ## Text operations
 
-| Key                              : | Description of function                   |
-|------------------------------------|-------------------------------------------|
-| Shift+arrows                       | Move and select text                      |
-| AltShiftRightArrow                 | Select word right                         |
-| AltShiftLeftArrow                  | Select word left                          |
-| ShiftHome ,  CtrlShiftLeftArrow    | Select to start of current line           |
-| ShiftEnd ,  CtrlShiftRightArrow    | Select to end of current line             |
-| AltShiftUpArrow                    | Select one Page Up                        |
-| AltShiftDownArrow                  | Select one Page Down                      |
-| AltUpArrow   or Alt+e              | Move current line or selected lines up    |
-| AltDownArrow or Alt+d              | Move current line or selected lines down  |
-| Ctrl+b a                           | Select all                                |
-| Ctrl+k                             | Cut selected line and append to clipboard |
-| Ctrl+x                             | Cut selected text                         |
-| Ctrl+c                             | Copy selected text                        |
-| Ctrl+v                             | Paste                                     |
-| Ctrl+d                             | Duplicate current line                    |
-| Ctrl+z                             | Undo                                      |
-| Alt+z                              | Redo                                      |
-| Ctrl+j                             | Delete line                               |
-| Ctrl+c                             | Toggle selection case                     |
+| Key                              : | Description of function                  |
+|------------------------------------|------------------------------------------|
+| Shift+arrows                       | Move and select text                     |
+| AltShiftRightArrow                 | Select word right                        |
+| AltShiftLeftArrow                  | Select word left                         |
+| ShiftHome ,  CtrlShiftLeftArrow    | Select to start of current line          |
+| ShiftEnd ,  CtrlShiftRightArrow    | Select to end of current line            |
+| AltShiftUpArrow                    | Select one Page Up                       |
+| AltShiftDownArrow                  | Select one Page Down                     |
+| AltUpArrow   or Alt+e              | Move current line or selected lines up   |
+| AltDownArrow or Alt+d              | Move current line or selected lines down |
+| Ctrl+b a                           | Select all                               |
+| Ctrl+x                             | Cut selected text                        |
+| Ctrl+c                             | Copy selected text                       |
+| Ctrl+v                             | Paste                                    |
+| Ctrl+d                             | Duplicate current line                   |
+| Ctrl+z                             | Undo                                     |
+| Alt+z                              | Redo                                     |
+| Ctrl+j                             | Delete line                              |
+| Ctrl+c                             | Toggle selection case                    |
 
 ## Multiple cursors
 
@@ -129,7 +128,7 @@ All Ctrl keys are availabe for : copy, paste, cut, add line, remove lines, etc.
 | Alt-m           | Spawn a new cursor at the beginning of every line in current selection |
 | Ctrl-MouseLeft  | Place a multiple cursor at any location                                |
 
-## Power user
+## Commands
 
 | Key   : | Description of function                               |
 |---------|-------------------------------------------------------|
