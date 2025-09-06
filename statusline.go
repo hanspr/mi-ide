@@ -98,7 +98,6 @@ func (sline *Statusline) Display() {
 		file += "*"
 	}
 
-	// Fix length of file name to help eyes find information in the same place
 	if fwidth > w/4 {
 		size = w / 4
 	} else {
@@ -125,7 +124,6 @@ func (sline *Statusline) Display() {
 	}
 	totColumn = strconv.Itoa(sline.view.Buf.End().Y + 1)
 
-	// Fix size of cursor position so it stays in the same place all the time
 	file += fmt.Sprintf(" %6s/%s,%-4s ", lineNum, totColumn, columnNum)
 
 	// bellow 69 columns begin hidding information
@@ -163,10 +161,10 @@ func (sline *Statusline) Display() {
 		} else {
 			ff = "spc "
 		}
-		file += fmt.Sprintf("%-4s%-2d", ff, int(sline.view.Buf.Settings["tabsize"].(float64))) + "| "
-		file += sline.view.Buf.FileType() + " | "
-		file += fmt.Sprintf("%-4s", sline.view.Buf.Settings["fileformat"].(string)) + " | "
-		file += sline.view.Buf.encoder + " |"
+		file += fmt.Sprintf("%-4s%-2d", ff, int(sline.view.Buf.Settings["tabsize"].(float64))) + "  "
+		file += sline.view.Buf.FileType() + "   "
+		file += fmt.Sprintf("%-4s", sline.view.Buf.Settings["fileformat"].(string)) + "   "
+		file += sline.view.Buf.encoder + "  "
 		showbuttons = false
 	} else {
 		showbuttons = false

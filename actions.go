@@ -1085,10 +1085,10 @@ func (v *View) InsertTab(usePlugin bool) bool {
 		if diff != 0 && v.Buf.IsModified {
 			v.Cursor.GotoLoc(Loc{cSave.X + diff, v.Cursor.Y})
 		}
-	} else if !v.Buf.Settings["tabindents"].(bool) {
-		v.Buf.Insert(v.Cursor.Loc, v.Buf.IndentString()[:bytesUntilIndent])
-	} else {
+	} else if v.Buf.Settings["tabindents"].(bool) {
 		v.Buf.Insert(Loc{0, v.Cursor.Loc.Y}, v.Buf.IndentString()[:bytesUntilIndent])
+	} else {
+		v.Buf.Insert(v.Cursor.Loc, v.Buf.IndentString()[:bytesUntilIndent])
 	}
 	v.savedLoc = v.Cursor.Loc
 
