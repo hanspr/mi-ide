@@ -1033,7 +1033,7 @@ func (b *Buffer) ChangeIndentation(cfrom, cto string, nfrom, nto int) {
 		sr = strings.Repeat(" ", nto)
 		b.setIndentationOptions("space", nto)
 	}
-	for y := 0; y < b.LinesNum()-1; y++ {
+	for y := range b.LinesNum() - 1 {
 		l := b.Line(y)
 		ws := GetLeadingWhitespace(l)
 		wt := strings.ReplaceAll(ws, ss, sr)
@@ -1053,7 +1053,7 @@ func (b *Buffer) SmartDetections() {
 	found := false
 	retab := regexp.MustCompile(`^\t+`)
 	respc := regexp.MustCompile(`^  +`)
-	for i := 0; i < end; i++ {
+	for i := range end {
 		l := b.Line(i)
 		if Count(l) < 2 {
 			continue

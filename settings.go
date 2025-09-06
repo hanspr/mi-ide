@@ -155,10 +155,6 @@ func InitLocalSettings(buf *Buffer) {
 	if err == nil {
 		// Load previous saved settings for this file
 		maps.Copy(buf.Settings, fSettings)
-	} else {
-		// No previous saved knowledge of this file
-		// Try to get some useful parameters from scanning file
-		buf.SmartDetections()
 	}
 }
 

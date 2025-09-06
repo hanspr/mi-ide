@@ -294,7 +294,7 @@ func (v *View) CursorRight(usePlugin bool) bool {
 			tabsize := int(v.Buf.Settings["tabsize"].(float64))
 			line := v.Buf.Line(v.Cursor.Y)
 			if v.Cursor.X+tabsize <= Count(line) && line[v.Cursor.X:v.Cursor.X+tabsize] == Spaces(tabsize) && IsStrWhitespace(line[0:v.Cursor.X]) {
-				for i := 0; i < tabsize; i++ {
+				for range tabsize {
 					v.Cursor.Right()
 				}
 			} else {
