@@ -60,7 +60,7 @@ func DefaultCommands() map[string]StrCommand {
 		"open":     {"Open", []Completion{FileCompletion}},
 		"pwd":      {"Pwd", []Completion{NoCompletion}},
 		"reload":   {"Reload", []Completion{NoCompletion}},
-		"saveas":   {"SaveAs", []Completion{NoCompletion}},
+		"save":     {"SaveAs", []Completion{FileCompletion}},
 		// Groups
 		"config:": {"GroupConfig", []Completion{GroupCompletion, NoCompletion}},
 		"edit:":   {"GroupEdit", []Completion{GroupCompletion, NoCompletion}},
@@ -126,8 +126,10 @@ func CommandAction(cmd string) func(*View, bool) bool {
 
 // SaveAs saves the buffer with a new name
 func SaveAs(args []string) {
-	if len(args) > 0 {
+	if len(args) > 0 && args[0] != "" {
 		CurView().saveToFile(args[0])
+	} else {
+		CurView().Save(true)
 	}
 }
 
