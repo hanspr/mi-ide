@@ -13,11 +13,7 @@ our $DEBUG = 0;
 Format();
 
 sub Format {
-    my ($indent, $lc, @quoted_parts, $ci);
-    my $L  = 0;
-    my $I  = 0;
-    my $ch = " ";
-    my $sp = 4;
+    my $L = 0;
 
     open(F, "<:utf8", $FILE)       or exit 1;
     open(O, ">:utf8", "$FILE.tmp") or exit 1;
@@ -66,8 +62,19 @@ sub Format {
                         $l .= "|";
                         next;
                     }
-                    if ($rows[$i][$j] =~ /^-+/) {
-                        $rows[$i][$j] = '-' x ($max[$j] + 1);
+                    if ($rows[$i][$j] =~ /^(:)?-+(:)?/) {
+                        my $minus = 0;
+                        my $db    = "";
+                        my $da    = "";
+                        if ($1) {
+                            $minus++;
+                            $db = ":";
+                        }
+                        if ($2) {
+                            $minus++;
+                            $da = ":";
+                        }
+                        $rows[$i][$j] = $db . '-' x ($max[$j] + 1 - $minus) . $da;
                         $l .= "$rows[$i][$j]|";
                     } else {
                         $rows[$i][$j] = sprintf("%-$max[$j]s", $rows[$i][$j]);

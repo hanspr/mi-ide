@@ -12,8 +12,8 @@
     "smartindent": false,
     "smartpaste": true,
     "softwrap": false,
-    "tabindents": false,
-    "tabmovement": false,
-    "tabsize": 4,
-    "tabstospaces": false
+    "tabindents": true,
+    "tabmovement": true,
+    "tabsize": 2,
+    "tabstospaces": true
 }
