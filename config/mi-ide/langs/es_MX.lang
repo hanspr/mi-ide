@@ -1,41 +1,44 @@
+Actual|Actual
+Available|Disponible
+Author|Autor
+all|todos
+Cancel|Cancelar
+Description|Descripción
+Encoding:|Codificación:
+Exit|Salir
 File|Archivo
+Find|Encontrar
+Free|Libre
+Install|Instalar
+Installed|Instalado
+Installing|Instalando
+Key|Llave
+Language|Idioma
+Languages|Idiomas
+Name|Nombre
 Open|Abrir
 open|abrir
-Find|Encontrar
+Options|Opciones
+Password|Contraseña
+Passphrase|Frase privada
+Plugins|Complementos
+Recording|Grabando
+Replaced|Reemplazados
+Remove|Eliminar
+Removed|Eliminado
+restart|reiniciar
 Save|Guardar
 Saved|Guardado
-Exit|Salir
+Search|Buscar
+Search regex:|Buscar regex:
+Taken|Tomada
 y|s
 n|n
 Y|S
 N|N
 q|f
 !|!
-all|todos
-Replaced|Reemplazados
-Removed|Eliminado
-Available|Disponible
-Search|Buscar
-Search regex:|Buscar regex:
-Cancel|Cancelar
-Encoding:|Codificación:
-Taken|Tomada
-Free|Libre
-Language|Idioma
-Languages|Idiomas
-Plugins|Complementos
-Install|Instalar
-Installed|Instalado
-Installing|Instalando
-Remove|Eliminar
-Name|Nombre
-Author|Autor
-Description|Descripción
-Actual|Actual
-restart|reiniciar
-Key|Llave
-Password|Contraseña
-Passphrase|Frase privada
+Do it|Hacerlo
 F5,Backspace (Previous)  F6,Enter (Next)|F5,Tecla borrar (Anterior)  F6,Enter (Siguiente)
 is a directory|es un directorio
 You may want to remove the files in|Probablemente desee eliminar los archivos en
@@ -59,7 +62,6 @@ Line is too big to cut|Línea demasiado grande para cortar
 Line is too big, can not duplicate. You may move (up/down) or delete only.|Línea es demasiado grande para duplicarla. Puede mover la línea hacia (arriba/abajo) o eliminar únicamente.
 Jump to line: (1 - %v) :|Saltar a línea: (1 - %v) :
 Invalid line number|Número inválido
-Recording|Grabando
 Stopped recording|Grabación detenida
 Unknown plugin:|Complemento desconocida:
 Error installing|Error instalando
@@ -134,7 +136,6 @@ File uploaded to cloud|Archivo se subió a la nube
 No files to download|Sin archivos que descargar
 Clipboard uploaded to cloud|Copiado a la nube
 Bad credentials|Credenciales inválidas
-Do it|Hacerlo
 Upload my settings|Subir mis configuraciones
 Download my settings|Descargar mis configuraciones
 Settings uploaded OK|Configuración subida correctamente
