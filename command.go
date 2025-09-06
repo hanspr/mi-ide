@@ -33,11 +33,11 @@ var (
 func init() {
 	commandActions = map[string]func([]string){
 		"Cd":          Cd,
+		"Exit":        Exit,
 		"Help":        Help,
 		"MemUsage":    MemUsage,
 		"Open":        Open,
 		"Pwd":         Pwd,
-		"Raw":         Raw,
 		"Reload":      Reload,
 		"SaveAs":      SaveAs,
 		"ToggleLog":   ToggleLog,
@@ -53,12 +53,12 @@ func init() {
 func DefaultCommands() map[string]StrCommand {
 	return map[string]StrCommand{
 		"cd":       {"Cd", []Completion{FileCompletion}},
+		"exit":     {"Exit", []Completion{NoCompletion}},
 		"help":     {"Help", []Completion{HelpCompletion, NoCompletion}},
 		"log":      {"ToggleLog", []Completion{NoCompletion}},
 		"memusage": {"MemUsage", []Completion{NoCompletion}},
 		"open":     {"Open", []Completion{FileCompletion}},
 		"pwd":      {"Pwd", []Completion{NoCompletion}},
-		"raw":      {"Raw", []Completion{NoCompletion}},
 		"reload":   {"Reload", []Completion{NoCompletion}},
 		"saveas":   {"SaveAs", []Completion{NoCompletion}},
 		// Groups
@@ -131,30 +131,8 @@ func SaveAs(args []string) {
 	}
 }
 
-// Raw opens a new raw view which displays the escape sequences mi-ide
-// is receiving in real-time
-func Raw(args []string) {
-	buf := NewBufferFromString("", "Raw events")
-
-	view := NewView(buf)
-	view.Buf.Insert(view.Cursor.Loc, Language.Translate("Warning: Showing raw event escape codes")+"\n")
-	view.Buf.Insert(view.Cursor.Loc, Language.Translate("Use CtrlQ to exit")+"\n")
-	view.Type = vtRaw
-	tab := NewTabFromView(view)
-	tab.SetNum(len(tabs))
-	tabs = append(tabs, tab)
-	curTab = len(tabs) - 1
-	if len(tabs) == 2 {
-		for _, t := range tabs {
-			for _, v := range t.Views {
-				v.AddTabbarSpace()
-			}
-		}
-	}
-}
-
 // Groups
-
+// GroupEdit execute selected option
 func GroupEdit(args []string) {
 	if args[0] == "settings" {
 		EditSettings()
@@ -163,6 +141,7 @@ func GroupEdit(args []string) {
 	}
 }
 
+// GroupConfig execute config option
 func GroupConfig(args []string) {
 	if args[0] == "cloudsettings" {
 		CloudSettings()
@@ -177,12 +156,14 @@ func GroupConfig(args []string) {
 	}
 }
 
+// GroupShow execute selected option
 func GroupShow(args []string) {
 	if args[0] == "snippets" {
 		ShowSnippets()
 	}
 }
 
+// GroupGit execute selected option
 func GroupGit(args []string) {
 	if args[0] == "diff" {
 		GitDiff("")
@@ -289,6 +270,11 @@ func Reload(args []string) {
 	loadAll()
 }
 
+// Reload reloads all files (syntax files, colorschemes...)
+func Exit(args []string) {
+	CurView().QuitAll(false)
+}
+
 // Help tries to open the given help page in a horizontal split
 func Help(args []string) {
 	if len(args) < 1 {
@@ -322,11 +308,13 @@ func ShowSnippets() {
 	CurView().OpenHelperView("v", "snippet", snips)
 }
 
+// EditSettings open settings.json in the editor
 func EditSettings() {
 	CurView().AddTab(false)
 	CurView().Open(configDir + "/settings.json")
 }
 
+// EditSnippets edit current buffer snippets
 func EditSnippets() {
 	ftype := CurView().Buf.FileType()
 	CurView().AddTab(false)
@@ -405,24 +393,29 @@ func ExpandString(s string) string {
 	return s
 }
 
-// Menu access
+// Config options
 
+// Settings open settings config
 func Settings() {
 	micromenu.GlobalConfigDialog()
 }
 
+// CloudSettings open cloud settings
 func CloudSettings() {
 	micromenu.MiCloudServices()
 }
 
+// PluginManager open plugins manager
 func PluginManager() {
 	micromenu.PluginManagerDialog()
 }
 
+// KeyBindings config keybindings
 func KeyBindings() {
 	micromenu.KeyBindingsDialog()
 }
 
+// BufferSettings config buffer settings for current buffer
 func BufferSettings() {
 	micromenu.SelLocalSettings(CurView().Buf)
 }
