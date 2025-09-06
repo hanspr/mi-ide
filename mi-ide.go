@@ -224,8 +224,6 @@ func InitConfigDir() {
 			os.Exit(0)
 		}
 	}
-	Clip = clipboard.New()
-	Clip.SetLocalPath(configDir + "/buffers/clips.txt")
 }
 
 // InitScreen creates and initializes the tcell screen
@@ -406,6 +404,10 @@ func main() {
 
 	// Find the user's configuration directory (probably $XDG_CONFIG_HOME/mi-ide)
 	InitConfigDir()
+
+	// Now we can create the clipboard
+	Clip = clipboard.New()
+	Clip.SetLocalPath(configDir + "/buffers/clips.txt")
 
 	// Build a list of available Extensions (Syntax, Colorscheme etc.)
 	InitRuntimeFiles()
