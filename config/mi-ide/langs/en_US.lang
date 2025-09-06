@@ -3,7 +3,9 @@ Author|
 Available|
 all|
 Cancel|
+Commands|
 Description|
+Encoding:|
 Exit|
 File|
 Find|
@@ -22,6 +24,7 @@ Password|
 Passphrase|
 Plugins|
 Recording|
+Replaced|
 Remove|
 Removed|
 restart|
@@ -29,12 +32,16 @@ Save|
 Saved|
 Search|
 Taken|
+Welcome|
 y|
 n|
 Y|
 N|
 q|
 !|
+Key bindings|
+Search regex:|
+Do it|
 F5,Backspace (Previous)  F6,Enter (Next)|
 is a directory|
 You may want to remove the files in|
@@ -85,7 +92,6 @@ has no binding|
 Invalid replace statement:|
 Invalid flag:|
 Perform replacement? (y,n,q,!)|
-Replaced|
 occurrences of|
 Nothing matched|
 Unknown command|
@@ -94,7 +100,6 @@ before closing? (y,n,esc)|
 You need to save view first|
 opened in new Tab|
 opened in View|
-Search regex:|
 Search / Replace|
 Search regex:|
 Replace regex:|
@@ -103,7 +108,6 @@ No regexp|
 Save all|
 Save As ...|
 File name :|
-Encoding:|
 Use this encoding:|
 Select Encoding|
 Set encoding|
@@ -134,7 +138,6 @@ File uploaded to cloud|
 No files to download|
 Clipboard uploaded to cloud|
 Bad credentials|
-Do it|
 Upload my settings|
 Download my settings|
 Settings uploaded OK|

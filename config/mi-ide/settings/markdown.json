@@ -1,7 +1,7 @@
 {
     "autoclose": true,
-    "charsopen": "_*",
-    "charsclose": "_*",
+    "charsopen": "_",
+    "charsclose": "_",
     "autoindent": true,
     "eofnewline": false,
     "fileformat": "unix",

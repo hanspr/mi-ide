@@ -1,8 +1,9 @@
 Actual|Actual
-Available|Disponible
 Author|Autor
+Available|Disponible
 all|todos
 Cancel|Cancelar
+Commands|Comandos
 Description|Descripción
 Encoding:|Codificación:
 Exit|Salir
@@ -30,14 +31,16 @@ restart|reiniciar
 Save|Guardar
 Saved|Guardado
 Search|Buscar
-Search regex:|Buscar regex:
 Taken|Tomada
+Welcome|Bienvendida
 y|s
 n|n
 Y|S
 N|N
 q|f
 !|!
+Key bindings|Asignación de teclas
+Search regex:|Buscar regex:
 Do it|Hacerlo
 F5,Backspace (Previous)  F6,Enter (Next)|F5,Tecla borrar (Anterior)  F6,Enter (Siguiente)
 is a directory|es un directorio

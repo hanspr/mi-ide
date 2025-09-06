@@ -5,34 +5,34 @@ Here are the possible commands that you can use.
 
 Tab key lets you see the list of availalbe commands at a given label, and autocompletes
 
-* `exit`: Quits mi-ide.
+* `quit`: Quits mi-ide.
 
 * `cd path`: Change the working directory to the given `path`.
 
 * `config`: Submenu for config commands, possible options
-            `buffersettings` : buffer settings for current file
-            `settings` : global settings
-            `keybindings` : reconfigure bindings
-            `plugins` : open the plugin manager
+  `buffersettings` : buffer settings for current file
+  `settings` : global settings
+  `keybindings` : reconfigure bindings
+  `plugins` : open the plugin manager
 
 * `edit`: Submenu to edit config files directly
-            `settings` : global settings
-            `snippets` : snippets for current buffer language
+  `settings` : global settings
+  `snippets` : snippets for current buffer language
 
 * `git`: Submenu to execute some git commands
-            `status` : git status
-            `diff` : open new tab with the git diff
-            `diffstaged` : open new tab with the git diff --staged
+  `status` : git status
+  `diff` : open new tab with the git diff
+  `diffstaged` : open new tab with the git diff --staged
 
 * `help` : Access to help topics
 
-* `saveas <filename>`: Saves the current buffer. If the filename is provided it will 'save as' the filename.
-
 * `log`: opens a log of all messages and debug statements.
 
-* `reload`: reloads all runtime files.
+* `reload`: reloads all runtime files. Only needed if you edit configuration files : colors, syntax, etc.
 
 * `open filename`: Open a file in the current buffer.
+
+* `save <filename>`: Saves the current buffer. If the filename is provided it will 'save as' the filename.
 
 * `pwd`: Print the current working directory.
 
