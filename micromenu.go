@@ -82,7 +82,8 @@ func (m *microMenu) Menu() {
 		name = "help"
 		m.AddSubmenu(name, "help")
 		f.AddWindowMenuLabel(name, fmt.Sprintf("%-"+strconv.Itoa(m.maxwidth+1)+"s", "Help"), 0, row, m.ShowSubmenuItems, "", "")
-		m.AddSubMenuItem(name, Language.Translate("KeyBindings"), m.HelpKeyBindings)
+		m.AddSubMenuItem(name, Language.Translate("Commands"), m.HelpCommands)
+		m.AddSubMenuItem(name, Language.Translate("Key bindings"), m.HelpKeyBindings)
 		m.AddSubMenuItem(name, Language.Translate("Welcome"), m.HelpWelcome)
 		row++
 		f.AddWindowMenuBottom("menubottom", fmt.Sprintf("%-"+strconv.Itoa(m.maxwidth+1)+"s", " "), 0, row, nil, "", "")
@@ -250,6 +251,12 @@ func (m *microMenu) HelpKeyBindings() {
 
 func (m *microMenu) HelpWelcome() {
 	CurView().openHelp("welcome")
+	m.Finish("")
+	m.myapp = nil
+}
+
+func (m *microMenu) HelpCommands() {
+	CurView().openHelp("commands")
 	m.Finish("")
 	m.myapp = nil
 }
