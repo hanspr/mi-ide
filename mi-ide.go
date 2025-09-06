@@ -405,10 +405,6 @@ func main() {
 	// Find the user's configuration directory (probably $XDG_CONFIG_HOME/mi-ide)
 	InitConfigDir()
 
-	// Now we can create the clipboard
-	Clip = clipboard.New()
-	Clip.SetLocalPath(configDir + "/buffers/clips.txt")
-
 	// Build a list of available Extensions (Syntax, Colorscheme etc.)
 	InitRuntimeFiles()
 
@@ -419,10 +415,17 @@ func main() {
 		utf8ToShare, _ := CompileLua(configDir + "/libs/shared.lua")
 		DoCompiledFile(L, utf8ToShare)
 	}
+
 	// Create translation object, to begin translating messages
 	Language = lang.NewLang(globalSettings["lang"].(string), configDir+"/langs/"+globalSettings["lang"].(string)+".lang")
 
+	// Create the clipboard
+	Clip = clipboard.New()
+	Clip.SetLocalPath(configDir + "/buffers/clips.txt")
+	Clip.SetCloudPath(cloudPath, globalSettings["mi-key"].(string), globalSettings["mi-pass"].(string), globalSettings["mi-phrase"].(string))
+
 	InitCommands()
+
 	InitBindings()
 
 	// Start the screen

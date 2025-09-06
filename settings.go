@@ -81,7 +81,6 @@ func InitGlobalSettings() {
 		mouseEnabled = true
 		previousMouseStatus = true
 	}
-	Clip.SetCloudPath(cloudPath, globalSettings["mi-key"].(string), globalSettings["mi-pass"].(string), globalSettings["mi-phrase"].(string))
 }
 
 // InitLocalSettings get known local settings for this opened file
