@@ -71,13 +71,19 @@ func (m *microMenu) Menu() {
 		m.AddSubMenuItem(name, Language.Translate("Exit"), m.FileQuit)
 		row++
 		name = "microide"
-		m.AddSubmenu(name, "mi-ide")
-		f.AddWindowMenuLabel(name, fmt.Sprintf("%-"+strconv.Itoa(m.maxwidth+1)+"s", "mi-ide"), 0, row, m.ShowSubmenuItems, "", "")
+		m.AddSubmenu(name, "options")
+		f.AddWindowMenuLabel(name, fmt.Sprintf("%-"+strconv.Itoa(m.maxwidth+1)+"s", "Options"), 0, row, m.ShowSubmenuItems, "", "")
 		m.AddSubMenuItem(name, Language.Translate("Global Settings"), m.GlobalConfigDialog)
 		m.AddSubMenuItem(name, Language.Translate("KeyBindings"), m.KeyBindingsDialog)
 		m.AddSubMenuItem(name, Language.Translate("Plugin Manager"), m.PluginManagerDialog)
 		m.AddSubMenuItem(name, Language.Translate("Cloud Services"), m.MiCloudServices)
 		m.AddSubMenuItem(name, Language.Translate("Sync Settings"), m.MiCloudSync)
+		row++
+		name = "help"
+		m.AddSubmenu(name, "help")
+		f.AddWindowMenuLabel(name, fmt.Sprintf("%-"+strconv.Itoa(m.maxwidth+1)+"s", "Help"), 0, row, m.ShowSubmenuItems, "", "")
+		m.AddSubMenuItem(name, Language.Translate("KeyBindings"), m.HelpKeyBindings)
+		m.AddSubMenuItem(name, Language.Translate("Welcome"), m.HelpWelcome)
 		row++
 		f.AddWindowMenuBottom("menubottom", fmt.Sprintf("%-"+strconv.Itoa(m.maxwidth+1)+"s", " "), 0, row, nil, "", "")
 		row++
@@ -232,6 +238,18 @@ func (m *microMenu) FileSaveAll() {
 
 func (m *microMenu) FileQuit() {
 	CurView().QuitAll(true)
+	m.Finish("")
+	m.myapp = nil
+}
+
+func (m *microMenu) HelpKeyBindings() {
+	CurView().openHelp("defaultkeys")
+	m.Finish("")
+	m.myapp = nil
+}
+
+func (m *microMenu) HelpWelcome() {
+	CurView().openHelp("welcome")
 	m.Finish("")
 	m.myapp = nil
 }
