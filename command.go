@@ -53,12 +53,12 @@ func init() {
 func DefaultCommands() map[string]StrCommand {
 	return map[string]StrCommand{
 		"cd":       {"Cd", []Completion{FileCompletion}},
-		"exit":     {"Exit", []Completion{NoCompletion}},
 		"help":     {"Help", []Completion{HelpCompletion, NoCompletion}},
 		"log":      {"ToggleLog", []Completion{NoCompletion}},
 		"memusage": {"MemUsage", []Completion{NoCompletion}},
 		"open":     {"Open", []Completion{FileCompletion}},
 		"pwd":      {"Pwd", []Completion{NoCompletion}},
+		"quit":     {"Exit", []Completion{NoCompletion}},
 		"reload":   {"Reload", []Completion{NoCompletion}},
 		"save":     {"SaveAs", []Completion{FileCompletion}},
 		// Groups
