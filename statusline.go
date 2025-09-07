@@ -123,8 +123,8 @@ func (sline *Statusline) Display() {
 		lineNum = strconv.Itoa(sline.view.savedLoc.Y + 1)
 	}
 	totColumn = strconv.Itoa(sline.view.Buf.End().Y + 1)
-
-	file += fmt.Sprintf(" %6s/%s,%-4s ", lineNum, totColumn, columnNum)
+	lPos := fmt.Sprintf("%s/%s,%s", lineNum, totColumn, columnNum)
+	file += fmt.Sprintf("%15s  ", lPos)
 
 	// bellow 69 columns begin hidding information
 	if w > 69 && mouseEnabled {
