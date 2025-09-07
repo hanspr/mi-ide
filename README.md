@@ -1,33 +1,33 @@
 # ![mi-ide](./assets/logo.png)
 
-mi-ide (_**mi ide**_ in Spanish, _**my ide**_ in English. As in: this is _**my** editor_) is a spin-off version of micro editor project at https://github.com/zyedidia/micro.
+mi-ide (___mi ide___ in Spanish, ___my ide___ in English. As in: this is ___my editor___) is a spin-off version of micro editor project.
 
 This has become a personal project, but if you are still looking for something different you may try this editor.
 
-What is this editor philosophy:
+What is this editor's philosophy:
 
 * Is a remote terminal oriented editor
   * I'm not interested in developing another editor for the desktop environment
   * This editor is meant to run in small cloud servers
   * No space for language servers, not enough cpu to support a heavy load
 * I do want to have as many amenities from well developed ides, like
-  * Syntax error checking inside the editor
-  * Check git status on the status bar, and access to git status and git diff within the editor
-  * Search for functions within the project
-  * Snippets
+  * __Syntax error checking__ inside the editor
+  * __git status on the status bar__, and access to git status and git diff within the editor
+  * __Search for functions__ within the project
+  * __Snippets__
   * Good set of commands and key actions to help writing code fluently
-  * A new approach to keybindins to maintain the hands on the keyboard as much as possible
-  * A clipboard that works across editors in diferente terminals and servers (cloud clipboard)
+  * A new approach to keybindins to __maintain the hands on the keyboard__ as much as possible
+  * A clipboard that works across editors in diferente terminals and servers (__cloud clipboard__)
   * A plugin system to enhance the experience of developing in a particular language
-  * Syntax highlight
+  * __Syntax highlight__
   * A beautiful interface (why not)
-* My particular setup is : tmux, lazygit and miide. With this combination I have a very usefull development environment on my remote servers.
+* My particular setup is : tmux, lazygit and mi-ide. With this combination I have a very usefull development environment on my remote servers.
 
-The original motivation came from the usual experience of searching for an editor when I began coding. Vim was too hard for me, nano way too simple.
+The original motivation came from the usual experience of searching for an editor when I began coding. Vim is too hard for me, nano way too simple.
 
-I eventually landed with jed editor. It had the basic features that I liked, but again too limited and very difficult to enhance it. I did learn slang and did some hacking to it, but the framework had many limitations to grow it.
+I eventually landed with jed editor. It had the basic features that I liked, but again too limited and very difficult to enhance it. I did learn slang and did some hacking to it, but the framework had many limitations for me to grow it.
 
-And one day I discover micro. Written in go. I was very interested in learning go. So I downloaded, installed, and run it. And at that time it was very promissing, but it was full of bugs that made it impractical (have to say that since, I then have not followed the project so I'm sure many issues were resolved).
+And one day I discover micro. Written in go. I was very interested in learning go. So I downloaded, installed, and run it. And at that time it was very promissing, but it was full of bugs that made it impractical (have to say that since then, I have't followed the project so I'm sure many issues were resolved).
 
 But I took this opportunity to grab a book and started learning go. Jumped into the code, and after 3 months, I managed to remove most of the bugs, and began using it daily and little by little grow it to fit my needs. Which drove me very far away from the original project.
 
@@ -39,6 +39,7 @@ So this is the result of it, check the manual and see if it would fill your requ
 
 - [Installation](#installation)
 - [Usage](#usage)
+- [Default keys](https://github.com/hanspr/mi-ide/wiki/defaultkeys#simplified-key-map)
 - [Documentation and Help](#documentation-and-help)
 - [Plugin Development](#plugin)
 - [Translate](#translate)
@@ -81,7 +82,7 @@ You can move the cursor around with the arrow keys and mouse.
 
 You can also use the mouse to select text, double click to enable a word, and triple click to enable line selection.
 
-Mouse is disabled by default, you can enable on the general settings or toggle by typing : Ctrl-k p
+Mouse should be enabled by default, if is not, you can enable on the general settings or toggle by typing : `Ctrl-k p`
 
 ## Documentation and Help
 
