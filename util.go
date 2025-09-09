@@ -519,7 +519,7 @@ func ExtractZip(data *[]byte, targetDir string) error {
 				return err
 			}
 			defer content.Close()
-			target, err := os.Create(targetName)
+			target, err := os.OpenFile(targetName, os.O_WRONLY|os.O_CREATE|os.O_TRUNC, f.Mode())
 			if err != nil {
 				if strings.Contains(err.Error(), "permission denied") {
 					// Skip files with permission denied
