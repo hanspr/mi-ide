@@ -274,6 +274,7 @@ func DefaultGlobalSettings() map[string]any {
 		"tabsize":        float64(4),
 		"tabstospaces":   false,
 		"tabindents":     false,
+		"usemouse":       true,
 	}
 }
 
