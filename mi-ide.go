@@ -149,8 +149,8 @@ func LoadInput() []*Buffer {
 
 	args := flag.Args()
 	buffers := make([]*Buffer, 0, len(args))
-	if _, err := os.Stat(configDir + "/welcome.md"); err == nil {
-		os.Rename(configDir+"/welcome.md", configDir+"/help/welcome.md")
+	if _, err := os.Stat(configDir + "/new.txt"); err == nil {
+		os.Remove(configDir + "/new.txt")
 		buf, err = NewBufferFromFile(configDir + "/help/welcome.md")
 		if err == nil {
 			buffers = append(buffers, buf)
