@@ -272,6 +272,7 @@ func InitScreen() {
 	if mouseEnabled {
 		screen.EnableMouse()
 	}
+
 	// Now we can put the TERM back to what it was before
 	if truecolor {
 		os.Setenv("TERM", oldTerm)
