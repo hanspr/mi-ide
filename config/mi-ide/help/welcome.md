@@ -2,14 +2,13 @@
 
 If you are new to mi-ide, We will take a very quick review to ease your start
 
-* __ɱ __
+__☰ __
+     On the top left is a menu to access the editor configurations with your mouse.
+     - If mouse is not active typing Ctrl-k + p (Control K the letter p) and then use the mouse.
+     - If your terminal does not have mouse support or Ctrl-e then type :
+       config > settings (type `config` <space> or <tab>, `settings` <enter>)
 
-    On the top left is a menu to access the editor configurations with your mouse.
-    - If mouse is not active typing Ctrl-k + p (Control K the letter p) and then use the mouse.
-    - If your terminal does not have mouse support or Ctrl-e then type :
-      config > settings (type `config` <space> or <tab>, `settings` <enter>)
-
-* __Basic Keys__
+__Basic Keys__
 
 | Keys:      | Action                             |
 |------------|------------------------------------|
