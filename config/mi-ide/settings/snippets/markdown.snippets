@@ -31,20 +31,29 @@ snippet alert
 snippet table2
 	|${1:title}|${2:title}|
 	|-------|-------|
-	|||
-	|||
+	|${3:a}|${4:b}|
+	row2${0}
+snippet row2
+	|${1:a}|${2:b}|
+	row2${0}
 
 snippet table3
 	|${1:title}|${2:title}|${3:title}|
 	|-------|-------|-------|
-	||||
-	||||
+	|${4:a}|${5:b}|${6:c}|
+	row3${0}
+snippet row3
+	|${1:a}|${2:b}|${3:c}|
+	row3${0}
 
 snippet table4
 	|${1:title}|${2:title}|${3:title}|${4:title}|
 	|-------|-------|-------|-------|
-	|||||
-	|||||
+	|${5:a}|${6:b}|${7:c}|${8:d}|
+	row4${0}
+snippet row4
+	|${1:a}|${2:b}|${3:c}|${3:d}|
+	row4${0}
 
 # Common
 
@@ -67,4 +76,3 @@ snippet blockquote-link
 	{% blockquote ${1:author} ${2:URL} ${3:link_text} %}
 	${0:quote}
 	{% endblockquote %}
-
