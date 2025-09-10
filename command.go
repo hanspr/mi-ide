@@ -136,24 +136,26 @@ func SaveAs(args []string) {
 // Groups
 // GroupEdit execute selected option
 func GroupEdit(args []string) {
-	if args[0] == "settings" {
+	switch args[0] {
+	case "settings":
 		EditSettings()
-	} else if args[0] == "snippets" {
+	case "snippets":
 		EditSnippets()
 	}
 }
 
 // GroupConfig execute config option
 func GroupConfig(args []string) {
-	if args[0] == "cloudsettings" {
+	switch args[0] {
+	case "cloudsettings":
 		CloudSettings()
-	} else if args[0] == "keybindings" {
+	case "keybindings":
 		KeyBindings()
-	} else if args[0] == "plugins" {
+	case "plugins":
 		PluginManager()
-	} else if args[0] == "settings" {
+	case "settings":
 		Settings()
-	} else if args[0] == "buffersettings" {
+	case "buffersettings":
 		BufferSettings()
 	}
 }
@@ -167,11 +169,12 @@ func GroupShow(args []string) {
 
 // GroupGit execute selected option
 func GroupGit(args []string) {
-	if args[0] == "diff" {
+	switch args[0] {
+	case "diff":
 		GitDiff("")
-	} else if args[0] == "diffstaged" {
+	case "diffstaged":
 		GitDiff("--staged")
-	} else if args[0] == "status" {
+	case "status":
 		GitStatus()
 	}
 }

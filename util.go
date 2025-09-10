@@ -560,11 +560,12 @@ func UpdateFileJSON(filename string, values map[string]string) error {
 	// Transform into strings, because we need strings for WriteJSON and we received strings
 	for k, v := range ovalues {
 		kind := reflect.TypeOf(v).Kind()
-		if kind == reflect.Bool {
+		switch kind {
+		case reflect.Bool:
 			svalues[k] = strconv.FormatBool(v.(bool))
-		} else if kind == reflect.String {
+		case reflect.String:
 			svalues[k] = v.(string)
-		} else if kind == reflect.Float64 {
+		case reflect.Float64:
 			svalues[k] = strconv.FormatFloat(v.(float64), 'f', -1, 64)
 		}
 	}

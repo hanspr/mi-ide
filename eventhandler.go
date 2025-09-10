@@ -41,15 +41,16 @@ type Delta struct {
 
 // ExecuteTextEvent runs a text event
 func ExecuteTextEvent(t *TextEvent, buf *Buffer) {
-	if t.EventType == TextEventInsert {
+	switch t.EventType {
+	case TextEventInsert:
 		for _, d := range t.Deltas {
 			buf.insert(d.Start, []byte(d.Text))
 		}
-	} else if t.EventType == TextEventRemove {
+	case TextEventRemove:
 		for i, d := range t.Deltas {
 			t.Deltas[i].Text = buf.remove(d.Start, d.End)
 		}
-	} else if t.EventType == TextEventReplace {
+	case TextEventReplace:
 		for i, d := range t.Deltas {
 			t.Deltas[i].Text = buf.remove(d.Start, d.End)
 			buf.insert(d.Start, []byte(d.Text))

@@ -12,8 +12,8 @@ import (
 	"unicode"
 
 	"github.com/hanspr/shellwords"
-	"github.com/mattn/go-runewidth"
 	"github.com/hanspr/tcell/v2"
+	"github.com/mattn/go-runewidth"
 )
 
 // TermMessage sends a message to the user in the terminal. This usually occurs before
@@ -127,19 +127,20 @@ func (m *Messenger) Alert(kind string, msg ...any) {
 	if !m.hasPrompt {
 		// if there is no active prompt then style and display the message as normal
 		m.message = buf.String()
-		if kind == "error" {
+		switch kind {
+		case "error":
 			m.style = defStyle.Foreground(tcell.Color196).Bold(true)
 			if _, ok := colorscheme["error-message"]; ok {
 				m.style = colorscheme["error-message"]
 			}
-		} else if kind == "warning" {
+		case "warning":
 			m.style = defStyle.Foreground(tcell.ColorYellow).Normal()
-		} else if kind == "success" {
+		case "success":
 			m.style = defStyle.Foreground(tcell.ColorGreen).Normal()
-		} else if kind == "info" {
+		case "info":
 			clearTime = 20
 			m.style = defStyle.Foreground(tcell.ColorBlue).Bold(true)
-		} else {
+		default:
 			m.style = defStyle
 			if _, ok := colorscheme["message"]; ok {
 				m.style = colorscheme["message"]

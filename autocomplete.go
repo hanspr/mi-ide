@@ -85,13 +85,14 @@ func GroupComplete(group, input string) (string, []string) {
 	var chosen = ""
 	i := strings.Index(group, ":")
 	group = group[0:i]
-	if group == "edit" {
+	switch group {
+	case "edit":
 		options = []string{"settings", "snippets"}
-	} else if group == "config" {
+	case "config":
 		options = []string{"buffersettings", "cloudsettings", "keybindings", "plugins", "settings"}
-	} else if group == "git" {
+	case "git":
 		options = []string{"diff", "diffstaged", "status"}
-	} else if group == "show" {
+	case "show":
 		options = []string{"snippets"}
 	}
 	for _, cmd := range options {

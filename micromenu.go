@@ -182,14 +182,15 @@ func (m *microMenu) MenuItemClick(name, value, event, when string, x, y int) boo
 	if !err {
 		return false
 	}
-	if event == "mouseout" {
+	switch event {
+	case "mouseout":
 		e := f.elements[name]
 		e.style = e.style.Bold(false).Foreground(tcell.ColorWhite)
 		e.style = e.style.Bold(false).Background(tcell.ColorBlack)
 		f.elements[name] = e
 		e.Draw()
 		return false
-	} else if event == "mousein" {
+	case "mousein":
 		e := f.elements[name]
 		e.style = e.style.Bold(true).Foreground(tcell.ColorBlack)
 		e.style = e.style.Bold(false).Background(tcell.ColorYellow)
@@ -290,20 +291,21 @@ func (m *microMenu) GlobalConfigDialog() {
 		row := 2
 		col := 2
 		for _, k := range keys {
-			if k == "fileformat" {
+			switch k {
+			case "fileformat":
 				f.AddWindowSelect(k, k+" ", globalSettings[k].(string), "unix|dos", col, row, 0, 1, nil, "", "")
-			} else if k == "indentchar" {
+			case "indentchar":
 				char := "s"
 				if globalSettings[k].(string) != " " {
 					char = "t"
 				}
 				f.AddWindowSelect(k, k+" ", char, "t]Tab|s]Space", col, row, 0, 1, nil, "", "")
-			} else if k == "scrollmargin" {
+			case "scrollmargin":
 				f.AddWindowSelect(k, k+" ", fmt.Sprintf("%g", globalSettings[k].(float64)), "0|1|2|3|4|5|6|7|8|9|10", col, row, 3, 1, nil, "", "")
 				f.SetIndex(k, 3)
-			} else if k == "tabsize" {
+			case "tabsize":
 				f.AddWindowSelect(k, k+" ", fmt.Sprintf("%g", globalSettings[k].(float64)), "2|3|4|5|6|7|8|9|10", col, row, 3, 1, nil, "", "")
-			} else if k == "lang" {
+			case "lang":
 				Langs := ""
 				langs := GeTFileListFromPath(configDir+"/langs", "lang")
 				for _, l := range langs {
@@ -314,7 +316,7 @@ func (m *microMenu) GlobalConfigDialog() {
 					}
 				}
 				f.AddWindowSelect(k, k+" ", globalSettings[k].(string), Langs, col, row, 0, 1, nil, "", "")
-			} else if k == "colorscheme" {
+			case "colorscheme":
 				Colors := ""
 				colors := GeTFileListFromPath(configDir+"/colorschemes", "micro")
 				for _, c := range colors {
@@ -326,18 +328,19 @@ func (m *microMenu) GlobalConfigDialog() {
 				}
 				f.AddWindowSelect(k, k+" ", globalSettings["colorscheme"].(string), Colors, col, row, 0, 1, nil, "", "")
 				f.SetIndex(k, 3)
-			} else if k == "cursorshape" {
+			case "cursorshape":
 				f.AddWindowSelect(k, k+" ", globalSettings["cursorshape"].(string), "disabled|block|ibeam|underline", col, row, 0, 1, nil, "", "")
-			} else {
+			default:
 				kind := reflect.TypeOf(globalSettings[k]).Kind()
-				if kind == reflect.Bool {
+				switch kind {
+				case reflect.Bool:
 					f.AddWindowCheckBox(k, k, "true", col, row, globalSettings[k].(bool), nil, "", "")
-				} else if kind == reflect.String {
+				case reflect.String:
 					w := 26 - Count(k+" ")
 					f.AddWindowTextBox(k, k+" ", globalSettings[k].(string), "string", col, row, w, 50, nil, "", "")
-				} else if kind == reflect.Float64 {
+				case reflect.Float64:
 					f.AddWindowTextBox(k, k+" ", fmt.Sprintf("%g", globalSettings[k].(float64)), "integer", col, row, 5, 10, nil, "", "")
-				} else {
+				default:
 					continue
 				}
 			}
@@ -380,16 +383,17 @@ func (m *microMenu) SaveSettings(name, value, event, when string, x, y int) bool
 			continue
 		}
 		kind := reflect.TypeOf(globalSettings[k]).Kind()
-		if kind == reflect.Bool {
+		switch kind {
+		case reflect.Bool:
 			v = strconv.FormatBool(globalSettings[k].(bool))
 			if values[k] == "" {
 				values[k] = "false"
 			}
-		} else if kind == reflect.String {
+		case reflect.String:
 			v = globalSettings[k].(string)
-		} else if kind == reflect.Float64 {
+		case reflect.Float64:
 			v = fmt.Sprintf("%g", globalSettings[k].(float64))
-		} else {
+		default:
 			continue
 		}
 		if v != values[k] {
@@ -1434,27 +1438,29 @@ func (m *microMenu) SelLocalSettings(b *Buffer) {
 		row := 2
 		col := 2
 		for _, k := range keys {
-			if k == "fileformat" {
+			switch k {
+			case "fileformat":
 				f.AddWindowSelect(k, k+" ", b.Settings[k].(string), "unix|dos", col, row, 0, 1, nil, "", "")
-			} else if k == "indentchar" {
+			case "indentchar":
 				char := "s"
 				if b.Settings[k].(string) != " " {
 					char = "t"
 				}
 				f.AddWindowSelect(k, k+" ", char, "t]Tab|s]Space", col, row, 0, 1, nil, "", "")
-			} else if k == "tabsize" {
+			case "tabsize":
 				f.AddWindowSelect(k, k+" ", fmt.Sprintf("%g", b.Settings[k].(float64)), "2|3|4|5|6|7|8|9|10", col, row, 3, 1, nil, "", "")
-			} else if k == "comment" {
+			case "comment":
 				f.AddWindowTextBox(k, k+" ", b.Settings[k].(string), "string", col, row, 5, 20, nil, "", "")
-			} else {
+			default:
 				kind := reflect.TypeOf(b.Settings[k]).Kind()
-				if kind == reflect.Bool {
+				switch kind {
+				case reflect.Bool:
 					f.AddWindowCheckBox(k, k, "true", col, row, b.Settings[k].(bool), nil, "", "")
-				} else if kind == reflect.String {
+				case reflect.String:
 					f.AddWindowTextBox(k, k+" ", b.Settings[k].(string), "string", col, row, 30, 100, nil, "", "")
-				} else if kind == reflect.Float64 {
+				case reflect.Float64:
 					f.AddWindowTextBox(k, k+" ", fmt.Sprintf("%g", b.Settings[k].(float64)), "integer", col, row, 5, 10, nil, "", "")
-				} else {
+				default:
 					continue
 				}
 			}
@@ -1508,13 +1514,14 @@ func (m *microMenu) SetLocalSettings(name, value, event, when string, x, y int) 
 	if values["savefor"] != "none" {
 		fname := configDir + "/settings/" + b.FileType() + ".json"
 		dir := GetProjectDir(filepath.Dir(b.AbsPath), workingDir)
-		if values["savefor"] == "file" {
+		switch values["savefor"] {
+		case "file":
 			// Add current filetype selected too
 			values["encoder"] = b.buf.encoder
 			values["filetype"] = b.FileType()
 			// Change destintation for file only
 			fname = dir + "/.miide/" + b.Fname + ".json"
-		} else if values["savefor"] == "project" {
+		case "project":
 			fname = dir + "/.miide/" + b.FileType() + ".json"
 		}
 		// Init dir if does not exists
@@ -1924,7 +1931,8 @@ func (m *microMenu) TransferCloudSettings(name, value, event, when string, x, y 
 		return true
 	}
 	values := m.myapp.GetValues()
-	if values["action"] == "upload" {
+	switch values["action"] {
+	case "upload":
 		file, err := PackSettingsForUpload()
 		if err != nil {
 			messenger.Alert("error", err.Error())
@@ -1938,7 +1946,7 @@ func (m *microMenu) TransferCloudSettings(name, value, event, when string, x, y 
 				messenger.Alert("error", msg)
 			}
 		}
-	} else if values["action"] == "download" {
+	case "download":
 		settings := Clip.ReadFrom("cloud", "settings")
 		if settings == "" {
 			messenger.Alert("error", "Could not download settings")

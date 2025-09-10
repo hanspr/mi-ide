@@ -107,7 +107,8 @@ func (sl *SnippetLocation) focus() {
 }
 
 func (sl *SnippetLocation) handleInput(ev *TextEvent) bool {
-	if ev.EventType == 1 {
+	switch ev.EventType {
+	case 1:
 		if ev.Deltas[0].Text == "\n" {
 			sl.snippet.view.SnippetAccept(false)
 			return false
@@ -131,7 +132,7 @@ func (sl *SnippetLocation) handleInput(ev *TextEvent) bool {
 			sl.snippet.insert()
 			return true
 		}
-	} else if ev.EventType == -1 {
+	case -1:
 		offset := 0
 		sp := sl.startPos()
 		for sp.LessEqual(ev.Deltas[0].Start) {

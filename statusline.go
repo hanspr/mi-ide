@@ -38,22 +38,23 @@ func (sline *Statusline) MouseEvent(e *tcell.EventMouse, rx, ry int) {
 	}
 	for action, hs := range sline.hotspot {
 		if rx >= hs.X && rx <= hs.Y {
-			if action == "ENCODER" {
+			switch action {
+			case "ENCODER":
 				x, _ := e.Position()
 				diff := (hs.X + (hs.Y-hs.X+1)/2) - rx
 				micromenu.SelEncoding(x+diff, sline.EncodingSelected)
-			} else if action == "BUFFERSET" {
+			case "BUFFERSET":
 				micromenu.SelLocalSettings(sline.view.Buf)
-			} else if action == "FILETYPE" {
+			case "FILETYPE":
 				x, _ := e.Position()
 				diff := (hs.X + (hs.Y-hs.X+1)/2) - rx
 				micromenu.SelFileType(x + diff)
-			} else if action == "TABSPACE" {
+			case "TABSPACE":
 				_, y := e.Position()
 				x, _ := e.Position()
 				diff := (hs.X + (hs.Y-hs.X+1)/2) - rx
 				micromenu.SelTabSpace(x+diff, y)
-			} else if action == "FILEFORMAT" {
+			case "FILEFORMAT":
 				if sline.view.Buf.Settings["fileformat"].(string) == "unix" {
 					sline.view.Buf.Settings["fileformat"] = "dos"
 				} else {

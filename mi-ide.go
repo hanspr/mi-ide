@@ -348,7 +348,8 @@ func Finish(status int) {
 // Command line flags
 var flagVersion = flag.Bool("version", false, "Show the version number and information")
 var flagConfigDir = flag.String("config-dir", "", "Specify a custom location for the configuration directory")
-var flagOptions = flag.Bool("options", false, "Show all option help")
+
+// var flagOptions = flag.Bool("options", false, "Show all option help")
 
 // MicroAppStop stop mi-ide app redraw icon bar
 func MicroAppStop() {
@@ -621,13 +622,14 @@ func main() {
 				} else if button == tcell.ButtonNone {
 					Mouse.Click = false
 				} else {
-					if button == tcell.Button1 {
+					switch button {
+					case tcell.Button1:
 						Mouse.Button = 1
-					} else if button == tcell.Button2 {
+					case tcell.Button2:
 						Mouse.Button = 2
-					} else if button == tcell.Button3 {
+					case tcell.Button3:
 						Mouse.Button = 3
-					} else {
+					default:
 						Mouse.Button = 99
 					}
 					Mouse.Pos.X, Mouse.Pos.Y = e.Position()

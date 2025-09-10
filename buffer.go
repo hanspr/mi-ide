@@ -208,9 +208,10 @@ func NewBuffer(reader io.Reader, size int64, path string) *Buffer {
 		}
 	}
 
-	if fileformat == 1 {
+	switch fileformat {
+	case 1:
 		b.Settings["fileformat"] = "unix"
-	} else if fileformat == 2 {
+	case 2:
 		b.Settings["fileformat"] = "dos"
 	}
 
@@ -976,7 +977,8 @@ func (b *Buffer) FindMatchingBrace(braceType [2]rune, start Loc) Loc {
 	curLine := b.LineRunes(start.Y)
 	startChar := curLine[start.X]
 	var i int
-	if startChar == braceType[0] {
+	switch startChar {
+	case braceType[0]:
 		for y := start.Y; y < b.NumLines; y++ {
 			l := b.LineRunes(y)
 			xInit := 0
@@ -985,9 +987,10 @@ func (b *Buffer) FindMatchingBrace(braceType [2]rune, start Loc) Loc {
 			}
 			for x := xInit; x < len(l); x++ {
 				r := l[x]
-				if r == braceType[0] {
+				switch r {
+				case braceType[0]:
 					i++
-				} else if r == braceType[1] {
+				case braceType[1]:
 					i--
 					if i == 0 {
 						return Loc{x, y}
@@ -995,7 +998,7 @@ func (b *Buffer) FindMatchingBrace(braceType [2]rune, start Loc) Loc {
 				}
 			}
 		}
-	} else if startChar == braceType[1] {
+	case braceType[1]:
 		for y := start.Y; y >= 0; y-- {
 			l := []rune(string(b.lines[y].data))
 			xInit := len(l) - 1
@@ -1004,12 +1007,13 @@ func (b *Buffer) FindMatchingBrace(braceType [2]rune, start Loc) Loc {
 			}
 			for x := xInit; x >= 0; x-- {
 				r := l[x]
-				if r == braceType[0] {
+				switch r {
+				case braceType[0]:
 					i--
 					if i == 0 {
 						return Loc{x, y}
 					}
-				} else if r == braceType[1] {
+				case braceType[1]:
 					i++
 				}
 			}

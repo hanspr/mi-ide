@@ -335,21 +335,22 @@ func SetOption(option, value string) error {
 	var nativeValue any
 
 	kind := reflect.TypeOf(globalSettings[option]).Kind()
-	if kind == reflect.Bool {
+	switch kind {
+	case reflect.Bool:
 		b, err := ParseBool(value)
 		if err != nil {
 			return errors.New("invalid value")
 		}
 		nativeValue = b
-	} else if kind == reflect.String {
+	case reflect.String:
 		nativeValue = value
-	} else if kind == reflect.Float64 {
+	case reflect.Float64:
 		i, err := strconv.Atoi(value)
 		if err != nil {
 			return errors.New("invalid value")
 		}
 		nativeValue = float64(i)
-	} else {
+	default:
 		return errors.New("option has unsupported value type")
 	}
 
@@ -395,21 +396,22 @@ func SetLocalOption(option, value string, view *View) error {
 	var nativeValue any
 
 	kind := reflect.TypeOf(buf.Settings[option]).Kind()
-	if kind == reflect.Bool {
+	switch kind {
+	case reflect.Bool:
 		b, err := ParseBool(value)
 		if err != nil {
 			return errors.New("invalid value")
 		}
 		nativeValue = b
-	} else if kind == reflect.String {
+	case reflect.String:
 		nativeValue = value
-	} else if kind == reflect.Float64 {
+	case reflect.Float64:
 		i, err := strconv.Atoi(value)
 		if err != nil {
 			return errors.New("invalid value")
 		}
 		nativeValue = float64(i)
-	} else {
+	default:
 		return errors.New("option has unsupported value type")
 	}
 

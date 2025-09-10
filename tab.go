@@ -275,11 +275,12 @@ func TabbarHandleMouseEvent(event tcell.Event) {
 			return
 		}
 		// Change tab
-		if Mouse.Button == 1 {
+		switch Mouse.Button {
+		case 1:
 			// Left click = Select tab and display
 			curTab = tabnum
 			return
-		} else if Mouse.Button == 3 {
+		case 3:
 			// We allow to close only the current Tab, so user knows what he is doing
 			if curTab == tabnum {
 				// Right click = Close selected tab
