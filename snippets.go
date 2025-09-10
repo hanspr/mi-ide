@@ -207,7 +207,7 @@ func (s *snippet) prepare() {
 				p = &ph{num: num, value: value}
 				s.placeholders = append(s.placeholders, p)
 			}
-			s.locations = append(s.locations, NewSnippetLocation(idx[0], vidx, p, s))
+			s.locations = append(s.locations, NewSnippetLocation(vidx, vidx, p, s))
 		}
 	}
 }
@@ -242,7 +242,7 @@ func (s *snippet) findLocation(loc Loc) *SnippetLocation {
 }
 
 func (s *snippet) remove() {
-	endPos := s.startPos.Move(len([]rune(s.str())), s.view.Buf)
+	endPos := s.startPos.Move(Count(s.str()), s.view.Buf)
 	if endPos.GreaterThan(s.view.Buf.End()) {
 		endPos = s.view.Buf.End()
 	}
@@ -371,7 +371,7 @@ func (v *View) SnippetInsert(usePlugin bool) bool {
 	}
 	currentSnippet = curSn.clone()
 	currentSnippet.view = v
-	currentSnippet.startPos = xy.Move(-len(name), v.Buf)
+	currentSnippet.startPos = xy.Move(-Count(name), v.Buf)
 	currentSnippet.modText = true
 	c.SetSelectionStart(currentSnippet.startPos)
 	c.SetSelectionEnd(xy)
@@ -380,7 +380,7 @@ func (v *View) SnippetInsert(usePlugin bool) bool {
 	currentSnippet.modText = false
 	currentSnippet.insert()
 	if len(currentSnippet.placeholders) == 0 {
-		pos := currentSnippet.startPos.Move(len(currentSnippet.str()), v.Buf)
+		pos := currentSnippet.startPos.Move(Count(currentSnippet.str()), v.Buf)
 		for v.Cursor.LessThan(pos) {
 			v.Cursor.Right()
 		}
