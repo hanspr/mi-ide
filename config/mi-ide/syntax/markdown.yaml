@@ -12,10 +12,10 @@ rules:
     - identifier.var: "^;.+"
 
       # italic
-    - markup-italic: "(^|[[:space:]])_.*?_[^_]"
+    - markup-italic: "[^_\\w]_(?:.+?)_[^_\\w]"
 
       # Strong emphasis
-    - markup-bold: "(^|[[:space:]])(__[^ ][^_]*__|\\*\\*[^ ][^*]*\\*\\*)"
+    - markup-bold: "__(?:.+?)__"
 
       # strike-through
     - type: "(^|[[:space:]])~~[^ ][^~]*~~"
@@ -53,8 +53,10 @@ rules:
     - todo: "!!! warning.*"
     - todo: "> \\[!WARNING\\]"
     - constant.string: "^ {3,}.*"
-
-    - special: "^```$"
-
     - constant: "`.+?`"
 
+    - symbol.operator:
+        start: "^```(?:\\w+)$"
+        end: "^```$"
+        rules:
+            - function: "."
