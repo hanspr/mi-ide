@@ -75,11 +75,11 @@ snippet perly
 	}
 	
 	sub top {
-		print qq·
+		print qq•
 		<!DOCTYPE html>
 		<html>
 		<head>
-		<title>${1:}</title>
+		<title>${1:titulo}</title>
 		<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
 		<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 		<link rel="stylesheet" type="text/css" href="/css/style.css?version=$CSSVER">
@@ -89,9 +89,9 @@ snippet perly
 		<script src="/lib/validate.js?version=$JSVER"></script>
 		<script src="/lib/jquery.min.js?version=$JSVER"></script>
 		<body onload="addShadowMarkUp();">
-		<form name="Forma" action="${2:script}" method="post" onsubmit="ShadowOn();">
-		${0:}
-		·;
+		<form name="Forma" action="${2:action}" method="post" onsubmit="ShadowOn();">
+		${0:formtext}
+		•;
 	}
 	
 	sub bottom {
