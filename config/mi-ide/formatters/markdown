@@ -133,7 +133,7 @@ sub getLengths {
 
     for (my $i = 0; $i < scalar(@$parts); $i++) {
         $$parts[$i] =~ s/ +$//;
-        if ($$parts[$i] =~ /^-+/) {
+        if ($$parts[$i] =~ /^(?::)?-+/) {
             $length[$i] = 1;
             next;
         }
