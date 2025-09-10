@@ -159,7 +159,7 @@ func (l Loc) left(buf *Buffer) Loc {
 // It moves the cursor left if n is negative
 func (l Loc) Move(n int, buf *Buffer) Loc {
 	if n > 0 {
-		for i := 0; i < n; i++ {
+		for range n {
 			l = l.right(buf)
 		}
 		return l
