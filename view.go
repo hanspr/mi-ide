@@ -158,8 +158,10 @@ func NewViewWidthHeight(buf *Buffer, w, h int) *View {
 	return v
 }
 
+// HelperWindow holds a pointer the the helper window view or nill
 var HelperWindow = &View{}
 
+// OpenHelperView open a new helper window or reuse the one existing
 func (v *View) OpenHelperView(dir, filetype string, data string) {
 	if filetype == "" {
 		filetype = "text"
@@ -194,6 +196,7 @@ func (v *View) OpenHelperView(dir, filetype string, data string) {
 	}
 }
 
+// CloseHelperView close helper window
 func (v *View) CloseHelperView() {
 	if HelperWindow == nil {
 		return
@@ -201,6 +204,7 @@ func (v *View) CloseHelperView() {
 	HelperWindow.Quit(false)
 }
 
+// GetHelperView recover current helper window pointer
 func (v *View) GetHelperView() *View {
 	return HelperWindow
 }
@@ -1021,7 +1025,7 @@ func (v *View) SetCursorColorShape() {
 	}
 }
 
-// Set LastView used by plugins if they move views and cursor positions around
+// SetLastView used by plugins if they move views and cursor positions around
 func (v *View) SetLastView() {
 	LastView = v.Num
 }
