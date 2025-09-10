@@ -33,7 +33,7 @@ var (
 	currentSnippet *snippet
 )
 
-// Location
+// SnippetLocation Location
 type SnippetLocation struct {
 	idx     int
 	vidx    int
@@ -41,6 +41,7 @@ type SnippetLocation struct {
 	snippet *snippet
 }
 
+// NewSnippetLocation snippet locations
 func NewSnippetLocation(idx, vidx int, ph *ph, snip *snippet) *SnippetLocation {
 	sl := &SnippetLocation{}
 	sl.idx = idx
@@ -113,28 +114,27 @@ func (sl *SnippetLocation) handleInput(ev *TextEvent) bool {
 		if ev.Deltas[0].Text == "\n" {
 			sl.snippet.view.SnippetAccept(false)
 			return false
-		} else {
-			offset := 0
-			sp := sl.startPos()
-			for sp.LessEqual(ev.Deltas[0].Start) {
-				sp = sp.Move(1, sl.snippet.view.Buf)
-				offset = offset + 1
-			}
-			sl.snippet.remove()
-			insertRunes := []rune(ev.Deltas[0].Text)
-			if len(sl.ph.value) == 0 {
-				sl.ph.value = ev.Deltas[0].Text
-			} else {
-				originalRunes := []rune(sl.ph.value)
-				resultRunes := make([]rune, 0, len(originalRunes)+len(insertRunes))
-				resultRunes = append(resultRunes, originalRunes[:offset-1]...)
-				resultRunes = append(resultRunes, insertRunes...)
-				resultRunes = append(resultRunes, originalRunes[offset-1:]...)
-				sl.ph.value = string(resultRunes)
-			}
-			sl.snippet.insert()
-			return true
 		}
+		offset := 0
+		sp := sl.startPos()
+		for sp.LessEqual(ev.Deltas[0].Start) {
+			sp = sp.Move(1, sl.snippet.view.Buf)
+			offset = offset + 1
+		}
+		sl.snippet.remove()
+		insertRunes := []rune(ev.Deltas[0].Text)
+		if len(sl.ph.value) == 0 {
+			sl.ph.value = ev.Deltas[0].Text
+		} else {
+			originalRunes := []rune(sl.ph.value)
+			resultRunes := make([]rune, 0, len(originalRunes)+len(insertRunes))
+			resultRunes = append(resultRunes, originalRunes[:offset-1]...)
+			resultRunes = append(resultRunes, insertRunes...)
+			resultRunes = append(resultRunes, originalRunes[offset-1:]...)
+			sl.ph.value = string(resultRunes)
+		}
+		sl.snippet.insert()
+		return true
 	case -1:
 		offset := 0
 		sp := sl.startPos()
@@ -162,7 +162,8 @@ func (sl *SnippetLocation) handleInput(ev *TextEvent) bool {
 	return false
 }
 
-func NewSnippet() *snippet {
+// newSnippet create a new snippet to insert
+func newSnippet() *snippet {
 	s := &snippet{}
 	s.code = ""
 	s.focused = -1
@@ -213,7 +214,7 @@ func (s *snippet) prepare() {
 }
 
 func (s *snippet) clone() *snippet {
-	result := NewSnippet()
+	result := newSnippet()
 	result.addCodeLine(s.code)
 	result.prepare()
 	return result
@@ -280,12 +281,13 @@ func (s *snippet) focusNext() {
 
 func loadSnippets(filetype string) {
 	if filetype != snipFileType {
-		snippets = ReadSnippets(filetype)
+		snippets = readSnippets(filetype)
 		snipFileType = filetype
 	}
 }
 
-func ReadSnippets(filetype string) map[string]*snippet {
+// readSnippets reads all snippets for selected filetype into memory
+func readSnippets(filetype string) map[string]*snippet {
 	lineNum := 0
 	rgxComment, _ := regexp.Compile(`^#`)
 	rgxSnip, _ := regexp.Compile(`^snippet `)
@@ -310,7 +312,7 @@ func ReadSnippets(filetype string) map[string]*snippet {
 		} else if rgxSnip.Match(line) {
 			// snippet word
 			name := strings.Replace(string(line), "snippet ", "", 1)
-			curSnip = NewSnippet()
+			curSnip = newSnippet()
 			snippets[name] = curSnip
 		} else if rgxCode.Match(line) {
 			// snippet code
@@ -321,6 +323,7 @@ func ReadSnippets(filetype string) map[string]*snippet {
 	return snippets
 }
 
+// SnippetOnBeforeTextEvent process events or terminate if we are out of range
 func SnippetOnBeforeTextEvent(ev *TextEvent) bool {
 	if currentSnippet != nil && currentSnippet.view == CurView() {
 		if currentSnippet.modText {
@@ -343,7 +346,7 @@ func SnippetOnBeforeTextEvent(ev *TextEvent) bool {
 	return true
 }
 
-// Keybinding calls
+// SnippetInsert keybinding call entry point
 func (v *View) SnippetInsert(usePlugin bool) bool {
 	c := v.Cursor
 	buf := v.Buf
@@ -393,6 +396,7 @@ func (v *View) SnippetInsert(usePlugin bool) bool {
 	return true
 }
 
+// SnippetNext move focuse to next handler position
 func (v *View) SnippetNext(usePlugin bool) bool {
 	if currentSnippet != nil {
 		currentSnippet.focusNext()
@@ -400,12 +404,14 @@ func (v *View) SnippetNext(usePlugin bool) bool {
 	return true
 }
 
+// SnippetAccept finish on accept action
 func (v *View) SnippetAccept(usePlugin bool) bool {
 	v.Buf.Settings["autoclose"] = snAutoclose
 	currentSnippet = nil
 	return true
 }
 
+// SnippetCancel cancel snippet, remove from buffer
 func (v *View) SnippetCancel(usePlugin bool) bool {
 	if currentSnippet != nil {
 		currentSnippet.remove()
