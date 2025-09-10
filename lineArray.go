@@ -155,7 +155,7 @@ func (la *LineArray) NewlineBelow(y int) {
 func (la *LineArray) insert(pos Loc, value []byte) {
 	x, y := runeToByteIndex(pos.X, la.lines[pos.Y].data), pos.Y
 	// x, y := pos.x, pos.y
-	for i := 0; i < len(value); i++ {
+	for i := range len(value) {
 		if value[i] == '\n' {
 			la.Split(Loc{x, y})
 			x = 0
