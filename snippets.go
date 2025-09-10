@@ -4,6 +4,7 @@ import (
 	"bufio"
 	"os"
 	"regexp"
+	"slices"
 	"strconv"
 	"strings"
 )
@@ -120,14 +121,16 @@ func (sl *SnippetLocation) handleInput(ev *TextEvent) bool {
 				offset = offset + 1
 			}
 			sl.snippet.remove()
+			insertRunes := []rune(ev.Deltas[0].Text)
 			if len(sl.ph.value) == 0 {
 				sl.ph.value = ev.Deltas[0].Text
 			} else {
-				if offset == 1 {
-					sl.ph.value = ev.Deltas[0].Text + sl.ph.value[:offset-1]
-				} else {
-					sl.ph.value = sl.ph.value[0:offset-1] + ev.Deltas[0].Text + sl.ph.value[offset-1:]
-				}
+				originalRunes := []rune(sl.ph.value)
+				resultRunes := make([]rune, 0, len(originalRunes)+len(insertRunes))
+				resultRunes = append(resultRunes, originalRunes[:offset-1]...)
+				resultRunes = append(resultRunes, insertRunes...)
+				resultRunes = append(resultRunes, originalRunes[offset-1:]...)
+				sl.ph.value = string(resultRunes)
 			}
 			sl.snippet.insert()
 			return true
@@ -145,9 +148,13 @@ func (sl *SnippetLocation) handleInput(ev *TextEvent) bool {
 		sl.snippet.remove()
 		l := ev.Deltas[0].End.X - ev.Deltas[0].Start.X
 		if offset == 1 {
-			sl.ph.value = sl.ph.value[offset+l-1:]
+			originalRunes := []rune(sl.ph.value)
+			originalRunes = originalRunes[offset+l-1:]
+			sl.ph.value = string(originalRunes)
 		} else {
-			sl.ph.value = sl.ph.value[0:offset-1] + sl.ph.value[offset:]
+			originalRunes := []rune(sl.ph.value)
+			originalRunes = slices.Delete(originalRunes, offset-1, offset-1+l)
+			sl.ph.value = string(originalRunes)
 		}
 		sl.snippet.insert()
 		return true
@@ -213,12 +220,16 @@ func (s *snippet) clone() *snippet {
 }
 
 func (s *snippet) str() string {
-	res := s.code
+	originalRunes := []rune(s.code)
 	for i := len(s.locations) - 1; i >= 0; i-- {
 		loc := s.locations[i]
-		res = res[0:loc.idx] + loc.ph.value + res[loc.idx:]
+		insertRunes := []rune(loc.ph.value)
+		resultRunes := make([]rune, 0, len(originalRunes)+len(insertRunes))
+		resultRunes = append(resultRunes, originalRunes[:loc.idx]...)
+		resultRunes = append(resultRunes, insertRunes...)
+		originalRunes = append(resultRunes, originalRunes[loc.idx:]...)
 	}
-	return res
+	return string(originalRunes)
 }
 
 func (s *snippet) findLocation(loc Loc) *SnippetLocation {
@@ -231,7 +242,7 @@ func (s *snippet) findLocation(loc Loc) *SnippetLocation {
 }
 
 func (s *snippet) remove() {
-	endPos := s.startPos.Move(len(s.str()), s.view.Buf)
+	endPos := s.startPos.Move(len([]rune(s.str())), s.view.Buf)
 	if endPos.GreaterThan(s.view.Buf.End()) {
 		endPos = s.view.Buf.End()
 	}
