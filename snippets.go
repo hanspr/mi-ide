@@ -398,6 +398,7 @@ func (v *View) SnippetAccept(usePlugin bool) bool {
 func (v *View) SnippetCancel(usePlugin bool) bool {
 	if currentSnippet != nil {
 		currentSnippet.remove()
+		currentSnippet = nil
 	}
 	return true
 }
