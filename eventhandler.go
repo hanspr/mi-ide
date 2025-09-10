@@ -65,6 +65,9 @@ func ExecuteTextEvent(t *TextEvent, buf *Buffer) {
 
 // UndoTextEvent undoes a text event
 func UndoTextEvent(t *TextEvent, buf *Buffer) {
+	if currentSnippet != nil {
+		return
+	}
 	t.EventType = -t.EventType
 	ExecuteTextEvent(t, buf)
 }
@@ -221,6 +224,9 @@ func (eh *EventHandler) Execute(t *TextEvent) {
 
 // Undo the first event in the undo stack
 func (eh *EventHandler) Undo() {
+	if currentSnippet != nil {
+		return
+	}
 	t := eh.UndoStack.Peek()
 	if t == nil {
 		return
@@ -274,6 +280,9 @@ func (eh *EventHandler) UndoOneEvent() {
 
 // Redo the first event in the redo stack
 func (eh *EventHandler) Redo() {
+	if currentSnippet != nil {
+		return
+	}
 	t := eh.RedoStack.Peek()
 	if t == nil {
 		return
@@ -299,6 +308,9 @@ func (eh *EventHandler) Redo() {
 
 // RedoOneEvent redoes one event
 func (eh *EventHandler) RedoOneEvent() {
+	if currentSnippet != nil {
+		return
+	}
 	t := eh.RedoStack.Pop()
 	if t == nil {
 		return
