@@ -382,7 +382,7 @@ func DisplayTabs() {
 		MicroToolBar.active = true
 		toffset = toolBarOffset
 		toolbarRunes := MicroToolBar.Runes()
-		for x := 0; x < len(toolbarRunes); x++ {
+		for x := range len(toolbarRunes) {
 			if x < 3 {
 				// Menu icon
 				if x == 0 {
@@ -410,7 +410,7 @@ func DisplayTabs() {
 	tabsRunes := []rune(str)
 
 	// Display Tabs
-	for x := 0; x < w; x++ {
+	for x := range w {
 		if x < len(tabsRunes) {
 			if string(tabsRunes[x]) == tabOpen && !tabActive {
 				// Hightlight the current tab

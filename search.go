@@ -90,17 +90,14 @@ func searchDown(r *regexp.Regexp, v *View, start, end Loc) bool {
 		match := r.FindAllStringIndex(l, -1)
 
 		if match != nil {
-			for j := 0; j < len(match); j++ {
+			for j := range len(match) {
 				X := runePos(match[j][0], l)
 				Y := runePos(match[j][1], l)
 				if X >= startX {
 					nl := i
 					if newLineSearch {
 						nl++
-						Y = Y - len(v.Buf.lines[i].data) - 1
-						if Y < 0 {
-							Y = 0
-						}
+						Y = max(Y-len(v.Buf.lines[i].data)-1, 0)
 					}
 					v.Cursor.SetSelectionStart(Loc{X, i})
 					v.Cursor.SetSelectionEnd(Loc{Y, nl})
@@ -148,10 +145,7 @@ func searchUp(r *regexp.Regexp, v *View, start, end Loc) bool {
 					nl := i
 					if newLineSearch {
 						nl++
-						Y = Y - len(v.Buf.lines[i].data) - 1
-						if Y < 0 {
-							Y = 0
-						}
+						Y = max(Y-len(v.Buf.lines[i].data)-1, 0)
 					}
 					v.Cursor.SetSelectionStart(Loc{X, i})
 					v.Cursor.SetSelectionEnd(Loc{Y, nl})
@@ -223,10 +217,7 @@ func DialogSearch(searchStr string) string {
 	if found {
 		xs := v.Cursor.CurSelection
 		line := CurView().Buf.LineRunes(xs[0].Y)
-		x1 := 0
-		if xs[0].X-doff >= 0 {
-			x1 = xs[0].X - doff
-		}
+		x1 := max(xs[0].X-doff, 0)
 		d1 := 0
 		d2 := 0
 		if xs[0].X > len(line) || xs[1].X > len(line) {
@@ -306,7 +297,7 @@ func FindFileWith(r *regexp.Regexp, path, filetype, ext string, depth int, hint 
 				if hint {
 					pos++
 					if pos > maxLines {
-						for i := 0; i < maxLines; i++ {
+						for i := range maxLines {
 							prevLines[i] = prevLines[i+1]
 						}
 						pos = maxLines
@@ -320,7 +311,7 @@ func FindFileWith(r *regexp.Regexp, path, filetype, ext string, depth int, hint 
 					}
 					comment := regexp.MustCompile(`^\s*(?:#|//|(?:<!)?--|/\*)`)
 					data := ""
-					for i := 0; i < maxLines; i++ {
+					for i := range maxLines {
 						if comment.MatchString(prevLines[i]) {
 							data = data + prevLines[i] + "\n"
 						}

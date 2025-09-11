@@ -259,7 +259,7 @@ func (v *View) CursorLeft(usePlugin bool) bool {
 			tabsize := int(v.Buf.Settings["tabsize"].(float64))
 			line := v.Buf.Line(v.Cursor.Y)
 			if v.Cursor.X-tabsize >= 0 && line[v.Cursor.X-tabsize:v.Cursor.X] == Spaces(tabsize) && IsStrWhitespace(line[0:v.Cursor.X-tabsize]) {
-				for i := 0; i < tabsize; i++ {
+				for range tabsize {
 					v.Cursor.Left()
 				}
 			} else {

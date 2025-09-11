@@ -252,7 +252,7 @@ func (a *MicroApp) AddWindowElement(frame, name, label, form, value, valueType s
 		e.apose = Loc{x + lblwidth + w, y + h}
 		opts := strings.Split(e.valueType, "|")
 		e.cursor.X = len(opts)
-		for i := 0; i < len(opts); i++ {
+		for i := range len(opts) {
 			opt := strings.Split(opts[i], "]")
 			if len(opt) == 1 {
 				opt = append(opt, opt[0])
@@ -931,7 +931,7 @@ func (e *AppElement) DrawSelect() {
 			break
 		}
 		label := []rune(fmt.Sprintf(ft, e.opts[i].label) + chr)
-		for N := 0; N < len(label); N++ {
+		for N := range len(label) {
 			a.screen.SetContent(e.aposb.X+N+f.left, e.aposb.Y+Y+f.top, label[N], nil, style)
 		}
 		if e.height == 1 {
@@ -951,7 +951,7 @@ func (e *AppElement) DrawButton() {
 	case "ok":
 		style = e.style.Background(tcell.ColorDarkGreen).Foreground(tcell.ColorWhite).Bold(true)
 	}
-	for x := 0; x < len(label); x++ {
+	for x := range len(label) {
 		e.microapp.screen.SetContent(e.pos.X+x+f.left, e.pos.Y+f.top, label[x], nil, style)
 	}
 }
@@ -1222,7 +1222,7 @@ func (a *MicroApp) PrintAbsolute(msg string, x, y int, style *tcell.Style) {
 		style = &a.defStyle
 	}
 	msgr := []rune(msg)
-	for p := 0; p < len(msgr); p++ {
+	for p := range len(msgr) {
 		a.screen.SetContent(x+p, y, msgr[p], nil, *style)
 	}
 	a.screen.Show()

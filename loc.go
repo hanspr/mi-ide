@@ -20,7 +20,7 @@ func FromCharPos(loc int, buf *Buffer) Loc {
 func ToCharPos(start Loc, buf *Buffer) int {
 	x, y := start.X, start.Y
 	loc := 0
-	for i := 0; i < y; i++ {
+	for i := range y {
 		// + 1 for the newline
 		loc += Count(buf.Line(i)) + 1
 	}
@@ -41,7 +41,7 @@ func InBounds(pos Loc, buf *Buffer) bool {
 func ByteOffset(pos Loc, buf *Buffer) int {
 	x, y := pos.X, pos.Y
 	loc := 0
-	for i := 0; i < y; i++ {
+	for i := range y {
 		// + 1 for the newline
 		loc += len(buf.Line(i)) + 1
 	}

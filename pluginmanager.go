@@ -92,7 +92,7 @@ func fetchAllSources(count int, fetcher func(i int) PluginPackages) PluginPackag
 	wgDone := new(sync.WaitGroup)
 	wgDone.Add(1)
 	var packages PluginPackages
-	for i := 0; i < count; i++ {
+	for i := range count {
 		go func(i int) {
 			results <- fetcher(i)
 			wgQuery.Done()

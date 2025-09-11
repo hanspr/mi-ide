@@ -215,7 +215,7 @@ func (sline *Statusline) Display() {
 	gstart := 0
 	gitbg := git.bgcolor
 	gitfg := "#000000"
-	for x := 0; x < w; x++ {
+	for x := range w {
 		tStyle := statusLineStyle
 		if navigationMode {
 			tStyle = StringToStyle("#ffffff,#A90000")

@@ -58,9 +58,7 @@ func InitGlobalSettings() {
 	}
 
 	globalSettings = make(map[string]any)
-	for k, v := range defaults {
-		globalSettings[k] = v
-	}
+	maps.Copy(globalSettings, defaults)
 	for k, v := range parsed {
 		if !strings.HasPrefix(reflect.TypeOf(v).String(), "map") {
 			globalSettings[k] = v
@@ -169,9 +167,7 @@ func WriteSettings(filename string) error {
 	if _, e := os.Stat(configDir); e == nil {
 		filename := configDir + "/settings.json"
 		parsed := make(map[string]any)
-		for k, v := range globalSettings {
-			parsed[k] = v
-		}
+		maps.Copy(parsed, globalSettings)
 		if _, e := os.Stat(filename); e == nil {
 			input, err := os.ReadFile(filename)
 			if string(input) != "null" {

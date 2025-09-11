@@ -5,6 +5,7 @@ import (
 	"bufio"
 	"bytes"
 	"encoding/json"
+	"maps"
 
 	//"fmt"
 	"io"
@@ -151,16 +152,6 @@ func noAutoCloseChar(str string) bool {
 	}
 	if str == `"` || str == "'" || str == "`" {
 		return true
-	}
-	return false
-}
-
-// Contains returns whether or not a string array contains a given string
-func Contains(list []string, a string) bool {
-	for _, b := range list {
-		if b == a {
-			return true
-		}
 	}
 	return false
 }
@@ -570,9 +561,7 @@ func UpdateFileJSON(filename string, values map[string]string) error {
 		}
 	}
 	// Now Merge
-	for k, v := range values {
-		svalues[k] = v
-	}
+	maps.Copy(svalues, values)
 	// Save merged values to JSON FILE
 	err := WriteFileJSON(filename, svalues, true)
 	if err != nil {
