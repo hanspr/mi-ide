@@ -8,6 +8,7 @@ import (
 	"path/filepath"
 	"runtime"
 	"strings"
+	"sync"
 	"time"
 
 	"github.com/go-errors/errors"
@@ -126,6 +127,8 @@ var (
 	workingDir = ""
 
 	homeDir = ""
+
+	drawingLoc sync.Mutex
 )
 
 // LoadInput determines which files should be loaded into buffers
@@ -286,6 +289,7 @@ func RedrawAll(show bool) {
 	if freeze {
 		return
 	}
+	drawingLoc.Lock()
 
 	messenger.Clear()
 
@@ -305,6 +309,7 @@ func RedrawAll(show bool) {
 	if show {
 		screen.Show()
 	}
+	drawingLoc.Unlock()
 }
 
 func loadAll() {
