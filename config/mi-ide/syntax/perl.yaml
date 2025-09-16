@@ -46,7 +46,7 @@ rules:
         rules: []
     - default:
         start: "qq?[¡”·•]"
-        end: "[¡”·•]\\)?;"
+        end: "[¡”·•]\\)?;?"
         rules:
             - include: "javascript"
             - include: "html"
