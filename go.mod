@@ -1,6 +1,6 @@
 module mi-ide
 
-go 1.23.4
+go 1.24.6
 
 require (
 	github.com/blang/semver v3.5.1+incompatible
