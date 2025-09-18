@@ -1,0 +1,22 @@
+{
+    "autoclose": true,
+    "autoindent": true,
+    "blockclose": "^[}\\\\])]",
+    "blockinter": "^[}\\\\])].+?[{[(]$|:$",
+    "blockopen": "[{[\\\\(]$",
+    "comment": "//",
+    "eofnewline": false,
+    "fileformat": "unix",
+    "indentchar": " ",
+    "keepautoindent": true,
+    "matchbrace": true,
+    "rmtrailingws": true,
+    "smartindent": true,
+    "smartpaste": true,
+    "softwrap": false,
+    "tabindents": true,
+    "tabmovement": true,
+    "tabsize": 2,
+    "tabstospaces": true,
+    "useformatter": false
+}
