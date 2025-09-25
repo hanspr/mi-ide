@@ -358,6 +358,7 @@ func (b *Buffer) IndentString() string {
 	return "\t"
 }
 
+// AddMultiComment adds comment to multiple lines
 func (b *Buffer) AddMultiComment(Start, Stop Loc) {
 	cstring := b.Settings["comment"].(string)
 	comment := regexp.MustCompile(`^\s*` + cstring)
@@ -578,8 +579,8 @@ func (b *Buffer) ReOpen() {
 	b.ModTime, _ = GetModTime(b.Path)
 	b.IsModified = false
 	b.Update()
-	go git.GitSetStatus()
-	go b.SmartDetections()
+	git.GitSetStatus()
+	b.SmartDetections()
 	b.Cursor.Relocate()
 }
 
@@ -1047,7 +1048,7 @@ func (b *Buffer) ChangeIndentation(cfrom, cto string, nfrom, nto int) {
 	b.IsModified = true
 }
 
-// Check buffer to confirm current settings are consistent
+// SmartDetections Check buffer to confirm current settings are consistent
 func (b *Buffer) SmartDetections() {
 	check := 0
 	end := b.LinesNum()
@@ -1107,7 +1108,7 @@ func (b *Buffer) setIndentationOptions(indent string, n int) {
 
 // Buffer Utilities
 
-// Check if formmatter is enabled for the current buffer and a formatter exists
+// RunFormatter check if formmatter is enabled for the current buffer and a formatter exists
 // If formatter exists, run it
 func (b *Buffer) RunFormatter() bool {
 	if !b.Settings["useformatter"].(bool) {

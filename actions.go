@@ -453,7 +453,7 @@ func (v *View) SelectRight(usePlugin bool) bool {
 	return true
 }
 
-// SelectWordRight selects the word to the right of the cursor
+// SelectWord selects the word to the right of the cursor
 func (v *View) SelectWord(usePlugin bool) bool {
 	if usePlugin && !PreActionCall("SelectWord", v) {
 		return false
@@ -1164,7 +1164,7 @@ func (v *View) saveToFile(filename string) {
 		v.Buf.AbsPath, _ = filepath.Abs(filename)
 		v.Buf.Fname = filepath.Base(filename)
 		messenger.Message(Language.Translate("Saved") + " " + filename)
-		go git.GitSetStatus()
+		git.GitSetStatus()
 	}
 }
 
@@ -1190,7 +1190,7 @@ func (v *View) SaveAs(usePlugin bool) bool {
 		}
 		micromenu.SaveAs(v.Buf, usePlugin, v.SaveAsAnswer)
 	}
-	go git.GitSetStatus()
+	git.GitSetStatus()
 	return true
 }
 
@@ -1633,7 +1633,7 @@ func (v *View) OpenFile(usePlugin bool) bool {
 			}
 		}
 	}
-	go git.GitSetStatus()
+	git.GitSetStatus()
 	return false
 }
 
@@ -2523,6 +2523,7 @@ func (v *View) RemoveAllMultiCursors(usePlugin bool) bool {
 	return false
 }
 
+// ToggleCase change case
 func (v *View) ToggleCase(usePlugin bool) bool {
 	if v.Cursor.HasSelection() {
 		text := v.Cursor.GetSelection()
@@ -2778,7 +2779,7 @@ func (v *View) CloudSettings(plugin bool) bool {
 	return true
 }
 
-// Mouse Toggle
+// ToggleMouse enable disable mouse
 func (v *View) ToggleMouse(usePlugin bool) bool {
 	if mouseEnabled {
 		screen.DisableMouse()
@@ -2790,6 +2791,7 @@ func (v *View) ToggleMouse(usePlugin bool) bool {
 	return true
 }
 
+// MouseOnOff enable disable mouse
 func MouseOnOff(b bool) {
 	if b {
 		screen.EnableMouse()
@@ -2799,20 +2801,20 @@ func MouseOnOff(b bool) {
 	mouseEnabled = b
 }
 
-// Show Buffersettings
+// BufferSettings show Buffersettings
 func (v *View) BufferSettings(usePlugin bool) bool {
 	micromenu.SelLocalSettings(v.Buf)
 	return true
 }
 
-// Toggle Navigation Mode
+// NavigationMode Toggle Navigation Mode
 func (v *View) NavigationMode(usePlugin bool) bool {
 	MouseOnOff(false)
 	navigationMode = !navigationMode
 	return true
 }
 
-// Add Multicomments
+// MultiComment Add Multicomments
 func (v *View) MultiComment(usePlugin bool) bool {
 	if v.Buf.Settings["comment"].(string) == "" {
 		messenger.Alert("warning", "settings comment not configured")
@@ -2837,7 +2839,7 @@ func (v *View) MultiComment(usePlugin bool) bool {
 	return true
 }
 
-// Find function and show full file on split window
+// FindFunctionDeclaration Find function and show full file on split window
 func (v *View) FindFunctionDeclaration(usePlugin bool) bool {
 	messenger.Message("")
 	ok, where, word, line := v.SearchFunction(false)
@@ -2862,7 +2864,7 @@ func (v *View) FindFunctionDeclaration(usePlugin bool) bool {
 	return true
 }
 
-// Find function and show a small hint on window, with relevant information
+// HintFunction Find function and show a small hint on window, with relevant information
 func (v *View) HintFunction(usePlugin bool) bool {
 	messenger.Message("")
 	ok, data, word, _ := v.SearchFunction(true)
@@ -2874,7 +2876,7 @@ func (v *View) HintFunction(usePlugin bool) bool {
 	return true
 }
 
-// SearchFunction
+// SearchFunction :
 // Search for word under cursor in the current buffer or the file system
 // If searching for hint, return previous comments, and first line of function
 func (v *View) SearchFunction(hint bool) (bool, string, string, int) {
@@ -2926,6 +2928,7 @@ func (v *View) SearchFunction(hint bool) (bool, string, string, int) {
 	return false, "", word, 0
 }
 
+// ComboKeyActive check Ctrl-k pressed
 var ComboKeyActive = false
 
 // ComboKey Concatenates special key combinations
