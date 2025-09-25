@@ -579,8 +579,8 @@ func (b *Buffer) ReOpen() {
 	b.ModTime, _ = GetModTime(b.Path)
 	b.IsModified = false
 	b.Update()
-	git.GitSetStatus()
 	b.SmartDetections()
+	git.GitSetStatus()
 	b.Cursor.Relocate()
 }
 

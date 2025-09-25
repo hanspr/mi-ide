@@ -201,7 +201,9 @@ func Cd(args []string) {
 				}
 			}
 		}
-		git.CheckGit()
+		if git.CheckGit() {
+			git.GitSetStatus()
+		}
 	}
 }
 
@@ -331,10 +333,11 @@ func EditSnippets() {
 // Load git status into a window
 func GitStatus() {
 	if !git.enabled {
-		git.CheckGit()
-		return
+		if !git.CheckGit() {
+			return
+		}
 	}
-	status, err := RunShellCommand("git status")
+	status, err := ExecCommand("git", "status")
 	if err != nil {
 		return
 	}
@@ -387,13 +390,13 @@ func HandleCommand(input string) {
 
 // ExpandString transform string secuence to its correct string value
 func ExpandString(s string) string {
-	s = strings.Replace(s, `\\`, `{ESCBS}`, -1)
+	s = strings.ReplaceAll(s, `\\`, `{ESCBS}`)
 
-	s = strings.Replace(s, `\t`, "\t", -1)
-	s = strings.Replace(s, `\n`, "\n", -1)
-	s = strings.Replace(s, `\r`, "\r", -1)
+	s = strings.ReplaceAll(s, `\t`, "\t")
+	s = strings.ReplaceAll(s, `\n`, "\n")
+	s = strings.ReplaceAll(s, `\r`, "\r")
 
-	s = strings.Replace(s, `{ESCBS}`, `\`, -1)
+	s = strings.ReplaceAll(s, `{ESCBS}`, `\`)
 
 	return s
 }

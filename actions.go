@@ -1633,7 +1633,10 @@ func (v *View) OpenFile(usePlugin bool) bool {
 			}
 		}
 	}
-	git.GitSetStatus()
+	if git.CheckGit() {
+		git.GitSetStatus()
+	}
+
 	return false
 }
 

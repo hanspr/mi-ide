@@ -22,32 +22,35 @@ func NewGitStatus() *gitstatus {
 	return g
 }
 
-func (g *gitstatus) CheckGit() {
-	_, err := RunShellCommand("git status --porcelain")
+func (g *gitstatus) CheckGit() bool {
+	if g.enabled {
+		return true
+	}
+	_, err := ExecCommand("git", "status", "--porcelain")
 	if err == nil {
 		g.enabled = true
-		g.GitSetStatus()
-		return
+		return true
 	}
 	g.enabled = false
+	return false
 }
 
 func (g *gitstatus) GitSetStatus() {
 	if !g.enabled {
 		return
 	}
-	status, err := RunShellCommand("git status --porcelain")
+	status, err := ExecCommand("git", "status", "--porcelain")
 	if err != nil {
 		g.enabled = false
 		g.status = " "
 		return
 	}
 	// git 2.22+
-	branch, err := RunShellCommand("git branch --show-current")
+	branch, err := ExecCommand("git", "branch", "--show-current")
 	if err != nil {
 		// git -2.22
 		branch = ""
-		text, err := RunShellCommand("git branch")
+		text, err := ExecCommand("git", "branch")
 		if err != nil {
 			TermMessage(text)
 			g.enabled = false
