@@ -122,7 +122,7 @@ var (
 
 	cloudPath = "https://clip.microflow.com.mx:8443" // Cloud service url
 
-	git *gitstatus
+	git *Gitstatus
 
 	workingDir = ""
 

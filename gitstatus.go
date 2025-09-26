@@ -5,15 +5,17 @@ import (
 	"strings"
 )
 
-type gitstatus struct {
+// Gitstatus struc to hold git status state
+type Gitstatus struct {
 	enabled bool
 	status  string
 	fgcolor map[string]string
 	bgcolor string
 }
 
-func NewGitStatus() *gitstatus {
-	g := new(gitstatus)
+// NewGitStatus create git status object
+func NewGitStatus() *Gitstatus {
+	g := new(Gitstatus)
 	g.enabled = false
 	g.status = " "
 	g.fgcolor = make(map[string]string)
@@ -22,7 +24,8 @@ func NewGitStatus() *gitstatus {
 	return g
 }
 
-func (g *gitstatus) CheckGit() bool {
+// CheckGit validate if dir is a git repo
+func (g *Gitstatus) CheckGit() bool {
 	if g.enabled {
 		return true
 	}
@@ -35,7 +38,9 @@ func (g *gitstatus) CheckGit() bool {
 	return false
 }
 
-func (g *gitstatus) GitSetStatus() {
+// GitSetStatus validate, status, branch
+// create string to display in statusbar
+func (g *Gitstatus) GitSetStatus() {
 	if !g.enabled {
 		return
 	}
