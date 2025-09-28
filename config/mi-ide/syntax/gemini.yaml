@@ -1,7 +1,7 @@
 filetype: gemini
 
 detect:
-    filename: "\\.(md|mkd|mkdn|markdown)$"
+    filename: "\\.gemini$"
 
 rules:
     # Tables (Github extension)
@@ -10,6 +10,9 @@ rules:
     # quotes
     - method: "^[:>].+"
     - identifier.var: "^;.+"
+
+    - md-table: "(?:\\|.+?)+\\|"
+    - md-bold: "^\\|[^\\|]+"
 
       # italic
     - md-italic: "[^_\\w]_(?:.+?)_[^_\\w]"
@@ -25,7 +28,6 @@ rules:
 
       # horizontal rules
     - special: "(---+|===+|___+|\\*\\*\\*+)\\s*$"
-    - md-table: "(?:\\|.+?)+\\|"
     - statusline: "\\|"
     - statusline: "(?:\\|[-:]+)+\\|"
 

@@ -7,6 +7,8 @@ rules:
     # Tables (Github extension)
     - normal: ".*\\|.*"
 
+    - md-table: "(?:\\|.+?)+\\|"
+    - md-bold: "^\\|[^\\|]+"
     # quotes
     - method: "^[:>].+"
     - identifier.var: "^;.+"
@@ -24,7 +26,6 @@ rules:
 
       # horizontal rules
     - special: "(---+|===+|___+|\\*\\*\\*+)\\s*$"
-    - md-table: "(?:\\|.+?)+\\|"
     - statusline: "\\|"
     - statusline: "(?:\\|[-:]+)+\\|"
 
@@ -103,4 +104,5 @@ rules:
         start: "^```$"
         end: "^```$"
         rules:
-            - default: "."
+            - comment: "."
+
