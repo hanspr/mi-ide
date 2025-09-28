@@ -234,7 +234,7 @@ func InitConfigDir() {
 // InitScreen creates and initializes the tcell screen
 func InitScreen() {
 	// Should we enable true color?
-	truecolor := os.Getenv("MICRO_TRUECOLOR") == "1"
+	truecolor := os.Getenv("MIIDE_TRUECOLOR") == "1"
 
 	tcelldb := os.Getenv("TCELLDB")
 	os.Setenv("TCELLDB", configDir+"/.tcelldb")

@@ -44,11 +44,12 @@ func (g *geminiConnect) ask(question string) {
 		}
 		CurView().AddTab(false)
 		CurView().Buf = NewBufferFromString(result.Text(), "")
-		CurView().Buf.Settings["filetype"] = "markdown"
+		CurView().Buf.Settings["filetype"] = "gemini"
 		CurView().Type = vtLog
 		CurView().Buf.UpdateRules()
 		CurView().Buf.Fname = "gemini"
 		SetLocalOption("ruler", "false", CurView())
+		SetLocalOption("softwrap", "true", CurView())
 		navigationMode = true
 		messenger.ClearMessage()
 		RedrawAll(false)
