@@ -325,9 +325,11 @@ func ShowSnippets() {
 	}
 	sort.Strings(keys)
 	for _, name := range keys {
-		snips = snips + "snippet " + name + "\n" + snippets[name].code + "\n\n"
+		//snips = snips + "snippet " + name + "\n" + snippets[name].code + "\n\n"
+		snips = snips + "snippet " + name + "\n"
 	}
-	CurView().OpenHelperView("v", "snippet", snips)
+	CurView().OpenHelperView("v4", "snippet", snips)
+	CurView().PreviousSplit(false)
 }
 
 // EditSettings open settings.json in the editor

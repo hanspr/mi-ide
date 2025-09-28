@@ -167,6 +167,7 @@ func (v *View) OpenHelperView(dir, filetype string, data string) {
 		filetype = "text"
 	}
 	h := v.Height
+	w := v.Width
 	if HelperWindow == nil {
 		if dir == "h" {
 			CurView().HSplit(NewBufferFromString(data, ""))
@@ -180,7 +181,8 @@ func (v *View) OpenHelperView(dir, filetype string, data string) {
 		SetLocalOption("softwrap", "true", HelperWindow)
 		SetLocalOption("ruler", "false", HelperWindow)
 		navigationMode = true
-		if dir == "h" {
+		switch dir {
+		case "h":
 			nh := int(float64(h)*0.25) - 1
 			if nh < 5 {
 				return
@@ -188,6 +190,14 @@ func (v *View) OpenHelperView(dir, filetype string, data string) {
 			v.Height = h - nh - 2
 			HelperWindow.Height = h - v.Height - 1
 			HelperWindow.y = v.Height + 2
+		case "v3", "v4":
+			nv := int(float64(w)*0.33) - 1
+			if dir == "v4" {
+				nv = int(float64(w)*0.25) - 1
+			}
+			v.Width = w - nv
+			HelperWindow.Width = w - v.Width
+			HelperWindow.x = v.Width + 1
 		}
 	} else {
 		HelperWindow.Buf.remove(Loc{0, 0}, HelperWindow.Buf.End())
