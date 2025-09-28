@@ -21,7 +21,7 @@ function						call(a,b,c)
 method							.method(a,b,c)
 method.other					.othermethods(a,b,c)
 special							whatever
-underlined						markup
+underlined						md
 label							label
 info							my info
 error							my error
@@ -38,9 +38,9 @@ cursor-line						curor line
 color-column					cursor column
 selection						selection
 matchbrace						{}
-markup-head						# Header
-markup-bold						__bold__
-markup-table					|head|head|
-markup-url						link
-markup-underlined				<ins>under</ins>
-markup-italic					italic text
+md-head	  						# Header
+md-bold							__bold__
+md-table						|head|head|
+md-url							link
+md-underlined					<ins>under</ins>
+md-italic						italic text

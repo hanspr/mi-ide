@@ -6,7 +6,7 @@ detect:
 rules:
     # Tables (Github extension)
     - normal: ".*\\|.*"
-    - markup-head:  "^.+:$"
+    - md-head:  "^.+:$"
     - function: "func \\w+"
     - function: "\\w+\\(.*?\\)"
     - default: "\\(.*?\\)"

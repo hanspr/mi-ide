@@ -28,10 +28,10 @@ rules:
       # Paragraph Title
     - statement: "^\\..*$"
 
-      # source 
+      # source
     - identifier: "^\\[(source,.+|NOTE|TIP|IMPORTANT|WARNING|CAUTION)\\]"
 
-      # Other markup
+      # Other markdown
     - constant.string: ".*[[:space:]]\\+$"
     - constant.string: "_[^_]+_"
     - constant.string: "\\*[^\\*]+\\*"
