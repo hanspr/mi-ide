@@ -16,6 +16,8 @@ rules:
 
       # Strong emphasis
     - markup-bold: "__(?:.+?)__"
+    - markup-bold: "\\*\\*(?:.+?)\\*\\*"
+    - constant: "`(?:.+?)`"
 
       # strike-through
     - type: "(^|[[:space:]])~~[^ ][^~]*~~"
@@ -53,10 +55,52 @@ rules:
     - todo: "!!! warning.*"
     - todo: "> \\[!WARNING\\]"
     - constant.string: "^ {3,}.*"
-    - constant: "`.+?`"
 
-    - symbol.operator:
+    # bloques de código
+    - label:
+        start: "^```perl$"
+        end: "^```$"
+        rules:
+            - default: "."
+            - include: "perl"
+    - label:
+        start: "^```javascript$"
+        end: "^```$"
+        rules:
+            - default: "."
+            - include: "javascript"
+    - label:
+        start: "^```go$"
+        end: "^```$"
+        rules:
+            - default: "."
+            - include: "go"
+    - label:
+        start: "^```lua$"
+        end: "^```$"
+        rules:
+            - default: "."
+            - include: "lua"
+    - label:
+        start: "^```python$"
+        end: "^```$"
+        rules:
+            - default: "."
+            - include: "python"
+    - label:
+        start: "^```html$"
+        end: "^```$"
+        rules:
+            - default: "."
+            - include: "html"
+            - include: "javascript"
+    - label:
         start: "^```(?:\\w+)$"
         end: "^```$"
         rules:
-            - function: "."
+            - comment: "."
+    - constant:
+        start: "^```$"
+        end: "^```$"
+        rules:
+            - default: "."

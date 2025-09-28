@@ -38,7 +38,7 @@ rules:
     - include: "comments"
     - label: "^[\\t ]*\\w+:$"
     - default: "^[\\t ]+"
-    - comment: " //.+$"
+    - comment: "//.+$"
 
     - comment:
         start: "^\\s*/\\*"
