@@ -34,6 +34,7 @@ func init() {
 	commandActions = map[string]func([]string){
 		"Cd":          Cd,
 		"Exit":        Exit,
+		"Gemini":      GeminiAsk,
 		"Help":        Help,
 		"MemUsage":    MemUsage,
 		"Open":        Open,
@@ -53,6 +54,7 @@ func init() {
 func DefaultCommands() map[string]StrCommand {
 	return map[string]StrCommand{
 		"cd":       {"Cd", []Completion{FileCompletion}},
+		"gemini":   {"Gemini", []Completion{NoCompletion}},
 		"help":     {"Help", []Completion{HelpCompletion, NoCompletion}},
 		"log":      {"ToggleLog", []Completion{NoCompletion}},
 		"memusage": {"MemUsage", []Completion{NoCompletion}},
@@ -122,6 +124,19 @@ func CommandAction(cmd string) func(*View, bool) bool {
 		HandleCommand(cmd)
 		return false
 	}
+}
+
+// Gemini ask gemini
+func GeminiAsk(args []string) {
+	if gemini == nil {
+		gemini = GenaiNew()
+		if gemini == nil {
+			messenger.AddLog("Gemini, not available, check you have a Gemini API Key")
+			return
+		}
+	}
+	question := strings.Join(args, " ")
+	gemini.ask(question)
 }
 
 // SaveAs saves the buffer with a new name

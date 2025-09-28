@@ -129,6 +129,8 @@ var (
 	homeDir = ""
 
 	drawingLoc sync.Mutex
+
+	gemini *geminiConnect
 )
 
 // LoadInput determines which files should be loaded into buffers
@@ -375,6 +377,7 @@ func main() {
 	currEnv.ClipWhere = "local"
 	workingDir, _ = os.Getwd()
 	git = NewGitStatus()
+	gemini = nil
 	homeDir, _ = homedir.Dir()
 
 	flag.Usage = func() {
