@@ -20,6 +20,7 @@ What is this editor's philosophy:
   * A clipboard that works across editors in diferente terminals and servers (__cloud clipboard__)
   * A plugin system to enhance the experience of developing in a particular language
   * __Syntax highlight__
+  * __Gemini__ : coding questions
   * A beautiful interface (why not)
 * My particular setup is : tmux, lazygit and mi-ide. With this combination I have a very usefull development environment on my remote servers.
 
@@ -102,7 +103,7 @@ You will find the translation file in your config directory under : langs
 
 - Open the file : en_US.lang
 - Change the name to your ISO code location
-- Translate each sentence after the | (pipe)
+| (pipe) |
 - Save the final file with the new name.
 - Switch language by going to the menu > Global Settings
 - Change to your new language
