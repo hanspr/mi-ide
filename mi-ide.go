@@ -575,6 +575,7 @@ func main() {
 	InitColorscheme()
 	messenger.style = defStyle
 	CurView().SetCursorEscapeString()
+	git.GitSetStatus()
 
 	// Here is the event loop which runs in a separate thread
 	go func() {

@@ -162,7 +162,27 @@ func NewViewWidthHeight(buf *Buffer, w, h int) *View {
 var HelperWindow = &View{}
 
 // OpenHelperView open a new helper window or reuse the one existing
-func (v *View) OpenHelperView(dir, filetype string, data string) {
+// dir      : v - vertical h - horizontal
+// filetype : syntax color to apply
+// data     : buffer data to display
+// wp       : percentage (0.2-0.8) to use by window defaults (v 0.5, h 0.25)
+func (v *View) OpenHelperView(dir, filetype string, data string, wp ...float64) {
+	width := 0.0
+	if len(wp) == 0 {
+		if dir == "h" {
+			width = 0.25
+		} else {
+			width = 0.5
+		}
+	} else if wp[0] > 0 {
+		if wp[0] > 0.8 {
+			width = 0.8
+		} else if wp[0] < 0.2 {
+			width = 0.2
+		} else {
+			width = wp[0]
+		}
+	}
 	if filetype == "" {
 		filetype = "text"
 	}
@@ -181,23 +201,21 @@ func (v *View) OpenHelperView(dir, filetype string, data string) {
 		SetLocalOption("softwrap", "true", HelperWindow)
 		SetLocalOption("ruler", "false", HelperWindow)
 		navigationMode = true
-		switch dir {
-		case "h":
-			nh := int(float64(h)*0.25) - 1
-			if nh < 5 {
-				return
+		if width != 0 {
+			if dir == "h" {
+				nh := int(float64(h)*width) - 1
+				if nh < 5 {
+					return
+				}
+				v.Height = h - nh - 2
+				HelperWindow.Height = h - v.Height - 1
+				HelperWindow.y = v.Height + 2
+			} else {
+				nv := int(float64(w)*width) - 1
+				v.Width = w - nv
+				HelperWindow.Width = w - v.Width
+				HelperWindow.x = v.Width + 1
 			}
-			v.Height = h - nh - 2
-			HelperWindow.Height = h - v.Height - 1
-			HelperWindow.y = v.Height + 2
-		case "v3", "v4":
-			nv := int(float64(w)*0.33) - 1
-			if dir == "v4" {
-				nv = int(float64(w)*0.25) - 1
-			}
-			v.Width = w - nv
-			HelperWindow.Width = w - v.Width
-			HelperWindow.x = v.Width + 1
 		}
 	} else {
 		HelperWindow.Buf.remove(Loc{0, 0}, HelperWindow.Buf.End())

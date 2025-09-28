@@ -328,7 +328,7 @@ func ShowSnippets() {
 		//snips = snips + "snippet " + name + "\n" + snippets[name].code + "\n\n"
 		snips = snips + "snippet " + name + "\n"
 	}
-	CurView().OpenHelperView("v4", "snippet", snips)
+	CurView().OpenHelperView("v", "snippet", snips, 0.25)
 	CurView().PreviousSplit(false)
 }
 
