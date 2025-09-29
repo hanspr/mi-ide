@@ -5,21 +5,25 @@ detect:
     header: "^From .* \\d+:\\d+:\\d+ \\d+"
 
 rules:
-    - type: "^From .*"
     - identifier: "^[^[:space:]]+:"
-    - preproc: "^List-(Id|Archive|Subscribe|Unsubscribe|Post|Help):"
-    - constant: "^(To|From):"
-    - constant.string:
+    - type: "^List-(Id|Archive|Subscribe|Unsubscribe(?:-Post)?|Post|Help):"
+    - type: "^X-(?:Campaign\\w+):"
+    - type: "^(?:Precedence|Feedback-ID):"
+    - statement: "d=.+?;"
+    - identifier.var: " \\w{1,2}="
+    - md-head: "^(?:To|From|Date|Reply-To):"
+    - md-head:
         start: "^Subject:.*"
         end: "$"
-        rules: 
+        rules:
             - constant.specialChar: "\\\\."
     - statement: "<?[^@[:space:]]+@[^[:space:]]+>?"
-    - default:
-        start: "^\\n\\n"
-        end: ".*"
-        rules: []
-    - comment:
-        start: "^>.*"
-        end: "$"
-        rules: []
+    - error: "X-(?:Spam|Ham)-.+?:"
+    - constant: "^--.+$"
+    - constant: "boundary=.+$"
+    - constant:
+        start: "^Content-Type: .+?; .+$"
+        end: "^--.+$"
+        rules:
+            - comment: "."
+            - constant: "^Content-.+$"
