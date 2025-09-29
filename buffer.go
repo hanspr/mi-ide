@@ -238,7 +238,8 @@ func NewBuffer(reader io.Reader, size int64, path string) *Buffer {
 		buf: b,
 	}
 	InitLocalSettings(b)
-
+	cc.loadCompletions(b.FileType())
+	TermMessage("Regresé")
 	b.cursors = []*Cursor{&b.Cursor}
 	b.pasteLoc.X = -1
 	return b
