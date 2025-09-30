@@ -1,50 +1,61 @@
-# make
+#make a map
 snippet make
 	make(${1:[]string}, ${0:0})
-# map
+#create map
 snippet map
 	map[${1:string}]${0:int}
-# print
+#printf
 snippet printf
 	fmt.Printf("%${1:s}\n", ${2:var})
-# struct
+#struct
 snippet struct
 	type ${1:name} struct {
 		${2:name} ${3:type}
 	}
 	${0}
-#slice operations
+#slice: append elements (see library slices)
 snippet sadd
 	${1:a} = append(${1},${2:list})
+#slice: splice b into a
 snippet ssplice
 	${1:a} = append(${1},{$2:b}...)
+#slice: copy clone
 snippet scopy
 	${1:dest} := make([]T,len(${2:origin}))
 	copy(${1},${2})
+#slice: cut slice at point i
 snippet scut
 	${1:a} = append(${1}[:${2:i}],${1}[${2}+${3:j}]...)
+#slice: delete index
 snippet sdelete
 	${1:a} = append(${1}[:${2:i}],${1}[${2}+1])
+#slice: delete index with a pointer
 snippet sdeletepointer
 	copy(${1:a}[${2:position}:],${1}[${2}+1:])
 	${1}[len(${1}-1)] = nil
 	${1} = ${1}[:len(${1})-1]
+#slice: push elements at the end
 snippet spush
 	${1:a} = append(${1:a},${2:new})
+#slice: extract last element
 snippet spop
 	${1:pop_value},${2:a} = ${2}[len(${2})-1],${2}[:len(${2})-1]
+#slice: extract first element
 snippet sunshift
 	${1:a} = append([]${2:x},${1}...)
+#slice: insert element at the beggining
 snippet sinsert
 	${1:a} = append(${1},0)
 	copy(${1}[${2:i}+1:],${2}:)
 	${1}[${2}] = ${3:value}
+#slice: filter element
 snippet sfilter
 	for _,val := range ${1:slice a} {
 		if ${2:test} {
 			${3:slice b} = append(${3},val)
 		}
 	}
+#slice: find element
 snippet sfind
 	${1:found} := ${2:type}
 	for _,val := range ${3:slice} {
@@ -53,7 +64,7 @@ snippet sfind
 			break
 		}
 	}
-# map operations
+#map sort keys
 snippet msort
 	keys := make([]string,0,len(${1:map}))
 	for k := range (${1}) {
@@ -63,13 +74,15 @@ snippet msort
 	for _,k := range keys {
 		 ${0:// do something with} ${1}[k]
 	}
-# file operations
+#file: slurp (read all into an array)
 snippet fslurp
 	// data is a byte array
 	${1:data}, err := os.ReadFile("${2:filename}")
+#file: burp (write all from array)
 snippet fburp
 	// data is a byte array
 	err := os.WriteFile("${1:path}",[]bytes(${2:data}),0)
+#file: read by line
 snippet freadline
 	line := ""
 	file, err := os.Open(${1:path})
@@ -84,7 +97,7 @@ snippet freadline
 		line = scanner.Text()
 		${0}
 	}
-# json read
+#json read
 snippet jsonread
 	type ${1:name} struct {
 		${2:Var} ${3:type} `json:${4:name}`
@@ -98,7 +111,7 @@ snippet jsonread
 	}
 	${0}
 
-# read ini file
+#read ini file
 snippet iniread
 	// gopkg.in/gcfg.v1
 	type ${1:Section name} struct {
@@ -113,6 +126,7 @@ snippet iniread
 	}
 	// config holds your configuration
 	${0}
+#read yaml file
 snippet yalmsread
 	// github.com/kylelemons/go-gypsy/yaml
 	config,err := yaml.ReadFile("${1:path.yaml}")
@@ -121,15 +135,15 @@ snippet yalmsread
 	}
 	config.Get("parametro")
 	config.GetBool("parametro")
-# goroutine named function
+#goroutine named function
 snippet go
 	go ${1:funcName}(${0:parameters})
-# goroutine anonymous function
+#goroutine anonymous function
 snippet goan
 	go func(${1:var} ${2:type}) {
 		${3:/* code */}
 	}(${0})
-# select
+#select statement
 snippet select
 	select {
 	case ${1:v1} := <-${2:chan1}
@@ -137,7 +151,7 @@ snippet select
 	default:
 		${0}
 	}
-# switch
+#switch
 snippet switch
 	switch ${1:var} {
 	case ${2:value1}:
