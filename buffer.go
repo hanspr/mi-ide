@@ -150,6 +150,9 @@ func NewBufferFromFile(path string) (*Buffer, error) {
 	} else {
 		buf = NewBuffer(file, FSize(file), filename)
 	}
+	// TermMessage("Ir a cargar")
+	cc.loadCompletions(buf.FileType())
+	// TermMessage("Regresé")
 
 	return buf, nil
 }
@@ -238,8 +241,6 @@ func NewBuffer(reader io.Reader, size int64, path string) *Buffer {
 		buf: b,
 	}
 	InitLocalSettings(b)
-	cc.loadCompletions(b.FileType())
-	TermMessage("Regresé")
 	b.cursors = []*Cursor{&b.Cursor}
 	b.pasteLoc.X = -1
 	return b
