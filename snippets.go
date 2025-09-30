@@ -19,6 +19,7 @@ type snippet struct {
 	modText      bool
 	view         *View
 	focused      int
+	comment      string
 }
 
 type ph struct {
@@ -288,6 +289,7 @@ func loadSnippets(filetype string) {
 
 // readSnippets reads all snippets for selected filetype into memory
 func readSnippets(filetype string) map[string]*snippet {
+	comment := ""
 	lineNum := 0
 	rgxComment, _ := regexp.Compile(`^#`)
 	rgxSnip, _ := regexp.Compile(`^snippet `)
@@ -308,12 +310,15 @@ func readSnippets(filetype string) map[string]*snippet {
 		line := scanner.Bytes()
 		if rgxComment.Match(line) {
 			// comment line
+			comment = string(line)
 			continue
 		} else if rgxSnip.Match(line) {
 			// snippet word
 			name := strings.Replace(string(line), "snippet ", "", 1)
 			curSnip = newSnippet()
 			snippets[name] = curSnip
+			snippets[name].comment = comment
+			comment = ""
 		} else if rgxCode.Match(line) {
 			// snippet code
 			cline := strings.Replace(string(line), "\t", "", 1)
@@ -396,7 +401,7 @@ func (v *View) SnippetInsert(usePlugin bool) bool {
 	return true
 }
 
-// SnippetNext move focuse to next handler position
+// SnippetNext move focus to next handler position
 func (v *View) SnippetNext(usePlugin bool) bool {
 	if currentSnippet != nil {
 		currentSnippet.focusNext()

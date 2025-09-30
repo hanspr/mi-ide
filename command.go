@@ -326,6 +326,9 @@ func ShowSnippets() {
 	sort.Strings(keys)
 	for _, name := range keys {
 		//snips = snips + "snippet " + name + "\n" + snippets[name].code + "\n\n"
+		if snippets[name].comment != "" {
+			snips = snips + snippets[name].comment + "\n"
+		}
 		snips = snips + "snippet " + name + "\n"
 	}
 	CurView().OpenHelperView("v", "snippet", snips, 0.25)
