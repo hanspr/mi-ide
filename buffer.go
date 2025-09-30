@@ -150,9 +150,7 @@ func NewBufferFromFile(path string) (*Buffer, error) {
 	} else {
 		buf = NewBuffer(file, FSize(file), filename)
 	}
-	// TermMessage("Ir a cargar")
-	cc.loadCompletions(buf.FileType())
-	// TermMessage("Regresé")
+	go cc.loadCompletions(buf.FileType())
 
 	return buf, nil
 }

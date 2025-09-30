@@ -2046,7 +2046,7 @@ func (v *View) Quit(usePlugin bool) bool {
 
 		// Make sure not to quit if there are unsaved changes
 		if v.CanClose() {
-			// v.CloseBuffer()
+			cc.closeCodeComplete(v.Buf.FileType())
 			LastView = -1
 			if len(tabs[curTab].Views) > 1 {
 				pos := v.splitNode.GetViewNumPosition(v.Num)
@@ -2102,18 +2102,6 @@ func (v *View) QuitAll(usePlugin bool) bool {
 		}
 
 		if closeAll {
-			// Revmoved question to Quit. Unnecessary extra confirmation considering
-			// is promted when there is no information to loose.
-			// The user has already answered to yes/no save questions before.
-			// The application needs an action to exit completly without confirmations
-			// Option could be usefull, not necessary. F4 Can bind to Quit. Ctrl-Q to Quit All
-
-			// for _, tab := range tabs {
-			// 	for _, v := range tab.Views {
-			// 		v.CloseBuffer()
-			// 	}
-			// }
-
 			if usePlugin {
 				PostActionCall("QuitAll", v)
 			}

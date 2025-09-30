@@ -4,65 +4,63 @@ import (
 	"bufio"
 	"os"
 	"strings"
+	"sync"
 )
 
 type codecomplete struct {
 	lang  map[string]map[string][]string
 	ready map[string]bool
+	count map[string]int
+	mtx   sync.Mutex
 }
 
 func newCodeComplete() *codecomplete {
 	c := &codecomplete{
 		lang:  make(map[string]map[string][]string),
 		ready: make(map[string]bool),
+		count: make(map[string]int),
 	}
 	return c
 }
 
 func (c *codecomplete) closeCodeComplete(lang string) {
-	// on close
-	// validar si existen más ventanas con el mismo lenguaje
-	// SI: no hacer nada
-	// NO: descargar todos los objetos para liberar espacio
-	// c.lang[lang] = nil
-	// delete(c.lang[lang])
-	// delete(c.ready[lang]=false)
+	_, ok := c.lang[lang]
+	if !ok {
+		//messenger.AddLog("Nothing to unload for",lang)
+		return
+	}
+	c.mtx.Lock()
+	// messenger.AddLog("A", c.count[lang])
+	c.count[lang]--
+	// messenger.AddLog("D", c.count[lang])
+	if c.count[lang] > 0 {
+		c.mtx.Unlock()
+		return
+	}
+	// messenger.AddLog("remove ", lang)
+	delete(c.lang, lang)
+	delete(c.ready, lang)
+	delete(c.count, lang)
+	c.mtx.Unlock()
 }
 
 func (c *codecomplete) loadCompletions(lang string) {
-	// if CurView() == nil {
-	// 	TermMessage("Cargar completions")
-	// } else {
-	// 	messenger.AddLog("Cargar completions")
-	// }
+	c.mtx.Lock()
 	c.loadCoreCompletions(lang)
-	//TermMessage("Regresar")
+	c.mtx.Unlock()
 }
 
 func (c *codecomplete) loadCoreCompletions(lang string) {
 	_, ok := c.lang[lang]
 	if ok {
-		// if CurView() == nil {
-		// 	TermMessage("Ya hemos cargado completions para ", lang, " anteriormente")
-		// } else {
-		// 	messenger.AddLog("Ya hemos cargado completions para ", lang, " anteriormente")
-		// }
+		c.count[lang]++
 		return
 	}
 	c.ready[lang] = false
+	c.count[lang] = 0
 	path := configDir + "/codecomplete/" + lang + "/core.txt"
-	// if CurView() == nil {
-	// 	TermMessage("Cargar ruta:", path)
-	// } else {
-	// 	messenger.AddLog("Cargar ruta:", path)
-	// }
 	file, err := os.Open(path)
 	if err != nil {
-		// if CurView() == nil {
-		// 	TermMessage("Error:", err.Error())
-		// } else {
-		// 	messenger.AddLog("Error:", err.Error())
-		// }
 		return
 	}
 	defer file.Close()
@@ -73,10 +71,10 @@ func (c *codecomplete) loadCoreCompletions(lang string) {
 		data := strings.Split(scanner.Text(), "|")
 		c.lang[lang][data[0]] = data[1:]
 	}
-	// if CurView() == nil {
-	// 	TermMessage("estructura cargada!!")
-	// } else {
-	// 	messenger.AddLog("estructura cargada!!")
-	// }
+	c.count[lang]++
 	c.ready[lang] = true
 }
+
+//todo: load current buffer completes
+
+//todo: create autocomplete search and paint
