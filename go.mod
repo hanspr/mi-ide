@@ -7,7 +7,7 @@ require (
 	github.com/dustin/go-humanize v1.0.0
 	github.com/flynn/json5 v0.0.0-20160717195620-7620272ed633
 	github.com/go-errors/errors v1.1.1
-	github.com/hanspr/clipboard v0.1.0
+	github.com/hanspr/clipboard v0.1.1
 	github.com/hanspr/glob v0.0.0-20170209203856-dd4023a66dc3
 	github.com/hanspr/highlight v0.0.0-20190824225941-89571b5c169b
 	github.com/hanspr/ioencoder v0.0.0-20190927223910-112aaa3e7dca

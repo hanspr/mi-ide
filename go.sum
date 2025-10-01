@@ -63,6 +63,8 @@ github.com/gorilla/websocket v1.5.3 h1:saDtZ6Pbx/0u+bgYQ3q96pZgCzfhKXGPqt7kZ72aN
 github.com/gorilla/websocket v1.5.3/go.mod h1:YR8l580nyteQvAITg2hZ9XVh4b55+EU/adAjf1fMHhE=
 github.com/hanspr/clipboard v0.1.0 h1:ZNmYHWJ3h5LRllBi4Pjnf8UW3oSNOn86dCtcmlZsJkQ=
 github.com/hanspr/clipboard v0.1.0/go.mod h1:Om31XMcJsl+fhVNgS/+r13WvnBvCT3BhyMsvbHxsQGA=
+github.com/hanspr/clipboard v0.1.1 h1:XpWaL8nxubYPYlqQZtjSCYveoJh5fwB5Z+djr2BjfrA=
+github.com/hanspr/clipboard v0.1.1/go.mod h1:Om31XMcJsl+fhVNgS/+r13WvnBvCT3BhyMsvbHxsQGA=
 github.com/hanspr/glob v0.0.0-20170209203856-dd4023a66dc3 h1:qaDWP8hsl1MnYrG1V1US/iqjN7aqXC3fotfoPzHaEU8=
 github.com/hanspr/glob v0.0.0-20170209203856-dd4023a66dc3/go.mod h1:Ud5rneHM6TQve2GfY3ej8fIKHFDgM1yepObtGJVFT9E=
 github.com/hanspr/highlight v0.0.0-20190824225941-89571b5c169b h1:YUvwZRkJLAUktw+KXAL3qwlQ1ubTjQyM7f1hISqv7Jg=
