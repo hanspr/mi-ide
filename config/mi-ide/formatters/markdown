@@ -22,7 +22,7 @@ sub Format {
         if ($DEBUG) {
             print "line: $L\n$l";
         }
-        if ($l =~ m/\|/) {
+        if ($l =~ m/^\s*\|/) {
             $l =~ s/\n|\r//g;
             my $n      = 0;
             my @rows   = ();

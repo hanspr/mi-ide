@@ -9,6 +9,7 @@ rules:
 
     - md-table: "(?:\\|.+?)+\\|"
     - md-bold: "^\\|[^\\|]+"
+    - statusline: "\\|"
     # quotes
     - method: "^[:>].+"
     - identifier.var: "^;.+"
@@ -26,7 +27,6 @@ rules:
 
       # horizontal rules
     - special: "(---+|===+|___+|\\*\\*\\*+)\\s*$"
-    - statusline: "\\|"
     - statusline: "(?:\\|[-:]+)+\\|"
 
       # headlines
