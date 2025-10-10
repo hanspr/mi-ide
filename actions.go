@@ -2816,6 +2816,10 @@ func (v *View) BufferSettings(usePlugin bool) bool {
 
 // NavigationMode Toggle Navigation Mode
 func (v *View) NavigationMode(usePlugin bool) bool {
+	if v.Type.Readonly {
+		navigationMode = true
+		return true
+	}
 	MouseOnOff(false)
 	navigationMode = !navigationMode
 	return true
