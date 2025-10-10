@@ -1,9 +1,23 @@
 {
+    "autoclose": true,
     "autoindent": true,
+    "autoreload": true,
     "blockclose": "pass#$",
     "blockinter": "el(?:se|if)",
     "blockopen": ":$",
-    "smartindent": true,
+    "comment": "#",
+    "eofnewline": false,
+    "fileformat": "unix",
+    "indentchar": " ",
+    "keepautoindent": true,
+    "matchbrace": true,
     "rmtrailingws": false,
-    "tabstospaces": true
+    "smartindent": false,
+    "smartpaste": true,
+    "softwrap": false,
+    "tabindents": false,
+    "tabmovement": true,
+    "tabsize": 4,
+    "tabstospaces": true,
+    "useformatter": true
 }
