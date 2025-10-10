@@ -2170,6 +2170,8 @@ func (v *View) PreviousTab(usePlugin bool) bool {
 
 		if CurView().Type.Readonly {
 			navigationMode = true
+		} else {
+			navigationMode = false
 		}
 
 		if usePlugin {
@@ -2200,6 +2202,8 @@ func (v *View) NextTab(usePlugin bool) bool {
 
 		if CurView().Type.Readonly {
 			navigationMode = true
+		} else {
+			navigationMode = false
 		}
 
 		if usePlugin {
