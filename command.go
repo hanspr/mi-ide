@@ -43,6 +43,7 @@ func init() {
 		"SaveAs":      SaveAs,
 		"ToggleLog":   ToggleLog,
 		"GroupEdit":   GroupEdit,
+		"GroupGemini": GroupGemini,
 		"GroupGit":    GroupGit,
 		"GroupConfig": GroupConfig,
 		"GroupShow":   GroupShow,
@@ -54,7 +55,6 @@ func init() {
 func DefaultCommands() map[string]StrCommand {
 	return map[string]StrCommand{
 		"cd":       {"Cd", []Completion{FileCompletion}},
-		"gemini":   {"Gemini", []Completion{NoCompletion}},
 		"help":     {"Help", []Completion{HelpCompletion, NoCompletion}},
 		"log":      {"ToggleLog", []Completion{NoCompletion}},
 		"memusage": {"MemUsage", []Completion{NoCompletion}},
@@ -66,6 +66,7 @@ func DefaultCommands() map[string]StrCommand {
 		// Groups
 		"config:": {"GroupConfig", []Completion{GroupCompletion, NoCompletion}},
 		"edit:":   {"GroupEdit", []Completion{GroupCompletion, NoCompletion}},
+		"gemini:": {"GroupGemini", []Completion{GroupCompletion, NoCompletion}},
 		"git:":    {"GroupGit", []Completion{GroupCompletion, NoCompletion}},
 		"show:":   {"GroupShow", []Completion{GroupCompletion, NoCompletion}},
 	}
@@ -128,6 +129,10 @@ func CommandAction(cmd string) func(*View, bool) bool {
 
 // Gemini ask gemini
 func GeminiAsk(args []string) {
+	if len(args) < 4 {
+		messenger.Warning("Question is too short")
+		return
+	}
 	if gemini == nil {
 		gemini = GenaiNew()
 		if gemini == nil {
@@ -137,6 +142,32 @@ func GeminiAsk(args []string) {
 	}
 	question := strings.Join(args, " ")
 	gemini.ask(question)
+}
+
+func GeminiAskSelection(args []string) {
+	if CurView().Cursor.HasSelection() {
+		if len(args) < 4 {
+			messenger.Warning("Question is too short")
+			return
+		}
+		args = append(args, CurView().Cursor.GetSelection())
+		GeminiAsk(args)
+	} else {
+		messenger.Warning("Need a selection to ask")
+	}
+}
+
+func GeminiAskBuffer(args []string) {
+	if CurView().Buf.LinesNum() > 5 {
+		if len(args) < 4 {
+			messenger.Warning("Question is too short")
+			return
+		}
+		args = append(args, CurView().Buf.String())
+		GeminiAsk(args)
+	} else {
+		messenger.Warning("Buffer is too short")
+	}
 }
 
 // SaveAs saves the buffer with a new name
@@ -156,6 +187,24 @@ func GroupEdit(args []string) {
 		EditSettings()
 	case "snippets":
 		EditSnippets()
+	}
+}
+
+// GroupGemini execute selected option
+func GroupGemini(args []string) {
+	switch args[0] {
+	case "ask":
+		if len(args) > 1 {
+			GeminiAsk(args[1:])
+		}
+	case "selection":
+		if len(args) > 1 {
+			GeminiAskSelection(args[1:])
+		}
+	case "buffer":
+		if len(args) > 1 {
+			GeminiAskBuffer(args[1:])
+		}
 	}
 }
 

@@ -90,6 +90,8 @@ func GroupComplete(group, input string) (string, []string) {
 		options = []string{"settings", "snippets"}
 	case "config":
 		options = []string{"buffersettings", "cloudsettings", "keybindings", "plugins", "settings"}
+	case "gemini":
+		options = []string{"ask", "selection", "buffer"}
 	case "git":
 		options = []string{"diff", "diffstaged", "status"}
 	case "show":
