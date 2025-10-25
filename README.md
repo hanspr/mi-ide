@@ -20,7 +20,7 @@ What is this editor's philosophy:
   * A clipboard that works across editors in diferente terminals and servers (__cloud clipboard__)
   * A plugin system to enhance the experience of developing in a particular language
   * __Syntax highlight__
-  * __Gemini__ : coding questions
+  * __Gemini__ : access to google gemeini
   * A beautiful interface (why not)
 * My particular setup is : tmux, lazygit and mi-ide. With this combination I have a very usefull development environment on my remote servers.
 
