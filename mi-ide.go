@@ -23,13 +23,6 @@ import (
 	luar "layeh.com/gopher-luar"
 )
 
-const (
-	doubleClickThreshold = 400 // How many milliseconds to wait before a second click is not a double click
-	undoThreshold        = 500 // If two events are less than n milliseconds apart, undo both of them
-)
-
-// Force build, one time
-
 // MouseClick mouse clic structure to follow mouse clics
 type MouseClick struct {
 	Click     bool
@@ -381,20 +374,20 @@ func main() {
 	homeDir, _ = homedir.Dir()
 
 	flag.Usage = func() {
-		fmt.Println(ColorYellow + "Usage: mi-ide [OPTIONS] [FILE]..." + ColorReset)
-		fmt.Println(ColorBold + "Available options" + ColorReset)
-		fmt.Println(ColorBCyan + "--config-dir dir" + ColorReset)
+		fmt.Println(colorYellow + "Usage: mi-ide [OPTIONS] [FILE]..." + colorReset)
+		fmt.Println(colorBold + "Available options" + colorReset)
+		fmt.Println(colorBCyan + "--config-dir dir" + colorReset)
 		fmt.Println("    Specify a custom location for the configuration directory")
-		fmt.Println(ColorBCyan + "--version" + ColorReset)
+		fmt.Println(colorBCyan + "--version" + colorReset)
 		fmt.Println("    Show the version number")
-		fmt.Println(ColorBCyan + "\nQuick intro" + ColorReset)
-		fmt.Println(ColorBold + "    Ctrl-o     : " + ColorReset + "Open file")
-		fmt.Println(ColorBold + "    Ctrl-s     : " + ColorReset + "Save")
-		fmt.Println(ColorBold + "    Ctrl-t     : " + ColorReset + "Create new tab")
-		fmt.Println(ColorBold + "    Ctrl-w     : " + ColorReset + "Close current tab, helper window")
-		fmt.Println(ColorBold + "    Ctrl-q     : " + ColorReset + "Exit")
-		fmt.Println(ColorBold + "    Arrows     : " + ColorReset + "Move cursor around")
-		fmt.Println(ColorBold + "    Ctrl-e     : " + ColorReset + "Enter command mode, tab to see list of commands")
+		fmt.Println(colorBCyan + "\nQuick intro" + colorReset)
+		fmt.Println(colorBold + "    Ctrl-o     : " + colorReset + "Open file")
+		fmt.Println(colorBold + "    Ctrl-s     : " + colorReset + "Save")
+		fmt.Println(colorBold + "    Ctrl-t     : " + colorReset + "Create new tab")
+		fmt.Println(colorBold + "    Ctrl-w     : " + colorReset + "Close current tab, helper window")
+		fmt.Println(colorBold + "    Ctrl-q     : " + colorReset + "Exit")
+		fmt.Println(colorBold + "    Arrows     : " + colorReset + "Move cursor around")
+		fmt.Println(colorBold + "    Ctrl-e     : " + colorReset + "Enter command mode, tab to see list of commands")
 		fmt.Println("                 Ctrl-e help defaultkeys")
 	}
 
