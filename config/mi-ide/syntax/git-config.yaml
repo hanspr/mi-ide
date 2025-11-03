@@ -4,11 +4,9 @@ detect:
     filename: "git(config|modules)$|\\.git/config$"
 
 rules:
-    - constant: "\\<(true|false)\\>"
-    - type.keyword: "^[[:space:]]*[^=]*="
+    - type: "^[[:space:]]*[^=]*="
     - constant: "^[[:space:]]*\\[.*\\]$"
-    - constant: "\"(\\\\.|[^\"])*\"|'(\\\\.|[^'])*'"
-    - comment:
-        start: "#"
-        end: "$"
-        rules: []
+    - constant.string: "\"(\\\\.|[^\"])*\"|'(\\\\.|[^'])*'"
+    - constant: "(?:true|false)"
+    - comment: "^\\s*#"
+    - constant.string.url: "(ftp(s)?|http(s)?|git|chrome)://[^ \\t\\'\"]+"
