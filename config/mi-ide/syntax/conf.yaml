@@ -1,7 +1,7 @@
 filetype: conf
 
 detect:
-    filename: "(passwd)$|\\.(c[o]?nf(ig)?|ini|mime|default|cfg)$"
+    filename: "(passwd|_config)$|\\.(c[o]?nf(ig)?|ini|mime|default|cfg)$"
     header: "##+"
 
 rules:
