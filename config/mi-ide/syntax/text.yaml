@@ -8,5 +8,5 @@ rules:
     - underlined: "[_\\-:=\\*]{3,}"
     - constant.string: "\".*?\""
     - constant.string: "'.*?'"
-    - function: "^\\s*[\\p{L}\\p{N}\\s_]+:"
+    - function: "^\\s*[\\p{L}\\p{N}\\s_\\-]+:"
 
