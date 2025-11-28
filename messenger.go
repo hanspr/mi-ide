@@ -138,7 +138,7 @@ func (m *Messenger) Alert(kind string, msg ...any) {
 		case "success":
 			m.style = defStyle.Foreground(tcell.ColorGreen).Normal()
 		case "info":
-			clearTime = 20
+			clearTime = 10
 			m.style = defStyle.Foreground(tcell.ColorBlue).Bold(true)
 		default:
 			m.style = defStyle
