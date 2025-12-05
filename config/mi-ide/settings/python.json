@@ -11,7 +11,7 @@
     "indentchar": " ",
     "keepautoindent": true,
     "matchbrace": true,
-    "rmtrailingws": true,
+    "rmtrailingws": false,
     "smartindent": false,
     "smartpaste": true,
     "softwrap": false,

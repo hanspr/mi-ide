@@ -8,13 +8,14 @@ our $FILE = $ARGV[0];
 if (!$FILE || !-e $FILE || -d $FILE) {
     exit 1;
 }
+
 our $DEBUG = 0;
 
-IndentCode();
+PrityCode();
 
 exit 0;
 
-sub IndentCode {
+sub PrityCode {
     my ($indent, $lc, @quoted_parts, $ci);
     my $L  = 0;
     my $I  = 0;
@@ -31,40 +32,14 @@ sub IndentCode {
         $l =~ s/ +$//;
         $lc = $l;
         $lc =~ s/\n|\r//g;
-        if (!$lc || $lc =~ /^--/) {
+        if (!$lc || $lc =~ /^\s*#/) {
             print O $l;
             next;
-        }
-        # Set indentetion
-        $ci = $I;
-        if ($lc =~ /else/) {
-            print "  reduce indent\n";
-            $ci--;
-        } elsif ($lc =~ /then$|function| do$/) {
-            print "  add indent\n";
-            $I++;
-        } elsif ($lc =~ /end\s*$/) {
-            print "  remove indent\n";
-            $I--;
-            $ci--;
-        }
-        if ($DEBUG) {
-            print "  $I , $ci\n";
-        }
-        $indent = $ch x ($sp * $ci);
-        if ($DEBUG) {
-            print "  indent = '$indent'\n";
         }
         $lc =~ /^(\s+)/;
         if ($DEBUG) {
             print "  current intent = '$1'\n";
             print "  ", length($indent), "!=", length($1), "\n";
-        }
-        if (length($indent) != length($1)) {
-            if ($DEBUG) {
-                print "  apply indentation\n";
-            }
-            $l =~ s/^\s*/$indent/;
         }
         # Format Text
         # Remove quoted so we do not touch it

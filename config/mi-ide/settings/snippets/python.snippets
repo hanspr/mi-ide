@@ -91,26 +91,26 @@ snippet ld
 	${1:var} = lambda ${2:vars} : ${0:action}
 snippet .
 	self.
-snippet try Try/Except
+snippet tryexept
 	try:
 		${1}
 	except ${2:Exception}, ${3:e}:
 		${0:raise $3}
-snippet try Try/Except/Else
+snippet tryelse
 	try:
 		${1}
 	except ${2:Exception}, ${3:e}:
 		${4:raise $3}
 	else:
 		${0}
-snippet try Try/Except/Finally
+snippet tryfinal
 	try:
 		${1}
 	except ${2:Exception}, ${3:e}:
 		${4:raise $3}
 	finally:
 		${0}
-snippet try Try/Except/Else/Finally
+snippet tryelsefinal
 	try:
 		${1}
 	except ${2:Exception}, ${3:e}:
