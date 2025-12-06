@@ -36,11 +36,6 @@ sub PrityCode {
             print O $l;
             next;
         }
-        $lc =~ /^(\s+)/;
-        if ($DEBUG) {
-            print "  current intent = '$1'\n";
-            print "  ", length($indent), "!=", length($1), "\n";
-        }
         # Format Text
         # Remove quoted so we do not touch it
         @quoted_parts = safesplit($l);
@@ -52,20 +47,23 @@ sub PrityCode {
             $l =~ s/$q/XXXXXX$i/g;
         }
         if ($DEBUG) {
-            print "  No quotes : $l";
+            print "  No quotes : $l\n";
         }
         $l =~ s/([\w\"\)])(=|==|>|<|>=|<=|~=|\.\.|\*|\/)([-+\w\"\{])/$1 $2 $3/g;
         $l =~ s/([\d\w\"])(-|\+)([a-zA-Z\W\"])/$1 $2 $3/g;
         $l =~ s/\(\s+\)/\(\)/g;
         $l =~ s/,(\w)/, $1/g;
         $l =~ s/(\()\s+/$1/g;
-        $l =~ s/\s+(\))/$1/g;
+        $l =~ s/(\S)\s+(\))/$1$2/g;
         for (my $i = 0; $i < scalar(@quoted_parts); $i++) {
             my $q = $quoted_parts[$i];
             $l =~ s/XXXXXX$i/$q/g;
         }
+        if ($l !~ /\n$/) {
+            $l .= "\n";
+        }
         if ($DEBUG) {
-            print "  wt quotes : $l\n";
+            print "  wt quotes : $l";
         }
         # Print formated line
         print O $l;
