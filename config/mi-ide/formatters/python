@@ -30,8 +30,7 @@ sub PrityCode {
             print "line: $L\n$l";
         }
         $lc = $l;
-        $lc =~ s/ +$//;
-        $lc =~ s/\n|\r//g;
+        $lc =~ s/\s+$//;
         if (!$lc || $lc =~ /^#/) {
             print O $l;
             next;

@@ -50,4 +50,6 @@ rules:
         rules:
             - include: "javascript"
             - include: "html"
+            - include: "comments"
+            - comment: "^[ \\t]*//.*$"
 
