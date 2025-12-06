@@ -67,7 +67,7 @@ func (g *Gitstatus) GitSetStatus() {
 		if matches != nil {
 			branch = matches[1]
 		}
-	} else {
+	} else if branch != "" {
 		branch = branch[:len(branch)-1]
 	}
 	g.status = ""
