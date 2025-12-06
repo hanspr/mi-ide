@@ -29,10 +29,10 @@ sub PrityCode {
         if ($DEBUG) {
             print "line: $L\n$l";
         }
-        $l =~ s/ +$//;
         $lc = $l;
+        $lc =~ s/ +$//;
         $lc =~ s/\n|\r//g;
-        if (!$lc || $lc =~ /^\s*#/) {
+        if (!$lc || $lc =~ /^#/) {
             print O $l;
             next;
         }
@@ -51,10 +51,10 @@ sub PrityCode {
         }
         $l =~ s/([\w\"\)])(=|==|>|<|>=|<=|~=|\.\.|\*|\/)([-+\w\"\{])/$1 $2 $3/g;
         $l =~ s/([\d\w\"])(-|\+)([a-zA-Z\W\"])/$1 $2 $3/g;
-        $l =~ s/\(\s+\)/\(\)/g;
+        $l =~ s/\([ \t]+\)/\(\)/g;
         $l =~ s/,(\w)/, $1/g;
-        $l =~ s/(\()\s+/$1/g;
-        $l =~ s/(\S)\s+(\))/$1$2/g;
+        $l =~ s/(\()[ \t]+/$1/g;
+        $l =~ s/(\S)[ \t]+(\))/$1$2/g;
         for (my $i = 0; $i < scalar(@quoted_parts); $i++) {
             my $q = $quoted_parts[$i];
             $l =~ s/XXXXXX$i/$q/g;
