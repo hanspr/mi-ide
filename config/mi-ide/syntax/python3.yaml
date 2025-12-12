@@ -35,17 +35,21 @@ rules:
     - constant.string: "\"[^\"\\\\]*(?:\\\\.[^\"\\\\]*)*\""
     - constant.string: "\'[^\'\\\\]*(?:\\\\.[^\'\\\\]*)*\'"
     - include: "comments"
-    - comment: "^[ \\t]*#.*$"
     - comment: "[ \\t]+#.*$"
-
-    - constant.string:
-        start: "\"\"\""
-        end: "\"\"\""
-        rules: []
 
     - comment:
         start: "'''"
         end: "'''"
+        rules: []
+
+    - comment:
+        start: "^[ \\t]*#"
+        end: "$"
+        rules: []
+
+    - constant.string:
+        start: "\"\"\""
+        end: "\"\"\""
         rules: []
 
     - constant.string:
@@ -54,7 +58,7 @@ rules:
         skip: "\\\\."
         rules:
             - constant.specialChar: "\\\\."
-            - default: "{.+?}"
+            - identifier.var: "{.+?}"
             - constant.string: "\".+?\""
             - symbol.brackets: "([(){}]|\\[|\\])"
 
@@ -64,7 +68,7 @@ rules:
         skip: "\\\\."
         rules:
             - constant.specialChar: "\\\\."
-            - default: "{.+?}"
+            - identifier.var: "{.+?}"
             - constant.string: "\'.+?\'"
             - symbol.brackets: "([(){}]|\\[|\\])"
 
