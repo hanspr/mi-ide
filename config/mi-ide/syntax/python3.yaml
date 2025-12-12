@@ -32,7 +32,11 @@ rules:
       # numbers
     - constant.number: "\\b[0-9]+\\b"
     - constant.string.char: "\\b[A-Z_][A-Z_0-9]+\\b"
+    - constant.string: "\"[^\"\\\\]*(?:\\\\.[^\"\\\\]*)*\""
+    - constant.string: "\'[^\'\\\\]*(?:\\\\.[^\'\\\\]*)*\'"
     - include: "comments"
+    - comment: "^[ \\t]*#.*$"
+    - comment: "[ \\t]+#.*$"
 
     - constant.string:
         start: "\"\"\""
@@ -44,22 +48,23 @@ rules:
         end: "'''"
         rules: []
 
-    #- comment:
-        #start: "#"
-        #end: "$"
-        #rules: []
-
     - constant.string:
-        start: "\""
-        end: "\""
-        skip: "\\\\."
-        rules:
-            - constant.specialChar: "\\\\."
-
-    - constant.string:
-        start: "'"
+        start: "f'"
         end: "'"
         skip: "\\\\."
         rules:
             - constant.specialChar: "\\\\."
+            - default: "{.+?}"
+            - constant.string: "\".+?\""
+            - symbol.brackets: "([(){}]|\\[|\\])"
+
+    - constant.string:
+        start: "f\""
+        end: "\""
+        skip: "\\\\."
+        rules:
+            - constant.specialChar: "\\\\."
+            - default: "{.+?}"
+            - constant.string: "\'.+?\'"
+            - symbol.brackets: "([(){}]|\\[|\\])"
 
