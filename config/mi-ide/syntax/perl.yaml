@@ -38,6 +38,8 @@ rules:
     - constant.string.url: "(ftp(s)?|http(s)?|git|chrome)://[^ \\t\\'\"]+"
     - comment: "^[ \\t]*#.*$"
     - include: "comments"
+    - comment: "^[ \\t]*#.*$"
+    - comment: "[ \\t]+#.*$"
     - label: "^[\\t ]*\\w+:$"
     - default: "^[\\t ]+"
     - constant.string:
@@ -52,4 +54,5 @@ rules:
             - include: "html"
             - include: "comments"
             - comment: "^[ \\t]*//.*$"
+            - comment: "[ \\t]+//.*$"
 

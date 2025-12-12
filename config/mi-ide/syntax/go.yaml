@@ -36,6 +36,8 @@ rules:
     - constant.string: "\'.*?\'"
     - constant.string: "\\`.*?\\`"
     - include: "comments"
+    - comment: "^[ \\t]*//.*$"
+    - comment: "[ \\t]+//.*$"
     - label: "^[\\t ]*\\w+:$"
     - default: "^[\\t ]+"
     - comment: "//.+$"
