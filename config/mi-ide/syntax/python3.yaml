@@ -34,17 +34,13 @@ rules:
     - constant.string.char: "\\b[A-Z_][A-Z_0-9]+\\b"
     - constant.string: "\"[^\"\\\\]*(?:\\\\.[^\"\\\\]*)*\""
     - constant.string: "\'[^\'\\\\]*(?:\\\\.[^\'\\\\]*)*\'"
-    - include: "comments"
+    - comment: "^[ \\t]*#.*$"
     - comment: "[ \\t]+#.*$"
+    - include: "comments"
 
     - comment:
         start: "'''"
         end: "'''"
-        rules: []
-
-    - comment:
-        start: "^[ \\t]*#"
-        end: "$"
         rules: []
 
     - constant.string:

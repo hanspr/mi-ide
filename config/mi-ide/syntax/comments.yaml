@@ -4,8 +4,17 @@ detect:
     filename: "\\.comments$"
 
 rules:
-    # Operators
-    - info: "^[ \\t]*(?:#|//|--) ?(?:\\w+):.*$"
-    - todo: "(?i)^[ \\t]*(?:#|//|--) ?TODO:.*$"
-    - error: "(?i)^[ \\t]*(?:#|//|--) ?FIX:.*$"
-    - default: "^[\\t ]+"
+    - todo:
+        start: "(?i)^[ \\t]*(?:#|//|--) ?TODO:"
+        end: "$"
+        rules: []
+
+    - error:
+        start: "(?i)^[ \\t]*(?:#|//|--) ?FIX:"
+        end: "$"
+        rules: []
+
+    - info:
+        start: "^[ \\t]*(?:#|//|--) ?(?:\\w+):"
+        end: "$"
+        rules: []
