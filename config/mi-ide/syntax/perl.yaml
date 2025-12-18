@@ -55,4 +55,32 @@ rules:
             - include: "comments"
             - comment: "^[ \\t]*//.*$"
             - comment: "[ \\t]+//.*$"
+    - comment:
+        start: "__END__"
+        end: "to the end of the document"
+        rules:
+            # Tables (markup style)
+            - normal: ".*\\|.*"
+            - md-table: "(?:\\|.+?)+\\|"
+            - md-bold: "^\\|[^\\|]+"
+            - statusline: "\\|"
+            - constant: "^=.+"
+            - constant.string.url: "(ftp(s)?|http(s)?|git|chrome)://[^ \\t\\'\"]+"
+            - constant.string: "\".+?\""
+            - constant.string: "\'.*?\'"
+            - invisible:
+                start: "B<"
+                end: ">"
+                rules:
+                    - identifier.var: ".+"
+                    - constant.string: "\".+?\""
+                    - constant.string: "\'.*?\'"
+            - invisible:
+                start: "I<"
+                end: ">"
+                rules:
+                    - symbol.tag: ".+"
+                    - constant.string: "\".+?\""
+                    - constant.string: "\'.*?\'"
+
 
