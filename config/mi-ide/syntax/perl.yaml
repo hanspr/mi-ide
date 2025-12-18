@@ -56,7 +56,7 @@ rules:
             - comment: "^[ \\t]*//.*$"
             - comment: "[ \\t]+//.*$"
     - comment:
-        start: "__END__"
+        start: "^__END__$"
         end: "to the end of the document"
         rules:
             # Tables (markup style)
@@ -82,5 +82,3 @@ rules:
                     - symbol.tag: ".+"
                     - constant.string: "\".+?\""
                     - constant.string: "\'.*?\'"
-
-
