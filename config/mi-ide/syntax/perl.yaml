@@ -57,7 +57,7 @@ rules:
             - comment: "[ \\t]+//.*$"
     - comment:
         start: "^__END__$"
-        end: "to the end of the document"
+        end: "^__EOF__$"
         rules:
             # Tables (markup style)
             - normal: ".*\\|.*"
