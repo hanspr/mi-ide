@@ -42,19 +42,21 @@ rules:
     - comment: "[ \\t]+#.*$"
     - label: "^[\\t ]*\\w+:$"
     - default: "^[\\t ]+"
+
     - constant.string:
         start: "q’"
         end: "’[\\)\\'\\\"]*?;"
         rules: []
+
     - default:
         start: "qq?[¡”·•]"
         end: "[¡”·•]\\)?;?"
         rules:
             - include: "javascript"
             - include: "html"
-            - include: "comments"
             - comment: "^[ \\t]*//.*$"
             - comment: "[ \\t]+//.*$"
+
     - comment:
         start: "^__END__$"
         end: "^__EOF__$"

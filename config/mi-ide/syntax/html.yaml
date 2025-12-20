@@ -8,8 +8,6 @@ rules:
     - error: "<[^!].*?>"
     - symbol.tag: "</?.+?/?>"
     - symbol.tag: "</?[A-Za-z0-9:]+/?[ >]"
-
-
     - method: "(?i)<[/]?(body|div|html|head(er)?|footer|title|table|t(body|d|h(ead)?|r|foot)).*?>"
     - statement: "(?i)<(?:a|button||embed|form|iframe|in(put|s)|link|ma(in|p|rk)|met(a|er)|nav|noscript|o(bject|pt(group|ion)|utput)|se(ction|lect)|textarea|time|var|video|wbr) .*?>"
     - statement: "(?i)</(?:a|button||embed|form|iframe|in(put|s)|link|ma(in|p|rk)|met(a|er)|nav|noscript|o(bject|pt(group|ion)|utput)|se(ction|lect)|textarea|time|var|video|wbr) *>"
@@ -30,6 +28,11 @@ rules:
     - preproc: "<!DOCTYPE.+?>"
     - identifier.var: "[\\$@%]\\$*[\\p{L}\\p{N}_]+"
 
+    - comment:
+        start: "<!--$"
+        end: "-->$"
+        rules: []
+
     - default:
         start: "<script.*?>"
         end: "</script.*?>"
@@ -43,8 +46,3 @@ rules:
         limit-group: symbol.tag
         rules:
             - include: "css"
-
-    - comment:
-        start: "<!--$"
-        end: "-->$"
-        rules: []
