@@ -22,7 +22,7 @@ rules:
     - symbol.brackets: "(\\{|\\})"
     - symbol.brackets: "(\\(|\\))"
     - symbol.brackets: "(\\[|\\])"
-#    - default: "\\\\[/\\|\\-+*\\.{}[\\]()]"
+    - default: "\\\\[/\\|\\-+*\\.{}[\\]()]"
     - preproc: "\\$?(([\\p{L}\\p{N}_])+(?:::|->))+"
     - preproc: "use .+?(\\s|;$)"
     - preproc: "^no .+?;$"
