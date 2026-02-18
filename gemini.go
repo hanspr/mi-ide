@@ -29,7 +29,7 @@ func (g *geminiConnect) ask(question string) {
 		thinkingBudgetVal := int32(0)
 		result, err := g.client.Models.GenerateContent(
 			ctx,
-			"gemini-2.5-flash",
+			"gemini-3-flash-preview",
 			genai.Text(question),
 			&genai.GenerateContentConfig{
 				ThinkingConfig: &genai.ThinkingConfig{
