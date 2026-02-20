@@ -1,9 +1,9 @@
 {
     "autoclose": true,
     "autoindent": true,
-    "blockclose": "^[}\\\\])]",
-    "blockinter": "^[}\\\\])].+?[{[(]$|:$",
-    "blockopen": "[{[\\\\(]$",
+    "blockclose": "^[}\\])]|</\\w+>",
+    "blockinter": "^[}\\])].+?[{[(]$|:$",
+    "blockopen": "[{[(]$|<\\w+[^/]+?>",
     "comment": "//",
     "eofnewline": false,
     "fileformat": "unix",
