@@ -1,12 +1,13 @@
 {
     "autoclose": true,
     "autoindent": true,
-    "blockclose": "^[}\\])]|^\\s*</\\w+>",
+    "blockclose": "^[}\\])]",
     "blockinter": "^[}\\])].+?[{[(]$|:$",
-    "blockopen": "[{[(]$|<\\w+[^/]+?>$",
+    "blockopen": "[{[\\(]$",
     "comment": "//",
-    "eofnewline": false,
+    "eofnewline": true,
     "fileformat": "unix",
+    "findfuncregex": "^\\s*function\\s+%word%[\\s\\(]|%word%\\s*=\\s*(?:function|\\(?:.*?\\)\\s*=\u003e)[\\s\\(]",
     "indentchar": " ",
     "keepautoindent": true,
     "matchbrace": true,
@@ -16,7 +17,7 @@
     "softwrap": false,
     "tabindents": true,
     "tabmovement": true,
-    "tabsize": 2,
+    "tabsize": 4,
     "tabstospaces": true,
-    "useformatter": false
+    "useformatter": true
 }
