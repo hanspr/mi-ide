@@ -28,7 +28,7 @@ rules:
     - preproc: "^no .+?;$"
     - constant.string: "\"[^\"\\\\]*(?:\\\\.[^\"\\\\]*)*\""
     - constant.string: "qq[“°].*[“°]"
-    - statement: "(?i)\\b(insert|into|values|update|set|delete|select|from|where|and|or|isnull|join|left|right|outer|as|order by|limit|distinct|on)\\b"
+    - statement: "(?i)\\s(insert|into|values|update|set|delete|select|from|where|and|or|isnull|join|left|right|outer|as|order by|limit|distinct|on)\\s"
     - identifier.var: "[\\$@%]\\$*[\\p{L}\\p{N}_]*"
     - identifier.var: "\\$+\\{[\\p{L}\\p{N}_]+\\}"
     - identifier.var: "\\$\\W"
