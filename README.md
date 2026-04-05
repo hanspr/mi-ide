@@ -26,11 +26,14 @@ What is this editor's philosophy:
 
 The original motivation came from the usual experience of searching for an editor when I began coding. Vim is too hard for me, nano way too simple.
 
-I eventually landed with jed editor. It had the basic features that I liked, but again too limited and very difficult to enhance it. I did learn slang and did some hacking to it, but the framework had many limitations for me to grow it.
+I eventually landed with [jed](https://github.com/jedsoft/jed) editor. It had the basic features that I liked, but again too limited and very difficult to enhance it.
+I did learn slang and did some hacking to it, but the framework had many limitations for me to grow it.
 
-And one day I discover micro. Written in go. I was very interested in learning go. So I downloaded, installed, and run it. And at that time it was very promissing, but it was full of bugs that made it impractical (have to say that since then, I have't followed the project so I'm sure many issues were resolved).
+And one day I discovered [micro](https://github.com/micro-editor/micro). Written in go, I was very interested in learning go. So I downloaded, installed, and run it.
+And at that time it was very promissing, but it was full of bugs that made it impractical (have to say that since then, I have't followed the project so I'm sure many issues were resolved).
 
-But I took this opportunity to grab a book and started learning go. Jumped into the code, and after 3 months, I managed to remove most of the bugs, and began using it daily and little by little grow it to fit my needs. Which drove me very far away from the original project.
+But I took this opportunity to grab a book and started learning go. Jumped into the code, and after 3 months, I managed to remove most of the bugs, and began using it daily and little by little grow it to fit my needs.
+Which drove me very far away from the original project.
 
 So this is the result of it, check the manual and see if it would fill your requirements. And if not, grab it, change it and customize it to your needs.
 
@@ -57,10 +60,10 @@ So this is the result of it, check the manual and see if it would fill your requ
     - Place the binary in any location on your home directory, for example
         - `mv mi-ide ~/.local/bin`
         - `chmod 770 ~/.local/bin/mi-ide`
-    - Create an alias in your `.bashrc` or `.bash_aliases` to the location of your executable
+    - Create an alias to set your own name in your `.bashrc` or `.bash_aliases` to the location of your executable
         - Change to your home directory : `cd`
         - Edit : `nano .bashrc` or `nano .bash_aliases`
-        - Add : `alias mi-ide='~/.local/bin/mi-ide'`
+        - Add : `alias edit='~/.local/bin/mi-ide'`
         - Reload changes: `. .bashrc` or `. .bash_aliases`
     - Execute mi-ide.
         - The first time you run the editor will download the configurations from github.
