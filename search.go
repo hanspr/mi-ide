@@ -224,7 +224,7 @@ func DialogSearch(searchStr string) string {
 			d1 = len(line) - xs[0].X
 			d2 = len(line) - xs[1].X
 		}
-		return string(line[x1:xs[0].X+d1]) + "{f}" + v.Cursor.GetSelection() + "{/f}" + string(line[xs[1].X+d2:])
+		return string(line[x1:xs[0].X+d1]) + "{1}" + v.Cursor.GetSelection() + "{/1}" + string(line[xs[1].X+d2:])
 	}
 	return ""
 }

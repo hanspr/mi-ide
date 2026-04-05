@@ -981,7 +981,7 @@ func (m *microMenu) Search(callback func(map[string]string)) {
 		width := 70
 		height := 8
 		f = m.myapp.AddFrame("f", -1, -1, width, height, "relative")
-		m.myapp.AddStyle("f", "black,yellow")
+		m.myapp.AddStyle("1", "black,yellow")
 		f.AddWindowBox("enc", Language.Translate("Search"), 0, 0, width, height, true, nil, "", "")
 		lbl := Language.Translate("Search regex:")
 		f.AddWindowTextBox("find", lbl+" ", "", "string", 2, 2, 61-Count(lbl), 50, m.SubmitSearchOnEnter, "", "")
@@ -1025,7 +1025,7 @@ func (m *microMenu) SearchReplace(callback func(map[string]string)) {
 		width := 70
 		height := 12
 		f = m.myapp.AddFrame("f", -1, -1, width, height, "relative")
-		m.myapp.AddStyle("f", "bold black,yellow")
+		m.myapp.AddStyle("1", "bold black,yellow")
 		f.AddWindowBox("enc", Language.Translate("Search / Replace"), 0, 0, width, height, true, nil, "", "")
 		lbl := Language.Translate("Search regex:")
 		f.AddWindowTextBox("search", lbl+" ", "", "string", 2, 2, 63-Count(lbl), 50, m.SubmitSearchOnEnter, "", "")
@@ -1139,7 +1139,7 @@ func (m *microMenu) SubmitSearchOnEnter(name, value, event, when string, x, y in
 	found = strings.TrimLeft(found, " ")
 	found = strings.TrimLeft(found, "\t")
 	if len(found) > 68 {
-		found = found[:67] + "{/f}"
+		found = found[:67] + "{/1}"
 	} else {
 		found = fmt.Sprintf("%-68s", found)
 	}
