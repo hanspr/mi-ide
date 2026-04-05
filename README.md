@@ -17,10 +17,10 @@ What is this editor's philosophy:
   * __Snippets__
   * Good set of commands and key actions to help writing code fluently
   * A new approach to keybindins to __maintain the hands on the keyboard__ as much as possible
-  * A clipboard that works across editors in diferente terminals and servers (__cloud clipboard__)
+  * A clipboard that works across editors in diferent terminals and servers (__cloud clipboard__)
   * A plugin system to enhance the experience of developing in a particular language
   * __Syntax highlight__
-  * __Gemini__ : access to google gemeini
+  * __Gemini__ : access to google gemini
   * A beautiful interface (why not)
 * My particular setup is : tmux, lazygit and mi-ide. With this combination I have a very usefull development environment on my remote servers.
 
