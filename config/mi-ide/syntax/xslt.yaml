@@ -15,6 +15,8 @@ rules:
     - special: "(;[A-Za-z0-9_;]+)[;\\]]"
     - type.keyword: "(current|match|select|test) ?="
     - type.keyword: "</?xsl:[A-Za-z\\-]+[ >]"
+    - constant.string: "\".*?\""
+    - constant.string.url: "(ftp(s)?|http(s)?|git|chrome)://[^ \\t\\'\"]+"
     - comment: "<!.*-[ \t]*>"
     - type:
         start: "<style>"
