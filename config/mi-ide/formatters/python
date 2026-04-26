@@ -17,10 +17,11 @@ exit 0;
 
 sub PrityCode {
     my ($indent, $lc, @quoted_parts, $ci);
-    my $L  = 0;
-    my $I  = 0;
-    my $ch = " ";
-    my $sp = 4;
+    my $L           = 0;
+    my $I           = 0;
+    my $ch          = " ";
+    my $sp          = 4;
+    my $permissions = (stat($FILE))[2] & 07777;
 
     open(F, "<:utf8", $FILE)       or exit 1;
     open(O, ">:utf8", "$FILE.tmp") or exit 1;
@@ -75,6 +76,7 @@ sub PrityCode {
     close F;
     if (!$DEBUG) {
         system "mv -f $FILE.tmp $FILE";
+        chmod($permissions, $FILE);
     }
 }
 
