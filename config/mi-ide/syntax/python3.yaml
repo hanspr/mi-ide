@@ -59,7 +59,7 @@ rules:
             - symbol.brackets: "([(){}]|\\[|\\])"
 
     - constant.string:
-        start: "f\"[^)]"
+        start: "\\bf\"[^)]"
         end: "\""
         skip: "\\\\."
         rules:
