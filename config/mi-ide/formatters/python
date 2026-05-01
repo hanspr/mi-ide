@@ -30,6 +30,25 @@ sub PrityCode {
         if ($DEBUG) {
             print "line: $L\n$l";
         }
+        if ($l =~ /"""/) {
+            if ($DEBUG) {
+                print "> enter triple quotes";
+            }
+            print O $l;
+            while (my $l2 = <F>) {
+                if ($DEBUG) {
+                    print "line: $L\n$l2";
+                }
+                print O $l2;
+                if ($l2 =~ /"""/) {
+                    if ($DEBUG) {
+                        print "< exit triple quotes";
+                    }
+                    last;
+                }
+            }
+            next;
+        }
         $lc = $l;
         $lc =~ s/\s+$//;
         if (!$lc || $lc =~ /^#/) {
@@ -40,6 +59,9 @@ sub PrityCode {
         # Remove quoted so we do not touch it
         @quoted_parts = safesplit($l);
         for (my $i = 0; $i < scalar(@quoted_parts); $i++) {
+            if ($DEBUG) {
+                print "  part >>> $quoted_parts[$i]\n";
+            }
             my $q = quotemeta($quoted_parts[$i]);
             if ($DEBUG) {
                 print "  quoted string >>> $q\n";
@@ -88,10 +110,6 @@ sub safesplit {
 
     for (my $i = 0; $i < length($string); $i++) {
         my $c = substr($string, $i, 1);
-        if ($quote && $c eq '\\') {
-            $i++;
-            next;
-        }
         if ($quote && $c eq $quote) {
             $part .= $c;
             $quote = 0;
