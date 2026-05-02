@@ -159,6 +159,16 @@ func LoadInput() []*Buffer {
 		// Option 1
 		// We go through each file and load it
 		for i := range args {
+			if strings.HasPrefix(args[i], "+") {
+				if strings.Contains(args[i], ":") {
+					split := strings.Split(args[i], ":")
+					*flagStartPos = split[0][1:] + "," + split[1]
+				} else {
+					*flagStartPos = args[i][1:] + ",0"
+				}
+				continue
+			}
+
 			buf, err = NewBufferFromFile(args[i])
 			if err != nil {
 				TermMessage(err)
@@ -348,6 +358,7 @@ func Finish(status int) {
 // Command line flags
 var flagVersion = flag.Bool("version", false, "Show the version number and information")
 var flagConfigDir = flag.String("config-dir", "", "Specify a custom location for the configuration directory")
+var flagStartPos = flag.String("startpos", "", "LINE,COL to start the cursor at when opening a buffer.")
 
 // var flagOptions = flag.Bool("options", false, "Show all option help")
 
@@ -470,6 +481,7 @@ func main() {
 		for _, t := range tabs {
 			for _, v := range t.Views {
 				v.Center(false)
+				v.savedLoc = v.Cursor.Loc
 			}
 			t.Resize()
 
@@ -570,7 +582,6 @@ func main() {
 	messenger.style = defStyle
 	CurView().SetCursorEscapeString()
 	git.GitSetStatus()
-
 	// Here is the event loop which runs in a separate thread
 	go func() {
 		for {

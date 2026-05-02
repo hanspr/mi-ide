@@ -9,6 +9,7 @@ import (
 	"path/filepath"
 	"reflect"
 	"regexp"
+	"strconv"
 	"strings"
 	"syscall"
 	"time"
@@ -232,9 +233,9 @@ func NewBuffer(reader io.Reader, size int64, path string) *Buffer {
 	if _, err := os.Stat(configDir + "/buffers/"); os.IsNotExist(err) {
 		os.Mkdir(configDir+"/buffers/", os.ModePerm)
 	}
-
+	cursorLocation := GetBufferCursorLocation(b)
 	b.Cursor = Cursor{
-		Loc: Loc{0, 0},
+		Loc: cursorLocation,
 		buf: b,
 	}
 	InitLocalSettings(b)
@@ -242,6 +243,38 @@ func NewBuffer(reader io.Reader, size int64, path string) *Buffer {
 	b.cursors = []*Cursor{&b.Cursor}
 	b.pasteLoc.X = -1
 	return b
+}
+
+func GetBufferCursorLocation(b *Buffer) Loc {
+	var lineNum, colNum int
+	var errPos1, errPos2 error
+
+	c := Loc{0, 0}
+	if len(*flagStartPos) > 0 {
+		//TermMessage("startpos:", *flagStartPos)
+		positions := strings.Split(*flagStartPos, ",")
+		if len(positions) == 2 {
+			lineNum, errPos1 = strconv.Atoi(positions[0])
+			colNum, errPos2 = strconv.Atoi(positions[1])
+		}
+		if errPos1 != nil || errPos2 != nil {
+			return c
+		}
+		c.Y = lineNum - 1
+		c.X = colNum
+		if c.Y > b.NumLines-1 {
+			c.Y = b.NumLines - 1
+		} else if c.Y < 0 {
+			c.Y = 0
+		}
+		// Check to avoid column overflow
+		if c.X > len(b.Line(c.Y)) {
+			c.X = len(b.Line(c.Y))
+		} else if c.X < 0 {
+			c.X = 0
+		}
+	}
+	return c
 }
 
 // GetName returns the name that should be displayed in the statusline
