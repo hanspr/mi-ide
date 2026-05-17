@@ -49,6 +49,9 @@ sub PrityCode {
             }
             next;
         }
+        if ($l =~ /\S[\t ]+$/) {
+            $l =~ s/[\t ]+$//;
+        }
         $lc = $l;
         $lc =~ s/\s+$//;
         if (!$lc || $lc =~ /^#/) {

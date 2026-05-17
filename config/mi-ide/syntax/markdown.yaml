@@ -65,7 +65,7 @@ rules:
             - default: "."
             - include: "perl"
     - label:
-        start: "^```javascript$"
+        start: "^```(?:javascript|ts)$"
         end: "^```$"
         rules:
             - default: "."
@@ -89,6 +89,18 @@ rules:
             - default: "."
             - include: "python"
     - label:
+        start: "^```(?:bash|sh|zsh)$"
+        end: "^```$"
+        rules:
+            - default: "."
+            - include: "shell"
+    - label:
+        start: "^```ini$"
+        end: "^```$"
+        rules:
+            - default: "."
+            - include: "ini"
+    - label:
         start: "^```html$"
         end: "^```$"
         rules:
@@ -99,7 +111,7 @@ rules:
         start: "^```(?:\\w+)$"
         end: "^```$"
         rules:
-            - comment: "."
+           - line-number: "."
     - constant:
         start: "^```$"
         end: "^```$"
