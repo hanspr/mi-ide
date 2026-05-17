@@ -273,7 +273,22 @@ func (v *View) paste(clip string) {
 				clip = clip + "\n"
 			}
 		}
-		v.Buf.Insert(v.Cursor.Loc, clip)
+		if v.isOverwriteMode {
+			spaceLeft := v.Buf.LineLen(v.Cursor.Y) - v.Buf.Cursor.X
+			if multiline || Count(clip) > spaceLeft {
+				// is multiline or current length from cursor position is smaller than clip
+				// remove to the end of the current line and do a regular instert
+				// its safer than overwrite everything, is not obvious to visualize where will the overwrite end
+				// and easier to undo
+				v.Buf.Remove(v.Cursor.Loc, Loc{v.Buf.Cursor.X + spaceLeft, v.Buf.Cursor.Y})
+				v.Buf.Insert(v.Cursor.Loc, clip)
+			} else {
+				// clip fits in current line replace the text
+				v.Buf.Replace(v.Cursor.Loc, Loc{v.Cursor.X + Count(clip), v.Cursor.Y}, clip)
+			}
+		} else {
+			v.Buf.Insert(v.Cursor.Loc, clip)
+		}
 		x := v.Cursor.Loc.X
 		spc := CountLeadingWhitespace(v.Buf.Line(v.Cursor.Y))
 		v.Buf.SmartIndent(Start, v.Cursor.Loc)

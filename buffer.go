@@ -889,6 +889,11 @@ func (b *Buffer) LineRunes(n int) []rune {
 	return toRunes(b.lines[n].data)
 }
 
+// LineLen returns the length of a line
+func (b *Buffer) LineLen(n int) int {
+	return len(b.LineRunes(n))
+}
+
 // Line returns a single line
 func (b *Buffer) Line(n int) string {
 	if n >= len(b.lines) {
