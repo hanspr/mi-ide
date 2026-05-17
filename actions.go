@@ -488,6 +488,24 @@ func (v *View) SelectWordRight(usePlugin bool) bool {
 	return true
 }
 
+// SelectPhraseLeft selects the words to the left of the cursor
+func (v *View) SelectPhraseLeft(usePlugin bool) bool {
+	if usePlugin && !PreActionCall("SelectWordLeft", v) {
+		return false
+	}
+
+	if !v.Cursor.HasSelection() {
+		v.Cursor.OrigSelection[0] = v.Cursor.Loc
+	}
+	v.Cursor.PhraseLeft()
+	v.Cursor.SelectTo(v.Cursor.Loc)
+
+	if usePlugin {
+		return PostActionCall("SelectWordLeft", v)
+	}
+	return true
+}
+
 // SelectWordLeft selects the word to the left of the cursor
 func (v *View) SelectWordLeft(usePlugin bool) bool {
 	if usePlugin && !PreActionCall("SelectWordLeft", v) {

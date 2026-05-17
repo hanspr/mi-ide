@@ -360,7 +360,7 @@ func (v *View) SnippetInsert(usePlugin bool) bool {
 	ok := false
 	curSn := &snippet{}
 	snAutoclose = false
-	if v.SelectWordLeft(false) {
+	if v.SelectPhraseLeft(false) {
 		name = c.GetSelection()
 	} else {
 		return false

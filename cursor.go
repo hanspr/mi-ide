@@ -244,6 +244,28 @@ func (c *Cursor) WordRight() {
 	}
 }
 
+// PhraseLeft moves the cursor one phrase to the left
+func (c *Cursor) PhraseLeft() {
+	// Reset paste location
+	c.buf.pasteLoc.X = -1
+
+	c.Left()
+	for IsWhitespace(c.RuneUnder(c.X)) {
+		if c.X == 0 {
+			return
+		}
+		c.Left()
+	}
+	c.Left()
+	for !IsWhitespace(c.RuneUnder(c.X)) {
+		if c.X == 0 {
+			return
+		}
+		c.Left()
+	}
+	c.Right()
+}
+
 // WordLeft moves the cursor one word to the left
 func (c *Cursor) WordLeft() {
 	// Reset paste location
