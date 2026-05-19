@@ -1,39 +1,32 @@
-snippet #!
-	#!/usr/bin/env python
-	# -*- coding: utf-8 -*-
-snippet #!3
-	#!/usr/bin/env python3
-	# -*- coding: utf-8 -*-
+# import
 snippet imp
 	import ${0:module}
-snippet uni
-	def __unicode__(self):
-		${0:representation}
 snippet from
 	from ${1:package} import ${0:module}
-# Module Docstring
-snippet docs
-	"""
-	File: ${1:`vim_snippets#Filename('$1.py', 'foo.py')`}
-	Author: `g:snips_author`
-	Email: `g:snips_email`
-	Github: `g:snips_github`
-	Description: ${0}
-	"""
-
-snippet wh
-	while ${1:condition}:
+# Code structure
+snippet ifmain
+	def main():
+		print("main")
+	
+	if __name__ == '__main__':
+		${0:main()}
+# init
+snippet _
+	__${1:init}__
+# file operations
+snippet open
+	with open("${1:expr}","${2:rwa}") as ${3:f}:
 		${0}
-# dowh - does the same as do...while in other languages
-snippet dowh
-	while True:
-		${1}
-		if ${0:condition}:
-			break
-snippet with
-	with ${1:expr} as ${2:var}:
-		${0}
-# New Class
+snippet slurp
+	with open("${1:expr}") as f:
+		content = f.read()
+snippet slurpl
+	with open("${1:expr}") as f:
+		content = f.readlines()
+snippet readline
+	for line in f:
+		line = line.strip()
+# Clases
 snippet cl
 	class ${1:ClassName}(${2:object}):
 		"""${3:docstring for $1}"""
@@ -41,19 +34,14 @@ snippet cl
 			${5:super($1, self).__init__()}
 			self.$4 = $4
 			${0}
-# New Function
+# Functions and Methods
 snippet def
-	def ${1:fname}(${2:`indent('.') ? 'self' : ''`}):
+	def ${1:fname}(${2:parameters}):
 		"""${3:docstring for $1}"""
 		${0}
-snippet deff
-	def ${1:fname}(${2:`indent('.') ? 'self' : ''`}):
-		${0}
-# New Method
 snippet defm
 	def ${1:mname}(self, ${2:arg}):
 		${0}
-# New Property
 snippet property
 	def ${1:foo}():
 		doc = "${2:The $1 property.}"
@@ -65,32 +53,21 @@ snippet property
 			${0:del self._$1}
 		return locals()
 	$1 = property(**$1())
-# Ifs
-snippet if
-	if ${1:condition}:
-		${0}
-snippet el
-	else:
-		${0}
-snippet ei
-	elif ${1:condition}:
-		${0}
-# For
+# Loops
 snippet for
 	for ${1:item} in ${2:items}:
 		${0}
-# Encodes
-snippet cutf8
-	# -*- coding: utf-8 -*-
-snippet clatin1
-	# -*- coding: latin-1 -*-
-snippet cascii
-	# -*- coding: ascii -*-
+snippet wh
+	while ${1:condition}:
+		${0}
+snippet with
+	with ${1:expr} as ${2:var}:
+		${0}
+		break
 # Lambda
 snippet ld
 	${1:var} = lambda ${2:vars} : ${0:action}
-snippet .
-	self.
+# Try Catch
 snippet tryexept
 	try:
 		${1}
@@ -119,124 +96,21 @@ snippet tryelsefinal
 		${5}
 	finally:
 		${0}
-# if __name__ == '__main__':
-snippet ifmain
-	if __name__ == '__main__':
-		${0:main()}
-# __magic__
-snippet _
-	__${1:init}__
-# python debugger (pdb)
-snippet pdb
-	import pdb
-	pdb.set_trace()
-# bpython debugger (bpdb)
-snippet bpdb
-	import bpdb
-	bpdb.set_trace()
-# ipython debugger (ipdb)
-snippet ipdb
-	import ipdb
-	ipdb.set_trace()
-# embed ipython itself
-snippet iem
-	import IPython
-	IPython.embed()
-# ipython debugger (pdbbb)
-snippet pdbbb
-	import pdbpp
-	pdbpp.set_trace()
-# remote python debugger (rpdb)
-snippet rpdb
-	import rpdb
-	rpdb.set_trace()
-# ptpython
-snippet ptpython
-	from ptpython.repl import embed
-	embed(globals(), locals(), vi_mode=${1:False}, history_filename=${2:None})
-# python console debugger (pudb)
-snippet pudb
-	import pudb
-	pudb.set_trace()
-# pdb in nosetests
-snippet nosetrace
-	from nose.tools import set_trace
-	set_trace()
-snippet pprint
-	import pprint
-	pprint.pprint(${1})
-snippet "
-	"""${0:doc}
+# list comprehension
+snippet lc-func
+	${1:new_list} = [${2:func_name}(item) for item in ${3:list}]
+snippet lc-filterlist
+	def filter_list(words, remove_list):
+	    return [word for word in words if word not in remove_list]
+snippet lc-filterstring
+	def filter_string(sentence, remove_words):
+	    return " ".join([word for word in sentence.split() if word not in remove_words])
+# documentation
+snippet docs
 	"""
-# assertions
-snippet a=
-	self.assertEqual(${0}, ${1})
-# test function/method
-snippet test
-	def test_${1:description}(${2:`indent('.') ? 'self' : ''`}):
-		${0}
-# test case
-snippet testcase
-	class ${1:ExampleCase}(unittest.TestCase):
-
-		def test_${2:description}(self):
-			${0}
-snippet fut
-	from __future__ import ${0}
-#getopt
-snippet getopt
-	try:
-		# Short option syntax: "hv:"
-		# Long option syntax: "help" or "verbose="
-		opts, args = getopt.getopt(sys.argv[1:], "${1:short_options}", [${2:long_options}])
-
-	except getopt.GetoptError, err:
-		# Print debug info
-		print str(err)
-		${3:error_action}
-
-	for option, argument in opts:
-		if option in ("-h", "--help"):
-			${0}
-		elif option in ("-v", "--verbose"):
-			verbose = argument
-# logging
-# glog = get log
-snippet glog
-	import logging
-	logger = logging.getLogger(${0:__name__})
-snippet le
-	logger.error(${0:msg})
-# conflict with lambda=ld, therefor we change into Logger.debuG
-snippet lg
-	logger.debug(${0:msg})
-snippet lw
-	logger.warning(${0:msg})
-snippet lc
-	logger.critical(${0:msg})
-snippet li
-	logger.info(${0:msg})
-snippet epydoc
-	"""${1:Description}
-
-	@param ${2:param}: ${3: Description}
-	@type  $2: ${4: Type}
-
-	@return: ${5: Description}
-	@rtype : ${6: Type}
-
-	@raise e: ${0: Description}
+	File: ${1:`vim_snippets#Filename('$1.py', 'foo.py')`}
+	Author: `g:snips_author`
+	Email: `g:snips_email`
+	Github: `g:snips_github`
+	Description: ${0}
 	"""
-snippet dol
-	def ${1:__init__}(self, *args, **kwargs):
-	    super(${0:ClassName}, self).$1(*args, **kwargs)
-snippet kwg
-	self.${1:var_name} = kwargs.get('$1', ${2:None})
-snippet lkwg
-	${1:var_name} = kwargs.get('$1', ${2:None})
-snippet args
-	*args${1:,}${0}
-snippet kwargs
-	**kwargs${1:,}${0}
-snippet akw
-	*args, **kwargs${1:,}${0}

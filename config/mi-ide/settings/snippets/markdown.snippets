@@ -1,7 +1,5 @@
-# Markdown
-
 # Github
-snippet ghlink
+snippet link
 	[${1:text}](http://${2:address})
 
 snippet gist-full
@@ -13,18 +11,8 @@ snippet gist-short
 snippet youtube
 	{% youtube ${0:video_id} %}
 
-snippet gh-info
-	> [!NOTE]
-	> 
-	> 
-
-snippet gh-warning
-	> [!WARNING]
-	> 
-	> 
-
-snippet gh-danger
-	> [!CAUTION]
+snippet note
+	> [!${1:NOTE,WARNING,CAUTION}]
 	> 
 	> 
 
@@ -41,8 +29,8 @@ snippet img
 snippet alert
 	!!! ${1:error, success, example, note, abstract, info, tip, question, warning, fail, bug, quote} "${2:title}"
 		${3:message}
-		
 
+# Common
 snippet table2
 	|${1:title}|${2:title}|
 	|-------|-------|
@@ -69,8 +57,6 @@ snippet table4
 snippet row4
 	|${1:a}|${2:b}|${3:c}|${3:d}|
 	row4${0}
-
-# Common
 
 snippet code
 	```${1:language}
