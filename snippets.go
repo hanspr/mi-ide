@@ -424,3 +424,35 @@ func (v *View) SnippetCancel(usePlugin bool) bool {
 	}
 	return true
 }
+
+func listSnippets(filetype string) string {
+	var snippets strings.Builder
+	comment := ""
+	rgxComment, _ := regexp.Compile(`^#`)
+	rgxSnip, _ := regexp.Compile(`^snippet `)
+	filename := configDir + "/settings/snippets/" + filetype + ".snippets"
+	file, err := os.Open(filename)
+	if err != nil {
+		messenger.Error("No snippets file for ", filetype)
+		return ""
+	}
+	defer file.Close()
+	scanner := bufio.NewScanner(file)
+	scanner.Split(bufio.ScanLines)
+	for scanner.Scan() {
+		line := scanner.Bytes()
+		if rgxComment.Match(line) {
+			// comment line
+			comment = string(line)
+			snippets.WriteString(comment)
+			snippets.WriteString("\n")
+			continue
+		} else if rgxSnip.Match(line) {
+			// snippet word
+			snippets.WriteString(string(line))
+			snippets.WriteString("\n")
+			comment = ""
+		}
+	}
+	return snippets.String()
+}

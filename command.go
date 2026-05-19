@@ -5,7 +5,6 @@ import (
 	"os"
 	"path/filepath"
 	"runtime"
-	"sort"
 	"strings"
 
 	humanize "github.com/dustin/go-humanize"
@@ -366,20 +365,7 @@ func Help(args []string) {
 // Show loaded snippets
 func ShowSnippets() {
 	ftype := CurView().Buf.FileType()
-	snips := ""
-	loadSnippets(ftype)
-	keys := make([]string, 0, len(snippets))
-	for k := range snippets {
-		keys = append(keys, k)
-	}
-	sort.Strings(keys)
-	for _, name := range keys {
-		//snips = snips + "snippet " + name + "\n" + snippets[name].code + "\n\n"
-		if snippets[name].comment != "" {
-			snips = snips + snippets[name].comment + "\n"
-		}
-		snips = snips + "snippet " + name + "\n"
-	}
+	snips := listSnippets(ftype)
 	CurView().OpenHelperView("v", "snippet", snips, 0.25)
 	CurView().PreviousSplit(false)
 }
