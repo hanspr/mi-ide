@@ -25,11 +25,12 @@ func GenaiNew() *geminiConnect {
 func (g *geminiConnect) ask(question string) {
 	messenger.Alert("info", "Asking Gemini, task will be sent to background ...")
 	go func() {
+		model := GetGlobalOption("geminimodel").(string)
 		ctx := context.Background()
 		thinkingBudgetVal := int32(0)
 		result, err := g.client.Models.GenerateContent(
 			ctx,
-			"gemini-3-flash-preview",
+			model,
 			genai.Text(question),
 			&genai.GenerateContentConfig{
 				ThinkingConfig: &genai.ThinkingConfig{

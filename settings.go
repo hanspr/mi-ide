@@ -244,6 +244,7 @@ func DefaultGlobalSettings() map[string]any {
 		"cursorshape":    "disabled",
 		"eofnewline":     false,
 		"fileformat":     "unix",
+		"geminimodel":    "gemini-3-flash-preview",
 		"indentchar":     " ",
 		"keepautoindent": false,
 		"lang":           "en_US",
