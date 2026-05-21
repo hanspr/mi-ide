@@ -9,6 +9,7 @@
     "cursorshape": "block",
     "eofnewline": false,
     "fileformat": "unix",
+    "geminimodel": "gemini-3-flash-preview",
     "indentchar": " ",
     "keepautoindent": true,
     "lang": "en_US",
@@ -36,6 +37,6 @@
     "tabindents": false,
     "tabmovement": true,
     "tabsize": 4,
-    "tabstospaces": false,
+    "tabstospaces": true,
     "usemouse": true
 }
