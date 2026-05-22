@@ -35,16 +35,18 @@ rules:
     - constant.string: "\"[^\"\\\\]*(?:\\\\.[^\"\\\\]*)*\""
     - constant.string: "\'[^\'\\\\]*(?:\\\\.[^\'\\\\]*)*\'"
     - comment: "[ \\t]+#.*$"
-    - include: "comments"
+
+    - comment:
+        start: "^[ \\t]*#"
+        end: "$"
+        rules:
+            - info: "(?:\\w+):.*"
+            - warning: "(?i)TODO:.*"
+            - error: "(?i)FIX:.*"
 
     - comment:
         start: "'''"
         end: "'''"
-        rules: []
-
-    - comment:
-        start: "^[ \\t]*#.*$"
-        end: "$"
         rules: []
 
     - constant.string:
