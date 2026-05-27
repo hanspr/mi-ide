@@ -38,9 +38,6 @@ rules:
     - constant.string: "\'.*?\'"
     - comment: "[;,][ \\t]+#.*"
     - constant.string.url: "(ftp(s)?|http(s)?|git|chrome)://[^ \\t\\'\"]+"
-    - comment: "^[ \\t]*#.*$"
-    - include: "comments"
-    - comment: "^[ \\t]*#.*$"
     - comment: "[ \\t]+#.*$"
     - label: "^[\\t ]*\\w+:$"
     - default: "^[\\t ]+"
@@ -49,6 +46,14 @@ rules:
         start: "q’"
         end: "’[\\)\\'\\\"]*?;"
         rules: []
+
+    - comment:
+        start: "^[ \\t]*#"
+        end: "$"
+        rules:
+            - info: "(?:\\w+):.*"
+            - todo: "(?i)TODO:.*"
+            - error: "(?i)FIX:.*"
 
     - default:
         start: "qq?[¡”·•]"

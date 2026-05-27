@@ -41,7 +41,7 @@ rules:
         end: "$"
         rules:
             - info: "(?:\\w+):.*"
-            - warning: "(?i)TODO:.*"
+            - todo: "(?i)TODO:.*"
             - error: "(?i)FIX:.*"
 
     - comment:
