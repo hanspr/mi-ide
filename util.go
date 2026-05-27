@@ -860,7 +860,7 @@ func RunBackgroundShell(input string) {
 }
 
 // GetProjectDir tries to find the correct path to the project
-// with respecto to the file directory path
+// with respect to the file directory path
 func GetProjectDir(wkdir, fdir string) string {
 	// search for existing settings on dir or above
 	dirs := []string{wkdir, fdir}
@@ -872,14 +872,14 @@ func GetProjectDir(wkdir, fdir string) string {
 	for _, path := range dirs {
 		testPath := path
 		dirPath := testPath + "/.miide"
-		// go up at the most 3 levels
-		for range 3 {
+		// go up at the most 5 levels
+		for range 5 {
 			_, err := os.Stat(dirPath)
 			if err == nil {
 				return testPath
 			}
 			testPath = filepath.Dir(testPath)
-			if testPath == homeDir {
+			if testPath == homeDir || testPath == "/" {
 				break
 			}
 			dirPath = testPath + "/.miide"
