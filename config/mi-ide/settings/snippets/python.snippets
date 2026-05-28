@@ -1,8 +1,3 @@
-# import
-snippet imp
-	import ${0:module}
-snippet from
-	from ${1:package} import ${0:module}
 # Code structure
 snippet ifmain
 	def main():
@@ -98,13 +93,11 @@ snippet tryelsefinal
 		${0}
 # list comprehension
 snippet lc-func
-	${1:new_list} = [${2:func_name}(item) for item in ${3:list}]
+	${0:new_list} = [${1:func_name}(item) for item in ${2:list}]
 snippet lc-filterlist
-	def filter_list(words, remove_list):
-	    return [word for word in words if word not in remove_list]
+    ${0:new_list} = [item for item in ${1:list_name} if item not in ${2:remove_list}]
 snippet lc-filterstring
-	def filter_string(sentence, remove_words):
-	    return " ".join([word for word in sentence.split() if word not in remove_words])
+    ${0:new_list} = " ".join([word for word in ${1:string}.split() if word not in ${2:remove_words}])
 # documentation
 snippet docs
 	"""
