@@ -49,6 +49,22 @@ rules:
         end: "'''"
         rules: []
 
+    - comment:
+        start: "f'''"
+        end: "'''"
+        rules:
+            - constant.specialChar: "\\\\."
+            - identifier.var: "{.+?}"
+            - symbol.brackets: "([(){}]|\\[|\\])"
+
+    - constant.string:
+        start: "f\"\"\""
+        end: "\"\"\""
+        rules:
+            - constant.specialChar: "\\\\."
+            - identifier.var: "{.+?}"
+            - symbol.brackets: "([(){}]|\\[|\\])"
+
     - constant.string:
         start: "\"\"\""
         end: "\"\"\""
