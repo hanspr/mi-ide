@@ -12,7 +12,7 @@ rules:
     - label: "goto \\w+"
     - statement: "goto "
     - statement: "\\b(break|case|continue|default|go|goto|range|return)\\b"
-    - statement: "\\b(else|for|if|switch)\\b"
+    - statement: "\\b(else|for|if|select|switch)\\b"
     - statement: "\\b(package|import|const|var|type|struct|func|go|defer|iota)\\b"
     - symbol.operator: "[-+/*=<>!~%&|^]|:="
 
