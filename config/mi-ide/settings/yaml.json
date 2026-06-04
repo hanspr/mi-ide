@@ -1,5 +1,5 @@
 {
-	"smartindent": false,
+    "smartindent": false,
     "comment": "#",
     "autoclose": true,
     "autoindent": true,
@@ -8,10 +8,9 @@
     "matchbrace": false,
     "matchbraceleft": false,
     "rmtrailingws": true,
-    "smartindent": false,
     "smartpaste": true,
     "softwrap": false,
     "tabindents": true,
-    "tabmovement": false,
+    "tabmovement": true,
     "tabstospaces": true
 }
