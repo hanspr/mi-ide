@@ -4,9 +4,12 @@ snippet make
 #create map
 snippet map
 	map[${1:string}]${0:int}
-#printf
-snippet printf
+#fmt.Printf
+snippet pf
 	fmt.Printf("%${1:s}\n", ${2:var})
+#fmt.Errorf
+snippet pef
+	fmt.Errorf("%${1:s}\n", ${2:var})
 #struct
 snippet struct
 	type ${1:name} struct {
