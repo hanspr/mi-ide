@@ -173,12 +173,12 @@ snippet get
 	defer resp.Body.Close()
 	body${2:read|encode}
 snippet getreq
-	req,err := http.NewRequest(${1:http.MethodGet},url,nil)
+	req,err := http.NewRequest("GET",url,nil)
 	if err != nil {
 		//fail action
 	}
 	req.Header.Set("Content-Type","application/json")
-	req.Header.Set(${2:header},"${3:value}")
+	req.Header.Set(${1:header},"${2:value}")
 	client := &http.Client{
 		Timeout: 10 * time.Second,
 	}
@@ -187,21 +187,39 @@ snippet getreq
 		//fail action
 	}
 	defer resp.Body.Close()
-	body${4:read|encode}
+	body${3:read|encode}
+snippet post
+	jdata, err := json.Marshal(${1:data})
+	if err != nil {
+		//fail action
+	}
+	req, err := http.NewRequest("POST",${2:url},bytes.NewBuffer(jdata))
+	if err != nil {
+		//fail action
+	}
+	req.Header.Set("Content-Type","application/json")
+	req.Header.Set(${3:header},"${4:value}")
+	client := &http.Client{}
+	res,err := client.Do(req)
+	if err != nil {
+		//fail action
+	}
+	defer res.Body.Close()
+	body${5:read|encode}
 snippet bodyread
 	content, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
 		//fail action
 	}
-	var data ${1:struct}
-	err = json.Unmarshal(content, &data)
+	var ${1:data} ${2:struct}
+	err = json.Unmarshal(content, &${1})
 	if err != nil {
 		//fail action
 	}
 	//success
 snippet bodyencode
-	var data ${1:struct}
-	err = json.NewDecoder(resp.Body).Decode(&data)
+	var ${1:data} ${2:struct}
+	err = json.NewDecoder(resp.Body).Decode(&${1})
 	if err != nil {
 		//fail action
 	}
