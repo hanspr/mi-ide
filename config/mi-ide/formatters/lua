@@ -116,10 +116,6 @@ sub safesplit {
 
     for (my $i = 0; $i < length($string); $i++) {
         my $c = substr($string, $i, 1);
-        if ($quote && $c eq '\\') {
-            $i++;
-            next;
-        }
         if ($quote && $c eq $quote) {
             $part .= $c;
             $quote = 0;

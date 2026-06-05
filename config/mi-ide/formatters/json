@@ -9,7 +9,7 @@ our (@LINES);
 if (!$FILE || !-e $FILE || -d $FILE) {
     exit 1;
 }
-our $DEBUG = 0;
+our $DEBUG = 1;
 our $I     = 0;
 
 CleanCode();
@@ -156,20 +156,14 @@ sub safesplit {
 
     for (my $i = 0; $i < length($string); $i++) {
         my $c = substr($string, $i, 1);
-        if ($quote && $c eq '\\') {
-            $part .= $c;
-            $i++;
-            $part .= substr($string, $i, 1);
-            next;
-        }
-        if ($quote && ($c eq "\"" || $c eq "\'")) {
+        if ($quote && $c eq $quote) {
             $part .= $c;
             $quote = 0;
             push @parts, $part;
             $part = "";
         } elsif (!$quote && ($c eq "\"" || $c eq "\'")) {
             $part .= $c;
-            $quote = 1;
+            $quote = $c;
         } elsif ($quote) {
             $part .= $c;
         }
