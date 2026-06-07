@@ -84,7 +84,7 @@ snippet fslurp
 #file: burp (write all from array)
 snippet fburp
 	// data is a byte array
-	err := os.WriteFile("${1:path}",[]bytes(${2:data}),0)
+	err := os.WriteFile("${1:path}",[]byte(${2:data}),0)
 #file: read by line
 snippet freadline
 	line := ""
