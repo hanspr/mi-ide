@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"time"
 
 	"google.golang.org/genai"
 )
@@ -28,20 +29,27 @@ func (g *geminiConnect) ask(question string) {
 		model := GetGlobalOption("geminimodel").(string)
 		ctx := context.Background()
 		thinkingBudgetVal := int32(0)
-		result, err := g.client.Models.GenerateContent(
-			ctx,
-			model,
-			genai.Text(question),
-			&genai.GenerateContentConfig{
-				ThinkingConfig: &genai.ThinkingConfig{
-					ThinkingBudget: &thinkingBudgetVal,
-				},
-			})
-		if err != nil {
-			messenger.Alert("warning", "Gemini error, check log")
-			messenger.AddLog(err)
-			gemini = nil
-			return
+		var err error
+		var result *genai.GenerateContentResponse
+		for i := range 5 {
+			result, err = g.client.Models.GenerateContent(
+				ctx,
+				model,
+				genai.Text(question),
+				&genai.GenerateContentConfig{
+					ThinkingConfig: &genai.ThinkingConfig{
+						ThinkingBudget: &thinkingBudgetVal,
+					},
+				})
+			if err != nil && i == 5 {
+				messenger.Alert("warning", "Gemini error, check log")
+				messenger.AddLog(err)
+				gemini = nil
+				return
+			} else if err != nil {
+				messenger.AddLog(err)
+				time.Sleep(3 * time.Second)
+			}
 		}
 		CurView().AddTab(false)
 		CurView().Buf = NewBufferFromString(result.Text(), "")
