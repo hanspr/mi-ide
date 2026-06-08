@@ -47,7 +47,7 @@ func (g *geminiConnect) ask(question string) {
 				gemini = nil
 				return
 			} else if err != nil {
-				messenger.AddLog(err)
+				messenger.AddLog("retry:", i, "-", err)
 				time.Sleep(3 * time.Second)
 			}
 		}
