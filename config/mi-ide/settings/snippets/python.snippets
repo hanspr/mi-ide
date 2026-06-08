@@ -13,10 +13,10 @@ snippet open
 	with open("${1:expr}","${2:rwa}") as ${3:f}:
 		${0}
 snippet slurp
-	with open("${1:expr}") as f:
+	with open("${1:expr}","${2:rwa}") as f:
 		content = f.read()
 snippet slurpl
-	with open("${1:expr}") as f:
+	with open("${1:expr}","${2:rwa}") as f:
 		content = f.readlines()
 snippet readline
 	for line in f:
