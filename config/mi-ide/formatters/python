@@ -11,9 +11,18 @@ if (!$FILE || !-e $FILE || -d $FILE) {
 
 our $DEBUG = 0;
 
+Ruff();
 PrityCode();
 
 exit 0;
+
+sub Ruff {
+    my $x = system "which ruff";
+    if (!$x) {
+        system "ruff format $FILE";
+        exit 0;
+    }
+}
 
 sub PrityCode {
     my ($indent, $lc, @quoted_parts, $ci);
