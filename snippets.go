@@ -325,6 +325,7 @@ func readSnippets(filetype string) map[string]*snippet {
 			curSnip.addCodeLine(cline)
 		}
 	}
+	_ = scanner.Err()
 	return snippets
 }
 
@@ -367,12 +368,15 @@ func (v *View) SnippetInsert(usePlugin bool) bool {
 	}
 
 	loadSnippets(buf.FileType())
+	messenger.AddLog("A")
 	if curSn, ok = snippets[name]; !ok {
+		messenger.AddLog("B")
 		c.ResetSelection()
 		c.GotoLoc(xy)
 		messenger.Message("Unknown snippet : ", name)
 		return false
 	}
+	messenger.AddLog("C")
 	if buf.Settings["autoclose"].(bool) {
 		snAutoclose = true
 		buf.Settings["autoclose"] = false
@@ -411,6 +415,9 @@ func (v *View) SnippetNext(usePlugin bool) bool {
 
 // SnippetAccept finish on accept action
 func (v *View) SnippetAccept(usePlugin bool) bool {
+	if currentSnippet == nil {
+		return true
+	}
 	v.Buf.Settings["autoclose"] = snAutoclose
 	currentSnippet = nil
 	return true
@@ -421,6 +428,7 @@ func (v *View) SnippetCancel(usePlugin bool) bool {
 	if currentSnippet != nil {
 		currentSnippet.remove()
 		currentSnippet = nil
+		v.Buf.Settings["autoclose"] = snAutoclose
 	}
 	return true
 }
@@ -454,5 +462,6 @@ func listSnippets(filetype string) string {
 			comment = ""
 		}
 	}
+	_ = scanner.Err()
 	return snippets.String()
 }

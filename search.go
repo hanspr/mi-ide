@@ -330,6 +330,7 @@ func FindFileWith(r *regexp.Regexp, path, filetype, ext string, depth int, hint 
 				}
 				i++
 			}
+			_ = scanner.Err()
 		} else if findFileDeep != depth {
 			abort--
 			if abort <= 0 {
