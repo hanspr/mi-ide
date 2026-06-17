@@ -11,15 +11,22 @@ rules:
     - statement: "\\b(abstract|as|async|await|break|case|catch|class|const|constructor|continue)\\b"
     - statement: "\\b(debugger|declare|default|delete|do|else|enum|export|extends|finally|for|from)\\b"
     - statement: "\\b(function|get|if|implements|import|in|instanceof|interface|is|let|module|namespace)\\b"
-    - statement: "\\b(new|of|package|private|protected|public|require|return|set|static|super|switch)\\b"
+    - statement: "\\b(new|of|package|private|protected|public|readonly|require|return|satisfies|set|static|super|switch)\\b"
     - statement: "\\b(this|throw|try|type|typeof|var|void|while|with|yield)\\b"
     - constant: "\\b(false|true|null|undefined|NaN)\\b"
     - type: "\\b(Array|Boolean|Date|Enumerator|Error|Function|Math)\\b"
     - type: "\\b(Number|Object|RegExp|String|Symbol)\\b"
     - type: "\\b(any|boolean|never|number|string|symbol)\\b"
-    - statement: "[-+/*=<>!~%?:&|]"
+    - symbol.tag: ": ?\\w+ ?[=]"
+    - statement: "[-+/*=<>!~%?&|]"
+    - statement: "\\.{3}"
     - constant: "/[^*]([^/]|(\\\\/))*[^\\\\]/[gim]*"
     - constant: "\\\\[0-7][0-7]?[0-7]?|\\\\x[0-9a-fA-F]+|\\\\[bfnrt'\"\\?\\\\]"
+    - symbol.tag: ": ?(?:any|boolean|number|string|\\w+[\\[{](?:\\w*)[\\]}])"
+    - constant.string.char: "{ ?(\\w+,? ?)+ ?}"
+    - method: "\\w+<\\w+.+?>"
+    - symbol.tag: "[\\?:]"
+    - constant.string: "\'.*?\'"
     - comment:
         start: "//"
         end: "$"
@@ -30,15 +37,21 @@ rules:
         rules:
             - todo: "TODO:?"
     - constant.string:
+        start: "`"
+        end: "`"
+        rules:
+            - identifier.var: "\\W{.+?}"
+            - method: "\\w+<\\w+.+?>"
+    - constant.string:
         start: "\""
         end: "\""
         skip: "\\\\."
         rules:
             - constant.specialChar: "\\\\."
-    - constant.string:
-        start: "'"
-        end: "'"
-        skip: "\\\\."
-        rules:
-            - constant.specialChar: "\\\\."
-    
+    #- constant.string:
+        #start: "'"
+        #end: "'"
+        #skip: "\\\\."
+        #rules:
+            #- constant.specialChar: "\\\\."
+
