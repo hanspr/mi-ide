@@ -733,6 +733,7 @@ func ReadHeaderBytes(path string) []byte {
 	for scanner.Scan() {
 		return scanner.Bytes()
 	}
+	_ = scanner.Err()
 	return line
 }
 
