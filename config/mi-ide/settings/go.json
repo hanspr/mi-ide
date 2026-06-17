@@ -1,9 +1,24 @@
 {
-    "blockopen": "[{[\\(]$",
+    "autoclose": true,
+    "autoindent": true,
+    "autoreload": true,
     "blockclose": "^[}\\])]",
     "blockinter": "^[}\\])].+?[{[(]$|:$",
-    "tabstospaces": false,
-    "findfuncregex": "^\\s*func\\s+(?:\\(.+?\\)\\s)?%word%\\(|%word%\\s*:?=\\s*func[\\s\\{\\(]",
+    "blockopen": "[{[\\(]$",
     "comment": "//",
-    "smartindent": true
+    "eofnewline": true,
+    "fileformat": "unix",
+    "findfuncregex": "^\\s*func\\s+(?:\\(.+?\\)\\s)?%word%\\(|%word%\\s*:?=\\s*func[\\s\\{\\(]",
+    "indentchar": "\t",
+    "keepautoindent": true,
+    "matchbrace": true,
+    "rmtrailingws": true,
+    "smartindent": true,
+    "smartpaste": true,
+    "softwrap": false,
+    "tabindents": false,
+    "tabmovement": true,
+    "tabsize": 4,
+    "tabstospaces": false,
+    "useformatter": true
 }
