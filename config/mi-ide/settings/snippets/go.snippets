@@ -84,7 +84,7 @@ snippet slurp
 #file: burp (write all from array)
 snippet burp
 	// data is a byte array
-	err := os.WriteFile("${1:path}",[]byte(${2:data}),0)
+	err := os.WriteFile("${1:path}",[]byte(${2:data}),${3:0640})
 #file: read by line
 snippet readline
 	line := ""
