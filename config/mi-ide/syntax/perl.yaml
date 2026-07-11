@@ -36,24 +36,19 @@ rules:
     - symbol.tag: "</?[A-Za-z0-9:]+/?[ >]"
     - constant.tag: "&[\\w]{2,5};"
     - constant.string: "\'.*?\'"
-    - comment: "[;,][ \\t]+#.*"
-    - constant.string.url: "(ftp(s)?|http(s)?|git|chrome)://[^ \\t\\'\"]+"
     - comment: "[ \\t]+#.*$"
+    - constant.string.url: "(ftp(s)?|http(s)?|git|chrome)://[^ \\t\\'\"]+"
+    - comment: "^[ \\t]*#.*$"
     - label: "^[\\t ]*\\w+:$"
+    - info: "^[\\t ]*# ?\\w+:.*"
+    - todo: "(?i)^[\\t ]*# ?TODO:.*"
+    - error: "(?i)^[\\t ]*# ?FIX:.*"
     - default: "^[\\t ]+"
 
     - constant.string:
         start: "q’"
         end: "’[\\)\\'\\\"]*?;"
         rules: []
-
-    - comment:
-        start: "^[ \\t]*#"
-        end: "$"
-        rules:
-            - info: "(?:\\w+):.*"
-            - todo: "(?i)TODO:.*"
-            - error: "(?i)FIX:.*"
 
     - default:
         start: "qq?[¡”·•]"
