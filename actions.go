@@ -2872,7 +2872,7 @@ func (v *View) FindFunctionDeclaration(usePlugin bool) bool {
 	messenger.Message("")
 	ok, where, word, line := v.SearchFunction(false)
 	if !ok {
-		messenger.Warning("function not found : ", word)
+		messenger.Warning("function search ", where, " : ", word)
 		return true
 	}
 	v.VSplit(v.Buf)
@@ -2897,7 +2897,7 @@ func (v *View) HintFunction(usePlugin bool) bool {
 	messenger.Message("")
 	ok, data, word, _ := v.SearchFunction(true)
 	if !ok {
-		messenger.Warning("function not found : ", word)
+		messenger.Warning("function hint ", data, " : ", word)
 		return true
 	}
 	v.OpenHelperView("h", v.Buf.Settings["filetype"].(string), data)
@@ -2913,10 +2913,15 @@ func (v *View) SearchFunction(hint bool) (bool, string, string, int) {
 	word := v.Cursor.GetSelection()
 	v.Cursor.ResetSelection()
 	v.Cursor.Loc = loc
-	if word == "" {
-		return false, "", word, 0
+	exp := `\W+`
+	matched, err := regexp.MatchString(exp, word)
+	if word == "" || err != nil || matched {
+		return false, "bad word", word, 0
 	}
-	exp := `^\s*(?:local )?(?:func(?:tion)?|def(?:n|un|ine)?|fn|sub|let|\w+\s+(?:\(.*?\)))\s+` + word + `\s*(?:(?:\(.*?\))|\s*\W)|` + word + `\s*:?=\s*(?:func(?:tion|fn|sub)[\s\{\(])`
+	if len(word) < 2 {
+		return false, "too short", word, 0
+	}
+	exp = `^\s*(?:local )?(?:func(?:tion)?|def(?:n|un|ine)?|fn|sub|let|\w+\s+(?:\(.*?\)))\s+` + word + `\s*(?:(?:\(.*?\))|\s*\W)|` + word + `\s*:?=\s*(?:func(?:tion|fn|sub)[\s\{\(])`
 	if v.Buf.Settings["findfuncregex"].(string) != "" {
 		exp = strings.ReplaceAll(v.Buf.Settings["findfuncregex"].(string), "%word%", word)
 	}
@@ -2953,7 +2958,7 @@ func (v *View) SearchFunction(hint bool) (bool, string, string, int) {
 	if ok {
 		return true, data, word, line
 	}
-	return false, "", word, 0
+	return false, "not found", word, 0
 }
 
 // ComboKeyActive check Ctrl-k pressed
