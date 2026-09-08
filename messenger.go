@@ -634,7 +634,6 @@ func (m *Messenger) LoadHistory() {
 			err = decoder.Decode(&decodedMap)
 
 			if err != nil {
-				m.Alert("error", Language.Translate("Error loading history:"), err)
 				return
 			}
 		}
