@@ -9,7 +9,7 @@ require (
 	github.com/go-errors/errors v1.5.1
 	github.com/hanspr/clipboard v0.1.1
 	github.com/hanspr/glob v0.0.0-20170209203856-dd4023a66dc3
-	github.com/hanspr/highlight v0.0.0-20250112191739-dee013b68f88
+	github.com/hanspr/highlight v0.1.0
 	github.com/hanspr/ioencoder v0.0.0-20190927223910-112aaa3e7dca
 	github.com/hanspr/lang v0.0.0-20190927223733-9af21a7298b1
 	github.com/hanspr/shellwords v0.0.0-20190824230231-432d02ac431a

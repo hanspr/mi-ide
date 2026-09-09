@@ -54,6 +54,8 @@ github.com/hanspr/glob v0.0.0-20170209203856-dd4023a66dc3 h1:qaDWP8hsl1MnYrG1V1U
 github.com/hanspr/glob v0.0.0-20170209203856-dd4023a66dc3/go.mod h1:Ud5rneHM6TQve2GfY3ej8fIKHFDgM1yepObtGJVFT9E=
 github.com/hanspr/highlight v0.0.0-20250112191739-dee013b68f88 h1:MF6urOa+HtI5xzpiZZqmVAUQMZib1F+TVWYWTx3/yJM=
 github.com/hanspr/highlight v0.0.0-20250112191739-dee013b68f88/go.mod h1:OSeCiKUuygfYo3n83RntREyuN2apsWAJUIS5UQVlb/M=
+github.com/hanspr/highlight v0.1.0 h1:ncfSW6/SGyEhRhlgQdQDshdwdmbDiW7PbA1bQgAInXw=
+github.com/hanspr/highlight v0.1.0/go.mod h1:OSeCiKUuygfYo3n83RntREyuN2apsWAJUIS5UQVlb/M=
 github.com/hanspr/ioencoder v0.0.0-20190927223910-112aaa3e7dca h1:JLIkppuKckhRyerG2JzMsFSFSxOuwWi4Vk344dKoDeE=
 github.com/hanspr/ioencoder v0.0.0-20190927223910-112aaa3e7dca/go.mod h1:Cj++j3a7n3IVvDxHrovAQ4Xfjt+n6qxW4cO6vpzv7PE=
 github.com/hanspr/lang v0.0.0-20190927223733-9af21a7298b1 h1:+iYEY37c2eAbebcjAzVl0kYiOks12fSqOnWJGs7fcbo=
