@@ -110,3 +110,10 @@ You will find the translation file in your config directory under : langs
 - Save the final file with the new name.
 - Switch language by going to the menu > Global Settings
 - Change to your new language
+
+## Known bugs and limitations
+
+No appropriate support for Wide characters
+
+* Short lines below the window/view width display properly.
+* Poor navigation above the window/view width
