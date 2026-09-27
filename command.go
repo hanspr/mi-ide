@@ -6,6 +6,7 @@ import (
 	"path/filepath"
 	"runtime"
 	"strings"
+	"sync"
 
 	humanize "github.com/dustin/go-humanize"
 	"github.com/hanspr/shellwords"
@@ -26,27 +27,33 @@ type StrCommand struct {
 var (
 	commands       map[string]Command
 	commandActions map[string]func([]string)
+	actionsOnce    sync.Once
 	replacing      bool = false
 )
 
-func init() {
-	commandActions = map[string]func([]string){
-		"Cd":          Cd,
-		"Exit":        Exit,
-		"Gemini":      GeminiAsk,
-		"Help":        Help,
-		"MemUsage":    MemUsage,
-		"Open":        Open,
-		"Pwd":         Pwd,
-		"Reload":      Reload,
-		"SaveAs":      SaveAs,
-		"ShowLog":     ShowLog,
-		"GroupEdit":   GroupEdit,
-		"GroupGemini": GroupGemini,
-		"GroupGit":    GroupGit,
-		"GroupConfig": GroupConfig,
-		"GroupShow":   GroupShow,
-	}
+// GetCommandActions returns a thread-safe, lazily-initialized map of command actions.
+func GetCommandActions() map[string]func([]string) {
+	actionsOnce.Do(func() {
+		commandActions = map[string]func([]string){
+			"Cd":          Cd,
+			"Exit":        Exit,
+			"Gemini":      GeminiAsk,
+			"Help":        Help,
+			"MemUsage":    MemUsage,
+			"Open":        Open,
+			"Pwd":         Pwd,
+			"Reload":      Reload,
+			"SaveAs":      SaveAs,
+			"ShowHLog":    ShowHLog,
+			"ShowVLog":    ShowVLog,
+			"GroupEdit":   GroupEdit,
+			"GroupGemini": GroupGemini,
+			"GroupGit":    GroupGit,
+			"GroupConfig": GroupConfig,
+			"GroupShow":   GroupShow,
+		}
+	})
+	return commandActions
 }
 
 // group commands with group:command
@@ -55,7 +62,8 @@ func DefaultCommands() map[string]StrCommand {
 	return map[string]StrCommand{
 		"cd":       {"Cd", []Completion{FileCompletion}},
 		"help":     {"Help", []Completion{HelpCompletion, NoCompletion}},
-		"log":      {"ShowLog", []Completion{NoCompletion}},
+		"log":      {"ShowHLog", []Completion{NoCompletion}},
+		"logv":     {"ShowVLog", []Completion{NoCompletion}},
 		"memusage": {"MemUsage", []Completion{NoCompletion}},
 		"open":     {"Open", []Completion{FileCompletion}},
 		"pwd":      {"Pwd", []Completion{NoCompletion}},
@@ -88,8 +96,9 @@ func parseCommands(userCommands map[string]StrCommand) {
 // MakeCommand is a function to easily create new commands
 // This can be called by plugins in Lua so that plugins can define their own commands
 func MakeCommand(name, function string, completions ...Completion) {
-	action := commandActions[function]
-	if _, ok := commandActions[function]; !ok {
+	actions := GetCommandActions()
+	action, ok := actions[function]
+	if !ok {
 		// If the user seems to be binding a function that doesn't exist
 		// We hope that it's a lua function that exists and bind it to that
 		action = LuaFunctionCommand(function)
@@ -98,8 +107,7 @@ func MakeCommand(name, function string, completions ...Completion) {
 	commands[name] = Command{action, completions}
 }
 
-// MakeCommand is a function to easily create new commands
-// This can be called by plugins in Lua so that plugins can define their own commands
+// RemoveCommand delete command
 func RemoveCommand(name string) {
 	delete(commands, name)
 }
@@ -319,7 +327,24 @@ func Save(args []string) {
 }
 
 // ShowLog toggles the log view
-func ShowLog(args []string) {
+func ShowHLog(args []string) {
+	buffer := messenger.getBuffer()
+	if CurView().Type != vtLog {
+		CurView().HSplit(buffer)
+		CurView().Type = vtLog
+		RedrawAll(true)
+		buffer.Cursor.Loc = buffer.Start()
+		CurView().Relocate()
+		buffer.Cursor.Loc = buffer.End()
+		CurView().Relocate()
+		CurView().PreviousSplit(false)
+	} else {
+		CurView().Quit(true)
+	}
+}
+
+// ShowLog toggles the log view
+func ShowVLog(args []string) {
 	buffer := messenger.getBuffer()
 	if CurView().Type != vtLog {
 		CurView().VSplit(buffer)
