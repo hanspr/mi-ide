@@ -1088,12 +1088,10 @@ func (v *View) DisplayView() {
 		// Log or raw views should always follow the cursor...
 		v.Relocate()
 	}
-	//messenger.AddLog(CurView().Type.Kind, "==0 && ", LastView, "!=", CurView().Num, " && ", CurView().Cursor.Loc, "!=", CurView().savedLoc, " && ", Mouse.Click, " == false")
 	if CurView().Type.Kind == 0 && LastView != CurView().Num && CurView().Cursor.Loc != CurView().savedLoc && !Mouse.Click {
 		// HP : Set de cursor in last known position for this view
 		// It happens when 2+ views point to same buffer
 		// Set into current view boundaries
-		//messenger.AddLog("Focus event")
 		if CurView().savedLoc.Y > CurView().Buf.End().Y {
 			CurView().savedLoc.Y = CurView().Buf.End().Y
 			if CurView().savedLoc.X > CurView().Buf.End().X {
@@ -1327,8 +1325,7 @@ func (v *View) DisplayView() {
 				} else if !ActiveView {
 					lineStyle = lineStyle.Background(bgDisabled)
 				}
-
-				screen.SetContent(xOffset+char.visualLoc.X, yOffset+char.visualLoc.Y, char.drawChar, nil, lineStyle)
+				screen.SetContent(xOffset+char.visualLoc.X, yOffset+char.visualLoc.Y, char.drawChar, char.comb, lineStyle)
 
 				for i, c := range v.Buf.cursors {
 					v.SetCursor(c)

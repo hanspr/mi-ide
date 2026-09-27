@@ -5,12 +5,12 @@ import (
 	"github.com/mattn/go-runewidth"
 )
 
-func min(a, b int) int {
-	if a <= b {
-		return a
-	}
-	return b
-}
+// func min(a, b int) int {
+// 	if a <= b {
+// 		return a
+// 	}
+// 	return b
+// }
 
 func visualToCharPos(visualIndex int, lineN int, str string, buf *Buffer, tabsize int) (int, int, *tcell.Style) {
 	charPos := 0
@@ -57,6 +57,7 @@ type Char struct {
 	// The actual character that is drawn
 	// This is only different from char if it's for example hidden character
 	drawChar rune
+	comb     []rune
 	style    tcell.Style
 	width    int
 }
@@ -141,8 +142,6 @@ func (c *CellView) Draw(buf *Buffer, top, height, left, width int, ActiveView bo
 
 		lineStr := buf.Line(lineN)
 		line := []rune(lineStr)
-		//messenger.AddLog("string:", line)
-		//messenger.AddLog("line  :", line)
 
 		colN, startOffset, startStyle := visualToCharPos(left, lineN, lineStr, buf, tabsize)
 		if colN < 0 {
@@ -188,7 +187,7 @@ func (c *CellView) Draw(buf *Buffer, top, height, left, width int, ActiveView bo
 					}
 				}
 				if viewCol < len(c.lines[viewLine]) {
-					c.lines[viewLine][viewCol] = &Char{Loc{viewCol, viewLine}, Loc{colN, lineN}, char, char, st, 1}
+					c.lines[viewLine][viewCol] = &Char{Loc{viewCol, viewLine}, Loc{colN, lineN}, char, char, nil, st, 1}
 				}
 			}
 			if char == '\t' {
@@ -209,10 +208,21 @@ func (c *CellView) Draw(buf *Buffer, top, height, left, width int, ActiveView bo
 				for i := 1; i < charWidth; i++ {
 					viewCol++
 					if viewCol >= 0 && viewCol < lineLength && viewCol < len(c.lines[viewLine]) {
-						c.lines[viewLine][viewCol] = &Char{Loc{viewCol, viewLine}, Loc{colN, lineN}, char, ' ', curStyle, 1}
+						c.lines[viewLine][viewCol] = &Char{Loc{viewCol, viewLine}, Loc{colN, lineN}, char, ' ', nil, curStyle, 1}
 					}
 				}
 				viewCol++
+			} else if runewidth.RuneWidth(char) == 0 {
+				// Attach combining character to the preceding grid cell if it exists
+				if viewCol > 0 && viewCol-1 < len(c.lines[viewLine]) && c.lines[viewLine][viewCol-1] != nil {
+					prevChar := c.lines[viewLine][viewCol-1]
+					prevChar.comb = append(prevChar.comb, char)
+				} else if viewCol >= 0 && viewCol < len(c.lines[viewLine]) && c.lines[viewLine][viewCol] != nil {
+					// Fallback for edge cases where cursor/cell positioning points directly at viewCol
+					c.lines[viewLine][viewCol].comb = append(c.lines[viewLine][viewCol].comb, char)
+				}
+				colN++
+				continue // Do not advance viewCol
 			} else if runewidth.RuneWidth(char) > 1 {
 				charWidth := runewidth.RuneWidth(char)
 				if viewCol >= 0 {
@@ -220,10 +230,8 @@ func (c *CellView) Draw(buf *Buffer, top, height, left, width int, ActiveView bo
 				}
 				for i := 1; i < charWidth; i++ {
 					viewCol++
-					//messenger.AddLog(viewCol, " >= ", 0, " && ", viewCol, " < ", lineLength, " && ", viewCol, " < ", len(c.lines[viewLine]))
 					if viewCol >= 0 && viewCol < lineLength && viewCol < len(c.lines[viewLine]) {
-						//messenger.AddLog("insertar char:", char)
-						c.lines[viewLine][viewCol] = &Char{Loc{viewCol, viewLine}, Loc{colN, lineN}, char, ' ', curStyle, 1}
+						c.lines[viewLine][viewCol] = &Char{Loc{viewCol, viewLine}, Loc{colN, lineN}, char, ' ', nil, curStyle, 1}
 					}
 				}
 				viewCol++
