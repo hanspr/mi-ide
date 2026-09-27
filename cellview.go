@@ -1,8 +1,8 @@
 package main
 
 import (
-	"github.com/mattn/go-runewidth"
 	"github.com/hanspr/tcell/v2"
+	"github.com/mattn/go-runewidth"
 )
 
 func min(a, b int) int {
@@ -141,6 +141,8 @@ func (c *CellView) Draw(buf *Buffer, top, height, left, width int, ActiveView bo
 
 		lineStr := buf.Line(lineN)
 		line := []rune(lineStr)
+		//messenger.AddLog("string:", line)
+		//messenger.AddLog("line  :", line)
 
 		colN, startOffset, startStyle := visualToCharPos(left, lineN, lineStr, buf, tabsize)
 		if colN < 0 {
@@ -155,7 +157,7 @@ func (c *CellView) Draw(buf *Buffer, top, height, left, width int, ActiveView bo
 
 		// We'll either draw the length of the line, or the width of the screen
 		// whichever is smaller
-		lineLength := min(StringWidth(lineStr, tabsize), width)
+		lineLength := min(ViewLength(lineStr, tabsize), width)
 		c.lines = append(c.lines, make([]*Char, lineLength))
 
 		wrap := false
@@ -218,7 +220,9 @@ func (c *CellView) Draw(buf *Buffer, top, height, left, width int, ActiveView bo
 				}
 				for i := 1; i < charWidth; i++ {
 					viewCol++
+					//messenger.AddLog(viewCol, " >= ", 0, " && ", viewCol, " < ", lineLength, " && ", viewCol, " < ", len(c.lines[viewLine]))
 					if viewCol >= 0 && viewCol < lineLength && viewCol < len(c.lines[viewLine]) {
+						//messenger.AddLog("insertar char:", char)
 						c.lines[viewLine][viewCol] = &Char{Loc{viewCol, viewLine}, Loc{colN, lineN}, char, ' ', curStyle, 1}
 					}
 				}
