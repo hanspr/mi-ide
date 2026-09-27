@@ -40,7 +40,7 @@ func init() {
 		"Pwd":         Pwd,
 		"Reload":      Reload,
 		"SaveAs":      SaveAs,
-		"ToggleLog":   ToggleLog,
+		"ShowLog":     ShowLog,
 		"GroupEdit":   GroupEdit,
 		"GroupGemini": GroupGemini,
 		"GroupGit":    GroupGit,
@@ -55,7 +55,7 @@ func DefaultCommands() map[string]StrCommand {
 	return map[string]StrCommand{
 		"cd":       {"Cd", []Completion{FileCompletion}},
 		"help":     {"Help", []Completion{HelpCompletion, NoCompletion}},
-		"log":      {"ToggleLog", []Completion{NoCompletion}},
+		"log":      {"ShowLog", []Completion{NoCompletion}},
 		"memusage": {"MemUsage", []Completion{NoCompletion}},
 		"open":     {"Open", []Completion{FileCompletion}},
 		"pwd":      {"Pwd", []Completion{NoCompletion}},
@@ -318,11 +318,11 @@ func Save(args []string) {
 	CurView().Save(true)
 }
 
-// ToggleLog toggles the log view
-func ToggleLog(args []string) {
+// ShowLog toggles the log view
+func ShowLog(args []string) {
 	buffer := messenger.getBuffer()
 	if CurView().Type != vtLog {
-		CurView().HSplit(buffer)
+		CurView().VSplit(buffer)
 		CurView().Type = vtLog
 		RedrawAll(true)
 		buffer.Cursor.Loc = buffer.Start()
