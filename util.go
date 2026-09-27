@@ -26,6 +26,7 @@ import (
 	"github.com/go-errors/errors"
 	"github.com/hanspr/shellwords"
 	"github.com/hanspr/tcell/v2"
+	"github.com/mattn/go-runewidth"
 )
 
 // Util.go is a collection of utility functions that are used throughout
@@ -331,6 +332,22 @@ func GetModTime(path string) (time.Time, bool) {
 		return time.Now(), false
 	}
 	return info.ModTime(), true
+}
+
+func ViewLength(str string, tabsize int) int {
+	ns := strings.Count(str, "\t")
+	line := []rune(str)
+	visualX := 0
+
+	// Convert slice of runes up to cursor index X into visual terminal width
+	for _, r := range line {
+		w := runewidth.RuneWidth(r)
+		if w == 0 {
+			w = 1 // fallback for non-printable/zero-width runes if needed
+		}
+		visualX += w
+	}
+	return visualX - ns + ns*tabsize
 }
 
 // StringWidth returns the width of a string where tabs count as `tabsize` width
