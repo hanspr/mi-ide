@@ -292,6 +292,8 @@ func (f *Frame) AddWindowBox(name, title string, x, y, width, height int, border
 		return
 	}
 	a.AddWindowElement(f.name, name, title, "box", "", "", x, y, width, height, border, callback, style, luacallback)
+	a.frames[f.name].elements[name].checked = true
+	a.frames[f.name].elements[name].DrawBox(true)
 }
 
 // AddWindowLabel add a label to a frame
@@ -344,12 +346,14 @@ func (f *Frame) AddWindowRadio(name, label, value string, x, y int, checked bool
 }
 
 // AddWindowTextArea add a textarea element to the frame
-func (f *Frame) AddWindowTextArea(name, label, value string, x, y, columns, rows int, readonly bool, callback func(string, string, string, string, int, int) bool, style, luacallback string) {
+func (f *Frame) AddWindowTextArea(name, label, value string, x, y, columns, rows int, frame bool, readonly bool, callback func(string, string, string, string, int, int) bool, style, luacallback string) {
 	a := f.microapp
 	if columns < 5 || rows < 2 {
 		return
 	}
 	a.AddWindowElement(f.name, name, label, "textarea", value, "", x, y, columns+2, rows+2, readonly, callback, style, luacallback)
+	a.frames[f.name].elements[name].checked = frame
+	a.frames[f.name].elements[name].DrawBox(true)
 }
 
 // AddWindowSelect add a select element to the frame
@@ -725,7 +729,7 @@ func (e *AppElement) Draw() {
 	}
 	switch e.form {
 	case "box":
-		e.DrawBox()
+		e.DrawBox(false)
 	case "label":
 		e.DrawLabel()
 	case "textbox":
@@ -748,7 +752,7 @@ func (e *AppElement) Hide() {
 }
 
 // DrawBox draw a box element
-func (e *AppElement) DrawBox() {
+func (e *AppElement) DrawBox(clear bool) {
 	a := e.microapp
 	f := e.frame
 	Hborder := tcell.RuneHLine
@@ -791,9 +795,11 @@ func (e *AppElement) DrawBox() {
 		a.screen.SetContent(x1, y2, LLC, nil, e.style)
 		a.screen.SetContent(x2, y2, LRC, nil, e.style)
 	}
-	for row := y1 + 1; row < y2; row++ {
-		for col := x1 + 1; col < x2; col++ {
-			a.screen.SetContent(col, row, ' ', nil, e.style)
+	if clear {
+		for row := y1 + 1; row < y2; row++ {
+			for col := x1 + 1; col < x2; col++ {
+				a.screen.SetContent(col, row, ' ', nil, e.style)
+			}
 		}
 	}
 	if e.label != "" {
@@ -959,14 +965,13 @@ func (e *AppElement) DrawButton() {
 
 // DrawTextArea draw a text area element
 func (e *AppElement) DrawTextArea() {
-	//y := e.aposb.Y
+	e.DrawBox(false)
 	y := e.aposb.Y
-	e.DrawBox()
 	str := e.value
-	//messenger.AddLog("draw : str = ", str)
-	//str = WordWrap(str, e.width-1)
 	for line := range strings.SplitSeq(str, "\n") {
 		e.frame.Print(line, e.aposb.X, y, nil)
+		clean := strings.Repeat(" ", e.width-Count(line)-1)
+		e.frame.Print(clean, e.aposb.X+Count(line), y, nil)
 		y++
 	}
 }
@@ -992,34 +997,29 @@ func WordWrap(str string, w int) string {
 }
 
 // Get the cursor position from an absolute cursor position
-func (e *AppElement) getECursorFromACursor() int {
+func (e *AppElement) getECursorFromACursor() Loc {
 	a := e.microapp
 	f := e.frame
 	X := 0
-	Y := 0
-	ac := 0
+	Y := -1
 	offset := a.cursor.X - e.aposb.X
-	width := e.width - 1
-	str := WordWrap(e.value, width)
-	lines := strings.Split(str, "\\N")
-	for i, line := range lines {
-		Y = i
-		X = Count(line)
-		if i+e.aposb.Y == a.cursor.Y {
-			newx := ac + offset
-			if offset > X {
-				newx = newx - Abs(X-offset)
-				a.cursor.X = e.aposb.X + X
+	for line := range strings.SplitSeq(e.value, "\n") {
+		Y++
+		max := Count(line)
+		if Y+e.aposb.Y == a.cursor.Y {
+			X = a.cursor.X - offset
+			if X > max {
+				X = max
+				a.cursor.X = X + offset
 			}
 			a.screen.ShowCursor(a.cursor.X+f.left, a.cursor.Y+f.top)
-			return newx
+			return Loc{X, Y}
 		}
-		ac = ac + X
 	}
 	a.cursor.Y = e.aposb.Y + Y
 	a.cursor.X = e.aposb.X + X
 	a.screen.ShowCursor(a.cursor.X+f.left, a.cursor.Y+f.top)
-	return ac
+	return Loc{X, Y}
 }
 
 // Set cursor absolute position from an element cursor position
@@ -1217,7 +1217,7 @@ func (e *AppElement) TextAreaClickEvent(event string, x, y int) {
 	a.activeElement = e.name
 	a.cursor.X = x
 	a.cursor.Y = y
-	e.cursor.X = e.getECursorFromACursor()
+	e.cursor = e.getECursorFromACursor()
 	a.screen.Show()
 }
 
@@ -1503,21 +1503,18 @@ func (e *AppElement) SelectKeyEvent(key string, x, y int) {
 // TextAreaKeyEvent handle key event
 func (e *AppElement) TextAreaKeyEvent(key string, x, y int) {
 	a := e.microapp
-	if e.apose.Y == y && e.apose.X == x {
-		return
-	}
 	r := []rune(key)
 	if len(r) > 1 {
 		// Process Control Keys
 		switch key {
 		case "Backspace2":
-			if e.cursor.X <= 0 {
+			if e.cursor.X <= 0 && e.cursor.Y == 0 {
 				return
 			}
-			e.cursor.X--
-			e.value = a.removeCharAt(e.value, e.cursor)
+			e.textAreaMoveCursor(-1, 0)
+			e.removeCharAt()
 		case "Delete", "Ctrl+U":
-			e.value = a.removeCharAt(e.value, e.cursor)
+			e.removeCharAt()
 		case "Left", "Alt+j":
 			e.textAreaMoveCursor(-1, 0)
 		case "Right", "Alt+l":
@@ -1529,31 +1526,31 @@ func (e *AppElement) TextAreaKeyEvent(key string, x, y int) {
 		case "Home", "Alt+u":
 			e.textAreaMoveCursor(0, 0)
 		case "End", "Alt+o":
-			e.textAreaMoveCursor(-99, -99)
+			e.textAreaMoveCursor(-99, 0)
 		case "Enter":
+			if e.cursor.Y+1 >= e.apose.Y-1 {
+				return
+			}
 			e.value = e.value + "\n"
 			e.cursor.Y++
 			e.cursor.X = 0
 		case "Ctrl+V":
-			clip := Clip.ReadFrom("local", "clip")
-			e.value = e.value + clip
-			e.TextAreaKeyEvent("End", x, y)
-			return
+			e.DrawBox(true)
+			e.value = Clip.ReadFrom("local", "clip")
+			e.cursor.X = 0
+			e.cursor.Y = 0
 		case "Ctrl+R", "Ctrl+J":
 			e.value = ""
-			a.cursor.X = e.aposb.X
-			a.cursor.Y = e.aposb.Y
+			e.DrawBox(true)
+			e.cursor.X = 0
+			e.cursor.Y = 0
 		}
-		e.Draw()
+		e.DrawTextArea()
 		e.setACursorFromECursor()
 		a.screen.Show()
 		return
 	}
-	// messenger.AddLog("B", e.value)
-	// messenger.AddLog("insertar", key)
-	e.value = a.insertCharAt(e.value, r[0], e.cursor)
-	//messenger.AddLog("A", e.value)
-	e.cursor.X++
+	e.insertCharAt(r[0])
 	e.DrawTextArea()
 	e.setACursorFromECursor()
 	a.screen.Show()
@@ -1577,9 +1574,9 @@ func (e *AppElement) TextBoxKeyEvent(key string, x, y int) {
 			if a.cursor.X-1 >= e.aposb.X {
 				a.cursor.X--
 			}
-			e.value = a.removeCharAt(e.value, e.cursor)
+			e.removeCharAt()
 		case "Delete", "Ctrl+U":
-			e.value = a.removeCharAt(e.value, e.cursor)
+			e.removeCharAt()
 		case "Left", "Alt+j":
 			if e.cursor.X-1 < 0 {
 				return
@@ -1636,12 +1633,9 @@ func (e *AppElement) TextBoxKeyEvent(key string, x, y int) {
 	if len(b) >= maxlength {
 		return
 	}
-	e.value = a.insertCharAt(e.value, r[0], e.cursor)
-	if e.cursor.X < maxlength-1 && e.cursor.X <= len(b) {
-		e.cursor.X++
-		if a.cursor.X+1 <= e.apose.X {
-			a.cursor.X++
-		}
+	e.insertCharAt(r[0])
+	if a.cursor.X+1 <= e.apose.X {
+		a.cursor.X++
 	}
 	e.DrawTextBox()
 	a.screen.ShowCursor(a.cursor.X+f.left, a.cursor.Y+f.top)
@@ -1808,10 +1802,12 @@ func insertRune(s string, r rune, i int) string {
 	return string(result)
 }
 
-func (a *MicroApp) removeCharAt(b string, pos Loc) string {
+func (e *AppElement) removeCharAt() {
+	b := e.value
 	if len(b) == 0 {
-		return b
+		return
 	}
+	pos := e.cursor
 	B := ""
 	y := 0
 	count := strings.Count(b, "\n")
@@ -1826,16 +1822,21 @@ func (a *MicroApp) removeCharAt(b string, pos Loc) string {
 		B = B + line
 		y++
 	}
-	return B
+	e.value = B
 }
 
-func (a *MicroApp) insertCharAt(b string, r rune, pos Loc) string {
+func (e *AppElement) insertCharAt(r rune) {
+	pos := e.cursor
 	B := ""
 	y := 0
-	count := strings.Count(b, "\n")
-	for line := range strings.SplitSeq(b, "\n") {
+	count := strings.Count(e.value, "\n")
+	for line := range strings.SplitSeq(e.value, "\n") {
 		if y == pos.Y {
+			if pos.X+1 >= e.width-1 {
+				return
+			}
 			line = insertRune(line, r, pos.X)
+			e.cursor.X++
 		}
 		if count > 0 {
 			line = line + "\n"
@@ -1844,7 +1845,7 @@ func (a *MicroApp) insertCharAt(b string, r rune, pos Loc) string {
 		B = B + line
 		y++
 	}
-	return B
+	e.value = B
 }
 
 func (e *AppElement) textAreaMoveCursor(x, y int) {
@@ -1865,7 +1866,7 @@ func (e *AppElement) textAreaMoveCursor(x, y int) {
 			break
 		}
 		fy++
-		if y == -99 && fy == e.cursor.Y {
+		if x == -99 && fy == e.cursor.Y {
 			fx = Count(line)
 			break
 		} else if int(math.Abs(float64(x))) == 1 && fy == e.cursor.Y {

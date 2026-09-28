@@ -166,21 +166,11 @@ func GeminiAskSelection(args []string) {
 
 func GeminiAskBuffer(args []string) {
 	micromenu.GetMultilineString(GeminiDoBufferAsk)
-	// if CurView().Buf.LinesNum() > 5 {
-	// 	if len(args) < 4 {
-	// 		messenger.Warning("Question is too short")
-	// 		return
-	// 	}
-	// 	args = append(args, CurView().Buf.String())
-	// 	GeminiAsk(args)
-	// } else {
-	// 	messenger.Warning("Buffer is too short")
-	// }
 }
 
 func GeminiDoBufferAsk(query map[string]string) {
 	if CurView().Buf.LinesNum() > 5 {
-		if len(query["data"]) < 10 {
+		if len(query["data"]) < 4 {
 			messenger.Warning("Question is too short")
 			return
 		}

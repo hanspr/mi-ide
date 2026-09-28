@@ -1980,8 +1980,8 @@ func (m *microMenu) GetMultilineString(callback func(map[string]string)) {
 		height := 20
 		f = m.myapp.AddFrame("f", -1, -1, width, height, "relative")
 		m.myapp.AddStyle("1", "black,yellow")
-		f.AddWindowBox("enc", Language.Translate("Ask"), 0, 0, width, height, true, nil, "", "")
-		f.AddWindowTextArea("data", "", "", 1, 1, width-4, height-8, false, m.SubmitSearchOnEnter, "", "")
+		f.AddWindowBox("enc", "", 0, 0, width, height, true, nil, "", "")
+		f.AddWindowTextArea("data", Language.Translate("Ask"), "", 1, 1, width-4, height-5, true, false, m.SubmitSearchOnEnter, "", "")
 		lbl := Language.Translate("Cancel")
 		f.AddWindowButton("cancel", " "+lbl+" ", "cancel", width-20-Count(lbl), height-1, m.ButtonFinish, "", "")
 		lbl = Language.Translate("Ask")
@@ -1990,10 +1990,19 @@ func (m *microMenu) GetMultilineString(callback func(map[string]string)) {
 	} else {
 		f = m.myapp.frames["f"]
 	}
+	m.myapp.frames["f"].elements["data"].callback = m.SubmitMultilineData
 	m.myapp.WindowFinish = callback
 	m.myapp.Start()
 	f.SetFocus("data", "B")
 	apprunning = m.myapp
+}
+
+func (m *microMenu) SubmitMultilineData(name, value, event, when string, x, y int) bool {
+	if event == "Ctrl+S" {
+		m.ReturnMultilineData(name, value, event, when, x, y)
+		return false
+	}
+	return true
 }
 
 func (m *microMenu) ReturnMultilineData(name, value, event, when string, x, y int) bool {
