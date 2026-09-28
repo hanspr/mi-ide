@@ -1748,27 +1748,6 @@ func (m *microMenu) getDir() (string, int) {
 }
 
 // ---------------------------------------
-// General Routines
-// ---------------------------------------
-
-func (m *microMenu) Finish(s string) {
-	apprunning = nil
-	MouseOnOff(previousMouseStatus)
-	MicroToolBar.FixTabsIconArea()
-}
-
-func (m *microMenu) ButtonFinish(name, value, event, when string, x, y int) bool {
-	if event != "mouse-click1" {
-		return true
-	}
-	if when == "POST" {
-		return true
-	}
-	m.Finish("Abort")
-	return true
-}
-
-// ---------------------------------------
 // Mi Ide Cloud Services
 // ---------------------------------------
 
@@ -1960,5 +1939,70 @@ func (m *microMenu) TransferCloudSettings(name, value, event, when string, x, y 
 		}
 	}
 	m.Finish("SyncSettings")
+	return true
+}
+
+// ---------------------------------------
+// General Routines
+// ---------------------------------------
+
+func (m *microMenu) Finish(s string) {
+	apprunning = nil
+	MouseOnOff(previousMouseStatus)
+	MicroToolBar.FixTabsIconArea()
+}
+
+func (m *microMenu) ButtonFinish(name, value, event, when string, x, y int) bool {
+	if event != "mouse-click1" {
+		return true
+	}
+	if when == "POST" {
+		return true
+	}
+	m.Finish("Abort")
+	return true
+}
+
+// Multiline textbox
+
+func (m *microMenu) GetMultilineString(callback func(map[string]string)) {
+	var f *Frame
+	if m.myapp == nil || m.myapp.name != "mi-multiline" {
+		if m.myapp == nil {
+			m.myapp = new(MicroApp)
+			m.myapp.New("mi-multiline")
+		} else {
+			m.myapp.name = "mi-multiline"
+		}
+		m.myapp.Reset()
+		m.myapp.defStyle = StringToStyle("#ffffff,#262626")
+		width := 80
+		height := 20
+		f = m.myapp.AddFrame("f", -1, -1, width, height, "relative")
+		m.myapp.AddStyle("1", "black,yellow")
+		f.AddWindowBox("enc", Language.Translate("Ask"), 0, 0, width, height, true, nil, "", "")
+		f.AddWindowTextArea("data", "", "", 1, 1, width-4, height-8, false, m.SubmitSearchOnEnter, "", "")
+		lbl := Language.Translate("Cancel")
+		f.AddWindowButton("cancel", " "+lbl+" ", "cancel", width-20-Count(lbl), height-1, m.ButtonFinish, "", "")
+		lbl = Language.Translate("Ask")
+		f.AddWindowButton("set", " "+lbl+" ", "ok", width-5-Count(lbl), height-1, m.ReturnMultilineData, "", "")
+		m.myapp.Finish = m.AbortSearch
+	} else {
+		f = m.myapp.frames["f"]
+	}
+	m.myapp.WindowFinish = callback
+	m.myapp.Start()
+	f.SetFocus("data", "B")
+	apprunning = m.myapp
+}
+
+func (m *microMenu) ReturnMultilineData(name, value, event, when string, x, y int) bool {
+	if when == "POST" {
+		return true
+	}
+	var resp = make(map[string]string)
+	resp["data"] = value
+	m.myapp.WindowFinish(resp)
+	m.Finish("MultilineData")
 	return true
 }
