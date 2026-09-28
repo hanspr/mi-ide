@@ -3,6 +3,7 @@ package main
 
 import (
 	"fmt"
+	"math"
 	"regexp"
 	"strconv"
 	"strings"
@@ -958,17 +959,15 @@ func (e *AppElement) DrawButton() {
 
 // DrawTextArea draw a text area element
 func (e *AppElement) DrawTextArea() {
+	//y := e.aposb.Y
 	y := e.aposb.Y
 	e.DrawBox()
 	str := e.value
-	str = WordWrap(str, e.width-1)
-	lines := strings.Split(str, "\\N")
-	for _, line := range lines {
+	//messenger.AddLog("draw : str = ", str)
+	//str = WordWrap(str, e.width-1)
+	for line := range strings.SplitSeq(str, "\n") {
 		e.frame.Print(line, e.aposb.X, y, nil)
 		y++
-		if y > e.apose.Y {
-			break
-		}
 	}
 }
 
@@ -989,7 +988,7 @@ func WordWrap(str string, w int) string {
 	rstr := []rune(str)
 	str1 := string(rstr[:lastspc+1])
 	str2 := string(rstr[lastspc+1:])
-	return str1 + "\\N" + WordWrap(str2, w)
+	return str1 + "\n" + WordWrap(str2, w)
 }
 
 // Get the cursor position from an absolute cursor position
@@ -1027,28 +1026,8 @@ func (e *AppElement) getECursorFromACursor() int {
 func (e *AppElement) setACursorFromECursor() {
 	a := e.microapp
 	f := e.frame
-	ex := e.cursor.X
-	ax := 0
-	ay := 0
-	ac := 0
-	width := e.width - 1
-	str := WordWrap(e.value, width)
-	lines := strings.Split(str, "\\N")
-	for i, line := range lines {
-		ay = i
-		ll := Count(line)
-		ac = ac + ll
-		ax = e.aposb.X + ll
-		if ex <= ac {
-			ax = e.aposb.X + ll - Abs(ac-ex)
-			break
-		}
-	}
-	if ax > e.apose.X {
-		ax = e.apose.X
-	}
-	a.cursor.X = ax
-	a.cursor.Y = ay + e.aposb.Y
+	a.cursor.X = e.cursor.X + e.aposb.X
+	a.cursor.Y = e.cursor.Y + e.aposb.Y
 	a.screen.ShowCursor(a.cursor.X+f.left, a.cursor.Y+f.top)
 }
 
@@ -1528,7 +1507,6 @@ func (e *AppElement) TextAreaKeyEvent(key string, x, y int) {
 		return
 	}
 	r := []rune(key)
-	b := []rune(e.value)
 	if len(r) > 1 {
 		// Process Control Keys
 		switch key {
@@ -1537,47 +1515,25 @@ func (e *AppElement) TextAreaKeyEvent(key string, x, y int) {
 				return
 			}
 			e.cursor.X--
-			b = a.removeCharAt(b, e.cursor.X)
-			e.value = string(b)
+			e.value = a.removeCharAt(e.value, e.cursor)
 		case "Delete", "Ctrl+U":
-			b = a.removeCharAt(b, e.cursor.X)
-			e.value = string(b)
+			e.value = a.removeCharAt(e.value, e.cursor)
 		case "Left", "Alt+j":
-			if e.cursor.X-1 < 0 {
-				return
-			}
-			e.cursor.X--
-			e.setACursorFromECursor()
+			e.textAreaMoveCursor(-1, 0)
 		case "Right", "Alt+l":
-			if e.cursor.X+1 > len(b) || (x+1 > e.apose.X && y == e.apose.Y) {
-				return
-			}
-			e.cursor.X++
-			e.setACursorFromECursor()
+			e.textAreaMoveCursor(1, 0)
 		case "Up", "Alt+i":
-			if a.cursor.Y-1 < e.aposb.Y {
-				return
-			}
-			a.cursor.Y--
-			e.cursor.X = e.getECursorFromACursor()
-			a.screen.Show()
-			return
+			e.textAreaMoveCursor(0, -1)
 		case "Down", "Alt+k":
-			if a.cursor.Y+1 > e.apose.Y {
-				return
-			}
-			a.cursor.Y++
-			e.cursor.X = e.getECursorFromACursor()
-			a.screen.Show()
-			return
+			e.textAreaMoveCursor(0, 1)
 		case "Home", "Alt+u":
-			a.cursor.X = e.aposb.X
-			e.cursor.X = 0
-			a.cursor.Y = e.aposb.Y
+			e.textAreaMoveCursor(0, 0)
 		case "End", "Alt+o":
-			e.cursor.X = len(b)
+			e.textAreaMoveCursor(-99, -99)
 		case "Enter":
-			return
+			e.value = e.value + "\n"
+			e.cursor.Y++
+			e.cursor.X = 0
 		case "Ctrl+V":
 			clip := Clip.ReadFrom("local", "clip")
 			e.value = e.value + clip
@@ -1586,7 +1542,6 @@ func (e *AppElement) TextAreaKeyEvent(key string, x, y int) {
 		case "Ctrl+R", "Ctrl+J":
 			e.value = ""
 			a.cursor.X = e.aposb.X
-			e.cursor.X = 0
 			a.cursor.Y = e.aposb.Y
 		}
 		e.Draw()
@@ -1594,7 +1549,10 @@ func (e *AppElement) TextAreaKeyEvent(key string, x, y int) {
 		a.screen.Show()
 		return
 	}
-	e.value = string(a.insertCharAt(b, r, e.cursor.X))
+	// messenger.AddLog("B", e.value)
+	// messenger.AddLog("insertar", key)
+	e.value = a.insertCharAt(e.value, r[0], e.cursor)
+	//messenger.AddLog("A", e.value)
 	e.cursor.X++
 	e.DrawTextArea()
 	e.setACursorFromECursor()
@@ -1619,11 +1577,9 @@ func (e *AppElement) TextBoxKeyEvent(key string, x, y int) {
 			if a.cursor.X-1 >= e.aposb.X {
 				a.cursor.X--
 			}
-			b = a.removeCharAt(b, e.cursor.X)
-			e.value = string(b)
+			e.value = a.removeCharAt(e.value, e.cursor)
 		case "Delete", "Ctrl+U":
-			b = a.removeCharAt(b, e.cursor.X)
-			e.value = string(b)
+			e.value = a.removeCharAt(e.value, e.cursor)
 		case "Left", "Alt+j":
 			if e.cursor.X-1 < 0 {
 				return
@@ -1680,7 +1636,7 @@ func (e *AppElement) TextBoxKeyEvent(key string, x, y int) {
 	if len(b) >= maxlength {
 		return
 	}
-	e.value = string(a.insertCharAt(b, r, e.cursor.X))
+	e.value = a.insertCharAt(e.value, r[0], e.cursor)
 	if e.cursor.X < maxlength-1 && e.cursor.X <= len(b) {
 		e.cursor.X++
 		if a.cursor.X+1 <= e.apose.X {
@@ -1827,24 +1783,125 @@ func (a *MicroApp) GetActiveElement(name string) *AppElement {
 // String methods
 // ------------------------------------------------
 
-func (a *MicroApp) removeCharAt(b []rune, i int) []rune {
-	if len(b) == 0 || i >= len(b) {
-		return b
+func deleteRune(s string, i int) string {
+	runes := []rune(s)
+	if i < 0 || i >= len(runes) {
+		return s // Index out of bounds
 	}
-	copy(b[i:], b[i+1:])
-	return b[:len(b)-1]
+	// Append slice after index i to slice before index i
+	runes = append(runes[:i], runes[i+1:]...)
+	return string(runes)
 }
 
-func (a *MicroApp) insertCharAt(b, r []rune, i int) []rune {
-	var b1 []rune
-	if i > len(b) {
-		b = append(b, r[0])
+func insertRune(s string, r rune, i int) string {
+	runes := []rune(s)
+	if i < 0 || i > len(runes) {
+		return s // Index out of bounds
+	}
+
+	// Create a new slice with space for the inserted rune
+	result := make([]rune, 0, len(runes)+1)
+	result = append(result, runes[:i]...)
+	result = append(result, r)
+	result = append(result, runes[i:]...)
+
+	return string(result)
+}
+
+func (a *MicroApp) removeCharAt(b string, pos Loc) string {
+	if len(b) == 0 {
 		return b
 	}
-	b1 = append(b1, b[i:]...)
-	b = append(b[:i], r[0])
-	b = append(b, b1...)
-	return b
+	B := ""
+	y := 0
+	count := strings.Count(b, "\n")
+	for line := range strings.SplitSeq(b, "\n") {
+		if y == pos.Y {
+			line = deleteRune(line, pos.X)
+		}
+		if count > 0 {
+			line = line + "\n"
+			count--
+		}
+		B = B + line
+		y++
+	}
+	return B
+}
+
+func (a *MicroApp) insertCharAt(b string, r rune, pos Loc) string {
+	B := ""
+	y := 0
+	count := strings.Count(b, "\n")
+	for line := range strings.SplitSeq(b, "\n") {
+		if y == pos.Y {
+			line = insertRune(line, r, pos.X)
+		}
+		if count > 0 {
+			line = line + "\n"
+			count--
+		}
+		B = B + line
+		y++
+	}
+	return B
+}
+
+func (e *AppElement) textAreaMoveCursor(x, y int) {
+	if x == 0 && y == 0 {
+		// move to the beginning of the line
+		e.cursor.X = 0
+		return
+	}
+	fx := 0
+	fy := -1
+	pCount := -1
+	maxY := strings.Count(e.value, "\n")
+	for line := range strings.SplitSeq(e.value, "\n") {
+		if x == -98 {
+			if fx > Count(line) {
+				fx = Count(line)
+			}
+			break
+		}
+		fy++
+		if y == -99 && fy == e.cursor.Y {
+			fx = Count(line)
+			break
+		} else if int(math.Abs(float64(x))) == 1 && fy == e.cursor.Y {
+			fx = e.cursor.X + x
+			if fx < 0 && fy > 0 {
+				fy--
+				fx = pCount
+			} else if fx < 0 {
+				fx = 0
+			} else if fx > Count(line) && fy < maxY {
+				fy++
+				fx = 0
+			} else if fx > Count(line) {
+				fx = Count(line)
+			}
+			break
+		} else if int(math.Abs(float64(y))) == 1 && fy == e.cursor.Y {
+			fx = e.cursor.X
+			fy = e.cursor.Y + y
+			if fy < 0 {
+				fy = 0
+			} else if fy > maxY {
+				fy = maxY
+			}
+			if y < 0 {
+				if fx > pCount && pCount >= 0 {
+					fx = pCount
+				}
+				break
+			}
+			x = -98
+		}
+		pCount = Count(line)
+	}
+	e.cursor.X = fx
+	e.cursor.Y = fy
 }
 
 // ------------------------------------------------
