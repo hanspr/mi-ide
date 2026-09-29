@@ -38,6 +38,9 @@ func (c *Cursor) Goto(b Cursor) {
 // GotoLoc puts the cursor at the given cursor's location and gives
 // the current cursor its selection too
 func (c *Cursor) GotoLoc(l Loc) {
+	if c.X < 0 || c.Y < 0 || c.Y > c.buf.LinesNum()-1 || c.X > c.buf.LineLen(c.Y) {
+		return
+	}
 	c.X, c.Y = l.X, l.Y
 	c.LastVisualX = c.GetVisualX()
 }
