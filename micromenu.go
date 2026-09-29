@@ -188,14 +188,14 @@ func (m *microMenu) MenuItemClick(name, value, event, when string, x, y int) boo
 		e.style = e.style.Bold(false).Foreground(tcell.ColorWhite)
 		e.style = e.style.Bold(false).Background(tcell.ColorBlack)
 		f.elements[name] = e
-		e.Draw()
+		e.Draw(false)
 		return false
 	case "mousein":
 		e := f.elements[name]
 		e.style = e.style.Bold(true).Foreground(tcell.ColorBlack)
 		e.style = e.style.Bold(false).Background(tcell.ColorYellow)
 		f.elements[name] = e
-		e.Draw()
+		e.Draw(false)
 		return false
 	}
 	if event != "mouse-click1" {
@@ -834,10 +834,10 @@ func (m *microMenu) ChangeSource(name, value, event, when string, x, y int) bool
 		f.SetVisible("title", true)
 		f.SetVisible("remove", true)
 	}
-	f.elements["langs"].Draw()
-	f.elements["codeplugins"].Draw()
-	f.elements["apps"].Draw()
-	f.elements["list"].Draw()
+	f.elements["langs"].Draw(false)
+	f.elements["codeplugins"].Draw(false)
+	f.elements["apps"].Draw(false)
+	f.elements["list"].Draw(false)
 	f.SetLabel("msg", "")
 	f.SetVisible("install", true)
 	return true
@@ -979,7 +979,7 @@ func (m *microMenu) Search(callback func(map[string]string)) {
 		m.myapp.Reset()
 		m.myapp.defStyle = StringToStyle("#ffffff,#262626")
 		width := 70
-		height := 8
+		height := 6
 		f = m.myapp.AddFrame("f", -1, -1, width, height, "relative")
 		m.myapp.AddStyle("1", "black,yellow")
 		f.AddWindowBox("enc", Language.Translate("Search"), 0, 0, width, height, true, nil, "", "")
@@ -988,9 +988,9 @@ func (m *microMenu) Search(callback func(map[string]string)) {
 		f.AddWindowCheckBox("i", "i", "i", 65, 2, false, m.SubmitSearchOnEnter, "", "")
 		f.AddWindowLabel("found", "", 2, 4, nil, "", "")
 		lbl = Language.Translate("Cancel")
-		f.AddWindowButton("cancel", " "+lbl+" ", "cancel", 46-Count(lbl), 6, m.ButtonFinish, "", "")
+		f.AddWindowButton("cancel", " "+lbl+" ", "cancel", 46-Count(lbl), height-1, m.ButtonFinish, "", "")
 		lbl = Language.Translate("Search")
-		f.AddWindowButton("set", " "+lbl+" ", "ok", 64-Count(lbl), 6, m.StartSearch, "", "")
+		f.AddWindowButton("set", " "+lbl+" ", "ok", 64-Count(lbl), height-1, m.StartSearch, "", "")
 		m.myapp.Finish = m.AbortSearch
 	} else {
 		f = m.myapp.frames["f"]
@@ -1023,7 +1023,7 @@ func (m *microMenu) SearchReplace(callback func(map[string]string)) {
 		m.myapp.Reset()
 		m.myapp.defStyle = StringToStyle("#ffffff,#262626")
 		width := 70
-		height := 12
+		height := 10
 		f = m.myapp.AddFrame("f", -1, -1, width, height, "relative")
 		m.myapp.AddStyle("1", "bold black,yellow")
 		f.AddWindowBox("enc", Language.Translate("Search / Replace"), 0, 0, width, height, true, nil, "", "")
@@ -1043,9 +1043,9 @@ func (m *microMenu) SearchReplace(callback func(map[string]string)) {
 		f.AddWindowCheckBox("l", lbl, "l", offset, 6, false, m.SubmitSearchOnEnter, "", "")
 		f.AddWindowLabel("found", "", 2, 8, nil, "", "")
 		lbl = Language.Translate("Cancel")
-		f.AddWindowButton("cancel", " "+lbl+" ", "cancel", 46-Count(lbl), 10, m.ButtonFinish, "", "")
+		f.AddWindowButton("cancel", " "+lbl+" ", "cancel", 46-Count(lbl), height-1, m.ButtonFinish, "", "")
 		lbl = Language.Translate("Search")
-		f.AddWindowButton("set", " "+lbl+" ", "ok", 64-Count(lbl), 10, m.StartSearch, "", "")
+		f.AddWindowButton("set", " "+lbl+" ", "ok", 64-Count(lbl), height-1, m.StartSearch, "", "")
 		m.myapp.Finish = m.AbortSearch
 	} else {
 		f = m.myapp.frames["f"]
@@ -1318,12 +1318,12 @@ func (m *microMenu) SetFtype(name, value, event, when string, x, y int) bool {
 	e := m.myapp.frames[m.myapp.activeFrame].elements[name]
 	if event == "mouseout" {
 		e.style = m.myapp.defStyle
-		e.Draw()
+		e.Draw(false)
 		return true
 	}
 	if event == "mousein" {
 		e.style = e.style.Foreground(tcell.ColorBlack).Background(tcell.Color220)
-		e.Draw()
+		e.Draw(false)
 		return true
 	}
 	if event != "mouse-click1" {
@@ -1377,12 +1377,12 @@ func (m *microMenu) SetTabSpace(name, value, event, when string, x, y int) bool 
 		} else {
 			e.style = m.myapp.styles["tab"].style
 		}
-		e.Draw()
+		e.Draw(false)
 		return true
 	}
 	if event == "mousein" {
 		e.style = e.style.Foreground(tcell.ColorBlack).Background(tcell.Color220)
-		e.Draw()
+		e.Draw(false)
 		return true
 	}
 	if event != "mouse-click1" {
@@ -1589,12 +1589,12 @@ func (m *microMenu) SetEncoding(name, value, event, when string, x, y int) bool 
 	e := m.myapp.frames[m.myapp.activeFrame].elements[name]
 	if event == "mouseout" {
 		e.style = m.myapp.defStyle
-		e.Draw()
+		e.Draw(false)
 		return true
 	}
 	if event == "mousein" {
 		e.style = e.style.Foreground(tcell.ColorBlack).Background(tcell.Color220)
-		e.Draw()
+		e.Draw(false)
 		return true
 	}
 	if event != "mouse-click1" {
@@ -1981,7 +1981,7 @@ func (m *microMenu) GetMultilineString(callback func(map[string]string)) {
 		f = m.myapp.AddFrame("f", -1, -1, width, height, "relative")
 		m.myapp.AddStyle("1", "black,yellow")
 		f.AddWindowBox("enc", "", 0, 0, width, height, true, nil, "", "")
-		f.AddWindowTextArea("data", Language.Translate("Ask"), "", 1, 1, width-4, height-5, true, false, m.SubmitSearchOnEnter, "", "")
+		f.AddWindowTextArea("data", Language.Translate("Ask"), "", 1, 1, width-4, height-5, true, m.SubmitSearchOnEnter, "", "")
 		lbl := Language.Translate("Cancel")
 		f.AddWindowButton("cancel", " "+lbl+" ", "cancel", width-20-Count(lbl), height-1, m.ButtonFinish, "", "")
 		lbl = Language.Translate("Ask")

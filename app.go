@@ -23,7 +23,7 @@ type Opt struct {
 type AppElement struct {
 	name        string // element name
 	label       string // element label if it apply
-	form        string // types: box, textbox, textarea, label, checkbox, radio, button
+	form        string // types box, textbox, textarea, label, checkbox, radio, button
 	value       string
 	valueType   string                                              // string, number
 	pos         Loc                                                 // Top left corner where to position element
@@ -31,7 +31,7 @@ type AppElement struct {
 	apose       Loc                                                 // hotspot bottom,right
 	cursor      Loc                                                 // cursor location inside text elements
 	width       int                                                 // text element width, text area width
-	height      int                                                 // Textbox: maxlength, text area have no predefined maxlength
+	height      int                                                 // Textbox maxlength, text area have no predefined maxlength
 	index       int                                                 // order in which to draw
 	callback    func(string, string, string, string, int, int) bool // (element.name, element.value, event, when, x, y)
 	style       tcell.Style                                         // color style for this element
@@ -292,7 +292,6 @@ func (f *Frame) AddWindowBox(name, title string, x, y, width, height int, border
 		return
 	}
 	a.AddWindowElement(f.name, name, title, "box", "", "", x, y, width, height, border, callback, style, luacallback)
-	a.frames[f.name].elements[name].checked = true
 	a.frames[f.name].elements[name].DrawBox(true)
 }
 
@@ -346,13 +345,12 @@ func (f *Frame) AddWindowRadio(name, label, value string, x, y int, checked bool
 }
 
 // AddWindowTextArea add a textarea element to the frame
-func (f *Frame) AddWindowTextArea(name, label, value string, x, y, columns, rows int, frame bool, readonly bool, callback func(string, string, string, string, int, int) bool, style, luacallback string) {
+func (f *Frame) AddWindowTextArea(name, label, value string, x, y, columns, rows int, frame bool, callback func(string, string, string, string, int, int) bool, style, luacallback string) {
 	a := f.microapp
 	if columns < 5 || rows < 2 {
 		return
 	}
-	a.AddWindowElement(f.name, name, label, "textarea", value, "", x, y, columns+2, rows+2, readonly, callback, style, luacallback)
-	a.frames[f.name].elements[name].checked = frame
+	a.AddWindowElement(f.name, name, label, "textarea", value, "", x, y, columns+2, rows+2, frame, callback, style, luacallback)
 	a.frames[f.name].elements[name].DrawBox(true)
 }
 
@@ -432,7 +430,7 @@ func (f *Frame) SetVisible(k string, v bool) {
 	}
 	e.visible = v
 	if v {
-		e.Draw()
+		e.Draw(true)
 	} else {
 		a.ResetFrames()
 		if a.activeElement == "" {
@@ -508,7 +506,7 @@ func (f *Frame) SetValue(k, v string) {
 	} else if e.form == "textbox" || e.form == "textarea" {
 		f.SetFocus(k, "end")
 	}
-	e.Draw()
+	e.Draw(false)
 	a.screen.Show()
 }
 
@@ -549,7 +547,7 @@ func (f *Frame) SetChecked(k string, v bool) {
 	}
 	a := f.microapp
 	e.checked = v
-	e.Draw()
+	e.Draw(false)
 	a.screen.Show()
 }
 
@@ -570,7 +568,7 @@ func (f *Frame) SetPos(k string, v Loc) {
 	}
 	a := f.microapp
 	e.pos = v
-	e.Draw()
+	e.Draw(false)
 	a.screen.Show()
 }
 
@@ -598,11 +596,11 @@ func (f *Frame) SetLabel(k, v string) {
 	if Count(vx) < Count(lx) {
 		// First overwrite n spaces to erease current label
 		e.label = strings.Repeat(" ", Count(lx))
-		e.Draw()
+		e.Draw(true)
 	}
 	// Now add new label
 	e.label = v
-	e.Draw()
+	e.Draw(true)
 	a.screen.Show()
 }
 
@@ -723,13 +721,13 @@ func (f *Frame) DeleteElement(k string) {
 // Element Drawing
 
 // Draw an element into the screen
-func (e *AppElement) Draw() {
+func (e *AppElement) Draw(redraw bool) {
 	if !e.visible {
 		return
 	}
 	switch e.form {
 	case "box":
-		e.DrawBox(false)
+		e.DrawBox(redraw)
 	case "label":
 		e.DrawLabel()
 	case "textbox":
@@ -1055,7 +1053,7 @@ func (a *MicroApp) DrawAll() {
 			for i := 0; i <= f.maxindex; i++ {
 				for _, e := range f.elements {
 					if e.index == i {
-						e.Draw()
+						e.Draw(true)
 					}
 				}
 			}
@@ -1290,7 +1288,7 @@ func (e *AppElement) SelectClickEvent(event string, x, y int) {
 			break
 		}
 	}
-	e.Draw()
+	e.Draw(true)
 	a.screen.Show()
 }
 
@@ -1407,7 +1405,7 @@ func (e *AppElement) SelectWheelEvent(event string, x, y int) {
 		e.offset++
 	}
 	e.value = e.opts[e.offset].value
-	e.Draw()
+	e.Draw(false)
 	a.screen.Show()
 }
 
@@ -1496,7 +1494,7 @@ func (e *AppElement) SelectKeyEvent(key string, x, y int) {
 		}
 	}
 	e.value = e.opts[e.offset].value
-	e.Draw()
+	e.Draw(false)
 	a.screen.Show()
 }
 
