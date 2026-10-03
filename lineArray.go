@@ -115,7 +115,7 @@ func NewLineArray(size int64, reader io.Reader) *LineArray {
 	return la
 }
 
-// Returns the String representation of the LineArray
+// String Returns the String representation of the LineArray
 func (la *LineArray) String() string {
 	str := ""
 	for i, l := range la.lines {

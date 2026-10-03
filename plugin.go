@@ -96,11 +96,11 @@ func LuaFunctionMouseBinding(function string) func(*View, bool, *tcell.EventMous
 }
 
 func unpack(old []string) []any {
-	new := make([]any, len(old))
+	newVal := make([]any, len(old))
 	for i, v := range old {
-		new[i] = v
+		newVal[i] = v
 	}
-	return new
+	return newVal
 }
 
 // LuaFunctionCommand is the same as LuaFunctionBinding except it returns a normal function
@@ -117,7 +117,6 @@ func LuaFunctionCommand(function string) func([]string) {
 // LuaFunctionComplete returns a function which can be used for autocomplete in plugins
 func LuaFunctionComplete(function string) func(string) []string {
 	return func(input string) (result []string) {
-
 		res, err := Call(function, input)
 		if err != nil {
 			TermMessage(err)
@@ -182,7 +181,6 @@ func LoadPlugins() {
 		}
 
 		loadedPlugins[pluginName] = pluginLuaName
-
 	}
 
 	if _, err := os.Stat(configDir + "/init.lua"); err == nil {

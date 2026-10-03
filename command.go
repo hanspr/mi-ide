@@ -56,8 +56,8 @@ func GetCommandActions() map[string]func([]string) {
 	return commandActions
 }
 
-// group commands with group:command
 // DefaultCommands returns a map containing mi-ide's default commands
+// group commands with group:command
 func DefaultCommands() map[string]StrCommand {
 	return map[string]StrCommand{
 		"cd":       {"Cd", []Completion{FileCompletion}},
@@ -134,7 +134,7 @@ func CommandAction(cmd string) func(*View, bool) bool {
 	}
 }
 
-// Gemini ask gemini
+// GeminiAsk ask gemini
 func GeminiAsk(args []string) {
 	if len(args) < 4 {
 		messenger.Warning("Question is too short")
@@ -190,7 +190,6 @@ func SaveAs(args []string) {
 	}
 }
 
-// Groups
 // GroupEdit execute selected option
 func GroupEdit(args []string) {
 	switch args[0] {
@@ -330,7 +329,7 @@ func Save(args []string) {
 	CurView().Save(true)
 }
 
-// ShowLog toggles the log view
+// ShowHLog shows log horizontal split
 func ShowHLog(args []string) {
 	buffer := messenger.getBuffer()
 	if CurView().Type != vtLog {
@@ -347,7 +346,7 @@ func ShowHLog(args []string) {
 	}
 }
 
-// ShowLog toggles the log view
+// ShowVLog show log vertical split
 func ShowVLog(args []string) {
 	buffer := messenger.getBuffer()
 	if CurView().Type != vtLog {
@@ -369,7 +368,7 @@ func Reload(args []string) {
 	loadAll()
 }
 
-// Reload reloads all files (syntax files, colorschemes...)
+// Exit: Reload reloads all files (syntax files, colorschemes...)
 func Exit(args []string) {
 	CurView().QuitAll(false)
 }
@@ -391,7 +390,7 @@ func Help(args []string) {
 
 // : Snippets
 
-// Show loaded snippets
+// ShowSnippets loaded snippets
 func ShowSnippets() {
 	ftype := CurView().Buf.FileType()
 	snips := listSnippets(ftype)
@@ -414,7 +413,7 @@ func EditSnippets() {
 
 // : Git
 
-// Load git status into a window
+// GitStatus Load git status into a window
 func GitStatus() {
 	if !git.enabled {
 		if !git.CheckGit() {
@@ -428,7 +427,7 @@ func GitStatus() {
 	CurView().OpenHelperView("h", "git-status", status)
 }
 
-// Load git status into a window
+// GitDiff Load git status into a window
 func GitDiff(arg string) {
 	if !git.enabled {
 		return

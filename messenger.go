@@ -567,7 +567,7 @@ func (m *Messenger) Clear() {
 	}
 }
 
-// Clear clears the line at the bottom of the editor
+// ClearMessage clears the line at the bottom of the editor
 func (m *Messenger) ClearMessage() {
 	m.message = ""
 	if apprunning == nil {

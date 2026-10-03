@@ -1130,7 +1130,6 @@ func (m *microMenu) SubmitSearchOnEnter(name, value, event, when string, x, y in
 	}
 	if len([]rune(event)) > 1 {
 		if event == "Backspace2" || event == "Delete" || event == "Ctrl+V" || event == "Paste" {
-			event = ""
 		} else {
 			return true
 		}

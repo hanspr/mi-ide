@@ -732,7 +732,7 @@ func (b *Buffer) SaveAs(filename string) error {
 			fileutf8 = file
 		}
 		if len(b.lines) == 0 {
-			return
+			return nil
 		}
 
 		if b.Settings["fileformat"] == "dos" {
@@ -743,22 +743,22 @@ func (b *Buffer) SaveAs(filename string) error {
 
 		// write lines
 		if fileSize, e = fileutf8.Write(b.lines[0].data); e != nil {
-			return
+			return nil
 		}
 
 		for _, l := range b.lines[1:] {
 			if _, e = fileutf8.Write(eol); e != nil {
-				return
+				return nil
 			}
 
 			if _, e = fileutf8.Write(l.data); e != nil {
-				return
+				return nil
 			}
 
 			fileSize += len(eol) + len(l.data)
 		}
 
-		return
+		return nil
 	})
 
 	if err != nil {
@@ -768,7 +768,6 @@ func (b *Buffer) SaveAs(filename string) error {
 			if newerr != nil {
 				return err
 			}
-			err = nil
 		} else {
 			return err
 		}

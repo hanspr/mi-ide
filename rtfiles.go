@@ -130,7 +130,6 @@ func InitRuntimeFiles() {
 			}
 		}
 	}
-
 }
 
 // PluginReadRuntimeFile allows plugin scripts to read the content of a runtime file

@@ -1,4 +1,3 @@
-// app
 package main
 
 import (
@@ -750,7 +749,7 @@ func (e *AppElement) Hide() {
 }
 
 // DrawBox draw a box element
-func (e *AppElement) DrawBox(clear bool) {
+func (e *AppElement) DrawBox(clearBox bool) {
 	a := e.microapp
 	f := e.frame
 	Hborder := tcell.RuneHLine
@@ -793,7 +792,7 @@ func (e *AppElement) DrawBox(clear bool) {
 		a.screen.SetContent(x1, y2, LLC, nil, e.style)
 		a.screen.SetContent(x2, y2, LRC, nil, e.style)
 	}
-	if clear {
+	if clearBox {
 		for row := y1 + 1; row < y2; row++ {
 			for col := x1 + 1; col < x2; col++ {
 				a.screen.SetContent(col, row, ' ', nil, e.style)
@@ -1003,11 +1002,11 @@ func (e *AppElement) getECursorFromACursor() Loc {
 	offset := a.cursor.X - e.aposb.X
 	for line := range strings.SplitSeq(e.value, "\n") {
 		Y++
-		max := Count(line)
+		maxC := Count(line)
 		if Y+e.aposb.Y == a.cursor.Y {
 			X = a.cursor.X - offset
-			if X > max {
-				X = max
+			if X > maxC {
+				X = maxC
 				a.cursor.X = X + offset
 			}
 			a.screen.ShowCursor(a.cursor.X+f.left, a.cursor.Y+f.top)

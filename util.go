@@ -54,10 +54,10 @@ func toRunes(b []byte) []rune {
 
 // Remove everything to the end starting from index
 func sliceEnd(slc []byte, index int) []byte {
-	len := len(slc)
+	strlen := len(slc)
 	i := 0
 	totalSize := 0
-	for totalSize < len {
+	for totalSize < strlen {
 		if i >= index {
 			return slc[:totalSize]
 		}

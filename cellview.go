@@ -36,7 +36,6 @@ func visualToCharPos(visualIndex int, lineN int, str string, buf *Buffer, tabsiz
 			lineIdx += rw
 		}
 		lastWidth = width
-		rw = 0
 		if c == '\t' {
 			rw = tabsize - (lineIdx % tabsize)
 			width += rw
@@ -254,9 +253,7 @@ func (c *CellView) Draw(buf *Buffer, top, height, left, width int, ActiveView bo
 
 				viewCol = 0
 			}
-
 		}
-
 		if group, ok := buf.Match(lineN)[len(line)]; ok {
 			curStyle = GetColor(group.String())
 		}

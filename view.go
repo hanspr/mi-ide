@@ -247,7 +247,6 @@ func (v *View) AddTabbarSpace() {
 }
 
 func (v *View) paste(clip string) {
-
 	if len(clip) == 0 {
 		return
 	}
@@ -816,7 +815,6 @@ func (v *View) HandleEvent(event tcell.Event) {
 							TermMessage(err)
 						}
 					}
-
 				}
 				v.SetCursor(&v.Buf.Cursor)
 			}
@@ -1289,7 +1287,7 @@ func (v *View) DisplayView() {
 
 			// Write the extra space
 			screen.SetContent(screenX+divider, yOffset+visualLineN, ' ', nil, lineNumStyle)
-			screenX++
+			//screenX++
 		}
 
 		// Cursor

@@ -92,9 +92,9 @@ func NewEventHandler(buf *Buffer) *EventHandler {
 // the buffer equal to that string
 // This means that we can transform the buffer into any string and still preserve undo/redo
 // through insert and delete events
-func (eh *EventHandler) ApplyDiff(new string) {
+func (eh *EventHandler) ApplyDiff(newStr string) {
 	differ := dmp.New()
-	diff := differ.DiffMain(eh.buf.String(), new, false)
+	diff := differ.DiffMain(eh.buf.String(), newStr, false)
 	loc := eh.buf.Start()
 	for _, d := range diff {
 		if d.Type == dmp.DiffDelete {

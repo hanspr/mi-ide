@@ -372,7 +372,6 @@ func GetInstalledPluginVersion(name string) string {
 		version := L.GetField(plugin, "VERSION")
 		if str, ok := version.(lua.LString); ok {
 			return string(str)
-
 		}
 	}
 	return ""

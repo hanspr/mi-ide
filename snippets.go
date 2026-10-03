@@ -459,7 +459,6 @@ func listSnippets(filetype string) string {
 			// snippet word
 			snippets.WriteString(string(line))
 			snippets.WriteString("\n")
-			comment = ""
 		}
 	}
 	_ = scanner.Err()

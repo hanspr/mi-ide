@@ -14,7 +14,7 @@ import (
 	lua "github.com/yuin/gopher-lua"
 )
 
-// PreActionCall executes the lua pre callback if possible
+// PreActionCall executes the lua pre callback if possible.
 func PreActionCall(funcName string, view *View, args ...any) bool {
 	executeAction := true
 	for pl := range loadedPlugins {
@@ -33,7 +33,7 @@ func PreActionCall(funcName string, view *View, args ...any) bool {
 	return executeAction
 }
 
-// PostActionCall executes the lua plugin callback if possible
+// PostActionCall executes the lua plugin callback if possible.
 func PostActionCall(funcName string, view *View, args ...any) bool {
 	relocate := true
 	for pl := range loadedPlugins {
@@ -63,9 +63,8 @@ func (v *View) deselect(index int) bool {
 }
 
 // MousePress is the event that should happen when a normal click happens
-// This is almost always bound to left click
+// This is almost always bound to left click.
 func (v *View) MousePress(usePlugin bool, e *tcell.EventMouse) bool {
-
 	if usePlugin && !PreActionCall("MousePress", v, e) {
 		return false
 	}
@@ -1214,7 +1213,6 @@ func (v *View) SaveAs(usePlugin bool) bool {
 
 // FindNext searches forwards for the last used search term
 func (v *View) FindNext(usePlugin bool) bool {
-
 	if !searching {
 		return false
 	}
@@ -1242,7 +1240,6 @@ func (v *View) FindNext(usePlugin bool) bool {
 
 // FindPrevious searches backwards for the last used search term
 func (v *View) FindPrevious(usePlugin bool) bool {
-
 	if !searching {
 		return false
 	}
@@ -2025,7 +2022,7 @@ func (v *View) SafeQuit(usePlugin bool) bool {
 	return true
 }
 
-// QuitOthers Binding to close oposite window
+// QuitOthers Binding to close opposite window
 func (v *View) QuitOthers(usePlugin bool) bool {
 	if v.Type == vtLog || v.Type == vtTerm || v.Type == vtHelp {
 		return false
@@ -2123,7 +2120,7 @@ func (v *View) QuitAll(usePlugin bool) bool {
 			// is promted when there is no information to loose.
 			// The user has already answered to yes/no save questions before.
 			// The application needs an action to exit completly without confirmations
-			// Option could be usefull, not necessary. F4 Can bind to Quit. Ctrl-Q to Quit All
+			// Option could be useful, not necessary. F4 Can bind to Quit. Ctrl-Q to Quit All
 
 			// for _, tab := range tabs {
 			// 	for _, v := range tab.Views {
@@ -2447,7 +2444,6 @@ func (v *View) SpawnMultiCursorSelect(usePlugin bool) bool {
 		if usePlugin {
 			PostActionCall("SpawnMultiCursorSelect", v)
 		}
-
 	}
 	return false
 }
@@ -2625,7 +2621,6 @@ func (v *View) FindDialogFinished(values map[string]string) {
 
 // Replace runs search and replace
 func Replace(args []string) {
-
 	if len(args) < 2 || args[0] == args[1] {
 		// We need to find both a search and replace expression
 		messenger.Alert("error", Language.Translate("Invalid replace statement:"), " "+strings.Join(args, " "))
@@ -2654,7 +2649,7 @@ func Replace(args []string) {
 		}
 	}
 
-	search := string(args[0])
+	search := args[0]
 
 	if noRegex {
 		search = regexp.QuoteMeta(search)
@@ -2662,7 +2657,7 @@ func Replace(args []string) {
 		search = mods + search
 	}
 
-	replace := string(args[1])
+	replace := args[1]
 	replace = ExpandString(replace)
 	regex, err := regexp.Compile(search)
 	if err != nil {
