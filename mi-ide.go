@@ -484,12 +484,8 @@ func main() {
 				v.savedLoc = v.Cursor.Loc
 			}
 			t.Resize()
-
 		}
 	}
-
-	// release the references we created, they are no longer needed
-	buffers = nil
 
 	for k, v := range optionFlags {
 		if *v != "" {
