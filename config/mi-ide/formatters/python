@@ -19,7 +19,7 @@ exit 0;
 sub Ruff {
     my $x = system "which ruff";
     if (!$x) {
-        system "ruff format $FILE";
+        system("ruff", "format", $FILE);
         exit 0;
     }
 }
