@@ -979,7 +979,7 @@ func (m *microMenu) Search(callback func(map[string]string)) {
 		m.myapp.Reset()
 		m.myapp.defStyle = StringToStyle("#ffffff,#262626")
 		width := 70
-		height := 6
+		height := 7
 		f = m.myapp.AddFrame("f", -1, -1, width, height, "relative")
 		m.myapp.AddStyle("1", "black,yellow")
 		f.AddWindowBox("enc", Language.Translate("Search"), 0, 0, width, height, true, nil, "", "")
@@ -1023,7 +1023,7 @@ func (m *microMenu) SearchReplace(callback func(map[string]string)) {
 		m.myapp.Reset()
 		m.myapp.defStyle = StringToStyle("#ffffff,#262626")
 		width := 70
-		height := 10
+		height := 11
 		f = m.myapp.AddFrame("f", -1, -1, width, height, "relative")
 		m.myapp.AddStyle("1", "bold black,yellow")
 		f.AddWindowBox("enc", Language.Translate("Search / Replace"), 0, 0, width, height, true, nil, "", "")
