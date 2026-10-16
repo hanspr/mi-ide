@@ -2890,6 +2890,13 @@ func (v *View) FindFunctionDeclaration(usePlugin bool) bool {
 // HintFunction Find function and show a small hint on window, with relevant information
 func (v *View) HintFunction(usePlugin bool) bool {
 	messenger.Message("")
+	if v.Buf.FileType() == "go" {
+		doc := v.goDoc()
+		if doc != "" {
+			v.OpenHelperView("h", v.Buf.Settings["filetype"].(string), doc)
+			return true
+		}
+	}
 	ok, data, word, _ := v.SearchFunction(true)
 	if !ok {
 		messenger.Warning("function hint ", data, " : ", word)
@@ -2899,15 +2906,21 @@ func (v *View) HintFunction(usePlugin bool) bool {
 	return true
 }
 
+// goDoc find documentation about word under cursor
+func (v *View) goDoc() string {
+	word := v.Cursor.getWordUnder(".")
+	doc, err := ExecCommand("go", "doc", word)
+	if err != nil {
+		return ""
+	}
+	return doc
+}
+
 // SearchFunction :
 // Search for word under cursor in the current buffer or the file system
 // If searching for hint, return previous comments, and first line of function
 func (v *View) SearchFunction(hint bool) (bool, string, string, int) {
-	loc := v.Cursor.Loc
-	v.Cursor.SelectWord(false)
-	word := v.Cursor.GetSelection()
-	v.Cursor.ResetSelection()
-	v.Cursor.Loc = loc
+	word := v.Cursor.getWordUnder("")
 	exp := `\W+`
 	matched, err := regexp.MatchString(exp, word)
 	if word == "" || err != nil || matched {
