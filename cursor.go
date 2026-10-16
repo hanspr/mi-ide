@@ -181,6 +181,28 @@ func (c *Cursor) SelectWord(IncludeRepeatedNoneWords bool) {
 	c.Loc = c.CurSelection[1]
 }
 
+// SelectWord selects the word the cursor is currently on
+func (c *Cursor) getWordUnder(include string) string {
+	line := c.buf.Line(c.Y)
+	if len(line) == 0 {
+		return ""
+	}
+
+	forward, backward := c.X, c.X
+
+	for backward > 0 && (IsWordChar(string(c.RuneUnder(backward-1))) || string(c.RuneUnder(backward-1)) == include) {
+		backward--
+	}
+
+	for forward < Count(c.buf.Line(c.Y))-1 && (IsWordChar(string(c.RuneUnder(forward+1))) || string(c.RuneUnder(backward-1)) == include) {
+		forward++
+	}
+	if backward >= forward {
+		return ""
+	}
+	return line[backward : forward+1]
+}
+
 // AddWordToSelection adds the word the cursor is currently on
 // to the selection
 func (c *Cursor) AddWordToSelection() {
