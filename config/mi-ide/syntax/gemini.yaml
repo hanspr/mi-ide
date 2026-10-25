@@ -5,7 +5,7 @@ detect:
 
 rules:
     # Tables (Github extension)
-    - normal: ".*\\|.*"
+    - default: ".*\\|.*"
 
     # quotes
     - method: "^[:>].+"

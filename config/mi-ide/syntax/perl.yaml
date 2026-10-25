@@ -9,7 +9,7 @@ rules:
     - function: "\\w+\\(.*?\\)"
     - function: "->\\w+"
     - label: "goto \\w+"
-    - statement: "goto "
+    - type.keyword: "goto "
     - constant.number: "[0-9]+(\\.[0-9]+)?([Ee][\\-\\+]?[0-9]+)?|undef"
     - symbol.operator: "\\||#|/"
     - symbol: "[!=]\\~|\\*\\*|\\!|\\~|\\|\\+|\\-|\\*|%|<<|>>|<|>|[<>=!]=|<=>|&|\\|\\^|&&|\\.\\.|\\.\\.\\.|\\?|:|=|\\*\\*=|\\+=|\\*=|&=|\\|\\||\\.=|%=|\\^=|\\bx\\b"
@@ -36,14 +36,14 @@ rules:
     - symbol.tag: "</?[A-Za-z0-9:]+/?[ >]"
     - constant.tag: "&[\\w]{2,5};"
     - constant.string: "\'.*?\'"
-    - comment: "[ \\t]+#.*$"
     - constant.string.url: "(ftp(s)?|http(s)?|git|chrome)://[^ \\t\\'\"]+"
-    - comment: "^[ \\t]*#.*$"
     - label: "^[\\t ]*\\w+:$"
     - info: "^[\\t ]*# ?\\w+:.*"
     - todo: "(?i)^[\\t ]*# ?TODO:.*"
     - error: "(?i)^[\\t ]*# ?FIX:.*"
-    - default: "^[\\t ]+"
+    - default: "^\\s+"
+    - comment: "\\s+#.*$"
+    - comment: "^\\s*#.*"
 
     - constant.string:
         start: "q’"
@@ -64,7 +64,7 @@ rules:
         end: "^__EOF__$"
         rules:
             # Tables (markup style)
-            - normal: ".*\\|.*"
+            - default: ".*\\|.*"
             - md-table: "(?:\\|.+?)+\\|"
             - md-bold: "^\\|[^\\|]+"
             - statusline: "\\|"

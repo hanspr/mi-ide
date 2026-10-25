@@ -1,4 +1,4 @@
-#color-link default "#F8F8F2"
+color-link default "#FFFFFF"
 color-link comment "#767676"
 color-link type.keyword "#ff82ab"
 color-link type.other "bold #ff82ab"

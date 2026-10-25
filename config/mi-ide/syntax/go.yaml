@@ -24,7 +24,7 @@ rules:
 
       # Methods
     - method: "\\.\\w+\\b"
-    - normal: "\\."
+    - default: "\\."
       # Brackets
     - symbol.brackets: "(\\{|\\})"
     - symbol.brackets: "(\\(|\\))"
@@ -37,16 +37,10 @@ rules:
     - constant.string: "\\`.*?\\`"
     - include: "comments"
     - comment: "^[ \\t]*//.*$"
-    - comment: "[ \\t]+//.*$"
+    - comment: "//.*$"
     - label: "^[\\t ]*\\w+:$"
     - constant.string.url: "(ftp(s)?|http(s)?|git|chrome)://[^ \\t\\'\"]+"
     - default: "^[\\t ]+"
-
-    - comment:
-        start: "^\\s*/\\*"
-        end: "\\*/"
-        rules:
-            - todo: "(TODO|XXX|FIXME):?"
 
     - type.keyword:
         start: "struct {"
@@ -57,4 +51,4 @@ rules:
             - symbol.brackets: "(\\(|\\))"
             - symbol.brackets: "(\\[|\\])"
             - constant.string: "`.*?`"
-            - comment: "\\s*//.+$"
+            - comment: "//.+$"

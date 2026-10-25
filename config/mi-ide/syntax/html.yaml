@@ -34,8 +34,8 @@ rules:
         rules: []
 
     - default:
-        start: "<script.*?>"
-        end: "</script.*?>"
+        start: "<script *(language=\".+\")?>"
+        end: "</script>"
         limit-group: symbol.tag
         rules:
             - include: "javascript"
